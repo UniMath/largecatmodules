@@ -188,7 +188,7 @@ Defined.
      rewrite (functor_comp T).
      rewrite assoc.
      reflexivity.
-  Qed.
+  Defined. (* would be a HUGE mistake to put Qed here *)
 
 (*
   unfold pullback_module.
@@ -282,6 +282,21 @@ Defined.
 Definition bmod_data : disp_precat_data _
 := (bmod_disp_ob_mor ,, bmod_id_comp).
 
+
+Lemma foo (x y : MONAD) (f g : MONAD ⟦ x, y ⟧)
+  (e : f = g)
+  (xx : bmod_data x)
+  (yy : pr1 bmod_data y)
+  (ff : xx -->[ f] yy)
+  (c : C) :
+  (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 ff c.
+Proof.
+  destruct e.
+  intros.
+  apply idpath.
+Qed.
+
+
 Lemma bmod_axioms : disp_precat_axioms MONAD bmod_data.
 Proof.
 
@@ -294,6 +309,18 @@ Proof.
     intros c; simpl.
     simpl.
     rewrite assoc; simpl.
+    etrans. Focus 2. eapply pathsinv0.
+      apply  foo.
+   cbn. simpl. unfold pbm_mor_comp.
+      unfold transportb.
+      rewrite id_left.
+      rewrite id_right.
+      apply idpath.
+  - (* this is for Ambroise *)
+
+      Search (transportf (fun _ => _ ) _ _ = _ ).
+      set (foo := paths).
+      use pr1_transportf.
 TODO
     reflexivity.
     rewrite <- nat_trans_over_id_left.
