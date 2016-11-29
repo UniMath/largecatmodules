@@ -231,7 +231,7 @@ Section LargeCatMod.
 
 
 
-  Search (_ -> has_homsets _ ).
+
   (* total_precat_has_homsets *)
   Lemma monad_category_has_homsets : has_homsets (precategory_Monad C (homset_property C)).
     intros F G.
@@ -289,8 +289,13 @@ Proof.
   - simpl.
     unfold id_disp; simpl.
 
-    unfold transportb; simpl.
-
+    apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+    apply nat_trans_eq; try apply homset_property.
+    intros c; simpl.
+    simpl.
+    rewrite assoc; simpl.
+TODO
+    reflexivity.
     rewrite <- nat_trans_over_id_left.
     unfold mor_disp; simpl.
   apply isasetaprop, homset_property.
