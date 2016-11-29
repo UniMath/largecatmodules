@@ -11,7 +11,8 @@ Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 
 Require Import UniMath.CategoryTheory.Monads.
-Require Import UniMath.CategoryTheory.Modules.
+Require Import Largecat.modules.
+(* Require Import UniMath.CategoryTheory.Modules. *)
 
 
 Require Import TypeTheory.Auxiliary.Auxiliary.
@@ -147,6 +148,28 @@ Definition pbm_mor {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory} {T T' :
   reflexivity.
 Defined.
 
+Lemma is_nat_trans_id_pw {B C} {F G:functor B C} (f:Π x : B, C ⟦ F x, G x ⟧) (heq: Π x,  F x = G x) (heqf:Π x, f x = transportf (fun A =>  C ⟦ F x, A ⟧) (heq x) (identity (F x) )) : is_nat_trans F G f.
+  intros.
+  red.
+  intros b b' g.
+  rewrite heqf.
+  rewrite heqf.
+  clear heqf.
+  simpl.
+  assert  (tr:= fun P Q f=> transport_map(P:=P) (Q:=Q)f (heq b)).
+  simpl.
+Abort.
+(*
+  rewrite transportf_fun.
+  unfold heq.
+  rewrite transportf_id2.
+  set (Q:=(λ A : C, C ⟦ F b, A ⟧)).
+  assert (tr2 :=  tr (fun _ => unit) Q).
+  set (f' := fun (z:C) _  => identity z : Q z).
+  simpl in tr2.
+  (fun z _ => identity z) tt).
+  rewrite tr2.
+*)
 
   Definition pbm_mor_comp_nat_trans {B} {M M' M'':Monad B} (m:Monad_Mor M M') (m':Monad_Mor M' M'') {C:precategory} {T :RModule M'' C} : (pullback_module m (pullback_module m' T)) ⟶ pullback_module (Monad_composition m  m') T.
     intros.
@@ -265,8 +288,9 @@ Proof.
   repeat apply tpair; intros; try apply homset_property.
   - simpl.
     unfold id_disp; simpl.
-    TODO
+
     unfold transportb; simpl.
+
     rewrite <- nat_trans_over_id_left.
     unfold mor_disp; simpl.
   apply isasetaprop, homset_property.
