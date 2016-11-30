@@ -539,10 +539,10 @@ End Arities2.
 (* large category of representation defined as a display category
 
 Not that contrary to the large category of modules, we do not construct the category of
-modules over a monad.
+representations of a specific arity
 
 This is an attempt to use directly the display category construction.
-The category of represenations of an arity can be retrieved as a fiber category.
+The category of represenations of a specific arity can be retrieved as a fiber category.
 
 *)
 Section LargeCatRep.
@@ -586,6 +586,7 @@ Section LargeCatRep.
 
     split; intro c.
     (* Soooo enervinggggggg  et ce n'est pas le seul truc que j'ai testé bien sûr *)
+
     rewrite functor_id_id.
     repeat pr1_norm.
         unfold pr1.
