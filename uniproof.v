@@ -248,7 +248,24 @@ Section LargeCatMod.
     apply homset_property.
   Qed.
 
-  Definition monadPrecategory : Precategory := (precategory_Monad C (homset_property C) ,, monad_category_has_homsets).
+    Lemma rmodule_category_has_homsets (R:Monad C): has_homsets (precategory_RModule R D (homset_property D)).
+    intros R F G.
+    simpl.
+
+
+    apply isaset_total2 .
+    apply isaset_nat_trans.
+    apply homset_property.
+    intros m.
+
+    apply isasetaprop.
+    apply isaprop_RModule_Mor_laws.
+    apply homset_property.
+  Qed.
+
+
+    Definition monadPrecategory : Precategory := (precategory_Monad C (homset_property C) ,, monad_category_has_homsets).
+
 
   Local Notation MONAD := monadPrecategory.
   Local Notation MODULE R := (precategory_RModule R _ (homset_property D)).
@@ -282,7 +299,7 @@ Defined.
 Definition bmod_data : disp_precat_data _
 := (bmod_disp_ob_mor ,, bmod_id_comp).
 
-
+(* Peut etre que c'est le genre de pb qui intéresse André.. Cf utilisation de foo *)
 Lemma foo (x y : MONAD) (f g : MONAD ⟦ x, y ⟧)
   (e : f = g)
   (xx : bmod_data x)
@@ -318,46 +335,377 @@ Proof.
       apply idpath.
   - (* this is for Ambroise *)
 
-      Search (transportf (fun _ => _ ) _ _ = _ ).
-      set (foo := paths).
-      use pr1_transportf.
-TODO
+    set (heqf := id_right f).
+     apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+     apply nat_trans_eq; try apply homset_property.
+     simpl.
+     intros c.
+     rewrite id_right,id_right.
+    revert ff.
+
+    destruct (heqf).
+    intros; simpl.
     reflexivity.
-    rewrite <- nat_trans_over_id_left.
-    unfold mor_disp; simpl.
-  apply isasetaprop, homset_property.
+  - set (heqf:= assoc f g h).
+     apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+     apply nat_trans_eq; try apply homset_property.
+     intros c; simpl.
+     (* rewrite id_right,id_right. *)
+     (* rewrite assoc. *)
+     etrans; cycle 1.
+     (* set (z:= (ff:nat c ;; gg c ;; hh c). *)
+     symmetry.
+
+     clearbody heqf.
+
+(* impossible de faire un destruct ici... *)
+
+     apply foo.
+     simpl.
+     repeat rewrite id_right.
+     rewrite assoc.
+     reflexivity.
+  - simpl.
+    apply rmodule_category_has_homsets.
 Qed.
 
-Definition bmod_disp : disp_precat MONAD.
-  := (bmod_data ,, bmod_axioms).
+Definition bmod_disp : disp_precat MONAD:=
+   (bmod_data ,, bmod_axioms).
 
 
-  TODO
+End LargeCatMod.
 
 
+(* a category can be viewed as a display category with singletons. But useless since there
+are already lifting functors in the Display Category library *)
+Section LiftCatDispCat.
+
+  Context (C:Precategory).
 
 
-
-Definition arrow_data : disp_precat_data _
-  := (arrow_disp_ob_mor ,, arrow_id_comp).
-
-Lemma arrow_axioms : disp_precat_axioms (C × C) arrow_data.
+Definition liftcat_disp_ob_mor : disp_precat_ob_mor C.
 Proof.
-  repeat apply tpair; intros; try apply homset_property.
-  apply isasetaprop, homset_property.
+  exists (fun R : C => unit).
+  intros xx' yy' g h ff'.
+  exact unit.
+    (* exact (precategory_morphisms (* (C:= MODULE xx') *) g ( pullback_module  ff'  h )). *)
+Defined.
+
+Definition liftcat_id_comp : disp_precat_id_comp _ liftcat_disp_ob_mor.
+Proof.
+  split.
+  -
+    intros x xx.
+    simpl.
+    exact tt.
+
+
+  - intros x y z f g xx yy zz ff gg.
+    exact tt.
+Defined.
+
+
+Definition liftcat_data : disp_precat_data _
+:= (liftcat_disp_ob_mor ,, liftcat_id_comp).
+
+Lemma uniq_tt (x:unit) : x=tt.
+  now destruct x.
+Qed.
+Lemma liftcat_axioms : disp_precat_axioms _ liftcat_data.
+Proof.
+
+  repeat apply tpair; intros; try apply homset_property; try  now rewrite uniq_tt;   symmetry;    rewrite uniq_tt.
+  exact isasetunit.
+Qed.
+
+Definition liftcat_disp : disp_precat _ :=
+   (liftcat_data ,, liftcat_axioms).
+
+(* Lemma iso_liftcast_disp : *)
+
+End LiftCatDispCat.
+
+
+Section Arities.
+
+  Variables (C D:Precategory).
+
+  Local Notation MONAD := (monadPrecategory C).
+  Local Notation BMOD := (bmod_disp C D).
+
+(* Définitions des arités *)
+Definition arity := functor_lifting BMOD (functor_identity MONAD).
+
+  (* functor_over (functor_identity _) (liftcat_disp (monadPrecategory C)) (bmod_disp C D). *)
+
+(* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
+Lemma right_inverse_arity  (ar:arity ) :  ((pr1_precat BMOD)□ (lifted_functor ar) )    =  (functor_identity MONAD).
+  intros.
+  apply subtypeEquality; [| reflexivity].
+  red.
+  intros;  apply isaprop_is_functor.
+  apply homset_property.
+Qed.
+
+(* Réciproque : si on a un foncteur qui vérifié ça, alors on a un functor lifting qui vaut lui-même *)
+
+Section Reciproque.
+
+  Variable (F:functor MONAD (total_precat BMOD)).
+  Hypothesis (hF :  ((pr1_precat (bmod_disp C D))□ F) = (functor_identity (monadPrecategory C))).
+
+  Definition ar_inv_ob (x:MONAD): BMOD x.
+    intro x.
+
+    unfold BMOD; simpl.
+    change x with (functor_identity MONAD x).
+    rewrite <- hF.
+    exact (pr2 (F x)).
+  Defined.
+
+  Definition ar_inv_data : section_disp_data BMOD.
+    exists ar_inv_ob.
+    intros.
+    unfold mor_disp.
+    (* Trop dur, il faut faire des transport c'est trop la galère *)
+    change f with (#(functor_identity MONAD) f).
+    (* rewrite <- hF. *)
+    Abort.
+(*
+    simpl.
+    assert (hf : forall g,  f = g -> pullback_module f (ar_inv_ob y) = pullback_module ( g) (ar_inv_ob y)).
+    { intros g heq.
+      destruct heq.
+      reflexivity.
+    }
+    erewrite hf; cycle 1.
+    clear.
+    assert (hf2 : forall A B (g:Monad_Mor A B), #(pr1_precat BMOD □ F) g = #(functor_identity MONAD) g).
+
+    rewrite <- hF.
+    change f with
+etrans.
+    erewrite hf.
+    assert (Ff := (#F f)).
+
+    assert (Ffm := pr2 Ff).
+    simpl in Ffm.
+
+    rewrite <- hF.
+    simpl.
+    intro f.
+
+    intros f.
+    exact (pr2 (#F f)).
+    set (Ff := pr2 (#F f)).
+    simpl in Ff.
+
+  Lemma right_inverse_arity_rep   ->
+                                                                    exists (ar:arity), (lifted_functor ar) = F.
+    intros.
+    apply subtypeEquality; [| reflexivity].
+    red.
+    intros;  apply isaprop_is_functor.
+    apply homset_property.
+  Qed.*)
+
+
+    End Reciproque.
+End Arities.
+
+
+(* deuxième manière de définir les arités *)
+Section Arities2.
+
+  Variables (C D:Precategory).
+
+  Local Notation MONAD := (monadPrecategory C).
+  Local Notation BMOD := (bmod_disp C D).
+  Local Notation LMONAD := (liftcat_disp MONAD).
+
+(* Définitions des arités *)
+Definition arity2 := functor_over (functor_identity _) LMONAD (bmod_disp C D).
+
+(* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
+Lemma right_inverse_arity2  (ar:arity2 ) :  ((pr1_precat BMOD)□ (total_functor ar) )    =  (pr1_precat LMONAD).
+  intros.
+  apply subtypeEquality; [| reflexivity].
+  red.
+  intros;  apply isaprop_is_functor.
+  apply homset_property.
+Qed.
+
+End Arities2.
+(* large category of representation defined as a display category
+
+Not that contrary to the large category of modules, we do not construct the category of
+modules over a monad.
+
+This is an attempt to use directly the display category construction.
+The category of represenations of an arity can be retrieved as a fiber category.
+
+*)
+Section LargeCatRep.
+
+  Variable (C :Precategory).
+
+  Local Notation MONAD := (monadPrecategory C).
+  Local Notation LMONAD := (liftcat_disp MONAD).
+  Local Notation BMOD := (bmod_disp C C).
+  Local Notation GEN_ARITY := (disp_functor_precat _ _ LMONAD BMOD).
+  (* Arities are display functors over the identity *)
+  Local Notation ARITY :=  (fiber_precategory GEN_ARITY (functor_identity _)).
+
+
+
+  (*
+************
+
+ ??? Question pour Benedikt :
+
+
+************
+*)
+  (* pourquoi ce check  ne marche pas : *)
+  (* Check (forall a:ob ARITY, Some (a:functor_over_data _ _ _) = None). *)
+  (* et ceux-là marchent ? *)
+  Check (forall a:ob ARITY, Some (a:functor_over  _ _  _) = None).
+  Check (forall a:ob ARITY, Some ((a:functor_over  _ _  _):functor_over_data _ _ _) = None).
+
+
+  Definition taut_rmod_data (R:MONAD) : RModule_data R C.
+    intros.
+    exists (pr1 R).
+    apply μ.
+  Defined.
+  Definition taut_rmod (R:Monad C) : BMOD R.
+    intros R.
+    exists (taut_rmod_data R).
+
+
+
+    split; intro c.
+    (* Soooo enervinggggggg  et ce n'est pas le seul truc que j'ai testé bien sûr *)
+    rewrite functor_id_id.
+    repeat pr1_norm.
+        unfold pr1.
+    apply   functor_id_id.
+
+        assert (h:=Monad_law1 (T:=R) c).
+        rewrite h.
+        refl
+    rewrite Monad_law1.
+    intro h.
+    rewrite h.
+    rewrite Monad_law1.
+    etrans.
+    apply maponpaths.
+    pr1_norm.
+    rewrite Monad_law1.
+TODO
+
+
+  Definition brep_disp_ob_mor : disp_precat_ob_mor ARITY.
+Proof.
+  exists (fun ar:ob ARITY => Σ (R:MONAD), RModule_Mor (((ar:functor_over _ _ _):functor_over_data _ _ _) R tt) R).
+  intros xx' yy' g h ff'.
+    exact (precategory_morphisms (* (C:= MODULE xx') *) g ( pullback_module  ff'  h )).
+Defined.
+
+Definition brep_id_comp : disp_precat_id_comp _ brep_disp_ob_mor.
+Proof.
+  split.
+  -
+    intros x xx.
+    simpl.
+    apply pbm_id.
+
+  - intros x y z f g xx yy zz ff gg.
+    set (pbm_g := pbm_mor f gg).
+    set (pbm_gf := (RModule_composition _ pbm_g (pbm_mor_comp f g ))).
+    exact (compose ff pbm_gf).
+Defined.
+
+
+Definition brep_data : disp_precat_data _
+:= (brep_disp_ob_mor ,, brep_id_comp).
+
+
+Lemma foo (x y : MONAD) (f g : MONAD ⟦ x, y ⟧)
+  (e : f = g)
+  (xx : brep_data x)
+  (yy : pr1 brep_data y)
+  (ff : xx -->[ f] yy)
+  (c : C) :
+  (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 ff c.
+Proof.
+  destruct e.
+  intros.
+  apply idpath.
 Qed.
 
 
-End Arrow_Disp.
-*)
+Lemma brep_axioms : disp_precat_axioms MONAD brep_data.
+Proof.
 
-(** Pull back module **)
+  repeat apply tpair; intros; try apply homset_property.
+  - simpl.
+    unfold id_disp; simpl.
 
+    apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+    apply nat_trans_eq; try apply homset_property.
+    intros c; simpl.
+    simpl.
+    rewrite assoc; simpl.
+    etrans. Focus 2. eapply pathsinv0.
+      apply  foo.
+   cbn. simpl. unfold pbm_mor_comp.
+      unfold transportb.
+      rewrite id_left.
+      rewrite id_right.
+      apply idpath.
+  - (* this is for Ambroise *)
 
+    set (heqf := id_right f).
+     apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+     apply nat_trans_eq; try apply homset_property.
+     simpl.
+     intros c.
+     rewrite id_right,id_right.
+    revert ff.
 
+    destruct (heqf).
+    intros; simpl.
+    reflexivity.
+  - set (heqf:= assoc f g h).
+     apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+     apply nat_trans_eq; try apply homset_property.
+     intros c; simpl.
+     (* rewrite id_right,id_right. *)
+     (* rewrite assoc. *)
+     etrans; cycle 1.
+     (* set (z:= (ff:nat c ;; gg c ;; hh c). *)
+     symmetry.
 
+     clearbody heqf.
 
-(*
+(* impossible de faire un destruct ici... *)
+
+     apply foo.
+     simpl.
+     repeat rewrite id_right.
+     rewrite assoc.
+     reflexivity.
+  - simpl.
+    apply rmodule_category_has_homsets.
+Qed.
+
+Definition brep_disp : disp_precat MONAD:=
+   (brep_data ,, brep_axioms).
+
+End LargeCatRep.
+
+  (*
  Definition nat_trans_dataE {C C' : precategory_data}
   {F F' : functor_data C C'}(a : nat_trans F F') : pr1 a = (nat_trans_data a  :
    Π x : ob C, F x --> F' x)  := idpath _.
