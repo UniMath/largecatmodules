@@ -557,6 +557,14 @@ Section LargeCatRep.
   Local Notation ARITY :=  (fiber_precategory GEN_ARITY (functor_identity _)).
 
 
+(* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
+Lemma right_inverse_arity3  (ar:ARITY ) :  ((pr1_precat BMOD)□ (total_functor ar) )    =  (pr1_precat LMONAD).
+  intros.
+  apply subtypeEquality; [| reflexivity].
+  red.
+  intros;  apply isaprop_is_functor.
+  apply homset_property.
+Qed.
 
   (*
 ************
@@ -568,9 +576,11 @@ Section LargeCatRep.
 *)
   (* pourquoi ce check  ne marche pas : *)
   (* Check (forall a:ob ARITY, Some (a:functor_over_data _ _ _) = None). *)
-  (* et ceux-là marchent ? *)
-  Check (forall a:ob ARITY, Some (a:functor_over  _ _  _) = None).
-  Check (forall a:ob ARITY, Some ((a:functor_over  _ _  _):functor_over_data _ _ _) = None).
+(* et ceux-là marchent ? *)
+
+Check (forall a:ob ARITY, Some (a:functor_over  _ _  _) = None).
+Check (forall a:ob ARITY, Some ((a:functor_over  _ _  _):functor_over_data _ _ _) = None).
+
 
 
   Definition taut_rmod_data (R:MONAD) : RModule_data R C.
@@ -578,6 +588,13 @@ Section LargeCatRep.
     exists (pr1 R).
     apply μ.
   Defined.
+
+  (* Require Import TLC.LibTactics. *)
+(*
+  Ltac mychange a b :=
+    let t := type of a in
+    change a with (b:t).
+*)
   Definition taut_rmod (R:Monad C) : BMOD R.
     intros R.
     exists (taut_rmod_data R).
@@ -585,40 +602,117 @@ Section LargeCatRep.
 
 
     split; intro c.
-    (* Soooo enervinggggggg  et ce n'est pas le seul truc que j'ai testé bien sûr *)
-
-    rewrite functor_id_id.
-    repeat pr1_norm.
-        unfold pr1.
-    apply   functor_id_id.
-
-        assert (h:=Monad_law1 (T:=R) c).
-        rewrite h.
-        refl
-    rewrite Monad_law1.
-    intro h.
-    rewrite h.
-    rewrite Monad_law1.
-    etrans.
-    apply maponpaths.
-    pr1_norm.
-    rewrite Monad_law1.
-TODO
 
 
-  Definition brep_disp_ob_mor : disp_precat_ob_mor ARITY.
+    - apply Monad_law2.
+    - apply Monad_law3.
+  Defined.
+
+  Notation Θ := taut_rmod.
+
+  (* a representation is a monad with a module morphisme from arity to itself *)
+  Definition rep_ar (ar: ARITY) := Σ (R:MONAD), RModule_Mor R (((ar:functor_over _ _ _):functor_over_data _ _ _) R tt) (Θ R).
+
+  Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
+
+  Definition μr {ar:ARITY} (X:rep_ar ar) := pr2 X.
+
+  Definition functor_from_monad (R:MONAD) : functor C C := pr1 (pr1 R).
+
+  Definition functor_from_module {D:precategory} {R:MONAD} (S:RModule R D) : functor C D := pr1 (pr1 S).
+
+  Definition ar_obj (a:ARITY) (M:MONAD)  := pr1 a M tt.
+
+  Delimit Scope arity_scope with ar.
+  (* ne marche pas.. *)
+  (* Coercion ar_obj : ARITY >-> Funclass. *)
+  Notation AO := ar_obj.
+
+  Definition ar_mor (a:ARITY) {M N:MONAD} (f:MONAD  ⟦ M,N ⟧) : ((ar_obj a M )  -->[f] (ar_obj a N))%mor_disp.
+    simpl.
+    intros.
+    apply (functor_over_on_morphisms a).
+    exact tt.
+  Defined.
+
+Notation "# F" := (ar_mor F)
+  (at level 3) : arity_scope.
+
+Delimit Scope arity_scope with ar.
+
+
+
+   (* Check (fun (a b:ARITY) (f: ARITY ⟦ a, b ⟧) (M:MONAD) => (#a f)%ar :nat_trans _ _)%ar). *)
+  Check (fun (b:ARITY) (M N:MONAD) (f:MONAD  ⟦ M,N ⟧) => (#b f)%ar).
+
+
+  Definition rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧) :=
+                                                     (* or the other way around a g ;;; f N : it is the same thanks to the naturality of f *)
+    Σ g:MONAD ⟦ M, N ⟧, Π c,  ((μr M) ;;; pr1 g) c = (pr1 (pr1 f M tt) ;;;  pr1 (#b g )%ar ;;; μr N) c.
+
+
+
+
+  Definition brep_disp_ob_mor : disp_precat_ob_mor ARITY:= (rep_ar,, rep_ar_mor_mor).
+
+Definition maponpathsf {T1  : UU} {T2: T1->UU} (f:T1) (t1 t2 : Π (x: T1) , T2 x)
+           (e: t1 = t2) : t1 f = t2 f.
 Proof.
-  exists (fun ar:ob ARITY => Σ (R:MONAD), RModule_Mor (((ar:functor_over _ _ _):functor_over_data _ _ _) R tt) R).
-  intros xx' yy' g h ff'.
-    exact (precategory_morphisms (* (C:= MODULE xx') *) g ( pullback_module  ff'  h )).
+  intros. induction e. apply idpath.
 Defined.
 
+
+Definition functoreq (C D:precategory) (F G:functor C D)
+           (e: F = G) x : F x = G x.
+Proof.
+    intros. induction e. apply idpath.
+Defined.
+
+
+Require Import TLC.LibTactics.
 Definition brep_id_comp : disp_precat_id_comp _ brep_disp_ob_mor.
 Proof.
   split.
   -
     intros x xx.
     simpl.
+    apply (tpair _ (Monad_identity _)).
+    intro c.
+    simpl.
+    rewrite id_right,id_left.
+    (* Pourquoi reflexivity ne marche pas ? *)
+    symmetry.
+
+    rewrite <- id_left.
+    (* Quel lemme utilise Benedikt à la place de my_f_equal ? *)
+    my_f_equal.
+    unfold ar_mor.
+
+    set (z:= @id_disp _ (LMONAD) (pr1 xx) tt).
+    change tt with z.
+    etrans.
+    Unset Printing Notations.
+    Set Printing Implicit.
+    idtac.
+Check ( (pr1 ((# (pr1 x))%mor_disp (z)))).
+    use maponpathsf.
+    rewrite functor_over_id.
+    (* apply functor_over_id. *)
+    etrans.
+    apply functor_over_id.
+    unfold functor_over_on_morphisms.
+
+    simpl.
+    destruct xx as [R M].
+    simpl.
+    destruct x as [F Fax].
+    simpl.
+    destruct F; simpl.
+    reflexivity.
+
+    TODO
+    use id_left.
+    exact (Monad_identity,,fun z => idpath).
     apply pbm_id.
 
   - intros x y z f g xx yy zz ff gg.
