@@ -587,7 +587,7 @@ Delimit Scope arity_scope with ar.
 
   Definition brep_disp_ob_mor : disp_precat_ob_mor ARITY:= (rep_ar,, rep_ar_mor_mor).
 
-Definition maponpathsf {T1  : UU} {T2: T1->UU} (f:T1) (t1 t2 : Π (x: T1) , T2 x)
+Definition maponpathsf {T1  : UU} (f:T1) {T2: T1->UU}  (t1 t2 : Π (x: T1) , T2 x)
            (e: t1 = t2) : t1 f = t2 f.
 Proof.
   intros. induction e. apply idpath.
@@ -600,6 +600,11 @@ Proof.
     intros. induction e. apply idpath.
 Defined.
 
+(* Definition maponpathsf2 {T1  : UU} {T2: T1->UU} (f:T1) (t1 t2 : Π (x: T1) , T2 x) *)
+(*            (e: t1 = t2) (e':f = g): t1 f = t2 g. *)
+(* Proof. *)
+(*   intros. induction e. apply idpath. *)
+(* Defined. *)
 
 
 Definition brep_id_comp : disp_precat_id_comp _ brep_disp_ob_mor.
@@ -620,9 +625,36 @@ Proof.
     my_f_equal.
     unfold ar_mor.
 
+    (* Ici je suis bloqué. Je voudrais utiliser functor_over_id mais pas moyen *)
     set (z:= @id_disp _ (LMONAD) (pr1 xx) tt).
     change tt with z.
     etrans.
+    match goal with
+    | |- ?f c = _  => let t:= type of f in  evar (hjk:t);
+                                               assert (f=hjk)
+    end.
+    simpl.
+    match goal with
+    | |- nat_trans_data (pr1 ?aa) = ?bb => set (a := aa);
+                                           let t:= type of a in  evar (hjk2:t);
+                                               assert (a=hjk2)
+    end.
+    unfold a.
+    unfold hjk2.
+    unfold z.
+    simpl.
+(* Ca ne marche pas *)
+    apply functor_over_id.
+    match goal with
+
+    | |- ?aa = ?bb => set (a2 := aa)
+
+    end.
+    simpl.
+    use functor_over_id.
+
+    apply maponpathsf.
+    idtac.
     Unset Printing Notations.
     Set Printing Implicit.
     idtac.
