@@ -148,6 +148,7 @@ Definition pbm_mor {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory} {T T' :
   reflexivity.
 Defined.
 
+
 Lemma is_nat_trans_id_pw {B C} {F G:functor B C} (f:Π x : B, C ⟦ F x, G x ⟧) (heq: Π x,  F x = G x) (heqf:Π x, f x = transportf (fun A =>  C ⟦ F x, A ⟧) (heq x) (identity (F x) )) : is_nat_trans F G f.
   intros.
   red.
@@ -159,17 +160,6 @@ Lemma is_nat_trans_id_pw {B C} {F G:functor B C} (f:Π x : B, C ⟦ F x, G x ⟧
   assert  (tr:= fun P Q f=> transport_map(P:=P) (Q:=Q)f (heq b)).
   simpl.
 Abort.
-(*
-  rewrite transportf_fun.
-  unfold heq.
-  rewrite transportf_id2.
-  set (Q:=(λ A : C, C ⟦ F b, A ⟧)).
-  assert (tr2 :=  tr (fun _ => unit) Q).
-  set (f' := fun (z:C) _  => identity z : Q z).
-  simpl in tr2.
-  (fun z _ => identity z) tt).
-  rewrite tr2.
-*)
 
   Definition pbm_mor_comp_nat_trans {B} {M M' M'':Monad B} (m:Monad_Mor M M') (m':Monad_Mor M' M'') {C:precategory} {T :RModule M'' C} : (pullback_module m (pullback_module m' T)) ⟶ pullback_module (Monad_composition m  m') T.
     intros.
@@ -190,14 +180,6 @@ Defined.
      reflexivity.
   Defined. (* would be a HUGE mistake to put Qed here *)
 
-(*
-  unfold pullback_module.
-  use subtypeEquality_prop.
-  use total2_paths.
-
-  Search
-  -
- *)
 
 (* Maybe reuse pbm_mor_comp_nat_trans *)
 Definition pbm_id_nat_trans {B} {M :Monad B}  {C:precategory} {T :RModule  M C} : T ⟶ pullback_module (Monad_identity M) T.
@@ -376,20 +358,14 @@ Definition bmod_disp : disp_precat MONAD:=
 End LargeCatMod.
 
 
-(* a category can be viewed as a display category with singletons. But useless since there
-are already lifting functors in the Display Category library *)
+(* a category can be viewed as a display category with singletons.
+*)
 Section LiftCatDispCat.
 
   Context (C:Precategory).
 
 
-Definition liftcat_disp_ob_mor : disp_precat_ob_mor C.
-Proof.
-  exists (fun R : C => unit).
-  intros xx' yy' g h ff'.
-  exact unit.
-    (* exact (precategory_morphisms (* (C:= MODULE xx') *) g ( pullback_module  ff'  h )). *)
-Defined.
+Definition liftcat_disp_ob_mor : disp_precat_ob_mor C:= ((fun _ => unit) ,, fun  _ _ _ _ _ => unit).
 
 Definition liftcat_id_comp : disp_precat_id_comp _ liftcat_disp_ob_mor.
 Proof.
@@ -398,8 +374,6 @@ Proof.
     intros x xx.
     simpl.
     exact tt.
-
-
   - intros x y z f g xx yy zz ff gg.
     exact tt.
 Defined.
@@ -413,7 +387,6 @@ Lemma uniq_tt (x:unit) : x=tt.
 Qed.
 Lemma liftcat_axioms : disp_precat_axioms _ liftcat_data.
 Proof.
-
   repeat apply tpair; intros; try apply homset_property; try  now rewrite uniq_tt;   symmetry;    rewrite uniq_tt.
   exact isasetunit.
 Qed.
@@ -421,7 +394,6 @@ Qed.
 Definition liftcat_disp : disp_precat _ :=
    (liftcat_data ,, liftcat_axioms).
 
-(* Lemma iso_liftcast_disp : *)
 
 End LiftCatDispCat.
 
@@ -436,7 +408,6 @@ Section Arities.
 (* Définitions des arités *)
 Definition arity := functor_lifting BMOD (functor_identity MONAD).
 
-  (* functor_over (functor_identity _) (liftcat_disp (monadPrecategory C)) (bmod_disp C D). *)
 
 (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
 Lemma right_inverse_arity  (ar:arity ) :  ((pr1_precat BMOD)□ (lifted_functor ar) )    =  (functor_identity MONAD).
@@ -471,46 +442,10 @@ Section Reciproque.
     change f with (#(functor_identity MONAD) f).
     (* rewrite <- hF. *)
     Abort.
-(*
-    simpl.
-    assert (hf : forall g,  f = g -> pullback_module f (ar_inv_ob y) = pullback_module ( g) (ar_inv_ob y)).
-    { intros g heq.
-      destruct heq.
-      reflexivity.
-    }
-    erewrite hf; cycle 1.
-    clear.
-    assert (hf2 : forall A B (g:Monad_Mor A B), #(pr1_precat BMOD □ F) g = #(functor_identity MONAD) g).
-
-    rewrite <- hF.
-    change f with
-etrans.
-    erewrite hf.
-    assert (Ff := (#F f)).
-
-    assert (Ffm := pr2 Ff).
-    simpl in Ffm.
-
-    rewrite <- hF.
-    simpl.
-    intro f.
-
-    intros f.
-    exact (pr2 (#F f)).
-    set (Ff := pr2 (#F f)).
-    simpl in Ff.
-
-  Lemma right_inverse_arity_rep   ->
-                                                                    exists (ar:arity), (lifted_functor ar) = F.
-    intros.
-    apply subtypeEquality; [| reflexivity].
-    red.
-    intros;  apply isaprop_is_functor.
-    apply homset_property.
-  Qed.*)
 
 
-    End Reciproque.
+End Reciproque.
+
 End Arities.
 
 
@@ -536,6 +471,8 @@ Lemma right_inverse_arity2  (ar:arity2 ) :  ((pr1_precat BMOD)□ (total_functor
 Qed.
 
 End Arities2.
+
+
 (* large category of representation defined as a display category
 
 Not that contrary to the large category of modules, we do not construct the category of
@@ -577,7 +514,6 @@ Qed.
   (* pourquoi ce check  ne marche pas : *)
   (* Check (forall a:ob ARITY, Some (a:functor_over_data _ _ _) = None). *)
 (* et ceux-là marchent ? *)
-
 Check (forall a:ob ARITY, Some (a:functor_over  _ _  _) = None).
 Check (forall a:ob ARITY, Some ((a:functor_over  _ _  _):functor_over_data _ _ _) = None).
 
@@ -642,11 +578,7 @@ Delimit Scope arity_scope with ar.
 
 
 
-   (* Check (fun (a b:ARITY) (f: ARITY ⟦ a, b ⟧) (M:MONAD) => (#a f)%ar :nat_trans _ _)%ar). *)
-  Check (fun (b:ARITY) (M N:MONAD) (f:MONAD  ⟦ M,N ⟧) => (#b f)%ar).
-
-
-  Definition rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧) :=
+     Definition rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧) :=
                                                      (* or the other way around a g ;;; f N : it is the same thanks to the naturality of f *)
     Σ g:MONAD ⟦ M, N ⟧, Π c,  ((μr M) ;;; pr1 g) c = (pr1 (pr1 f M tt) ;;;  pr1 (#b g )%ar ;;; μr N) c.
 
@@ -669,7 +601,7 @@ Proof.
 Defined.
 
 
-Require Import TLC.LibTactics.
+
 Definition brep_id_comp : disp_precat_id_comp _ brep_disp_ob_mor.
 Proof.
   split.
