@@ -60,6 +60,98 @@ Ltac my_f_equal :=
 
 Ltac pathvia b := (apply (@pathscomp0 _ _ b _ )).
 
+(**
+TODO : To be moved in the files Monads and modules
+
+Monads and Modules are more than precategories : they are Precategories (homset property)
+
+*)
+Section PrecatModulesMonads.
+
+  Section MonadPrecategory.
+    Variable  (C:Precategory).
+
+    (* total_precat_has_homsets *)
+    Lemma monad_category_has_homsets : has_homsets (precategory_Monad C (homset_property C)).
+      intros F G.
+      simpl.
+
+      unfold Monad_Mor.
+      apply isaset_total2 .
+      apply isaset_nat_trans.
+      apply homset_property.
+      intros m.
+
+      apply isasetaprop.
+      apply isaprop_Monad_Mor_laws.
+      apply homset_property.
+    Qed.
+
+    Definition monadPrecategory  : Precategory :=
+      (precategory_Monad C (homset_property C) ,, monad_category_has_homsets ).
+
+  End MonadPrecategory.
+
+  Section ModulePrecategory.
+
+    (* We don't need the hypothesis that C has homsets *)
+    Context {C:precategory} (R:Monad C) (D:Precategory).
+
+    Lemma rmodule_category_has_homsets : has_homsets
+                                           (precategory_RModule R D (homset_property D)).
+      intros F G.
+      simpl.
+
+      apply isaset_total2 .
+      apply isaset_nat_trans.
+      apply homset_property.
+      intros m.
+
+      apply isasetaprop.
+      apply isaprop_RModule_Mor_laws.
+      apply homset_property.
+    Qed.
+
+    Definition rmodulePrecategory  : Precategory :=
+      (precategory_RModule R D (homset_property D) ,, rmodule_category_has_homsets ).
+
+  End ModulePrecategory.
+
+End PrecatModulesMonads.
+
+
+(* The name is self-explainatory : any monad R is a module over R *)
+Section TautologicalModule.
+
+  Context {C:precategory} (R:Monad C).
+
+
+
+  Definition taut_rmod_data  : RModule_data R C.
+    intros.
+    exists (pr1 R).
+    apply μ.
+  Defined.
+
+  Lemma taut_rmod_law  : RModule_laws R (taut_rmod_data ).
+  Proof.
+    split; intro c.
+    - apply Monad_law2.
+    - apply Monad_law3.
+  Qed.
+
+  Definition taut_rmod : RModule R C := (taut_rmod_data ,, taut_rmod_law ).
+
+
+End TautologicalModule.
+
+
+(* Let m : M -> M' a monad morphism.
+
+m induces a functor m* between the category of modules over M' and the category of modules over M
+
+If T is a module over M', we call m* T the pullback module of T along m
+*)
 Section Pullback_module.
   Context {B:precategory} {M M':Monad B} (m: Monad_Mor M M').
 
@@ -248,7 +340,7 @@ End Pullback_Composition.
 
 (**
 The pullback module/morphism construction allow to construct a large category of modules over monads
-where objects are pairs (Monad, Module).
+where objects are pairs (Monad, Module over this monad).
 *)
 Section LargeCatMod.
 
@@ -258,44 +350,10 @@ Section LargeCatMod.
   (* range of modules *)
   Context (D:Precategory).
 
-  (* total_precat_has_homsets *)
-  Lemma monad_category_has_homsets : has_homsets (precategory_Monad C (homset_property C)).
-    intros F G.
-    simpl.
-
-    unfold Monad_Mor.
-    apply isaset_total2 .
-    apply isaset_nat_trans.
-    apply homset_property.
-    intros m.
-
-    apply isasetaprop.
-    apply isaprop_Monad_Mor_laws.
-    apply homset_property.
-  Qed.
-
-  Lemma rmodule_category_has_homsets (R:Monad C): has_homsets
-                                                    (precategory_RModule R D (homset_property D)).
-    intros R F G.
-    simpl.
 
 
-    apply isaset_total2 .
-    apply isaset_nat_trans.
-    apply homset_property.
-    intros m.
 
-    apply isasetaprop.
-    apply isaprop_RModule_Mor_laws.
-    apply homset_property.
-  Qed.
-
-
-  Definition monadPrecategory : Precategory :=
-    (precategory_Monad C (homset_property C) ,, monad_category_has_homsets).
-
-
-  Local Notation MONAD := monadPrecategory.
+  Local Notation MONAD := (monadPrecategory C).
   Local Notation MODULE R := (precategory_RModule R _ (homset_property D)).
 
   Definition bmod_disp_ob_mor : disp_precat_ob_mor MONAD.
@@ -355,8 +413,7 @@ Section LargeCatMod.
       rewrite id_left.
       rewrite id_right.
       apply idpath.
-    - (* this is for Ambroise *)
-
+    -
       set (heqf := id_right f).
       apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
       apply nat_trans_eq; try apply homset_property.
@@ -445,85 +502,103 @@ Section LiftCatDispCat.
 
 End LiftCatDispCat.
 
+(* Une première définition possible des arités, en tant que functor_lifting
 
-Section Arities.
+Inconvénient : ce n'est pas démontré dans la bibliothèque DisplayCat que les functor_lifting
+forment une catégorie. Il faudra donc démontrer que les arités forment une catégorie.
 
-  Variables (C D:Precategory).
+.*)
+Module Arites1.
+  Section Arities.
 
-  Local Notation MONAD := (monadPrecategory C).
-  Local Notation BMOD := (bmod_disp C D).
+    Variables (C D:Precategory).
 
-  (* Définitions des arités *)
-  Definition arity := functor_lifting BMOD (functor_identity MONAD).
+    Local Notation MONAD := (monadPrecategory C).
+    Local Notation BMOD := (bmod_disp C D).
+
+    (* Définitions des arités *)
+    Definition arity := functor_lifting BMOD (functor_identity MONAD).
 
 
-  (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
-  Lemma right_inverse_arity  (ar:arity ) :
-    ((pr1_precat BMOD)□ (lifted_functor ar) )    =  (functor_identity MONAD).
-  Proof.
-    intros.
-    apply subtypeEquality; [| reflexivity].
-    red.
-    intros;  apply isaprop_is_functor.
-    apply homset_property.
-  Qed.
+    (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
+    Lemma right_inverse_arity  (ar:arity ) :
+      ((pr1_precat BMOD)□ (lifted_functor ar) )    =  (functor_identity MONAD).
+    Proof.
+      intros.
+      apply subtypeEquality; [| reflexivity].
+      red.
+      intros;  apply isaprop_is_functor.
+      apply homset_property.
+    Qed.
 
-  (* Réciproque : si on a un foncteur qui vérifié ça, alors on a un functor lifting qui vaut
+    (* Réciproque : si on a un foncteur qui vérifié ça, alors on a un functor lifting qui vaut
 lui-même *)
 
-  Section Reciproque.
+    Section Reciproque.
 
-    Variable (F:functor MONAD (total_precat BMOD)).
-    Hypothesis (hF :  ((pr1_precat (bmod_disp C D))□ F) = (functor_identity (monadPrecategory C))).
+      Variable (F:functor MONAD (total_precat BMOD)).
+      Hypothesis (hF :  ((pr1_precat (bmod_disp C D))□ F) = (functor_identity (monadPrecategory C))).
 
-    Definition ar_inv_ob (x:MONAD): BMOD x.
-      intro x.
+      Definition ar_inv_ob (x:MONAD): BMOD x.
+        intro x.
 
-      unfold BMOD; simpl.
-      change x with (functor_identity MONAD x).
-      rewrite <- hF.
-      exact (pr2 (F x)).
-    Defined.
+        unfold BMOD; simpl.
+        change x with (functor_identity MONAD x).
+        rewrite <- hF.
+        exact (pr2 (F x)).
+      Defined.
 
-    Definition ar_inv_data : section_disp_data BMOD.
-      exists ar_inv_ob.
+      Definition ar_inv_data : section_disp_data BMOD.
+        exists ar_inv_ob.
+        intros.
+        unfold mor_disp.
+        (* Trop dur, il faut faire des transport c'est trop la galère *)
+        change f with (#(functor_identity MONAD) f).
+        (* rewrite <- hF. *)
+      Abort.
+
+
+    End Reciproque.
+
+  End Arities.
+End Arites1.
+
+(* Second way to define an arity
+As a display functor over identity between the category of monads seen as a display category
+and the large category of representations.
+
+Same inconvenient as before : it is not shown directly in the display_cat lib that functor_over is
+a category.
+
+The solution is the following : define an arity as an object in the fiber category over the identity
+(which is actually equivalent)
+
+*)
+Module Arites2.
+
+  Section Arities.
+
+    Variables (C D:Precategory).
+
+    Local Notation MONAD := (monadPrecategory C).
+    Local Notation BMOD := (bmod_disp C D).
+    Local Notation LMONAD := (liftcat_disp MONAD).
+
+    (* Définitions des arités *)
+    Definition arity2 := functor_over (functor_identity _) LMONAD (bmod_disp C D).
+
+    (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
+    Lemma right_inverse_arity2  (ar:arity2 ) :
+      ((pr1_precat BMOD)□ (total_functor ar) )    =  (pr1_precat LMONAD).
+    Proof.
       intros.
-      unfold mor_disp.
-      (* Trop dur, il faut faire des transport c'est trop la galère *)
-      change f with (#(functor_identity MONAD) f).
-      (* rewrite <- hF. *)
-    Abort.
-
-
-  End Reciproque.
-
-End Arities.
-
-
-(* deuxième manière de définir les arités *)
-Section Arities2.
-
-  Variables (C D:Precategory).
-
-  Local Notation MONAD := (monadPrecategory C).
-  Local Notation BMOD := (bmod_disp C D).
-  Local Notation LMONAD := (liftcat_disp MONAD).
-
-  (* Définitions des arités *)
-  Definition arity2 := functor_over (functor_identity _) LMONAD (bmod_disp C D).
-
-  (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
-  Lemma right_inverse_arity2  (ar:arity2 ) :
-    ((pr1_precat BMOD)□ (total_functor ar) )    =  (pr1_precat LMONAD).
-  Proof.
-    intros.
-    apply subtypeEquality; [| reflexivity].
-    red.
-    intros;  apply isaprop_is_functor.
-    apply homset_property.
-  Qed.
-
-End Arities2.
+      apply subtypeEquality; [| reflexivity].
+      red.
+      intros;  apply isaprop_is_functor.
+      apply homset_property.
+    Qed.
+  End Arities.
+End Arites2.
 
 
 (* adds a new equation z = ?x *)
@@ -547,6 +622,17 @@ representations of a specific arity
 This is an attempt to use directly the display category construction.
 The category of represenations of a specific arity can be retrieved as a fiber category.
 
+
+Let us recall what it the category of representations of an arity B.
+It is a pair (R,m) where R is monad and m a module morphism (on R) m : B(R) -> R.
+
+Now, any morphism of arity F : A -> B induces a functor F* : Rep(B) -> Rep(A) defined by
+F*(R,m) = (R, m o (F R))
+
+That's how the large category of representations is built.
+
+
+
 *)
 Section LargeCatRep.
 
@@ -557,6 +643,7 @@ Section LargeCatRep.
   Local Notation BMOD := (bmod_disp C C).
   Local Notation GEN_ARITY := (disp_functor_precat _ _ LMONAD BMOD).
   (* Arities are display functors over the identity *)
+
 
   Local Notation ARITY :=  (fiber_precategory GEN_ARITY (functor_identity _)).
 
@@ -579,26 +666,9 @@ Section LargeCatRep.
   Qed.
 
 
-(*
-  Définition du module tautologique
-*)
 
-  Definition taut_rmod_data (R:MONAD) : RModule_data R C.
-    intros.
-    exists (pr1 R).
-    apply μ.
-  Defined.
+  Local Notation Θ := taut_rmod.
 
-  Lemma taut_rmod_law (R:MONAD) : RModule_laws R (taut_rmod_data R).
-  Proof.
-    split; intro c.
-    - apply Monad_law2.
-    - apply Monad_law3.
-  Qed.
-
-  Definition taut_rmod (R:Monad C) : BMOD R := (taut_rmod_data R,, taut_rmod_law R).
-
-  Notation Θ := taut_rmod.
 
   (* a representation is a monad with a module morphisme from arity to itself *)
   Definition rep_ar (ar: ARITY) :=
@@ -684,36 +754,6 @@ Section LargeCatRep.
 
   Definition brep_disp_ob_mor : disp_precat_ob_mor ARITY:= (rep_ar,, rep_ar_mor_mor).
 
-  (*
-  Definition maponpathsf {T1  : UU} (f:T1) {T2: T1->UU}  (t1 t2 : Π (x: T1) , T2 x)
-             (e: t1 = t2) : t1 f = t2 f.
-  Proof.
-    intros. induction e. apply idpath.
-  Defined.
-
-
-  Definition functoreq (C D:precategory) (F G:functor C D)
-             (e: F = G) x : F x = G x.
-  Proof.
-    intros. induction e. apply idpath.
-  Defined.
-*)
-(* Definition maponpathsf2 {T1  : UU} {T2: T1->UU} (f:T1) (t1 t2 : Π (x: T1) , T2 x) *)
-(*            (e: t1 = t2) (e':f = g): t1 f = t2 g. *)
-(* Proof. *)
-(*   intros. induction e. apply idpath. *)
-(* Defined. *)
-
-
-
-
-(*
-  Lemma compose_eq :  Π (C : precategory_data) (a b c : C) (f f' : C ⟦ a, b ⟧) (g g' : C ⟦ b, c ⟧)
-                        (e:f = f') (e':g = g') , f ;; g = f' ;; g'.
-    intros.
-    now destruct e,e'.
-  Qed.
- *)
 
   Lemma brep_id_law (a : ARITY) (RM : brep_disp_ob_mor a) :
     (rep_ar_mor_law RM RM (identity _) (Monad_identity _)).
