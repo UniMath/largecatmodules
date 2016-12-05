@@ -118,7 +118,13 @@ Section Pullback_module.
 
 End Pullback_module.
 
+(*
 
+Let m:M -> M' be a monad morphism et n : T -> T' a morphism in the category of modules over M'.
+In this section we construct the morphism m* n : m*T -> m*T' in the category of modules over M
+between the pullback modules along m.
+
+*)
 Section Pullback_Module_Morphism.
 
   Context {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory} {T T' :RModule M' C}
@@ -148,6 +154,8 @@ Section Pullback_Module_Morphism.
 
   Definition pbm_mor  : RModule_Mor _  pbmT pbmT'  := ( _ ,, pbm_mor_law).
 
+  (* Attempt to prove that a nat trans that is pointwise the identity is a nat_trans.
+*)
   Lemma is_nat_trans_id_pw {B C} {F G:functor B C} (f:Π x : B, C ⟦ F x, G x ⟧)
         (heq: Π x,  F x = G x)
         (heqf:Π x, f x = transportf (fun A =>  C ⟦ F x, A ⟧)
@@ -162,10 +170,20 @@ Section Pullback_Module_Morphism.
     simpl.
     assert  (tr:= fun P Q f=> transport_map(P:=P) (Q:=Q)f (heq b)).
     simpl.
+    (* I am not fluent with transports. Too difficult *)
   Abort.
 
 End Pullback_Module_Morphism.
 
+
+(*
+Let T be a module on M'.
+
+In this section, we construct the module morphism T -> id* T (which is
+actully an iso) where id* T is the pullback module of T along
+the identity morphism in M'.
+
+*)
 Section Pullback_Identity_Module.
 
 
@@ -195,10 +213,15 @@ Section Pullback_Identity_Module.
 
 End Pullback_Identity_Module.
 
+(*
 
+In this section, we construct the module morphism (which is actually an iso)
+between m*(m'*(T'')) and (m o m')*(T'')
+
+*)
 Section Pullback_Composition.
 
-   Context {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory} {T T' :RModule M' C}
+   Context {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory}
      {M'': Monad B} (m' : Monad_Mor M' M'') (T'' : RModule M'' C).
 
     Local Notation comp_pbm := (pullback_module m (pullback_module m' T'')).
@@ -222,6 +245,11 @@ Section Pullback_Composition.
     Definition pbm_mor_comp : RModule_Mor _ comp_pbm pbm_comp := (_ ,, pbm_mor_comp_law).
 End Pullback_Composition.
 
+
+(**
+The pullback module/morphism construction allow to construct a large category of modules over monads
+where objects are pairs (Monad, Module).
+*)
 Section LargeCatMod.
 
   Context (C:Precategory).
@@ -295,7 +323,7 @@ Section LargeCatMod.
     := (bmod_disp_ob_mor ,, bmod_id_comp).
 
   (* Peut etre que c'est le genre de pb qui intéresse André.. Cf utilisation de foo *)
-  Lemma foo (x y : MONAD) (f g : MONAD ⟦ x, y ⟧)
+  Lemma bmod_transport (x y : MONAD) (f g : MONAD ⟦ x, y ⟧)
         (e : f = g)
         (xx : bmod_data x)
         (yy : pr1 bmod_data y)
@@ -321,7 +349,7 @@ Section LargeCatMod.
       simpl.
       rewrite assoc; simpl.
       etrans. Focus 2. eapply pathsinv0.
-      apply  foo.
+      apply  bmod_transport.
       cbn. simpl. unfold pbm_mor_comp.
       unfold transportb.
       rewrite id_left.
@@ -354,7 +382,7 @@ Section LargeCatMod.
 
       (* impossible de faire un destruct ici... *)
 
-      apply foo.
+      apply bmod_transport.
       simpl.
       repeat rewrite id_right.
       rewrite assoc.
@@ -498,6 +526,19 @@ Section Arities2.
 End Arities2.
 
 
+(* adds a new equation z = ?x *)
+Ltac neweq z :=
+    let t := type of z in
+    let x := fresh in
+    evar (x:t); cut (z=x); subst x; cycle 1.
+
+(* adds a new equation z = ?x and replace z with ?x in the current goal *)
+Ltac neweqsubst z :=
+    let h := fresh in
+    neweq z; [subst z| intro h; rewrite h; clear h z].
+
+
+
 (* large category of representation defined as a display category
 
 Not that contrary to the large category of modules, we do not construct the category of
@@ -516,24 +557,14 @@ Section LargeCatRep.
   Local Notation BMOD := (bmod_disp C C).
   Local Notation GEN_ARITY := (disp_functor_precat _ _ LMONAD BMOD).
   (* Arities are display functors over the identity *)
+
   Local Notation ARITY :=  (fiber_precategory GEN_ARITY (functor_identity _)).
 
-  Lemma eq_ar_pointwise  (a b c : ARITY) ( f : ARITY ⟦ a, b ⟧) ( g : ARITY ⟦ b, c ⟧) (R:MONAD) x:
-    (pr1 (pr1 (f ;; g) R tt)) x = (pr1 (pr1 f R tt) ;;; pr1 (pr1 g R tt)) x.
-    intros.
-    simpl.
-    (* ***************
+  Definition arity_Precategory : Precategory :=
+    (ARITY,, has_homsets_fiber GEN_ARITY (functor_identity _)).
 
-Question pour Benedikt
 
-Pourquoi reflexivity ne marche pas
 
-************* *)
-    etrans.
-    unfold compose.
-    simpl.
-
-  Abort.
 
 
   (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
@@ -615,11 +646,32 @@ Pourquoi reflexivity ne marche pas
 
   Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
              (g:MONAD ⟦ M, N ⟧) :=
-     Π c,  ((μr M) ;;; pr1 g) c = (pr1 (pr1 f M tt) ;;;  pr1 (#b g )%ar ;;; μr N) c.
+        (* or the other way around a g ;;; f N : it is the same thanks to the naturality of f *)
+    Π c,  ((μr M) ;;; pr1 g) c = (pr1 (pr1 f M tt) ;;;  pr1 (#b g )%ar ;;; μr N) c.
+
+  Lemma isaprop_rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
+        (g:MONAD ⟦ M, N ⟧) :
+    isaprop (rep_ar_mor_law (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
+                            (g:MONAD ⟦ M, N ⟧)).
+  Proof.
+    intros.
+    apply impred; intro c.
+    apply homset_property.
+  Qed.
 
   Definition rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧) :=
-    (* or the other way around a g ;;; f N : it is the same thanks to the naturality of f *)
     Σ g:MONAD ⟦ M, N ⟧, rep_ar_mor_law  M N f g.
+
+  Lemma isaset_rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧) :
+    isaset (rep_ar_mor_mor a b M N f).
+  Proof.
+    intros.
+    apply isaset_total2 .
+    apply monad_category_has_homsets.
+    intros.
+    apply isasetaprop.
+    apply isaprop_rep_ar_mor_law.
+  Qed.
 
   Coercion monad_morphism_from_rep_ar_mor_mor {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
            {f: ARITY ⟦ a, b ⟧} (h:rep_ar_mor_mor a b M N f) : MONAD ⟦ M, N ⟧
@@ -653,14 +705,6 @@ Pourquoi reflexivity ne marche pas
 (* Defined. *)
 
 
-  Ltac neweq z :=
-    let t := type of z in
-    let x := fresh in
-    evar (x:t); cut (z=x); subst x; cycle 1.
-
-  Ltac neweqsubst z :=
-    let h := fresh in
-    neweq z; [subst z| intro h; rewrite h; clear h z].
 
 
 (*
@@ -696,6 +740,75 @@ Pourquoi reflexivity ne marche pas
     apply brep_id_law.
   Defined.
 
+  Lemma transport_disp_mor {C} {d:disp_precat C} {x y : C} {f g : C ⟦ x, y ⟧}
+        (e : f = g)
+        {xx : d x}     {yy : d y}
+        (ff : xx -->[ f] yy)
+        (Q : UU)
+        (P : Π (z:C ⟦ x, y ⟧) ,xx -->[ z] yy -> Q  )
+        :
+    (P _ (transportf (mor_disp xx yy) e ff))  = P _ ff.
+  Proof.
+    destruct e.
+    intros.
+    apply idpath.
+  Qed.
+
+
+  Lemma eq_ar_pointwise  (a b c : ARITY) ( f : ARITY ⟦ a, b ⟧) ( g : ARITY ⟦ b, c ⟧) (R:MONAD) x :
+    (pr1 (pr1 (f ;; g) R tt)) x = (pr1 (pr1 f R tt) ;;; pr1 (pr1 g R tt)) x .
+    intros.
+    simpl.
+    match goal with
+    | |- ?x = _ => let t:=type of ( x) in set (typet := t)
+    end.
+    - unfold compose.
+      simpl.
+      match goal with
+        | |- context g [transportf _ ?eg ?funf'] => set (funf := funf'); set (e:= eg)
+      end.
+
+      assert (h:= transport_disp_mor (d:=GEN_ARITY) e (xx:=a) (yy:=c) funf typet).
+      etrans.
+      assert (h2 := h (fun a b => pr1 (pr1 b R tt) x)).
+      apply h2.
+      simpl.
+      rewrite id_right.
+      reflexivity.
+Qed.
+
+  Lemma transport_arity_mor (x y : ARITY) (f g : ARITY ⟦ x, y ⟧)
+        (e : f = g)
+        (xx : brep_disp_ob_mor x)
+        (yy : brep_disp_ob_mor y)
+        (ff : xx -->[ f] yy)
+        (c : C) :
+    pr1 (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 (pr1 ff) c.
+  Proof.
+    destruct e.
+    intros.
+    apply idpath.
+  Qed.
+
+  Lemma brep_transport    (x y : ARITY)
+        (R S:MONAD)
+        (f g : MONAD ⟦ R, S ⟧)
+        (e : f = g)
+        (* (xx : _ x) *)
+        (* (yy : pr1 _ y) *)
+
+        (ff : pr1 x R tt -->[ f] pr1 y S tt)
+        (c : C) :
+      pr1 (transportf _ e ff)  c = pr1 ff  c.
+  Proof.
+    intros.
+    simpl.
+    now destruct e.
+  Qed.
+  (* type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
+
+  (** Defining the composition in brep *)
+
   Lemma brep_comp_law  (a b c : ARITY) (f : ARITY ⟦ a, b ⟧) (g : ARITY ⟦ b, c ⟧)
              (R : brep_disp_ob_mor a) (S : brep_disp_ob_mor b)    (T : brep_disp_ob_mor c)
              (α:R -->[ f ] S) (β:S -->[g]  T) :
@@ -726,34 +839,62 @@ Pourquoi reflexivity ne marche pas
 
     etrans.
     apply cancel_postcomposition.
+    apply eq_ar_pointwise.
 
-    set (fg :=   (compose _ _ )).
-    simpl in fg.
-
-    unfold fg,compose.
-    simpl.
-    nat_trans_ov    set (fg2 := (pr1 fg)).
-er
-    simpl in fg.
-
-
+    apply cancel_precomposition.
     set (z := (# ( c))%ar _).
-
     neweqsubst z.
-
     assert( hc:= (@functor_over_comp _ _ _ _ _ ( c)) (pr1 R) (pr1 S) (pr1 T) tt tt tt
-                                                     (pr1 α) (pr1  β) tt tt).
+                                                    (pr1 α) (pr1  β) tt tt).
     apply hc.
-    rewrite ar_mor_eq.
-    rewrite ar_mor_eq.
     simpl.
-    rewrite id_right.
-    rewrite assoc.
+    rewrite ar_mor_eq,ar_mor_eq,id_right.
+    reflexivity.
+    simpl.
+
+    repeat rewrite assoc.
+    apply cancel_postcomposition.
+    apply cancel_postcomposition.
+    repeat rewrite <- assoc.
+    apply cancel_precomposition.
+    (* naturality of g *)
+    simpl in g.
+    simpl.
+    unfold ar_mor.
+    pr1_norm.
+    simpl.
+    set (z:= pr1 g).
+    simpl in z.
+    unfold nat_trans_over_data in z.
+    simpl in z.
+    assert (hg := pr2 g).
+    simpl in hg.
+    unfold nat_trans_over_axioms in hg.
+    simpl in hg.
+    assert (hg':= fun a b c=> hg a b c tt tt tt).
+    simpl in hg'.
+    assert (hg'' := hg' (pr1 R) (pr1 S) (pr1 α)).
+    simpl in hg''.
+    simpl.
+    match type of hg'' with
+    | ?a = ?b => set (xa := a) in *; set (xb := b) in *
+    end.
+    assert (heqx: pr1 xa x = pr1 xb x).
+    now rewrite hg''.
+    simpl in heqx.
+    rewrite id_right in heqx.
+    cbn in heqx.
+    symmetry.
+    etrans.
+    apply heqx.
+    unfold xb.
+    etrans.
+    apply brep_transport.
+    simpl.
+    now rewrite id_right.
+  Qed.
 
 
-
-
-  Admitted.
 
 
   Definition brep_comp (a b c : ARITY) (f : ARITY ⟦ a, b ⟧) (g : ARITY ⟦ b, c ⟧)
@@ -764,176 +905,209 @@ er
     apply brep_comp_law.
   Defined.
 
-(*
+
+  Definition brep_id_comp : disp_precat_id_comp _ brep_disp_ob_mor.
+  Proof.
+    split.
+    - apply brep_id.
+    - apply brep_comp.
+  Defined.
 
 
-NE PAS LIRE APRES C'EST LE BORDEL
+  Definition brep_data : disp_precat_data _
+    := (brep_disp_ob_mor ,, brep_id_comp).
 
-*)
-
-Definition brep_id_comp : disp_precat_id_comp _ brep_disp_ob_mor.
-Proof.
-  split.
-  - apply brep_id.
-  -
-    intros x xx.
-    simpl.
-    apply (tpair _ (Monad_identity _)).
-    intro c.
-    simpl.
-    rewrite -> id_right, id_left.
-
-    symmetry.
-    rewrite <- id_left.
-    apply cancel_postcomposition.
-    unfold ar_mor.
-    match goal with
-    | |- nat_trans_data (pr1 ?f) c = _  => set (z := f)
-    end.
-    neweqsubst z.
-    change tt_hom with (@id_disp _ (LMONAD) (pr1 xx) tt).
-    now apply (functor_over_id x).
-    reflexivity.
-
-  - intros a b c f g RM RM2 RM3 m1 m2.
-    exists (pr1 m1 ;; pr1 m2).
-    intros x.
-    simpl.
-
-    set (z := (# ( c))%ar _).
-
-    neweqsubst z.
-
-    assert( hc:= (@functor_over_comp _ _ _ _ _ ( c)) (pr1 RM) (pr1 RM2) (pr1 RM3) tt tt tt (pr1 m1) (pr1 m2) tt tt).
-    apply hc.
-    do 2! rewrite ar_mor_eq.
-    simpl.
-    rewrite id_right.
-    rewrite assoc.
-    pr1_norm.
+  Lemma rep_ar_mor_mor_equiv (a b : ARITY) (R:brep_data a) (S:brep_data b) (f:ARITY  ⟦ a, b ⟧)
+        (a b: R -->[ f] S) :
+    (Π c, pr1 (pr1 a) c = pr1 (pr1 b) c) -> a = b.
+    intros.
+    use (invmap (subtypeInjectivity _ _ _ _  )) ; cycle 1.
+    use (invmap (Monad_Mor_equiv _ _  _  )) ; cycle 1.
+    apply nat_trans_eq.
+    apply homset_property.
+    assumption.
+    apply homset_property.
+    intro g.
+    apply isaprop_rep_ar_mor_law.
+  Qed.
 
 
-    match goal with
-    | |-  ?f = _  => set (z := f)
-    end.
 
-    set (z := nat_trans_data (pr1
-    apply functor_over_comp.
-    simpl.
-set (z' := (# z)%ar _).
-neweq z'.
-unfold z'.
-unfold ar_mor.
- apply functor_over_comp.
-unfold z'.
-apply
- match goal with
- | |- context fff [((# z)%ar ?x )]     => (* let yop := context fff[((# z)%ar x)] in  *) set (x':=((# z)%ar x ) );
-                                                                                         let t:= type of x' in
-                                                                                         evar( z'':t);
-                                                                                           assert (hz'':x'=z'')
- end.
- unfold z''.
- apply functor_over_comp.
-rewrite functor_over_comp in x'.
-    ff gg.
-    set (pbm_g := pbm_mor f gg).
-    set (pbm_gf := (RModule_composition _ pbm_g (pbm_mor_comp f g ))).
-    exact (compose ff pbm_gf).
-Defined.
+  Lemma brep_axioms : disp_precat_axioms arity_Precategory brep_data.
+  Proof.
 
-
-Definition brep_data : disp_precat_data _
-:= (brep_disp_ob_mor ,, brep_id_comp).
-
-
-Lemma foo (x y : MONAD) (f g : MONAD ⟦ x, y ⟧)
-  (e : f = g)
-  (xx : brep_data x)
-  (yy : pr1 brep_data y)
-  (ff : xx -->[ f] yy)
-  (c : C) :
-  (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 ff c.
-Proof.
-  destruct e.
-  intros.
-  apply idpath.
-Qed.
+    repeat apply tpair; intros; try apply homset_property.
+    - simpl.
+      unfold id_disp; simpl.
+      apply rep_ar_mor_mor_equiv.
+      intros c.
+      simpl.
+      etrans.  apply id_left.
+      symmetry.
+      apply transport_arity_mor.
+    - simpl.
+      apply rep_ar_mor_mor_equiv.
+      intro c; simpl.
+      etrans. apply id_right.
+      symmetry.
+      apply transport_arity_mor.
+    - set (heqf:= assoc f g h).
+      apply rep_ar_mor_mor_equiv.
+      intros c; simpl.
+      etrans; cycle 1.
+      symmetry.
+      apply transport_arity_mor.
+      simpl.
+      now rewrite assoc.
+    - simpl.
+      unfold rep_ar_mor_mor; simpl.
+      apply isaset_rep_ar_mor_mor.
+  Qed.
+(* Why is it so long ??? *)
 
 
-Lemma brep_axioms : disp_precat_axioms MONAD brep_data.
-Proof.
-
-  repeat apply tpair; intros; try apply homset_property.
-  - simpl.
-    unfold id_disp; simpl.
-
-    apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
-    apply nat_trans_eq; try apply homset_property.
-    intros c; simpl.
-    simpl.
-    rewrite assoc; simpl.
-    etrans. Focus 2. eapply pathsinv0.
-      apply  foo.
-   cbn. simpl. unfold pbm_mor_comp.
-      unfold transportb.
-      rewrite id_left.
-      rewrite id_right.
-      apply idpath.
-  - (* this is for Ambroise *)
-
-    set (heqf := id_right f).
-     apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
-     apply nat_trans_eq; try apply homset_property.
-     simpl.
-     intros c.
-     rewrite id_right,id_right.
-    revert ff.
-
-    destruct (heqf).
-    intros; simpl.
-    reflexivity.
-  - set (heqf:= assoc f g h).
-     apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
-     apply nat_trans_eq; try apply homset_property.
-     intros c; simpl.
-     (* rewrite id_right,id_right. *)
-     (* rewrite assoc. *)
-     etrans; cycle 1.
-     (* set (z:= (ff:nat c ;; gg c ;; hh c). *)
-     symmetry.
-
-     clearbody heqf.
-
-(* impossible de faire un destruct ici... *)
-
-     apply foo.
-     simpl.
-     repeat rewrite id_right.
-     rewrite assoc.
-     reflexivity.
-  - simpl.
-    apply rmodule_category_has_homsets.
-Qed.
-
-Definition brep_disp : disp_precat MONAD:=
-   (brep_data ,, brep_axioms).
+  Definition brep_disp : disp_precat arity_Precategory :=
+    (brep_data ,, brep_axioms).
 
 End LargeCatRep.
 
-  (*
- Definition nat_trans_dataE {C C' : precategory_data}
-  {F F' : functor_data C C'}(a : nat_trans F F') : pr1 a = (nat_trans_data a  :
-   Π x : ob C, F x --> F' x)  := idpath _.
 
- Definition precategory_data_from_precategoryE (C : precategory) : pr1 C = precategory_data_from_precategory C := idpath _.
+
+
+Require Import Largecat.quotientfunctor.
+
+(* définition du quotient nécessaire pour la preuve de préservation par épi de la représentabilité
+des arités
+
+1e définition par les HIT à la Coq HOTT
+
+ Copied from Coq Hott HIT.Coeq
+ *)
+(* pour l'instant on l'ignore. *)
+
+(*
+  Module Export Coeq.
+
+
+
+    Local Notation C := hset_Precategory.
+    (* Context (C:Precategory). *)
+    Local Notation PARITY := (arity_Precategory C).
+    Local Notation BREP := (brep_disp C).
+
+    Local Notation "## F" := (pr1 (pr1 (F:BREP _)))(at level 3).
+
+    Private Inductive Quot {a b: PARITY} (F:PARITY ⟦ a, b ⟧) (R:BREP a) (c:ob C) : UU :=
+    | quot : pr1 (## R c) → Quot F R c .
+
+    Arguments quot [_ _] _ [_ _] _.
+
+
+
+
+
+    Axiom isaset_quotient : forall {a b} (F:PARITY ⟦ a, b ⟧) (R:BREP a) c, isaset (Quot F R c).
+
+    Definition equivc  {a b} (F:PARITY ⟦ a, b ⟧) {R:BREP a} {c:ob C} (x y:pr1 (## R c)) :=
+                                  (Π (S:BREP b) ( f : R -->[F] S),
+                                                   pr1 (pr1 f) c x = pr1 (pr1 f) c y).
+
+
+    Axiom cp : forall {a b} (F:PARITY ⟦ a, b ⟧) (R:BREP a)  {c:ob C} {x y:pr1 (## R c) },
+        equivc F  x y -> quot F  x = quot F  y.
+
+    (* Local Notation Quotient := (Quot F R). *)
+    (* Local Notation quotient := (quot F ). *)
+
+
+    Definition Quotient_ind {a b} (F:PARITY ⟦ a, b ⟧) (R:BREP a) {c} (P : Quot F R c → Type)
+               (coeq' : Π a, P (quot _ a))
+               (cp' : Π x y (Rxy : equivc F x y), transportb P (cp F R Rxy) (coeq' y) = coeq' x)
+      : Π w, P w
+      := fun w => match w with quot _  a => fun _ => coeq' a end cp'.
+
+    (* quel est l'axiome équivalent à celui-ci ??
+    Axiom Quotient_ind_beta_cp
+      : forall {c} (P : @Quotient c → Type)
+          (coeq' : forall a, P (quotient a))
+          (cp' : Π x y (Rxy : equivc x y), transportb P (cp Rxy) (coeq' y) = coeq' x)
+          (cp' : ∀ b, (cp b) # (coeq' (f b)) = coeq' (g b))
+          x y,
+        apD (Quotient_ind P coeq' cp') (cp b) = cp' b.
 *)
- (* Definition functor_data_from_functorE (C C': precategory_data) *)
- (*     (F : functor C C') : pr1 F = functor_data_from_functor _ _ F  := idpath _. *)
+
+  End Coeq.
+
+*)
 
 
-(* Hint Rewrite @nat_trans_dataE functor_data_from_functorE : coercions. *)
+
+(*
+A morphism of arity F : a -> b induces a functor between representation Rep(b) -> Rep(a)
+
+In this section we construct the left adjoint of this functor (which is defined whenever
+F is an epimorphism)
+ *)
+Section leftadjoint.
+
+
+  Local Notation C := hset_Precategory.
+  Local Notation PARITY := (arity_Precategory C).
+  Local Notation BREP := (brep_disp C).
+
+  Variables (a b:PARITY) (R:BREP a)
+    (F:PARITY ⟦ a, b⟧).
+
+
+  Lemma isaprop_equivc_xy (c:ob C) x y : isaprop (equivc F (R:=R) (c:=c) x y).
+    intros.
+    apply impred_isaprop.
+    intros S.
+    apply impred_isaprop.
+    intros f.
+    apply setproperty.
+  Qed.
+
+  Definition equivc_xy_prop (c:ob C) x y : hProp :=
+    (equivc F (R:=R) (c:=c) x y ,, isaprop_equivc_xy c x y).
+
+  Definition hequivc c : hrel _ := fun x y => equivc_xy_prop c x y.
+
+  Definition R'_ob c := setquot (hequivc c).
+
+  Lemma comp_any_fun (X Y : ob C) (g :C ⟦X,Y⟧) : iscomprelfun hequivc f)
+
+  (* other way to define the quotient of R, using HIT *)
+  (* Definition R'_data c := Quot F  R c. *)
+  (* Definition R'_ob c : hSet := (R'_data c,, isaset_quotient F R c). *)
+
+  (* We must show that this induces a functor. *)
+  Definition R'_mor (a a' : C) (f : C ⟦a, a'⟧) :
+    C⟦R'_ob a,R'_ob a'⟧.
 
 
 
-Require Import lemmacoercions.
+End leftadjoint.
+
+Section representable.
+
+
+  Local Notation C := hset_Precategory.
+  Local Notation PARITY := (arity_Precategory C).
+  Local Notation BREP := (brep_disp C).
+
+  Local Notation initial_rep_type a :=   (Initial (fiber_precategory BREP a)).
+
+
+  (* an arity is representable if there is an initial object in the category
+of representations of the arity*)
+  Definition is_representable (a:PARITY) := initial_rep_type a.
+
+  Variables (a b:PARITY) (R:initial_rep_type a)
+    (F:Epi _ a b).
+
+
+  (* Now we are to prove that b is representable *)
+
+  (* We define the quotient of R *)
+  Definition R'_data c := Quot F (pr1 R) c.
