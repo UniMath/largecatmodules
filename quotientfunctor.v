@@ -18,6 +18,7 @@ Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 
+Require Import TypeTheory.Auxiliary.Auxiliary.
 
 (* adds a new equation z = ?x *)
 Ltac neweq z :=
@@ -30,6 +31,8 @@ Ltac neweqsubst z :=
   let h := fresh in
   neweq z; [subst z| intro h; rewrite h; clear h z].
 
+
+(* Require Import Largecat.mylibtactics. *)
 
 (**   We show some properties about quotient functors .
 
@@ -65,56 +68,28 @@ Section QuotientFunctor.
 
   Definition quot_functor_data : functor_data D C := tpair _ _ quot_functor_mor.
 
+
   Lemma is_functor_quot_functor_data : is_functor quot_functor_data.
   Proof.
     split.
     - intros a; simpl.
 
-      apply funextsec.
+      apply funextfun.
       intro c.
-      simpl.
-      unfold quot_functor_mor;simpl.
-      unfold setquotfun; simpl.
-      match goal with | |-  (setquotuniv _ _  ?x _ _) = _ => pose (z := x)  end.
-      neweq z.
-      unfold z.
-      etrans.
-      apply funextsec.
-      ZUT...
-      apply maponpaths.
-       (functor_id R a).
-      intro hz.
-      clearbody z.
+      apply (surjectionisepitosets (setquotpr _));
+        [now apply issurjsetquotpr | apply isasetsetquot|].
+      intro x; cbn.
+      now rewrite (functor_id R).
 
-      unfold setquotfun ;simpl.
-      simpl.
+    - intros a b c f g; simpl.
+      apply funextfun; intro x.
+      apply (surjectionisepitosets (setquotpr _));
+        [now apply issurjsetquotpr | apply isasetsetquot|].
+      intro y; cbn.
+      now rewrite (functor_comp R).
+  Qed.
 
-      simpl.
-      unfold identity at 2.
-      simpl.
+  Definition quot_functor  : functor D C := tpair _ _ is_functor_quot_functor_data.
 
-      destruct hz.
-      unfold z.
-
-      pattern c.
-      match goal with |- ?P c => set (P':=P) end.
-
-      apply (setquotunivprop _ P').
-      apply funextsec.
-      apply setquotunivcomm.
-
-      (* rewrite hz ne marche pas *)
-      clear; admit.
-      clear; admit.
-    - intros d d' c f g; simpl.
-      apply funextsec.
-      intros c'; unfold quot_functor_mor; simpl.
-      symmetry.
-      etrans.
-      unfold compose; simpl.
-      reflexivity.
-      unfold setquotfun ; simpl.
-      TODO
-  Admitted.
 
 End QuotientFunctor.

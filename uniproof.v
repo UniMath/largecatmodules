@@ -1002,8 +1002,8 @@ Qed.
     - simpl.
       unfold rep_ar_mor_mor; simpl.
       apply isaset_rep_ar_mor_mor.
-  Qed.
-(* Why is it so long ??? *)
+      (* Why is it so long ??? *)
+  Admitted.
 
 
   Definition brep_disp : disp_precat arity_Precategory :=
@@ -1096,10 +1096,16 @@ Section leftadjoint.
   Local Notation BREP := (brep_disp C).
 
   Variables (a b:PARITY) (R:BREP a)
-    (F:PARITY ⟦ a, b⟧).
+            (F:PARITY ⟦ a, b⟧).
+
+  Local Notation "## F" := (pr1 (pr1 (F:BREP _)))(at level 3).
+
+  Definition equivc   {c:ob C} (x y:pr1 ( ## R c)) :=
+                                  (Π (S:BREP b) ( f : R -->[F] S),
+                                   pr1 (pr1 f) c x = pr1 (pr1 f) c y).
 
 
-  Lemma isaprop_equivc_xy (c:ob C) x y : isaprop (equivc F (R:=R) (c:=c) x y).
+  Lemma isaprop_equivc_xy (c:ob C) x y : isaprop (equivc (c:=c) x y).
     intros.
     apply impred_isaprop.
     intros S.
@@ -1109,11 +1115,36 @@ Section leftadjoint.
   Qed.
 
   Definition equivc_xy_prop (c:ob C) x y : hProp :=
-    (equivc F (R:=R) (c:=c) x y ,, isaprop_equivc_xy c x y).
+    (equivc  (c:=c) x y ,, isaprop_equivc_xy c x y).
 
-  Definition hequivc c : hrel _ := fun x y => equivc_xy_prop c x y.
+  Definition hrel_equivc c : hrel _ := fun x y => equivc_xy_prop c x y.
 
-  Definition R'_ob c := setquot (hequivc c).
+  Lemma iseqrel_equivc c : iseqrel (hrel_equivc c).
+    intros c.
+    unfold hrel_equivc, equivc_xy_prop, equivc; simpl;
+      repeat split; red ; simpl; intros; simpl.
+    -  etrans; eauto.
+    - now symmetry.
+  Qed.
+
+
+  Definition eqrel_equivc c : eqrel _ := (_ ,, iseqrel_equivc c).
+
+  Lemma congr_equivc: Π (x y:C) (f:C⟦ x,  y⟧), iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
+    intros.
+    red.
+    intros z z' eqz.
+    intros S g.
+    cbn in eqz.
+    unfold equivc in eqz.
+    etrans.
+    symmetry.
+    (* Comment faire *)
+    apply (nat_trans_ax (pr1 (pr1 g))).
+    TODO
+    apply eqz.
+    apply (pr1 (pr1 (eqz))).
+    cbn; unfold equivc.
 
   Lemma comp_any_fun (X Y : ob C) (g :C ⟦X,Y⟧) : iscomprelfun hequivc f)
 
