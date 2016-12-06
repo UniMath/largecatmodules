@@ -69,17 +69,40 @@ Section QuotientFunctor.
   Proof.
     split.
     - intros a; simpl.
-      etrans.
+
       apply funextsec.
       intro c.
       simpl.
       unfold quot_functor_mor;simpl.
-
-      match goal with | |-  (setquotfun  _ _ ?x _ _) = _ => set (z := x) end.
-      simpl in z.
+      unfold setquotfun; simpl.
+      match goal with | |-  (setquotuniv _ _  ?x _ _) = _ => pose (z := x)  end.
       neweq z.
-      apply (functor_id R a).
+      unfold z.
+      etrans.
+      apply funextsec.
+      ZUT...
+      apply maponpaths.
+       (functor_id R a).
       intro hz.
+      clearbody z.
+
+      unfold setquotfun ;simpl.
+      simpl.
+
+      simpl.
+      unfold identity at 2.
+      simpl.
+
+      destruct hz.
+      unfold z.
+
+      pattern c.
+      match goal with |- ?P c => set (P':=P) end.
+
+      apply (setquotunivprop _ P').
+      apply funextsec.
+      apply setquotunivcomm.
+
       (* rewrite hz ne marche pas *)
       clear; admit.
       clear; admit.
