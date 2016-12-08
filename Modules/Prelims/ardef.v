@@ -10,7 +10,7 @@ Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 
 Require Import UniMath.CategoryTheory.Monads.
-Require Import Largecat.modules.
+Require Import Modules.Prelims.modules.
 (* Require Import UniMath.CategoryTheory.Modules. *)
 
 
