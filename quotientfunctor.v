@@ -92,4 +92,13 @@ Section QuotientFunctor.
   Definition quot_functor  : functor D C := tpair _ _ is_functor_quot_functor_data.
 
 
+  Definition proj_nat_trans_data : (Π x , C ⟦ R x, quot_functor  x ⟧) :=
+    fun x a => setquotpr _ a.
+
+  Lemma is_nat_trans_proj_nat_trans : is_nat_trans _ _ proj_nat_trans_data.
+  Proof.
+    red; intros; apply idpath.
+  Qed.
+
+  Definition proj_quot : (nat_trans R  quot_functor) := (_ ,, is_nat_trans_proj_nat_trans).
 End QuotientFunctor.
