@@ -8,7 +8,9 @@
 -Q . Largecat
 
 modules.v
+mylibtactics.v
 quotientfunctor.v
+ardef.v
 uniproof.v
 
 
