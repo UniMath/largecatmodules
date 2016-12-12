@@ -245,9 +245,24 @@ Section Pullback_Module_Morphism.
 
   Definition pbm_mor  : RModule_Mor _  pbmT pbmT'  := ( _ ,, pbm_mor_law).
 
+
+End Pullback_Module_Morphism.
+
+  (* adds a new equation z = ?x *)
+Ltac neweq z :=
+  let t := type of z in
+  let x := fresh in
+  evar (x:t); cut (z=x); subst x; cycle 1.
+
+(* adds a new equation z = ?x and replace z with ?x in the current goal *)
+Ltac neweqsubst z :=
+  let h := fresh in
+  neweq z; [subst z| intro h; rewrite h; clear h z].
+
   (* Attempt to prove that a nat trans that is pointwise the identity is a nat_trans.
-*)
-  Lemma is_nat_trans_id_pw {B C} {F G:functor B C} (f:Π x : B, C ⟦ F x, G x ⟧)
+!! This is true only if F and G are equal on morphisms
+   *)
+  Lemma is_nat_trans_id_pw {B}{ C:precategory} {F G:functor B C} (f:Π x : B, C ⟦ F x, G x ⟧)
         (heq: Π x,  F x = G x)
         (heqf:Π x, f x = transportf (fun A =>  C ⟦ F x, A ⟧)
                                     (heq x) (identity (F x) )) : is_nat_trans F G f.
@@ -258,13 +273,88 @@ Section Pullback_Module_Morphism.
     rewrite heqf.
     rewrite heqf.
     clear heqf.
+    pose (g':= (#F g)).
+
+    clearbody g'.
     simpl.
-    assert  (tr:= fun P Q f=> transport_map(P:=P) (Q:=Q)f (heq b)).
+    assert  (tr:= fun P Q f=> transport_map(P:=P) (Q:=Q)f (heq b')).
+    etrans.
+    symmetry.
+    assert (tr2 := fun Q f => tr (λ A : C, C ⟦ F b', A ⟧) Q f (identity _)).
+    simpl in tr2.
+    (*
+    (f (F b') p = transportf Q (heq b) (#F g ;; identity (F b'))
+     f (G b') (transportf (λ A : C0, C0 ⟦ F b', A ⟧) (heq b') (identity (F b')))
+       = #F g ;; transportf _ _ _ *)
+    assert (tr3 := tr2 _ (fun a p => #F g;;p)).
+    simpl in tr3.
+    apply tr3; simpl.
+    etrans.
+    match goal with |- transportf _ _ ?f  = _ => set (P := f) end.
+    neweqsubst P.
+    assert (z:# F g ;; identity (F b') = #F g).
+
+    apply (id_right (# F g)).
+    exact z.
+    reflexivity.
+    match goal with | |- _ = ?x => let ttyp := type of x in set (tty := ttyp) end.
+    symmetry; etrans.
+    symmetry; etrans.
+    apply (idpath (transportb (fun A => C ⟦A, G b'⟧) (heq b) ((identity _ ;; # G g)))).
+    clear; admit.
+    rewrite id_left.
+    clear.
+    set (yop := heq b).
+    set (yop2 := heq b').
+    clearbody yop yop2.
+    clear heq.
+    subst tty.
     simpl.
+    unfold transportb.
+    cbn.
+    destruct (heq b).
+    clear tr.
+    match goal with |- transportf ?p _ _ ;; _ = _ => set (P := p) end.
+    assert  (tr:=  fun Q f => transport_map(P:=P) (Q:=Q) f (heq b) (identity _)).
+    symmetry.
+    subst P.
+    simpl in tr.
+
+    etrans.
+    Check ((identity _) ;; # G g).
+    apply (idpath (transportf _ (heq b)  ((identity (F b)) ;; # G g) )).
+    assert (tr3 := tr ((fun a => C0 ⟦ a, G b' ⟧)) (fun a p => p ;; #G g)).
+
+    apply tr.
+    simpl in tr.
+    use tr.
+
+    cbn.
+    simpl.
+    set (yop := heq b').
+    clearbody yop.
+    TODOx
+       use functtransportf_2.
+    etrans.
+
+
+
+    Check (# F g ;; transportf (λ A : C0, C0 ⟦ F b', A ⟧) yop (identity (F b'))).
+    apply functtransportf_2.
+    rewrite yop.
+    destruct yop.
+    apply cancel_precomposition.
+    symmetry.
+    Check (transportf (λ A : C0, C0 ⟦ F b', A ⟧) (heq b') (identity (F b'))).
+    Check (nat -> Prop).
+    etrans.
+    apply (idpath (identity (G b'))).
+    apply transportf_const.
+    Check (transportf (λ A : C0, C0 ⟦ F b', A ⟧) (heq b') (identity (F b'))).
     (* I am not fluent with transports. Too difficult *)
   Abort.
 
-End Pullback_Module_Morphism.
+
 
 
 (*
@@ -385,8 +475,7 @@ Section LargeCatMod.
         (xx : bmod_data x)
         (yy : pr1 bmod_data y)
         (ff : xx -->[ f] yy)
-        (c : C) :
-    (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 ff c.
+        (c : C) : (pr1 (transportf (mor_disp xx yy) e ff) c = pr1 ff c).
   Proof.
     destruct e.
     intros.
@@ -406,7 +495,7 @@ Section LargeCatMod.
       simpl.
       rewrite assoc; simpl.
       etrans. Focus 2. eapply pathsinv0.
-      apply  bmod_transport.
+      apply bmod_transport.
       cbn. simpl. unfold pbm_mor_comp.
       unfold transportb.
       rewrite id_left.
@@ -838,7 +927,7 @@ Qed.
 
         (ff : pr1 x R tt -->[ f] pr1 y S tt)
         (c : C) :
-      pr1 (transportf _ e ff)  c = pr1 ff  c.
+      pr1 (transportf _ e ff) c  = pr1 ff c .
   Proof.
     intros.
     simpl.

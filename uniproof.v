@@ -1,3 +1,4 @@
+
 Require Import UniMath.Foundations.Basics.PartD.
 Require Import UniMath.Foundations.Basics.Propositions.
 Require Import UniMath.Foundations.Basics.Sets.
@@ -7,7 +8,10 @@ Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.UnicodeNotations.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.limits.terminal.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.limits.kernels.
+Require Import UniMath.CategoryTheory.limits.pullbacks.
+Require Import UniMath.CategoryTheory.limits.coequalizers.
+
 Require Import UniMath.CategoryTheory.Epis.
 
 Require Import UniMath.CategoryTheory.Monads.
@@ -67,6 +71,83 @@ Section FunEquiv.
   Definition fun_eqrel : eqrel _ := (_ ,, iseqrel_fun_hrel ).
 End FunEquiv.
 
+
+
+(* Definition of an effective epimorphism.
+An effective epimorphism p: A -> B is a morphism wich as a kernel pair and which
+is the coequalizer of its kernel pair.
+
+This property is true of any epimorphism in Set. It allows to lift epimorphism
+*)
+Section EffectiveEpi.
+  Context {C:precategory} {A B:C}.
+  Variable (f: C ⟦A,B⟧).
+
+  Definition kernel_mor := Pullback  f f.
+
+
+
+  Definition isEffectiveEpi :=
+    Σ  g:kernel_mor, (Σ H :  (PullbackPr1 g) ;; f = (PullbackPr2 g) ;; f, isCoequalizer (PullbackPr1 g)
+                                                                       (PullbackPr2 g) f H).
+End EffectiveEpi.
+
+
+Require Import UniMath.CategoryTheory.category_hset_structures.
+Require Import UniMath.CategoryTheory.limits.graphs.pullbacks.
+
+(* wtf ? Il y a deux notions de pullback et je ne trouve pas le resultat suivant *)
+Definition equiv_Pullback {C:Precategory} {a b c  : C} {f : C ⟦b, a⟧} {g : C ⟦c, a⟧}
+            (pb  : Pullback _ f g):
+  limits.pullbacks.Pullback f g.
+Proof.
+  intros.
+  use  (limits.pullbacks.mk_Pullback _ _  (PullbackObject _ pb)
+                                     (PullbackPr1 _ pb) (PullbackPr2 _ pb) ).
+  apply PullbackSqrCommutes.
+  apply equiv_isPullback_2.
+  apply homset_property.
+  apply isPullback_Pullback.
+  apply homset_property.
+Defined.
+
+Section kernel_mor_Set.
+
+  Local Notation SET := hset_Precategory.
+  Context  {A B:SET}.
+  Variable (f: SET ⟦A,B⟧).
+
+  Definition kernel_mor_set : kernel_mor f.
+    apply equiv_Pullback.
+    apply Pullbacks_from_Lims.
+    apply LimsHSET.
+  Defined.
+
+  Local Notation g := kernel_mor_set.
+
+  Import limits.pullbacks.
+
+  Lemma kernel_mor_eq
+        (a:pr1 (PullbackObject g)) :
+    f ( (PullbackPr1 g) a) = f ((PullbackPr2 g) a).
+  Proof.
+    intros.
+    cbn.
+    (* Il manque des lemmes sur ce que vaut exactement le pullback dans set *)
+  Abort.
+
+End kernel_mor_Set.
+
+
+  Lemma set_effective_epi (A B:hSet) (f:Epi (hset_Precategory) A B) : isEffectiveEpi f.
+Proof.
+  intros.
+  red.
+  exists (kernel_mor_set f).
+  use tpair.
+  - apply funextfun.
+    intro x ; cbn.
+Abort.
 (* Let F : C -> Set be a functor.
 Any natural transformation m : F -> G yields a quotient functor obtained by
 splitting m into epi/mono.
@@ -161,7 +242,6 @@ End LiftEpi.
 (*
 J'aurais besoin de la réciproque de surjectionisepitosets
 
-Demander à Benedikt : je n'ai pas trouvé la preuve dnas la lib
  *)
 Section ReciproqueSurjectionIsEpiToSets.
   Local Notation SET := hset_Precategory.
@@ -177,19 +257,274 @@ Section ReciproqueSurjectionIsEpiToSets.
     simpl in hepi.
     apply hinhpr.
     red.
-  Abort.
-
-
+    clear.
+  Admitted.
+  (* proved in Coq Hott, and in the HoTT book. however I don't want to bother with this proof *)
 
 End ReciproqueSurjectionIsEpiToSets.
 
-(* if colimits are computed pointwise, then a transfo nat which is an epi is pointwise an epi*)
-Section PointwiseEpi.
+Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.limits.graphs.limits.
+
+(* Composing a functor and a diagram
+Demadner à Benedikt : pas trouvé dans la lib *)
+Section CompDiagrams.
+  Context { C D:precategory} {g:graph}.
+  Variables  (d:diagram g C) (F:functor_data C D).
+  (* Σ (f : vertex g -> C), Π (a b : vertex g), edge a b -> C⟦f a, f b⟧. *)
+  Definition comp_diag_functor : diagram g D.
+    exists (fun x => F (pr1 d x)).
+    exact (fun a b e => #F (pr2 d a b e)).
+  Defined.
+
+End CompDiagrams.
+
+(*
+Proof that f: A -> B is an epi is the same as saying that the diagram
+A ---> B
+|      |
+|      |  id         is a pushout
+‌\/     ‌‌\/
+B----> B
+  id
+*)
+Section EpiPushoutId.
+
+  Context {C:Precategory} {A B:C} (f:C⟦A,B ⟧).
+  Require Import UniMath.CategoryTheory.limits.pushouts.
+
+
+  Lemma epi_to_pushout : isEpi f -> isPushout f f (identity _) (identity _) (idpath _).
+  Proof.
+    intro h.
+    red.
+    intros x p1 p2 eqx.
+    assert (hp : p1 = p2).
+    { now apply h. }
+    destruct hp.
+    apply (unique_exists p1).
+    rewrite id_left.
+    now split.
+    intros y. apply isapropdirprod; apply homset_property.
+    intros y [h1 _].
+    now rewrite id_left in h1.
+  Qed.
+
+  Lemma pushout_to_epi :  isPushout f f (identity _) (identity _) (idpath _)-> isEpi f.
+  Proof.
+    intros hf.
+    intros D p1 p2 hp.
+    apply hf in hp.
+    destruct hp as [[p [hp1 hp2]] _].
+    now rewrite <- hp1,hp2.
+  Qed.
+
+End EpiPushoutId.
+
+(* definition of a functor that creates colimits.
+
+Demander à Benedikt : pas trouvé dans la lib
+
+definition de la préservation des colimites (pas cherché dans la lib)
+*)
+Section CreateCoLimits.
   Context { C D:precategory}.
-  Variable (D:subcategory [C,D]).
-  Hypothesis (pw_colimits : les colimites de D se calculent pointwise )
-             Lemma pw_epi (F G : D) (a:Epi _ F G) : Π x, isEpi ( a x).
-  TODO
+  Variable (F:functor_data C D).
+(*
+  Definition preservesCoLimit (g:graph) (d:diagram g C) :=
+    Π (g : graph) (d : diagram g C), ColimCocone d -> ColimCocone (comp_diag_functor d F).
+
+  Definition reflectsCoLimits :=
+    Π (g : graph) (d : diagram g C) (x , isColimCocone (comp_diag_functor d F) -> ColimCocone d.
+ *)
+(*
+  Definition createsCoLimit (g:graph) (d:diagram g C) :=
+    Σ (f:ColimCocone (comp_diag_functor d F) -> ColimCocone d), isColimCocone
+
+
+
+  Definition createsCoLimits :=
+    Π (g : graph) (d : diagram g C),
+    Σ yop : ColimCocone (comp_diag_functor d F) -> ColimCocone d, isColimCocone (#F yop ).
+*)
+End CreateCoLimits.
+
+
+(* The following section is copied from Pullback_pointwise section in limits/Pullbacks.v
+
+Unfortunately, there is no such analogue in limits/Pushouts...
+
+I am interested in showing that if D has colimits, then a colimit in the category [C,D] is
+a colimit pointwise. I tried to derive this result from limits/graphs/colimits.v and the
+construction of ColimitFunctors, however the pointwise diagrams seems to behave badly
+(see tried example in the next section *)
+
+Set Automatic Introduction.
+
+      (** * Pushouts in functor categories *)
+Section pushouts_pointwise.
+
+(** Diagram for this section:
+<<
+          d
+    J -------> H
+    |          |
+  c |          | b
+    v          v
+    G -------> F
+         a
+>>
+ *)
+Local Notation "[ C , D , hs ]" := (functor_precategory C D hs).
+
+Context {C D : precategory} (hsD : has_homsets D).
+Let CD := [C, D, hsD].
+Context {F G H J : CD}.
+Context {a : CD ⟦G, F⟧}{b : CD ⟦H, F⟧}{c : CD⟦J,G⟧}{d : CD⟦J, H⟧}.
+
+Variable Hcomm : c ;; a = d ;; b.
+
+Arguments mk_Pushout {_ _ _ _ _ _ _ _ _ _ } _ .
+
+Let Hcommx x := nat_trans_eq_pointwise Hcomm x.
+
+
+
+Local Definition g (T : Π x, isPushout _ _ _ _ (Hcommx x))
+      E (h : CD ⟦ G,E ⟧) (k : CD ⟦ H,E⟧)
+      (Hhk : c;; h  = d ;; k ) : Π x, D ⟦ pr1 F x, pr1 E x ⟧.
+Proof.
+
+  intro x; apply (PushoutArrow (mk_Pushout (T x)) _ (pr1 h x) (pr1 k x)).
+  abstract (apply (nat_trans_eq_pointwise Hhk)).
+Defined.
+
+Local Lemma is_nat_trans_g (T : Π x, isPushout _ _ _ _ (Hcommx x))
+      E (h : CD ⟦ G, E ⟧) (k : CD ⟦ H, E ⟧)
+      (Hhk :  c;; h  = d ;; k) : is_nat_trans _ _ (λ x : C, g T E _ _ Hhk x).
+Proof.
+  intros x y f; unfold g.
+  apply (MorphismsOutofPushoutEqual (T x)).
+  + rewrite !assoc, (PushoutArrow_PushoutIn1 (mk_Pushout (T x))).
+    rewrite <- (nat_trans_ax a), <- assoc.
+    now rewrite (PushoutArrow_PushoutIn1 (mk_Pushout (T y))), (nat_trans_ax h).
+  + rewrite !assoc,(PushoutArrow_PushoutIn2 (mk_Pushout (T x))).
+    rewrite <- (nat_trans_ax b), <- assoc.
+    now rewrite (PushoutArrow_PushoutIn2 (mk_Pushout (T y))), (nat_trans_ax k).
+Qed.
+
+Lemma po_if_pointwise_po : (Π x, isPushout _ _ _ _ (Hcommx x)) ->
+                           isPushout _ _ _ _ Hcomm.
+Proof.
+  intro T.
+  use mk_isPushout; intros E h k Hhk.
+  use unique_exists.
+  - mkpair.
+    + intro x; apply (g T E h k Hhk).
+    + apply is_nat_trans_g.
+  - abstract (split; apply (nat_trans_eq hsD); intro x;
+              [ apply (PushoutArrow_PushoutIn1 (mk_Pushout (T x)))
+              | apply (PushoutArrow_PushoutIn2 (mk_Pushout (T x))) ]).
+  - abstract (intro; apply isapropdirprod; apply functor_category_has_homsets).
+  - abstract (intros t [h1 h2]; destruct h as [h Hh];
+              apply (nat_trans_eq hsD); intro x; apply PushoutArrowUnique;
+              [ apply (nat_trans_eq_pointwise h1) | apply (nat_trans_eq_pointwise h2) ]).
+Defined.
+
+
+
+End pushouts_pointwise.
+
+
+(*
+  (* Exclusive lemma : the converse *)
+Lemma pointwise_po_if_po (hpo :Pushouts D) :   isPushout _ _ _ _ Hcomm ->
+                                               (Π x, isPushout _ _ _ _ (Hcommx x)).
+Proof.
+  intros T x.
+  assert (pocd := (hpo _ _ _ (pr1 c x) (pr1 d x))).
+  set (pocd2 := isPushout_Pushout pocd).
+  use mk_isPushout; intros E h k Hhk.
+  use unique_exists.
+  - mkpair.
+    + intro x; apply (g T E h k Hhk).
+    + apply is_nat_trans_g.
+  - abstract (split; apply (nat_trans_eq hsD); intro x;
+              [ apply (PushoutArrow_PushoutIn1 (mk_Pushout (T x)))
+              | apply (PushoutArrow_PushoutIn2 (mk_Pushout (T x))) ]).
+  - abstract (intro; apply isapropdirprod; apply functor_category_has_homsets).
+  - abstract (intros t [h1 h2]; destruct h as [h Hh];
+              apply (nat_trans_eq hsD); intro x; apply PushoutArrowUnique;
+              [ apply (nat_trans_eq_pointwise h1) | apply (nat_trans_eq_pointwise h2) ]).
+Defined.
+*)
+
+(* if colimits are computed pointwise, then a transfo nat which is an epi is pointwise an epi*)
+  Require Import UniMath.CategoryTheory.CocontFunctors.
+Section PointwiseEpi.
+  Context { C :precategory} {D:Precategory} {E:precategory}.
+
+  Definition functor_Precategory : Precategory :=
+    (functor_precategory C D (homset_property D),,functor_category_has_homsets _ _ _).
+
+  Local Notation Fc := functor_Precategory.
+  Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+  Require Import UniMath.CategoryTheory.limits.graphs.pushouts.
+
+  Definition colims_func (colimD : @Colims D) : @Colims Fc.
+    intros.
+    red.
+    intros g d.
+    apply ColimFunctorCocone.
+    intros a.
+    apply colimD.
+  Defined.
+
+(* A colimit is a colimit pointwise *)
+  Lemma pw_colim
+    (colimD:@Colims D) (g:graph) (J:diagram g Fc) (F:Fc) (R:cocone J F) :
+    isColimCocone J F R ->
+    Π c : C,
+          isColimCocone (diagram_pointwise _ _ (homset_property _) g J c) (pr1 F c)
+                        (cocone_pointwise _ _ (homset_property _) g J F R c).
+  Proof.
+    intros ????? isColim c.
+    apply isColimFunctor_is_pointwise_Colim.
+    intros b; apply colimD.
+    assumption.
+  Qed.
+  (*
+  Definition colims_func (colimD : @Colims D) g d (x:C)
+    : isColimCocone (cocone_pointwise _ _ _ _ _ _ (colims_func colimD g d) x).
+    intros.
+    red.
+    intros g d.
+    apply ColimFunctorCocone.
+    intros a.
+    apply colimD.
+  Defined.
+*)
+  Lemma Colims_pw_epi (colimD : @Colims D) (A B : Fc) (a:Epi _ A B) : Π (x:C), isEpi (pr1 (pr1 a) x).
+  Proof.
+    intros ???[a epia] x; simpl.
+    apply epi_to_pushout in epia.
+    apply pushout_to_epi.
+    simpl.
+    apply equiv_isPushout1 in epia; [| apply homset_property].
+    apply equiv_isPushout2; [ apply homset_property|].
+    apply pw_colim with (c:=x) in epia ;[|exact colimD].
+    simpl in epia.
+    red.
+    revert epia.
+    match goal with |- isColimCocone ?x1 ?y1 ?z1  -> isColimCocone ?x2 ?y2 ?z2  =>
+                    assert (hx:x1=x2);[|assert(hy:y1=y2)] end.
+    - use total2_paths2_b.
+      + simpl.
+        apply funextfun.
+        intros c.
+        simpl.
+        (* demander à benedikt : ça m'a lair moisi ce truc... *)
+  Abort.
 
 End PointwiseEpi.
 
