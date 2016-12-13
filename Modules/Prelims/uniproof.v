@@ -15,7 +15,7 @@ Require Import UniMath.CategoryTheory.limits.coequalizers.
 Require Import UniMath.CategoryTheory.Epis.
 
 Require Import UniMath.CategoryTheory.Monads.
-Require Import Largecat.modules.
+Require Import Modules.Prelims.modules.
 (* Require Import UniMath.CategoryTheory.Modules. *)
 
 
@@ -36,8 +36,8 @@ Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
 
-Require Import Largecat.ardef.
-Require Import Largecat.quotientfunctor.
+Require Import Modules.Prelims.ardef.
+Require Import Modules.Prelims.quotientfunctor.
 
 (* Let f : A -> B be a function.
 It induces an equivalence relation on A.
