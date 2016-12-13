@@ -312,47 +312,7 @@ Ltac neweqsubst z :=
     simpl.
     unfold transportb.
     cbn.
-    destruct (heq b).
-    clear tr.
-    match goal with |- transportf ?p _ _ ;; _ = _ => set (P := p) end.
-    assert  (tr:=  fun Q f => transport_map(P:=P) (Q:=Q) f (heq b) (identity _)).
-    symmetry.
-    subst P.
-    simpl in tr.
-
-    etrans.
-    Check ((identity _) ;; # G g).
-    apply (idpath (transportf _ (heq b)  ((identity (F b)) ;; # G g) )).
-    assert (tr3 := tr ((fun a => C0 ⟦ a, G b' ⟧)) (fun a p => p ;; #G g)).
-
-    apply tr.
-    simpl in tr.
-    use tr.
-
-    cbn.
-    simpl.
-    set (yop := heq b').
-    clearbody yop.
-    TODOx
-       use functtransportf_2.
-    etrans.
-
-
-
-    Check (# F g ;; transportf (λ A : C0, C0 ⟦ F b', A ⟧) yop (identity (F b'))).
-    apply functtransportf_2.
-    rewrite yop.
-    destruct yop.
-    apply cancel_precomposition.
-    symmetry.
-    Check (transportf (λ A : C0, C0 ⟦ F b', A ⟧) (heq b') (identity (F b'))).
-    Check (nat -> Prop).
-    etrans.
-    apply (idpath (identity (G b'))).
-    apply transportf_const.
-    Check (transportf (λ A : C0, C0 ⟦ F b', A ⟧) (heq b') (identity (F b'))).
-    (* I am not fluent with transports. Too difficult *)
-  Abort.
+    Abort.
 
 
 
@@ -689,16 +649,6 @@ Module Arites2.
 End Arites2.
 
 
-(* adds a new equation z = ?x *)
-Ltac neweq z :=
-    let t := type of z in
-    let x := fresh in
-    evar (x:t); cut (z=x); subst x; cycle 1.
-
-(* adds a new equation z = ?x and replace z with ?x in the current goal *)
-Ltac neweqsubst z :=
-    let h := fresh in
-    neweq z; [subst z| intro h; rewrite h; clear h z].
 
 
 
