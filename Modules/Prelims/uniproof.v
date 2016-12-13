@@ -480,15 +480,15 @@ Section PointwiseEpi.
     apply colimD.
   Defined.
 
-(* A colimit is a colimit pointwise *)
+  (* A colimit is a colimit pointwise *)
   Lemma pw_colim
     (colimD:@Colims D) (g:graph) (J:diagram g Fc) (F:Fc) (R:cocone J F) :
     isColimCocone J F R ->
     Π c : C,
-          isColimCocone (diagram_pointwise _ _ (homset_property _) g J c) (pr1 F c)
-                        (cocone_pointwise _ _ (homset_property _) g J F R c).
+          isColimCocone (diagram_pointwise  (homset_property _)  J c) (pr1 F c)
+                        (cocone_pointwise  (homset_property _)  J F R c).
   Proof.
-    intros ????? isColim c.
+    intros  isColim c.
     apply isColimFunctor_is_pointwise_Colim.
     intros b; apply colimD.
     assumption.
@@ -506,23 +506,42 @@ Section PointwiseEpi.
 *)
   Lemma Colims_pw_epi (colimD : @Colims D) (A B : Fc) (a:Epi _ A B) : Π (x:C), isEpi (pr1 (pr1 a) x).
   Proof.
-    intros ???[a epia] x; simpl.
+    destruct a as [a epia]; intro  x; simpl.
     apply epi_to_pushout in epia.
     apply pushout_to_epi.
     simpl.
     apply equiv_isPushout1 in epia; [| apply homset_property].
     apply equiv_isPushout2; [ apply homset_property|].
     apply pw_colim with (c:=x) in epia ;[|exact colimD].
+
     simpl in epia.
     red.
     revert epia.
+
     match goal with |- isColimCocone ?x1 ?y1 ?z1  -> isColimCocone ?x2 ?y2 ?z2  =>
                     assert (hx:x1=x2);[|assert(hy:y1=y2)] end.
-    - use total2_paths2_b.
-      + simpl.
+    -
+      use total2_paths2_b.
+      +
+        simpl.
         apply funextfun.
         intros c.
         simpl.
+        pattern c.
+        use StandardFiniteSets.three_rec_dep;apply idpath.
+      + apply  proofirrelevance.
+        admit.
+      - apply idpath.
+      - intros epia c cc.
+        assert (cc':cocone (diagram_pointwise (homset_property D)
+         (pushout_diagram (functor_precategory C D (homset_property D)) a a) x) c).
+        use tpair.
+        specialize (epia _ cc').
+        apply (unique_exists (pr1 (iscontrpr1 epia))).
+        intros v.
+        simpl.
+
+
         (* demander à benedikt : ça m'a lair moisi ce truc... *)
   Abort.
 
