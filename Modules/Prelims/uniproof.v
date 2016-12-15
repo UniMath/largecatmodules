@@ -191,16 +191,54 @@ Section LiftEpi.
            iscontr (Σ c : C, Σ
 *)  
 
-
-   ∃! y : C, ∃ a : A, (p a = b × f a = y).
-
-  Lemma comp_f_epi_hprop : Π b : pr1 B, iscontr (image (fun (x:hfiber p b) => f (pr1 x))).
+(*
+  Lemma comp_f_epi_hprop : Π b : pr1 B, ∃! y : pr1 C, ∃ a : pr1 A, (p a = b × f a = y).
   Proof.
-    intro b.
+        intro b.
     unfold image.
     unfold hfiber. cbn.
 
     
+    apply (squash_to_prop (surjectivep b)).
+    { apply isapropiscontr. }
+    intro H.
+    apply iscontraprop1.
+    - apply invproofirrelevance.
+      intros c c'.
+      apply subtypeEquality.
+      + intro. apply isapropishinh.
+      + destruct c as [c cp].
+        destruct c' as [c' cp']. 
+        cbn.
+        
+    
+    
+    
+
+(*
+    Search (  isaprop ?X → ?X →  iscontr ?X).
+*)
+    
+(* inspiré de     isapropimeqclass *)
+    Print hsubtypes.    
+    intros x1 x2.
+    apply (@hinhuniv2 _ _ (hProppair _ (pr2 C (x1) ( x2)))).
+    simpl;
+    intros y1 y2; simpl.
+    unfold hfiber in y1,y2.
+    destruct y1 as [ [z1 h1] h1' ].
+    destruct y2 as [ [z2 h2] h2' ].
+    rewrite <- h1' ,<-h2'.
+    apply comp_f_epi;simpl.
+    rewrite h1,h2.
+    apply idpath.
+    
+    apply prtoimage. apply H.
+*)
+
+  Lemma comp_f_epi_hprop : Π b : pr1 B, iscontr (image (fun (x:hfiber p b) => f (pr1 x))).
+  Proof.
+    intro b.
     apply (squash_to_prop (surjectivep b)).
     { apply isapropiscontr. }
     intro H.
@@ -232,12 +270,39 @@ Section LiftEpi.
     apply (pr1 (pr1 (comp_f_epi_hprop b))).
   Defined.
   
-  
   Lemma lift_epi_ax : Π x,  lift_epi (p x) = f x.
   Proof.
     intro x.
     apply pathsinv0.
+    apply path_to_ctr.
+    apply (squash_to_prop (surjectivep (p x))). 
+    { apply isapropishinh. }
+    intro r. apply hinhpr.
+    exists r.
+    apply comp_f_epi.
+    apply (pr2 r).
+  Defined.
+
+  Lemma lift_epi_unique : Π (g : SET⟦B, C⟧) (H : Π a : pr1 A, g (p a) = f a)
+                            (b : pr1 B), g b = lift_epi b.
+  Proof.
+    intros g H b.
+    apply path_to_ctr.
+    apply (squash_to_prop (surjectivep b)). 
+    { apply isapropishinh. }
+    intros [a Ha].
+    apply hinhpr.
+    mkpair.
+    - exists a. apply Ha.
+    - simpl.
+      rewrite <- H.
+      rewrite Ha.
+      apply idpath.
+Defined.
+
     
+  
+  
  
 
   Definition lift_epi : SET ⟦B, C⟧.
