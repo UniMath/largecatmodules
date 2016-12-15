@@ -1,4 +1,3 @@
-
 Require Import UniMath.Foundations.Basics.PartD.
 Require Import UniMath.Foundations.Basics.Propositions.
 Require Import UniMath.Foundations.Basics.Sets.
@@ -43,7 +42,8 @@ Require Import Modules.Prelims.quotientfunctor.
 It induces an equivalence relation on A.
 Reciproquement, any equivalence relation on A is yielded by such an equivalence
 
-Question pour Benedikt : est ce que ce truc est déjà démontré quelque part dans lalib standard
+Question pour Benedikt : est ce que ce truc est déjà démontré quelque part dans 
+lalib standard
  *)
 Section FunEquiv.
   Context {A B:hSet} (f:A -> B).
@@ -117,12 +117,17 @@ Section kernel_mor_Set.
   Context  {A B:SET}.
   Variable (f: SET ⟦A,B⟧).
 
+  Lemma Pullbacks_HSET : Pullbacks SET.
+    clear.
+  Admitted.
+
   Definition kernel_mor_set : kernel_mor f.
+    red.
     apply equiv_Pullback.
-    apply Pullbacks_from_Lims.
-    apply LimsHSET.
+    apply LimsHSET_of_shape.
   Defined.
 
+    
   Local Notation g := kernel_mor_set.
 
   Import limits.pullbacks.
@@ -132,52 +137,29 @@ Section kernel_mor_Set.
     f ( (PullbackPr1 g) a) = f ((PullbackPr2 g) a).
   Proof.
     intros.
-    cbn.
-    (* Il manque des lemmes sur ce que vaut exactement le pullback dans set *)
-  Abort.
+    assert (hg':=PullbackSqrCommutes g).
+    apply      toforallpaths in hg'.
+    apply hg'.
+  Qed.
 
+  Lemma isCoeqEpi (hf:issurjective f) : isCoequalizer _ _ _ (PullbackSqrCommutes g).
+  Proof.
+    intros.
+    red.
+    intros C u equ.
+Abort.
 End kernel_mor_Set.
 
 
-  Lemma set_effective_epi (A B:hSet) (f:Epi (hset_Precategory) A B) : isEffectiveEpi f.
-Proof.
-  intros.
-  red.
-  exists (kernel_mor_set f).
-  use tpair.
-  - apply funextfun.
-    intro x ; cbn.
-Abort.
+  
 (* Let F : C -> Set be a functor.
 Any natural transformation m : F -> G yields a quotient functor obtained by
 splitting m into epi/mono.
 
 A corollary is that m induces a relation on each image object of F *)
-(*
-Section FunctorEquiv.
-  Local Notation SET := hset_Precategory.
-  Context { C:precategory} { F G:functor_data C SET}.
-  Variable  (m:F ⟶  G) (c:C).
-
-  Definition nt_rel x y := m c x = m c y.
 
 
-
-
-  Lemma isaprop_nt_rel  x y : isaprop (nt_rel x y).
-    intros;
-    apply setproperty.
-  Qed.
-
-
-
-
-
-End FunctorEquiv.
-*)
-
-
-(* Preuve qu'on peut relever les épi dans la catégorie des endo foncteurs sur Set
+(* Preuve qu'on peut relever les épi dans la catégorie Set
 Autrement dit :
     f
  A ---> C
@@ -190,8 +172,6 @@ Autrement dit :
 Si p est un épi et que pour tout x y dans A, p(x)=p(y) => f(x)=f(b)
 alors il existe une unique flèche de B vers C qui complète le diagramme.
 
-Demander à Benedikt si ce truc est déjà démontrer. En particulier, je voudrais montrer que tout
-épi est en fait un setquotfun
 *)
 Section LiftEpi.
 
@@ -236,6 +216,20 @@ Section LiftEpi.
     exact (pr1 c).
   Defined.
 
+  Lemma lift_epi_ax : Π x,  lift_epi (p x) = f x.
+  Proof.
+    intro x.
+    cbn.
+    unfold lift_epi.
+    unfold hinhuniv; cbn.
+    
+    match goal with |- pr1 ?x = _ => set (z:=x) end.
+    simpl in z.
+    assert (hz := pr2 z).
+    cbn beta in hz.
+   TODO demander à Benedikt.
+  Qed.
+
 
 End LiftEpi.
 
@@ -246,13 +240,13 @@ J'aurais besoin de la réciproque de surjectionisepitosets
 Section ReciproqueSurjectionIsEpiToSets.
   Local Notation SET := hset_Precategory.
   Context {A B:SET}.
-  Variables        (p : Epi _ A B).
+  Variables        (p : SET⟦A, B⟧) (hp:isEpi p).
 
-  Lemma epitosetsissurjection : issurjective (pr1 p).
+  Lemma epitosetsissurjection : issurjective p.
   Proof.
     red.
     intros y.
-    assert (hepi := pr2 p).
+    assert (hepi := hp).
     red in hepi.
     simpl in hepi.
     apply hinhpr.
@@ -435,6 +429,127 @@ Defined.
 
 End pushouts_pointwise.
 
+(* Definition of nat trans between diagrams *)
+Section diagramNatTrans.
+
+  Context {g:graph} {C:precategory} .
+
+  Local Notation diag := (diagram g C).
+  Local Notation "# F" := (dmor F)(at level 3).
+
+  Definition is_diag_nat_trans {J J' : diag}
+             (t : Π x : vertex g, dob J x -->  dob J' x) :=
+    Π (x x' : vertex g)(f : edge x x'),
+    # J f ;; t x' = t x ;; #J' f.
+
+
+  Lemma isaprop_is_nat_trans (hs: has_homsets C) {J J' : diag}
+        (t : Π x : vertex g, dob J x -->  dob J' x) :
+    isaprop (is_diag_nat_trans t).
+  Proof.
+    repeat (apply impred; intro).
+    apply hs.
+  Qed. 
+  
+  Definition diag_nat_trans J J' :=
+    total2 (fun t : Π x : vertex g, dob J x -->  dob J' x => is_diag_nat_trans t).
+
+  Definition mk_diag_nat_trans {J J' }
+             (t : Π x : vertex g, dob J x --> dob J' x)
+             (H : is_diag_nat_trans  t) :
+  diag_nat_trans J J' := tpair _ t H.
+
+  Lemma isaset_diag_nat_trans  (hs: has_homsets C) J J'
+   : isaset (diag_nat_trans J J').
+  Proof.
+    apply (isofhleveltotal2 2).
+    + apply impred; intro t; apply hs.
+    + intro x; apply isasetaprop, isaprop_is_nat_trans, hs.
+  Qed.
+
+  Definition diag_nat_trans_data  {J J' : diag}
+           (a:diag_nat_trans J J') := pr1 a.
+  Coercion diag_nat_trans_data : diag_nat_trans >-> Funclass.
+
+  Definition diag_nat_trans_ax {J J' : diag}
+             (a:diag_nat_trans J J') := pr2 a.
+
+
+  (* Actually diagrams g -> C is a category but we just focus on the notion of
+ iso *)
+  Definition are_inverse {J J':diag} (a :diag_nat_trans J J')
+    (b: diag_nat_trans J' J):=
+    ( Π v:vertex g, a v ;; b v = identity _)
+      ×  Π v:vertex g, b v ;; a v = identity _ .
+
+
+  
+  
+End diagramNatTrans.
+
+
+
+(* a transfo nat between two diagrams induces a lift of cocones *)
+Section liftCocone.
+
+  Context {g:graph} {C:precategory} {J J' : diagram g C}.
+  Context (m:diag_nat_trans J J') {c} (cc: cocone J' c).
+
+  Definition lift_cocone : cocone J c.
+    assert (h := coconeInCommutes cc).
+    set (fin := (coconeIn cc)) in *.
+
+    apply (mk_cocone(fun v => m v ;; fin v)).
+        abstract(
+    intros u v e;
+    rewrite assoc, (diag_nat_trans_ax m), <- assoc, h; apply idpath).
+  Defined.
+End liftCocone.
+
+Section isoCocone.
+
+  Context {g:graph} {C:precategory} {J J' : diagram g C}.
+  Context  {c} (cc: cocone J' c).
+
+  Lemma is_exists_unique {A : UU} {B : A → UU} (H : ∃! a : A, B a) :
+    B ( pr1 (iscontrpr1 H)).
+  Proof.
+    exact(pr2 (pr1 H)).
+  Qed.
+
+  Lemma iso_colimCocone (hs:has_homsets C) {a b} (hinv:are_inverse (J:=J) (J':=J') a b) :
+    isColimCocone J' c cc -> isColimCocone J c (lift_cocone a cc).
+  Proof.
+    intros iscolim c' cc'.
+    specialize (iscolim c' (lift_cocone b cc')).
+    apply (unique_exists (pr1 (pr1 iscolim))).
+    - intro v.
+      cbn.
+      etrans.
+      rewrite <- assoc.
+      apply cancel_precomposition.
+      apply (is_exists_unique iscolim v).
+      cbn.
+      rewrite assoc,(pr1 hinv).
+      apply id_left.
+    - intros y.
+      apply impred_isaprop.
+      intros; apply hs.
+    - intros y hy.
+      apply (eq_exists_unique _ _ iscolim).
+      intro v; specialize (hy v).
+      cbn in hy; cbn.
+      rewrite <- hy, assoc, assoc, (pr2 hinv), id_left.
+      apply idpath.
+  Qed.
+
+    
+
+End isoCocone.
+
+(* used because as admit to signal that I don't want to wait for too long *)
+Lemma toolong : forall A, A.
+Admitted.                       
 
 (*
   (* Exclusive lemma : the converse *)
@@ -459,19 +574,70 @@ Proof.
 Defined.
 *)
 
-(* if colimits are computed pointwise, then a transfo nat which is an epi is pointwise an epi*)
+(* if colimits are computed pointwise, then a transfo nat which is an epi is
+ pointwise an epi*)
   Require Import UniMath.CategoryTheory.CocontFunctors.
 Section PointwiseEpi.
-  Context { C :precategory} {D:Precategory} {E:precategory}.
+  Context { C :precategory} {D:Precategory} .
 
   Definition functor_Precategory : Precategory :=
-    (functor_precategory C D (homset_property D),,functor_category_has_homsets _ _ _).
+    (functor_precategory C D (homset_property D),,
+                         functor_category_has_homsets _ _ _).
 
-  Local Notation Fc := functor_Precategory.
+  Local Notation CD := functor_Precategory.
   Require Import UniMath.CategoryTheory.limits.graphs.colimits.
   Require Import UniMath.CategoryTheory.limits.graphs.pushouts.
 
-  Definition colims_func (colimD : @Colims D) : @Colims Fc.
+
+  (* transfo nat between pushouts pw and pushout in D *)
+  Section pushouts.
+    Context {X Y Z :CD} {a:CD  ⟦ X, Y ⟧} {b:CD ⟦ X, Z⟧} (x:C).
+    Local Notation poD := (pushout_diagram D (pr1 a x) (pr1 b x)).
+    Local Notation po_pw := ((diagram_pointwise (homset_property D)
+                                                (pushout_diagram CD a b) x) ).
+
+    Definition poD_to_pw_data :  Π v : vertex _, dob poD v -->  dob po_pw v.
+      use StandardFiniteSets.three_rec_dep;simpl; apply identity.
+    Defined.
+
+    Definition pw_to_poD_data : Π v : vertex _, dob po_pw v -->  dob poD v.
+      use StandardFiniteSets.three_rec_dep;simpl; apply identity.
+    Defined.
+
+    Lemma is_nat_trans_poD_to_pw : is_diag_nat_trans poD_to_pw_data.
+      use StandardFiniteSets.three_rec_dep;
+        use StandardFiniteSets.three_rec_dep;
+        try exact (Empty_set_rect _ );
+      cbn;
+        unfold idfun; simpl;
+      now rewrite id_left, id_right.
+    Qed.
+
+    Lemma is_nat_trans_pw_to_poD : is_diag_nat_trans pw_to_poD_data.
+    Proof.
+      use StandardFiniteSets.three_rec_dep;
+        use StandardFiniteSets.three_rec_dep;
+        try exact (Empty_set_rect _ );
+      cbn;
+        unfold idfun; simpl;
+      now rewrite id_left, id_right.
+    Qed.      
+
+    Definition pw_to_poD : diag_nat_trans po_pw poD :=
+      mk_diag_nat_trans _ is_nat_trans_pw_to_poD.
+
+    Definition poD_to_pw : diag_nat_trans poD po_pw :=
+      mk_diag_nat_trans _ is_nat_trans_poD_to_pw.
+
+    Lemma is_inv_pw_poD : are_inverse pw_to_poD poD_to_pw.
+    Proof.
+      split; use StandardFiniteSets.three_rec_dep; apply id_left.
+    Qed.
+
+  End pushouts.
+
+(*  
+  Definition colims_func (colimD : @Colims D) : @Colims CD.
     intros.
     red.
     intros g d.
@@ -479,10 +645,13 @@ Section PointwiseEpi.
     intros a.
     apply colimD.
   Defined.
-
+*)
   (* A colimit is a colimit pointwise *)
   Lemma pw_colim
-    (colimD:@Colims D) (g:graph) (J:diagram g Fc) (F:Fc) (R:cocone J F) :
+        (g:graph) (J:diagram g CD)
+        (colimD: Π a : C, ColimCocone
+                 (diagram_pointwise (homset_property D) J a))
+(F:CD) (R:cocone J F) :
     isColimCocone J F R ->
     Π c : C,
           isColimCocone (diagram_pointwise  (homset_property _)  J c) (pr1 F c)
@@ -493,171 +662,131 @@ Section PointwiseEpi.
     intros b; apply colimD.
     assumption.
   Qed.
-  (*
-  Definition colims_func (colimD : @Colims D) g d (x:C)
-    : isColimCocone (cocone_pointwise _ _ _ _ _ _ (colims_func colimD g d) x).
-    intros.
-    red.
-    intros g d.
-    apply ColimFunctorCocone.
-    intros a.
-    apply colimD.
-  Defined.
-*)
-  Lemma Colims_pw_epi (colimD : @Colims D) (A B : Fc) (a:Epi _ A B) : Π (x:C), isEpi (pr1 (pr1 a) x).
+
+  Lemma cocone_pushout_pw {X Y Z :CD} {a:CD  ⟦ X, Y ⟧} {b:CD ⟦ X, Z⟧} {x c}
+        (cc : cocone (pushout_diagram D (pr1 a x) (pr1 b x))  c) :
+    cocone
+      (diagram_pointwise (homset_property D)
+                         (pushout_diagram CD a b) x) c.
   Proof.
-    destruct a as [a epia]; intro  x; simpl.
+    simple refine (mk_cocone _ _  ).
+    -
+    intro v.
+    specialize (pr1 cc v).
+    pattern v.
+   
+    use StandardFiniteSets.three_rec_dep;simpl; apply idfun.
+
+    - 
+     
+    intros u v e;
+     specialize (pr2 cc u v e);
+     revert u v e;
+     use StandardFiniteSets.three_rec_dep;  use StandardFiniteSets.three_rec_dep; 
+        exact (Empty_set_rect _ ) || (exact (fun v h => h)).
+  Defined.
+
+  Lemma Colims_pw_epi (colimD : Pushouts D) (A B : CD) (a:CD⟦ A,B⟧)
+        (epia:isEpi a) : Π (x:C), isEpi (pr1 a x).
+  Proof.    
+    intro  x; simpl.
     apply epi_to_pushout in epia.
     apply pushout_to_epi.
     simpl.
     apply equiv_isPushout1 in epia; [| apply homset_property].
     apply equiv_isPushout2; [ apply homset_property|].
-    apply pw_colim with (c:=x) in epia ;[|exact colimD].
 
-    simpl in epia.
-    red.
-    revert epia.
+    red in epia.    
+    
+    
+    apply pw_colim with (c:=x) in epia ; cycle 1.
+    {
+      intro c.
+      unfold Pushouts in colimD.
+      specialize (colimD _ _ _ (pr1 a c) (pr1 a c)).
+      assert (colimc := isColimCocone_from_ColimCocone colimD).
+      assert (epia' := iso_colimCocone  _ (homset_property D) (is_inv_pw_poD _)
+                                        colimc).      
+      apply (mk_ColimCocone _ _ _(epia')).
+    }
 
-    match goal with |- isColimCocone ?x1 ?y1 ?z1  -> isColimCocone ?x2 ?y2 ?z2  =>
-                    assert (hx:x1=x2);[|assert(hy:y1=y2)] end.
-    -
-      use total2_paths2_b.
-      +
-        simpl.
-        apply funextfun.
-        intros c.
-        simpl.
-        pattern c.
-        use StandardFiniteSets.three_rec_dep;apply idpath.
-      + apply  proofirrelevance.
-        admit.
-      - apply idpath.
-      - intros epia c cc.
-        assert (cc':cocone (diagram_pointwise (homset_property D)
-         (pushout_diagram (functor_precategory C D (homset_property D)) a a) x) c).
-        use tpair.
-        specialize (epia _ cc').
-        apply (unique_exists (pr1 (iscontrpr1 epia))).
-        intros v.
-        simpl.
+    intros c cc.
+    specialize (epia c (cocone_pushout_pw cc)).
+    apply (unique_exists (pr1 (iscontrpr1 epia))).
 
-
-        (* demander à benedikt : ça m'a lair moisi ce truc... *)
-  Abort.
+    - assert (hepi := pr2 (iscontrpr1 epia)); simpl in hepi.
+      intro v.
+      generalize v (hepi v).
+      use StandardFiniteSets.three_rec_dep; intro h; apply h.
+    - intros y.
+      apply impred_isaprop.
+      intros t.
+      apply homset_property.
+    - assert (hepi2 := eq_exists_unique _ _ epia); simpl in hepi2.
+      intros y hv; specialize (hepi2 y).
+      apply hepi2.
+      intros v; specialize (hv v).
+      revert v hv.
+      use StandardFiniteSets.three_rec_dep;intro h; apply h.
+  Qed.
 
 End PointwiseEpi.
 
-(* Lifting transfo nat *)
-Section PointwiseLift.
+(* 
 
+ Preuve qu'on peut relever les épi dans la catégorie des endo foncteurs sur Set
+Autrement dit :
+    f
+ A ---> C
+ |
+ | p
+ |
+ \/
+ B
+
+Si p est un épi et que pour tout x y dans A, p(x)=p(y) => f(x)=f(b)
+alors il existe une unique flèche de B vers C qui complète le diagramme.
+
+Demander à Benedikt si ce truc est déjà démontrer. En particulier, je voudrais montrer que tout
+épi est en fait un setquotfun
+*)
+Section LiftEpiNatTrans.
+  
   Local Notation SET := hset_Precategory.
-  Context {C:precategory} (F G: functor_data C SET).
-  Variables        (p : SET ⟦ A, B ⟧) (f: SET ⟦ A, C ⟧).
+  Context { Cat:precategory}.
+  Local Notation "[ C , D , hs ]" := (functor_precategory C D hs).
+  Local Notation C_SET :=  ([Cat, SET, (homset_property SET)]).
+
+  Context {A B C:C_SET} (p:nat_trans (pr1 A) (pr1 B))
+          (f:nat_trans (pr1 A)(pr1 C)).
+
+  Hypothesis (comp_epi: Π (X:Cat)  (x y: pr1 (pr1 A X)),
+                        p X x =  p X y -> f X x = f X y).
 
 
+  Hypothesis (surjectivep : isEpi (C:=C_SET) p).
 
-  Hypothesis (comp_f_epi: Π x y,  p x =  p y -> f x = f y).
-
-  (* Reformulation of the previous hypothesis *)
-  Lemma comp_f_epi_hprop : Π b : pr1 B, isaprop (image (fun (x:hfiber ( p) b) => f (pr1 x))).
-  Proof.
-    intro b.
-(* inspiré de     isapropimeqclass *)
-    apply isapropsubtype.
-    intros x1 x2.
-    apply (@hinhuniv2 _ _ (hProppair _ (pr2 C (x1) ( x2)))).
-    simpl;
-    intros y1 y2; simpl.
-    unfold hfiber in y1,y2.
-    destruct y1 as [ [z1 h1] h1' ].
-    destruct y2 as [ [z2 h2] h2' ].
-    rewrite <- h1' ,<-h2'.
-    apply comp_f_epi;simpl.
-    rewrite h1,h2.
-    apply idpath.
+  Lemma PushoutsHSET : Pushouts SET.
+    red.
+    intros .
+    apply ColimsHSET_of_shape.
+  Qed.
+    
+  Definition lift_epi_nt_data : Π (X:Cat), pr1 (pr1 B X) -> pr1 (pr1 C X).
+    intros X.
+    assert (h:= (lift_epi (A:=pr1 A X) (B:=pr1 B X) (C:=pr1 C X))).
+    cbn in h.
+    eapply h.
+    apply comp_epi.
+    apply epitosetsissurjection.
+    apply (Colims_pw_epi (C:=Cat)(D:=SET)).
+    exact PushoutsHSET.
+    assumption.
   Qed.
 
-  Hypothesis (surjectivep : issurjective p).
 
-  Definition lift_epi : SET ⟦B, C⟧.
-    (* inspiré de setquotuniv *)
-    intros b.
-    assert (c:(hProppair _  (comp_f_epi_hprop b))).
-    {
-    generalize (surjectivep b).
-    apply hinhuniv.
-    apply prtoimage.
-    }
-    exact (pr1 c).
-  Defined.
+End LiftEpiNatTrans.
 
-
-End PointwiseLift.
-
-
-(* définition du quotient nécessaire pour la preuve de préservation par épi de la représentabilité
-des arités
-
-1e définition par les HIT à la Coq HOTT
-
- Copied from Coq Hott HIT.Coeq
- *)
-(* pour l'instant on l'ignore. *)
-
-(*
-  Module Export Coeq.
-
-
-
-    Local Notation C := hset_Precategory.
-    (* Context (C:Precategory). *)
-    Local Notation PARITY := (arity_Precategory C).
-    Local Notation BREP := (brep_disp C).
-
-    Local Notation "## F" := (pr1 (pr1 (F:BREP _)))(at level 3).
-
-    Private Inductive Quot {a b: PARITY} (F:PARITY ⟦ a, b ⟧) (R:BREP a) (c:ob C) : UU :=
-    | quot : pr1 (## R c) → Quot F R c .
-
-    Arguments quot [_ _] _ [_ _] _.
-
-
-
-
-
-    Axiom isaset_quotient : forall {a b} (F:PARITY ⟦ a, b ⟧) (R:BREP a) c, isaset (Quot F R c).
-
-    Definition equivc  {a b} (F:PARITY ⟦ a, b ⟧) {R:BREP a} {c:ob C} (x y:pr1 (## R c)) :=
-                                  (Π (S:BREP b) ( f : R -->[F] S),
-                                                   pr1 (pr1 f) c x = pr1 (pr1 f) c y).
-
-
-    Axiom cp : forall {a b} (F:PARITY ⟦ a, b ⟧) (R:BREP a)  {c:ob C} {x y:pr1 (## R c) },
-        equivc F  x y -> quot F  x = quot F  y.
-
-    (* Local Notation Quotient := (Quot F R). *)
-    (* Local Notation quotient := (quot F ). *)
-
-
-    Definition Quotient_ind {a b} (F:PARITY ⟦ a, b ⟧) (R:BREP a) {c} (P : Quot F R c → Type)
-               (coeq' : Π a, P (quot _ a))
-               (cp' : Π x y (Rxy : equivc F x y), transportb P (cp F R Rxy) (coeq' y) = coeq' x)
-      : Π w, P w
-      := fun w => match w with quot _  a => fun _ => coeq' a end cp'.
-
-    (* quel est l'axiome équivalent à celui-ci ??
-    Axiom Quotient_ind_beta_cp
-      : forall {c} (P : @Quotient c → Type)
-          (coeq' : forall a, P (quotient a))
-          (cp' : Π x y (Rxy : equivc x y), transportb P (cp Rxy) (coeq' y) = coeq' x)
-          (cp' : ∀ b, (cp b) # (coeq' (f b)) = coeq' (g b))
-          x y,
-        apD (Quotient_ind P coeq' cp') (cp b) = cp' b.
-*)
-
-  End Coeq.
-
-*)
 
 
 
@@ -671,6 +800,7 @@ Section leftadjoint.
 
 
   Local Notation C := hset_Precategory.
+  Local Notation SET := hset_Precategory.
   Local Notation PARITY := (arity_Precategory C).
   Local Notation BREP := (brep_disp C).
 
@@ -699,7 +829,6 @@ Section leftadjoint.
   Definition hrel_equivc c : hrel _ := fun x y => equivc_xy_prop c x y.
 
   Lemma iseqrel_equivc c : iseqrel (hrel_equivc c).
-    intros c.
     unfold hrel_equivc, equivc_xy_prop, equivc; simpl;
       repeat split; red ; simpl; intros; simpl.
     -  etrans; eauto.
@@ -740,7 +869,10 @@ de a et que u est un morphisme de modules.
   Section CandidatU.
     Context {S:BREP a} (m:R -->[identity _] S).
 
-    Definition u_data :
+    Definition u : nat_trans (pr1 R') (## S).
+      apply lift_epi.
+
+
   End CandidatU.
 
 
