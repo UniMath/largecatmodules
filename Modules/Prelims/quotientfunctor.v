@@ -101,4 +101,21 @@ Section QuotientFunctor.
   Qed.
 
   Definition proj_quot : (nat_trans R  quot_functor) := (_ ,, is_nat_trans_proj_nat_trans).
+
+  Lemma is_epi_proj_quot : isEpi (C:=functor_precategory _ _ (homset_property _) ) proj_quot.
+  Proof.
+    apply is_nat_trans_epi_from_pointwise_epis.
+    intro a.
+    cbn.
+    unfold proj_nat_trans_data.
+    intros z f g eqfg.
+    apply funextfun.
+    intro x.
+    eapply surjectionisepitosets.
+    apply  issurjsetquotpr.
+    apply setproperty.
+    intro u.
+    apply toforallpaths in eqfg.
+    apply eqfg.
+  Qed.
 End QuotientFunctor.
