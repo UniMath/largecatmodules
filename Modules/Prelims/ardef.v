@@ -39,7 +39,7 @@ Ltac pr1_norm  :=
   end.
 
 Ltac receq t t' :=
-  let u := constr:(t,t') in
+  let u := constr:( ( t , t') )  in
   match u with
     (?f ?x, ?f' ?x') =>
     let h := fresh in
