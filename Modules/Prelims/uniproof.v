@@ -651,14 +651,14 @@ End pushouts_pointwise.
     intro v.
     apply (transportf (fun obj => C⟦_,obj⟧ ) (heq v) (coneOut cc v)).
     
+    abstract(
+    intros u v e; simpl;
 
-    intros u v e; simpl.
-    abstract( 
     
     rewrite <- ( coneOutCommutes cc u v e);
     etrans;[
     apply transport_compose|];
-    rewrite transportf_postcompose;
+    rewrite transport_target_postcompose;
     apply cancel_precomposition;
     apply transportf_transpose;
 
@@ -702,7 +702,7 @@ End pushouts_pointwise.
       etrans.
       rewrite <- (pathsinv0inv0 (eq_d1 v)).
       symmetry.
-      apply transportb_precompose.
+      apply transport_source_precompose.
       etrans.
       apply maponpaths.
       apply islim.
@@ -720,7 +720,7 @@ End pushouts_pointwise.
       intro hy.
       apply (transportf_transpose (P:=(λ obj : C, C ⟦ obj, c' ⟧))).
       etrans.
-      apply transportb_precompose.      
+      apply transport_source_precompose.      
       unfold transportb.
       rewrite pathsinv0inv0.
       apply hy.
@@ -756,7 +756,7 @@ End pushouts_pointwise.
 
       etrans.
       symmetry.
-      apply transportf_postcompose.
+      apply transport_target_postcompose.
       
       etrans.
       apply maponpaths.
@@ -777,7 +777,7 @@ End pushouts_pointwise.
       etrans.
       unfold transportb.
       rewrite pathsinv0inv0.
-      apply transportf_postcompose.
+      apply transport_target_postcompose.
       apply idpath.
   Qed.
 
@@ -1752,6 +1752,7 @@ Par contre, si je remplace R' par locked R', Coq calcule immediatement la répon
       (* trop lent !!! 
 Gros problème ici !!
 apply epi. *)
+
       TODO
 
 End leftadjoint.
