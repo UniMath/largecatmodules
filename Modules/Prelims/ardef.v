@@ -10,8 +10,8 @@ Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 
 Require Import UniMath.CategoryTheory.Monads.
-Require Import Modules.Prelims.modules.
-(* Require Import UniMath.CategoryTheory.Modules. *)
+(* Require Import Modules.Prelims.modules. *)
+Require Import UniMath.CategoryTheory.RModules.
 
 
 Require Import TypeTheory.Auxiliary.Auxiliary.

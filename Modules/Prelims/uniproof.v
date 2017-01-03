@@ -65,8 +65,7 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.Epis.
 
 Require Import UniMath.CategoryTheory.Monads.
-Require Import Modules.Prelims.modules.
-(* Require Import UniMath.CategoryTheory.Modules. *)
+Require Import UniMath.CategoryTheory.RModules. 
 
 
 Require Import TypeTheory.Auxiliary.Auxiliary.
