@@ -98,149 +98,14 @@ Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
 (* En attendant que la pull request soit acceptée dans UniMaths *)
 Require Import Modules.Prelims.epis.
+Require Import Modules.Prelims.sets.
 Import Epis.
+Import Basics.Sets.
 Require Import Modules.Prelims.ardef.
 Require Import Modules.Prelims.quotientfunctor.
 
-(* 
-
-***** A SUPPRIMER  ****** JE NE MEN SERS JAMAIS **********
-
-Let f : A -> B be a function.
-It induces an equivalence relation on A.
-Reciproquement, any equivalence relation on A is yielded by such an equivalence
-
-Question pour Benedikt : est ce que ce truc est déjà démontré quelque part dans 
-lalib standard
- *)
-(*
-Section FunEquiv.
-  Context {A B:hSet} (f:A -> B).
-
-  Definition fun_rel x y := f x = f y.
-
-  Lemma isaprop_fun_rel  x y : isaprop (fun_rel x y).
-    intros;
-    apply setproperty.
-  Qed.
-
-  Definition fun_rel_prop x y : hProp :=
-    (fun_rel x y ,, isaprop_fun_rel x y).
-
-  Definition fun_hrel  : hrel _ := fun x y => fun_rel_prop x y.
-
-  Lemma iseqrel_fun_hrel  : iseqrel (fun_hrel ).
-
-    unfold fun_hrel, fun_rel_prop, fun_rel; simpl;
-      repeat split; red ; simpl; intros; simpl.
-    -  etrans; eauto.
-    - now symmetry.
-  Qed.
-
-  Definition fun_eqrel : eqrel _ := (_ ,, iseqrel_fun_hrel ).
-End FunEquiv.
-*)
 
 
-
-  
-
-
-(* Preuve qu'on peut relever les épi dans la catégorie Set
-Autrement dit :
-    f
- A ---> C
- |
- | p
- |
- \/
- B
-
-Si p est un épi et que pour tout x y dans A, p(x)=p(y) => f(x)=f(y)
-alors il existe une unique flèche de B vers C qui complète le diagramme.
-
-*)
-Section LiftEpi.
-
-  Local Notation SET := hset_Precategory.
-  Context {A B C:SET}.
-  Variables        (p : SET ⟦ A, B ⟧) (f: SET ⟦ A, C ⟧).
-
-
-
-  Hypothesis (comp_f_epi: Π x y, p x =  p y -> f x = f y).
-  Hypothesis (surjectivep : issurjective p).
-
-  (* Reformulation of the previous hypothesis *)
-
-  Lemma comp_f_epi_hprop : Π b : pr1 B, iscontr (image (fun (x:hfiber p b) => f (pr1 x))).
-  Proof.
-    intro b.
-    apply (squash_to_prop (surjectivep b)).
-    { apply isapropiscontr. }
-    intro H.
-    apply iscontraprop1.
-(*
-    Search (  isaprop ?X → ?X →  iscontr ?X).
-*)
-    
-(* inspiré de     isapropimeqclass *)
-    apply isapropsubtype.
-    intros x1 x2.
-    apply (@hinhuniv2 _ _ (hProppair _ (pr2 C (x1) ( x2)))).
-    simpl;
-    intros y1 y2; simpl.
-    unfold hfiber in y1,y2.
-    destruct y1 as [ [z1 h1] h1' ].
-    destruct y2 as [ [z2 h2] h2' ].
-    rewrite <- h1' ,<-h2'.
-    apply comp_f_epi;simpl.
-    rewrite h1,h2.
-    apply idpath.
-    
-    apply prtoimage. apply H.
-  Defined.
-
-  Definition lift_epi : SET ⟦B, C⟧.
-  Proof.
-    intro b.
-    apply (pr1 (pr1 (comp_f_epi_hprop b))).
-  Defined.
-  
-  Lemma lift_epi_ax : Π x,  lift_epi (p x) = f x.
-  Proof.
-    intro x.
-    apply pathsinv0.
-    apply path_to_ctr.
-    apply (squash_to_prop (surjectivep (p x))). 
-    { apply isapropishinh. }
-    intro r. apply hinhpr.
-    exists r.
-    apply comp_f_epi.
-    apply (pr2 r).
-  Defined.
-(* TODO : utiliser le fait que p est surjective pour une preuve plus rapide *)
-  Lemma lift_epi_unique : Π (g : SET⟦B, C⟧) (H : Π a : pr1 A, g (p a) = f a)
-                            (b : pr1 B), g b = lift_epi b.
-  Proof.
-    
-    intros g H b.
-    apply path_to_ctr.
-    apply (squash_to_prop (surjectivep b)). 
-    { apply isapropishinh. }
-    intros [a Ha].
-    apply hinhpr.
-    mkpair.
-    - exists a. apply Ha.
-    - simpl.
-      rewrite <- H.
-      rewrite Ha.
-      apply idpath.
-Defined.
-
-    
-
-End LiftEpi.
 
 
 Section EquivPullbacks.
@@ -323,18 +188,18 @@ Section kernel_pair_Set.
       apply equ.
     }
     
-    use (unique_exists (lift_epi _ _ _ hf)).
+    use (unique_exists (univ_surj (setproperty C) _ _ _ hf)).
     - exact u.
     - exact hcompat.
     - simpl.
-      (* TODO parler à Benedikt : ici ça aurait été plus intéressatnd d'avoir une égalité dans lift_epi_ax *)
+      (* TODO parler à Benedikt : ici ça aurait été plus intéressatnd d'avoir une égalité dans univ_surj_ax *)
       apply funextfun.
       intros ?.
-      apply lift_epi_ax.
+      apply univ_surj_ax.
     - intros ?; apply homset_property.
     - intros ??; simpl.
       apply funextfun.
-      use lift_epi_unique.
+      use univ_surj_unique.
       simpl in X.
       apply toforallpaths in X.
       exact X.
@@ -1241,7 +1106,7 @@ Section LiftEpiNatTrans.
     assumption.
   Qed.
     
-  Definition lift_epi_nt :nat_trans ( (pr1 B )) ( (pr1 C )).
+  Definition univ_surj_nt :nat_trans ( (pr1 B )) ( (pr1 C )).
 
     apply EffectiveEpis_Functor_HSET in surjectivep.
     red in surjectivep.
@@ -1261,22 +1126,22 @@ Section LiftEpiNatTrans.
 
   Import limits.coequalizers.
 
-  Lemma lift_epi_nt_ax : ( p  ;;; lift_epi_nt   )   = f .
+  Lemma univ_surj_nt_ax : ( p  ;;; univ_surj_nt   )   = f .
   Proof.
-    unfold lift_epi_nt; cbn.
+    unfold univ_surj_nt; cbn.
     set (coeq := mk_Coequalizer _ _ _ _ _).
     apply (CoequalizerCommutes coeq).
   Qed.
 
-  Lemma lift_epi_nt_ax_pw x  : ( p x ;; lift_epi_nt x  )    = f x .
+  Lemma univ_surj_nt_ax_pw x  : ( p x ;; univ_surj_nt x  )    = f x .
   Proof.
-    now rewrite <- lift_epi_nt_ax.
+    now rewrite <- univ_surj_nt_ax.
   Qed.
 
   
-  Lemma lift_epi_nt_ax_pw_pw x c : ( p x ;; lift_epi_nt x  ) c   = f x c.
+  Lemma univ_surj_nt_ax_pw_pw x c : ( p x ;; univ_surj_nt x  ) c   = f x c.
   Proof.
-    now rewrite <- lift_epi_nt_ax.
+    now rewrite <- univ_surj_nt_ax.
   Qed.
 
 End LiftEpiNatTrans.
@@ -1481,7 +1346,7 @@ de a et que u est un morphisme de modules.
     Context {S:BREP b} (m:R -->[ F] S).
 
     Definition u : nat_trans (pr1 R') (## S).
-      apply (lift_epi_nt projR (## m)); [| apply is_epi_proj_quot].
+      apply (univ_surj_nt projR (## m)); [| apply is_epi_proj_quot].
       abstract(
       intros X x y eqpr;
       apply eq_proj_quot_rel in eqpr;
@@ -1491,7 +1356,7 @@ de a et que u est un morphisme de modules.
     Lemma u_commutes : ## m = projR ;;; u.
     Proof.
       symmetry.
-      apply lift_epi_nt_ax.
+      apply univ_surj_nt_ax.
     Qed.
 
   End CandidatU.
@@ -1571,7 +1436,7 @@ de a et que u est un morphisme de modules.
   
   Definition R'_μ  : nat_trans ( R'□  R')  ( R').
   Proof.
-    apply (lift_epi_nt (A:= ##R □ ##R) (B:=functor_composite R' R')                    
+    apply (univ_surj_nt (A:= ##R □ ##R) (B:=functor_composite R' R')                    
                        (horcomp projR projR)
                        (μ  (## R) ;;; projR)).
     (* asbtract these *)
@@ -1587,7 +1452,7 @@ de a et que u est un morphisme de modules.
   Proof.
     intro x.
     unfold R'_μ.
-    apply lift_epi_nt_ax_pw.
+    apply univ_surj_nt_ax_pw.
   Qed.
 
   Definition R'_Monad_data : Monad_data C := ((R' ,, R'_μ) ,, R'_η).
