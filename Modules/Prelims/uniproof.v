@@ -2,12 +2,8 @@
 
 In this file :
 
-- Proof that given a function f and a surjection p, f 
-can be uniquely lifted as a function Im p -> Im f provided
-forall x y, p(x) = p(y) => f(x) = f(y)
 
 - Proof that HSET has effective epis
-
 
 - Definition of a specific notion of equality (eq_diag) between
 diagrams to circumvent the fact that axiom of functional extensionality
@@ -207,44 +203,25 @@ Section kernel_pair_Set.
 End kernel_pair_Set.
 
 
-(*
-J'aurais besoin de la réciproque de surjectionisepitosets
-Autrement dit, un epi est surjectif
-
-Si A est le codomaine d'un épi, la preuve se fait en considérant 
-deux fonctions de A vers le type des prédicats A -> hProp
- *)
-Section ReciproqueSurjectionIsEpiToSets.
-  Local Notation SET := hset_Precategory.
-  Context {A B:SET}.
-  Variables        (p : SET⟦A, B⟧) (hp:isEpi p).
-
-  Lemma epitosetsissurjection : issurjective p.
-  Proof.
-    red.
-    intros y.
-    assert (hepi := hp).
-    red in hepi.
-    simpl in hepi.
-    apply hinhpr.
-    red.
-    clear.
-  Admitted.
-  (* proved in Coq Hott, and in the HoTT book. however I don't want to bother with this proof *)
-
-End ReciproqueSurjectionIsEpiToSets.
 
 
-  Lemma EffectiveEpis_HSET : HasEffectiveEpis hset_precategory.
-  Proof.
-    red.
-    clear.
-    intros A B f epif.
-    apply epitosetsissurjection in epif.
-    red.
-    exists (kernel_pair_set f).
-    now apply isCoeqEpi.
-  Qed.
+    
+
+
+
+Lemma EffectiveEpis_HSET : HasEffectiveEpis hset_precategory.
+Proof.
+  red.
+  clear.
+  intros A B f epif.
+  exists (kernel_pair_set f).
+  apply isCoeqEpi.
+  apply epiissurjectiontosets; [apply setproperty|].
+  intros C g1 g2 h .
+  apply toforallpaths.
+  apply (epif C    g1 g2).
+  now apply funextfun.
+Qed.
     
 
 
