@@ -2,21 +2,12 @@
 
 In this file :
 
-- Definition of effective epimorphism
-
 - Proof that given a function f and a surjection p, f 
 can be uniquely lifted as a function Im p -> Im f provided
 forall x y, p(x) = p(y) => f(x) = f(y)
 
 - Proof that HSET has effective epis
 
-- Proof that being an epi is equivalent to 
-A ---> B
-|      |
-|      |  id         is a pushout
-‌v     ‌‌ v
-B----> B
-  id
 
 - Definition of a specific notion of equality (eq_diag) between
 diagrams to circumvent the fact that axiom of functional extensionality
@@ -105,7 +96,9 @@ Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
-
+(* En attendant que la pull request soit acceptée dans UniMaths *)
+Require Import Modules.Prelims.epis.
+Import Epis.
 Require Import Modules.Prelims.ardef.
 Require Import Modules.Prelims.quotientfunctor.
 
@@ -149,32 +142,6 @@ End FunEquiv.
 *)
 
 
-(* Definition of an effective epimorphism.
-An effective epimorphism p: A -> B is a morphism wich as a kernel pair and which
-is the coequalizer of its kernel pair.
-
-This property is true of any epimorphism in Set. It allows to lift epimorphism
-*)
-Section EffectiveEpi.
-  Context {C:precategory} {A B:C}.
-  Variable (f: C ⟦A,B⟧).
-
-  Import limits.pullbacks.
-  Import limits.coequalizers.
-  
-  Definition kernel_mor := Pullback  f f.
-
-
-
-  Definition isEffective :=
-    Σ  g:kernel_mor,
-         (     isCoequalizer (PullbackPr1 g)
-                               (PullbackPr2 g) f (PullbackSqrCommutes g)).
-
-
-End EffectiveEpi.
-
-Definition EffectiveEpis (C:precategory) := Π (A B:C) (f:C⟦A,B⟧), isEpi f -> isEffective f.
 
   
 
@@ -295,7 +262,7 @@ Section EquivPullbacks.
   Defined.
 End EquivPullbacks.
 
-Section kernel_mor_Set.
+Section kernel_pair_Set.
 
   Local Notation SET := hset_Precategory.
   Context  {A B:SET}.
@@ -305,18 +272,18 @@ Section kernel_mor_Set.
     clear.
   Admitted.
 
-  Definition kernel_mor_set : kernel_mor f.
+  Definition kernel_pair_set : kernel_pair f.
     red.
     apply equiv_Pullback.
     apply LimsHSET_of_shape.
   Defined.
 
     
-  Local Notation g := kernel_mor_set.
+  Local Notation g := kernel_pair_set.
 
   Import limits.pullbacks.
 
-  Lemma kernel_mor_eq
+  Lemma kernel_pair_eq
         (a:pr1 (PullbackObject g)) :
     f ( (PullbackPr1 g) a) = f ((PullbackPr2 g) a).
   Proof.
@@ -372,12 +339,15 @@ Section kernel_mor_Set.
       apply toforallpaths in X.
       exact X.
   Qed.
-End kernel_mor_Set.
+End kernel_pair_Set.
 
 
 (*
 J'aurais besoin de la réciproque de surjectionisepitosets
+Autrement dit, un epi est surjectif
 
+Si A est le codomaine d'un épi, la preuve se fait en considérant 
+deux fonctions de A vers le type des prédicats A -> hProp
  *)
 Section ReciproqueSurjectionIsEpiToSets.
   Local Notation SET := hset_Precategory.
@@ -400,63 +370,20 @@ Section ReciproqueSurjectionIsEpiToSets.
 End ReciproqueSurjectionIsEpiToSets.
 
 
-  Lemma EffectiveEpis_HSET : EffectiveEpis hset_precategory.
+  Lemma EffectiveEpis_HSET : HasEffectiveEpis hset_precategory.
   Proof.
     red.
     clear.
     intros A B f epif.
     apply epitosetsissurjection in epif.
     red.
-    exists (kernel_mor_set f).
+    exists (kernel_pair_set f).
     now apply isCoeqEpi.
   Qed.
     
 
 
 
-
-
-(*
-Proof that f: A -> B is an epi is the same as saying that the diagram
-A ---> B
-|      |
-|      |  id         is a pushout
-‌v     ‌‌ v
-B----> B
-  id
-*)
-Section EpiPushoutId.
-
-  Context {C:Precategory} {A B:C} (f:C⟦A,B ⟧).
-
-
-
-  Lemma epi_to_pushout : isEpi f -> isPushout f f (identity _) (identity _) (idpath _).
-  Proof.
-    intro h.
-    red.
-    intros x p1 p2 eqx.
-    assert (hp : p1 = p2).
-    { now apply h. }
-    destruct hp.
-    apply (unique_exists p1).
-    rewrite id_left.
-    now split.
-    intros y. apply isapropdirprod; apply homset_property.
-    intros y [h1 _].
-    now rewrite id_left in h1.
-  Qed.
-
-  Lemma pushout_to_epi :  isPushout f f (identity _) (identity _) (idpath _)-> isEpi f.
-  Proof.
-    intros hf.
-    intros D p1 p2 hp.
-    apply hf in hp.
-    destruct hp as [[p [hp1 hp2]] _].
-    now rewrite <- hp1,hp2.
-  Qed.
-
-End EpiPushoutId.
 
 
 
@@ -1201,7 +1128,7 @@ Section IsEffectivePw.
   Lemma isEffectivePw : (Π (x:C), isEffective (pr1 a x)) -> isEffective a.
     intros h.
     red.
-    transparent assert (f:(kernel_mor a)).
+    transparent assert (f:(kernel_pair a)).
     { apply equiv_Pullback_2;[apply homset_property|].
       apply LimFunctorCone.
       intro c.
@@ -1304,7 +1231,7 @@ Section LiftEpiNatTrans.
     apply ColimsHSET_of_shape.
   Qed.
 
-  Lemma EffectiveEpis_Functor_HSET : EffectiveEpis C_SET.
+  Lemma EffectiveEpis_Functor_HSET : HasEffectiveEpis C_SET.
   Proof.
     intros F G m isepim.
     apply isEffectivePw.
