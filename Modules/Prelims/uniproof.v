@@ -92,11 +92,17 @@ Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
-(* En attendant que la pull request soit acceptée dans UniMaths *)
+(* En attendant que la pull request soit acceptée dans UniMaths 
 Require Import Modules.Prelims.epis.
 Require Import Modules.Prelims.sets.
+Require Import Modules.Prelims.pushouts.
+Require Import Modules.Prelims.effectiveepis.
 Import Epis.
 Import Basics.Sets.
+Import limits.pushouts.
+
+ *)
+Require Import UniMath.CategoryTheory.limits.EffectiveEpis.
 Require Import Modules.Prelims.ardef.
 Require Import Modules.Prelims.quotientfunctor.
 
@@ -209,7 +215,7 @@ End kernel_pair_Set.
 
 
 
-Lemma EffectiveEpis_HSET : HasEffectiveEpis hset_precategory.
+Lemma EffectiveEpis_HSET : EpisAreEffective hset_precategory.
 Proof.
   red.
   clear.
@@ -1073,7 +1079,7 @@ Section LiftEpiNatTrans.
     apply ColimsHSET_of_shape.
   Qed.
 
-  Lemma EffectiveEpis_Functor_HSET : HasEffectiveEpis C_SET.
+  Lemma EffectiveEpis_Functor_HSET : EpisAreEffective C_SET.
   Proof.
     intros F G m isepim.
     apply isEffectivePw.
@@ -1283,15 +1289,22 @@ For example :   R' ((R' □ R') c) = (R' □ R') (R' c) by reflexivity
 is so slow when R' is definitely equal to quot_functor !
 
 *)
-  Definition R' := (quot_functor (pr1 (pr1 R)) _ congr_equivc).
+  Definition R' := ( quot_functor (pr1 (pr1 R)) _ congr_equivc).
+  (* Opaque R'. *)
 
-  Lemma bizarre c:   R' ((R' □ R') c) = (R' □ R') (R' c).
-    cbn - [R'].
+(*
+  Lemma bizarre c: (* forall (R':functor SET SET),  *)  R' ((R' □ R') c) = (R' □ R') (R' c).
+    (* intros ?. *)
+
     reflexivity.
+  Qed.
+*)
+    (* cbn - [R']. *)
+    (* reflexivity. *)
     (* !! amazing 
 Qed takes so long !!!
 *)
-  Admitted. 
+  (* Admitted.  *)
 
   Definition projR : (## R) ⟶ R':= proj_quot _ _ congr_equivc.
 
@@ -1499,27 +1512,120 @@ de a et que u est un morphisme de modules.
       rewrite assoc, id_right.
       rewrite (Monad_law2 (T:=pr1 R)).
       now rewrite id_left.
-    - intro c.
+    - intro c.             
       cbn -[R' compose].
-      assert (epi :isEpi (horcomp projR (horcomp projR projR) c)).
+      (* Note : 
+
+If I write instead :
+  assert (epi :isEpi (horcomp projR (horcomp projR projR)  c)).
+(convertibly the same by associativity)
+
+then 'apply epi' takes a huge amount of time for Coq !!
+This is due to the fact that Coq takes a long time to show that
+   ((R' □ R') □ R') c = R' ((R' □ R') c)
+because it has a very bad computing strategy. He tries to evaluates R'
+which is bad idea. Probably because somewhere there is a Defined instead of 
+Qed for some proof, and I suspect somewhere in the section about
+quotients in basics/Sets.v
+
+       *)
+      assert (epi :isEpi (horcomp (horcomp projR projR) projR c)).
       {
-        admit.
+        apply Colims_pw_epi.
+        apply PushoutsHSET.        
+        apply isEpi_horcomp;[   apply isEpi_horcomp|]; try apply Colims_pw_epi;
+          try apply PushoutsHSET; apply is_epi_proj_quot.
       }
-      (* Gros problème ici !!! je voudrais faire apply epi mais ça met trop de
- temps *)
-      Check ((horcomp projR (horcomp projR projR)) c).
-      (*  SET ⟦ ((## R □ ## R) □ ## R) c, ((R' □ R') □ R') c ⟧ *)
-      Check (# R' (R'_μ c) ;; R'_μ c).
-      (*  SET ⟦ R' ((R' □ R') c), R' c ⟧ *)
-      (* Coq met trop de temps pour déterminer que les types 
- ((R' □ R') □ R') c et  R' ((R' □ R') c) sont égaux convetiblement,
- ce qui fait que apply epi prend trop de temps !!
-Cf lemme nommé 'bizarre' précédent.
-Par contre, si je remplace R' par locked R', Coq calcule immediatement la réponse
-*)
-      (* trop lent !!! 
-Gros problème ici !!
-apply epi. *)
+      apply epi.
+
+      (* To understand the proof, see the string diagram muproof sent to
+Benedikt.
+
+Legend of the diagram :
+- μ = μ R
+- ν = R'_μ
+- i = projR
+*)      
+      etrans.
+
+      (* First equality *)
+      etrans.
+
+      apply assoc.
+
+      rewrite horcomp_pre_post.
+      
+      etrans.
+      apply (cancel_postcomposition (C:=SET)).
+      
+      etrans.
+      apply (cancel_postcomposition (C:=SET)).
+      unfold compose.
+      cbn -[R' compose horcomp].
+      reflexivity.
+
+      etrans.
+      rewrite <- assoc.      
+      apply (cancel_precomposition SET).
+      rewrite <- (functor_comp (C:=SET) (C':=SET)).
+      apply cancel_functor_on_morph.
+      apply R'_μ_def.
+      
+      rewrite functor_comp,assoc.
+      apply cancel_postcomposition.
+      symmetry.
+      apply (nat_trans_ax (projR)).
+
+      (* second equality *)
+      rewrite <- assoc.
+      rewrite <- assoc.
+      apply (cancel_precomposition (SET)).     
+      apply (R'_μ_def c).
+
+      (* third equality *)
+      etrans.
+      rewrite assoc.
+      
+      etrans.
+      apply cancel_postcomposition.
+      apply (Monad_law3 (T:=pr1 R) c).
+
+      (* Fourth equality *)
+      rewrite <- assoc.
+      
+      etrans.
+      apply cancel_precomposition.
+      symmetry.
+      apply R'_μ_def.
+
+      rewrite assoc.      
+      apply cancel_postcomposition.
+
+      (* Fifth equality *)
+      etrans.
+      cbn -[projR compose].
+      rewrite (assoc (C:=SET)).
+      apply (cancel_postcomposition (C:=SET)).
+      symmetry.
+      apply R'_μ_def.
+
+
+      (* Close to the end *)
+      etrans.
+      rewrite <- assoc.
+      apply (cancel_precomposition SET).
+      symmetry.
+      apply (nat_trans_ax (R'_μ) (## R c)).
+      
+      rewrite assoc.
+      reflexivity.
+
+      etrans.
+      rewrite <- assoc.
+      reflexivity.
+
+      (* So mMmMmuuchhh tiime *)
+      apply cancel_postcomposition.
 
       TODO
 
