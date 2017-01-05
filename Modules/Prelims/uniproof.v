@@ -2,16 +2,7 @@
 
 In this file :
 
-
 - Proof that HSET has effective epis
-
-- Definition of a specific notion of equality (eq_diag) between
-diagrams to circumvent the fact that axiom of functional extensionality
-stops reduction with the standard equality.
-
-- Various proofs about equals diagrams : they define the same limits/colimits.
-This is used to switch between the pointwise definition of a diagram on vector
-and the definition of the pointwise diagram.
 
 - Definition of nat trans between diagrams (actually not really useful for
 my goal : I rather use eq_diag)
@@ -20,8 +11,6 @@ my goal : I rather use eq_diag)
 between two functors of codomain D is an epi, then it is pointwise an epi 
 (Colims_pw_epi).
 
-- Proof that natural transformations that are effective epis are 
-pointwise effective epis.
 
 - Proof that a natural transformation which is an epi when the codomain of
 considered functors is the hSet category has a lifting property similar
@@ -31,12 +20,9 @@ to the previously mentionned for surjections.
  any pre-whiskering of it is also an epi.
 
 
+
 Section leftadjoint : 
 Preuve d'André à traduire.
-
-J'en suis à montrer que le μ de la représentation initiale candidate
-vérifie bien le diagramme carré nécessaire. Mais Coq met trop de temps 
-à calculer.
 
 *)
 
@@ -76,7 +62,7 @@ Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.kernels.
 Require Import UniMath.CategoryTheory.limits.pullbacks.
 Require Import UniMath.CategoryTheory.limits.coequalizers.
-
+Require Import UniMath.CategoryTheory.limits.EffectiveEpis.
 
 
 Require Import UniMath.CategoryTheory.CocontFunctors.
@@ -92,17 +78,12 @@ Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
-(* En attendant que la pull request soit acceptée dans UniMaths 
-Require Import Modules.Prelims.epis.
-Require Import Modules.Prelims.sets.
-Require Import Modules.Prelims.pushouts.
+(* En attendant que la pull request soit acceptée dans UniMaths  *)
 Require Import Modules.Prelims.effectiveepis.
-Import Epis.
-Import Basics.Sets.
-Import limits.pushouts.
+Require Import Modules.Prelims.eqdiag.
+Import EffectiveEpis.
 
- *)
-Require Import UniMath.CategoryTheory.limits.EffectiveEpis.
+
 Require Import Modules.Prelims.ardef.
 Require Import Modules.Prelims.quotientfunctor.
 
@@ -321,257 +302,6 @@ Defined.
 
 End pushouts_pointwise.
 
-  Lemma is_exists_unique {A : UU} {B : A → UU} (H : ∃! a : A, B a) :
-    B ( pr1 (iscontrpr1 H)).
-  Proof.
-    exact(pr2 (pr1 H)).
-  Qed.
-
-
-  Lemma transport_swap: Π {X Y : UU} (P : X -> Y → UU) {x x':X} {y  y' : Y} (e : x = x') (e' : y = y') (p : P x y),
-                        transportf (fun a => P _ a) e' (transportf (fun a => P a _) e p) =
-                        transportf (fun a => P a _) e (transportf (fun a => P _ a) e' p) .
-    intros.
-    destruct e.
-    destruct e'.
-    apply idpath.
-  Qed.
-
-  Definition eq_diag  {C : Precategory} {g : graph} (d d' : diagram g C) :=
-    Σ (eq_v : Π v: vertex g, dob d v = dob d' v), Π (v v':vertex g) (f:edge v v'),
-              transportf (fun obj => C⟦obj, dob d v'⟧)  (eq_v v) (dmor d f) =
-              transportb (fun obj => C⟦_, obj⟧) (eq_v v') (dmor d' f).
-
-  Lemma sym_eq_diag  {C : Precategory} {g : graph} (d d' : diagram g C) :
-    eq_diag d d' -> eq_diag d' d.
-  Proof.
-    intros eq_d.
-    set (eq_d1 := pr1 eq_d).
-    set (eq_d2 := pr2 eq_d).
-
-    use tpair.
-    
-    intro v.    
-    apply (! (eq_d1 v)).
-    cbn.
-    intros v v' f.
-    specialize (eq_d2 v v' f).
-    symmetry.
-    unfold transportb.
-    rewrite pathsinv0inv0.
-    apply (transportf_transpose (P:=(λ obj : C, C ⟦ obj, dob d' v' ⟧))).
-    
-
-    assert (eq_d2':=transportf_transpose (P:=(precategory_morphisms (dob d' v))) _ _ _ (! eq_d2)).
-    rewrite eq_d2'.
-    unfold transportb; rewrite pathsinv0inv0.
-        apply (transport_swap (fun a b => C⟦b,a⟧)).
-  Defined.
-
-  Lemma eq_diag_mkcocone  :
-    Π {C : Precategory} {g : graph} {d : diagram g C}       
-      (d' : diagram g C)
-      (heq_d: eq_diag d d')
-    {c : C} (cc:cocone d c),
-    cocone d' c.
-  Proof.           
-    clear.
-    intros.
-    destruct heq_d as [heq heq2].
-    use mk_cocone.
-    intro v.
-    use (transportf (fun obj => C⟦obj,_⟧ ) (heq v)); simpl.
-    apply (coconeIn cc).
-    abstract(
-    intros u v e; simpl;
-    rewrite <- ( coconeInCommutes cc u v e);
-    apply (pathscomp0 (b:=transportb (precategory_morphisms (dob d' u)) (heq v) (dmor d' e) ;; (coconeIn cc v)));
-    [
-    unfold transportb; (set (z:= ! heq v));
-    rewrite <- (pathsinv0inv0 (heq v));
-    symmetry;
-    apply transport_compose|];
-
-    etrans; [
-    apply cancel_postcomposition;
-    symmetry; apply heq2|];
-    clear;
-    now destruct (heq u)).
-  Defined.
-
-  (* inutile .. *)
-  Lemma transportf_precompose : Π (C : precategory) (x y z w : C) (f : C ⟦ x, y ⟧) (g : C ⟦ y, z ⟧) (e : x = w), transportf (λ x' : C, C ⟦ x', z ⟧) e (f ;; g) = transportf (λ x' : C, C ⟦ x', y ⟧) e f ;; g.
-    destruct e.
-    apply idpath.
-  Qed.
-
-
-
-  
-  (* same proof (dual= TODO : rewrite eq_diag_mkcocone better *)
-  Lemma eq_diag_mkcone  :
-    Π {C : Precategory} {g : graph} {d : diagram g C}       
-      (d' : diagram g C)
-      (heq_d: eq_diag d d')
-    {c : C} (cc:cone d c),
-    cone d' c.
-  Proof.           
-    clear.
-    intros.
-    (* apply sym_eq_diag in heq_d. *)
-    set (heq := pr1 heq_d).
-    set (heq2 := pr2 heq_d).
-    use mk_cone.
-    intro v.
-    apply (transportf (fun obj => C⟦_,obj⟧ ) (heq v) (coneOut cc v)).
-    
-    abstract(
-    intros u v e; simpl;
-
-    
-    rewrite <- ( coneOutCommutes cc u v e);
-    etrans;[
-    apply transport_compose|];
-    rewrite transport_target_postcompose;
-    apply cancel_precomposition;
-    apply transportf_transpose;
-
-    etrans;[
-    apply (transport_swap (fun a b => C⟦a,b⟧))|];
-    etrans;[
-    apply maponpaths;
-    symmetry;
-    apply heq2|];
-    apply (Utilities.transportbfinv  (λ a : C, C ⟦ a, dob d v ⟧) ) ).
-  Defined.
-
-  (* TODO refaire mieux en s'isnpirant de eq_diag_islimcone *)
-  Lemma eq_diag_iscolimcocone:
-    Π {C : Precategory} {g : graph} {d : diagram g C} 
-      (d' : diagram g C)
-      (eq_d : eq_diag d d')
-            {c : C} {cc:cocone d c}
-            (islimcone : isColimCocone _ _ cc) ,
-    isColimCocone _ _ (eq_diag_mkcocone d' eq_d cc).
-  Proof.
-
-    intros.
-    destruct eq_d as [eq_d1 eq_d2].
-    set (eq_d := eq_d1,,eq_d2).
-    set (eq_d'' := sym_eq_diag _ _ eq_d).
-    set (eq_d1' := pr1 eq_d'').
-    set (eq_d2' := pr2 eq_d'').
-    set (eq_d'  := (eq_d1',,eq_d2'):eq_diag d' d).
-
-    red.
-    intros c' cc'.
-    set (cc'2 := eq_diag_mkcocone _ eq_d' cc').
-    specialize (islimcone c' cc'2).
-    apply (unique_exists (pr1 (pr1 islimcone))).
-    - intro v.
-      assert (islim := is_exists_unique islimcone v).
-      cbn in islim.
-      cbn.
-
-      etrans.
-      rewrite <- (pathsinv0inv0 (eq_d1 v)).
-      symmetry.
-      apply transport_source_precompose.
-      etrans.
-      apply maponpaths.
-      apply islim.
-      cbn.
-      now apply (Utilities.transportbfinv ( (λ x' : C, C ⟦ x', c' ⟧) )).
-    - intro y.
-      apply impred_isaprop.
-      intro t.
-      apply homset_property.
-    - intros y hy.
-      apply (path_to_ctr _ _ islimcone).
-      intro v; specialize (hy v).
-      revert hy.
-      cbn.
-      intro hy.
-      apply (transportf_transpose (P:=(λ obj : C, C ⟦ obj, c' ⟧))).
-      etrans.
-      apply transport_source_precompose.      
-      unfold transportb.
-      rewrite pathsinv0inv0.
-      apply hy.
-  Qed.
-
-  (* same proof : dual *)
-  Lemma eq_diag_islimcone:
-    Π {C : Precategory} {g : graph} {d : diagram g C} 
-      (d' : diagram g C)
-      (eq_d : eq_diag d d')
-            {c : C} {cc:cone d c}
-            (islimcone : isLimCone _ _ cc) ,
-    isLimCone _ _ (eq_diag_mkcone d' eq_d cc).
-  Proof.
-
-    intros.
-    set (eq_d1 := pr1 eq_d);
-      set (eq_d2 := pr1 eq_d).
-    set (eq_d' := sym_eq_diag _ _ eq_d).
-    set (eq_d1' := pr1 eq_d').
-    set (eq_d2' := pr2 eq_d').
-    (* set (eq_d'  := (eq_d1',,eq_d2'):eq_diag d' d). *)
-
-    red.
-    intros c' cc'.
-    set (cc'2 := eq_diag_mkcone _ eq_d' cc').
-    specialize (islimcone c' cc'2).
-    apply (unique_exists (pr1 (pr1 islimcone))).
-    - intro v.
-      assert (islim := is_exists_unique islimcone v).
-      cbn in islim.
-      cbn.
-
-      etrans.
-      symmetry.
-      apply transport_target_postcompose.
-      
-      etrans.
-      apply maponpaths.
-      apply islim.
-
-      apply Utilities.transportfbinv.
-
-    - intro y.
-      apply impred_isaprop.
-      intro t.
-      apply homset_property.
-    - intros y hy.
-      apply (path_to_ctr _ _ islimcone).
-      intro v; specialize (hy v).
-      cbn.
-      apply transportf_transpose.
-      rewrite <- hy.
-      etrans.
-      unfold transportb.
-      rewrite pathsinv0inv0.
-      apply transport_target_postcompose.
-      apply idpath.
-  Qed.
-
-      
-
-  Definition eq_diag_liftcolimcocone
-    {C : Precategory} {g : graph} {d : diagram g C} 
-      (d' : diagram g C)
-      (eq_d : eq_diag d d')
-       (cc:ColimCocone d ) : ColimCocone d'
-    := mk_ColimCocone _ _ _ (eq_diag_iscolimcocone _ eq_d
-                                               (isColimCocone_ColimCocone cc)).
-
-  Definition eq_diag_liftlimcone
-    {C : Precategory} {g : graph} {d : diagram g C} 
-      (d' : diagram g C)
-      (eq_d : eq_diag d d')
-       (cc:LimCone d ) : LimCone d'
-    := mk_LimCone _ _ _ (eq_diag_islimcone _ eq_d
-                                               (isLimCone_LimCone cc)).
 
 
   
@@ -909,6 +639,8 @@ Section PointwiseEpi.
   Defined.
 
   Import graphs.pushouts.
+
+  
   Lemma Colims_pw_epi (colimD : Pushouts D) (A B : CD) (a:CD⟦ A,B⟧)
         (epia:isEpi a) : Π (x:C), isEpi (pr1 a x).
   Proof.    
@@ -961,80 +693,8 @@ End PointwiseEpi.
 
 
 
-(* Let f be a transfo nat. If f is pointwise effective, then f is effective *)
-Section IsEffectivePw.
-  
-    Context { C :precategory} {D:Precategory} .
-
-    
-
-   Local Notation CD := (@functor_Precategory C D). 
-
-   
-    Context {X Y :functor C D } {a:CD ⟦X,Y⟧}.
-
-  Lemma isEffectivePw : (Π (x:C), isEffective (pr1 a x)) -> isEffective a.
-    intros h.
-    red.
-    transparent assert (f:(kernel_pair a)).
-    { apply equiv_Pullback_2;[apply homset_property|].
-      apply LimFunctorCone.
-      intro c.
-      specialize (h c).
-      set (f := pr1 h).
-      apply equiv_Pullback_1 in f;[|apply homset_property].
-      use (eq_diag_liftlimcone _  _  f).
-      use tpair.
-      use StandardFiniteSets.three_rec_dep; apply idpath.
-      
-      use StandardFiniteSets.three_rec_dep;  use StandardFiniteSets.three_rec_dep; 
-         exact (Empty_set_rect _ ) ||  (exact (fun _ => idpath _)).
-    }
-
-    exists f.
 
 
-    apply equiv_isCoequalizer2;[apply homset_property|].
-    apply  pointwise_Colim_is_isColimFunctor.
-    intro x.
-    set (g:= f).
-    assert (hf := (pr2 (h x))); simpl in hf.
-    apply equiv_isCoequalizer1 in hf;[|apply homset_property].
-    red in hf.
-    
-    revert hf.
-    match goal with |- isColimCocone ?d1 _ ?cc1 -> isColimCocone  ?d2 _  ?cc2 =>
-                    transparent assert (eqd:(eq_diag d1 d2)) end.
-    {
-      use tpair.
-      use StandardFiniteSets.two_rec_dep; reflexivity.
-     use StandardFiniteSets.two_rec_dep;  use StandardFiniteSets.two_rec_dep; 
-       try exact (Empty_set_rect _ ).
-
-     intros g'.
-     destruct g'.
-     apply idpath.
-     apply idpath.
-    } 
-
-    intro hf.
-
-    set (z:= (eq_diag_iscolimcocone _ eqd hf)).
-    set (CC := (mk_ColimCocone _ _ _ z)).
-    apply (is_iso_isColim (homset_property D) _ CC).
-    rewrite <- (colimArrowUnique CC _ _ (identity _)).
-    
-    apply identity_is_iso.
-    use StandardFiniteSets.two_rec_dep;
-    cbn beta;
-
-    rewrite id_right;
-    apply idpath.
-Qed.
-
-
-  
-End IsEffectivePw.
 
 
 (* 
@@ -1071,6 +731,7 @@ Section LiftEpiNatTrans.
 
   Hypothesis (surjectivep : isEpi (C:=C_SET) p).
 
+  
   Import graphs.pushouts.
 
   Lemma PushoutsHSET : Pushouts SET.
@@ -1360,8 +1021,9 @@ de a et que u est un morphisme de modules.
     apply idpath.
   Qed.
 
-  
-  Notation GODMENT a b := (horcomp a b) (only parsing).
+
+  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
+  (* Notation GODMENT a b := (horcomp a b) (only parsing). *)
 
 
   Lemma comp_cat_comp {A B C:hSet} (f : A -> B) (g:B -> C) x :
@@ -1386,7 +1048,7 @@ de a et que u est un morphisme de modules.
 
    *)
   Lemma compat_μ_projR : Π (X : SET) (x y : pr1 ((pr1 (## R □ ## R)) X)),
-                            GODMENT projR projR X x = GODMENT projR projR X y →
+                            (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
                             (μ ## R;;; projR) X x = (μ ## R;;; projR) X y.
   Proof.
     intros X x y.
@@ -1427,7 +1089,7 @@ de a et que u est un morphisme de modules.
   Definition R'_μ  : nat_trans ( R'□  R')  ( R').
   Proof.
     apply (univ_surj_nt (A:= ##R □ ##R) (B:=functor_composite R' R')                    
-                       (horcomp projR projR)
+                       ( projR ∙∙ projR)
                        (μ  (## R) ;;; projR)).
     (* asbtract these *)
     -  apply compat_μ_projR.
@@ -1438,7 +1100,7 @@ de a et que u est un morphisme de modules.
   Defined.
 
   Lemma R'_μ_def : Π (x:SET),
-                     horcomp projR projR x ;; R'_μ x = μ (## R) x ;; projR x .
+                     (projR ∙∙ projR) x ;; R'_μ x = μ (## R) x ;; projR x .
   Proof.
     intro x.
     unfold R'_μ.
@@ -1462,6 +1124,16 @@ de a et que u est un morphisme de modules.
     now destruct e.
   Qed.
 
+  Lemma horcomp_assoc : Π {B C D E : precategory} {H H':functor B C}
+        {F F' : functor C D}
+        {G G'  : functor D E} (a: H ⟶ H')(b: F ⟶ F') (c:G ⟶ G') x,
+      ((c ∙∙ b) ∙∙ a) x = (c ∙∙( b ∙∙ a)) x.
+  Proof.
+    intros.
+    cbn.
+    symmetry.
+    now rewrite functor_comp,assoc.
+  Qed.
   
   Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
   Proof.
@@ -1624,10 +1296,91 @@ Legend of the diagram :
       rewrite <- assoc.
       reflexivity.
 
-      (* So mMmMmuuchhh tiime *)
+      etrans.
       apply cancel_postcomposition.
 
-      TODO
+      assert (huse := (horcomp_assoc projR projR projR c)).
+      cbn.
+      apply huse.
+cbn.
+apply idpath.
+Qed.
+(* Le QED précédent prend énormément de temps.. pourquoi ? *)
+  
+  (*
+  Je veux expliquer ici pourquoi avec l'univalence computationnelle je n'ai plus
+besoin de mon égalité spécifique entre diagrammes eq_diag en prenant
+ l'exemple du transport de cone pour un produit binaire
+
+Soit g un graphe discret (sans arrête), qu'on identifie avec le type de ses sommets.
+
+Ici on prend l'exemple d'un graphe à 2 sommets A et B :
+  g := A + B
+
+Soit C une catégorie, qu'on identifie avec le type de ses objets.
+On note C⟦X,Y⟧ le type des morphismes entre les objets X, Y de C
+
+Le type des diagrammes de g vers C est le suivant : g -> C
+
+Le type des cones sur un diagrame J est le suivant : 
+   cone J = Σ (c:C), Π x:g, C⟦c, J x⟧
+
+Supposons que j'ai une égalité entre deux diagrammes : e : J = J'
+Alors j'ai une fonction f : cone J -> cone J'
+que je définis par f co := (pr1 co, fun x => transport _ e (pr2 co x))
+
+'transport' est la fonction de transport. 
+Le premier argument est le type à transporter, le second l'égalité à utiliser,
+et le troisième le terme à transporter.
+
+
+Maintenant, Supposons que pour démontrer que J=J', j'ai utilisé l'axiome
+d'égalité extensionnelle des fonctions : e := funextfun H
+funextfun est l'axiome et H est de type Π x, J x = J' x
+
+En particulier, supposons que J A ≡ J' A et J B ≡ J' B convertiblement.
+donc la preuve H consiste simplement à faire une disjonction de cas sur le sommet
+du graphe g (A ou B) et à appliquer eq_refl
+
+
+Ce que je voudrais pour des raisons techniques et/ou pratiques,
+c'est que  pr2 co A ≡ pr2 (f co) A et pr2 c B ≡ pr2 (f co) B convertiblement.
+
+Bien sûr ce n'est pas le cas si l'univalence est un axiome.
+En effet déplions un peu la chose pour le premier cas :
+
+pr2 (f co) A ≡ transport (fun X => C⟦pr1 c, X⟧) 
+                              (funextfun H) (pr2 co A)
+
+C'est clair que ça va pas calculer en coq normal. Voyons pourquoi cela
+devrait se réduire vers pr2 co A dans le cas où l'univalence calcule 
+(cubicaltt il paraît).
+
+Partons d'un exemple plus simple.
+
+J'ai une preuve e que deux fonctions (J J' : A+B -> T)
+ sont égales via égalité extensionnelle e= funextfun H, 
+via une simple disjonction de cas suivi de eq_refl.
+
+J'ai un terme de type t : J A.
+J'ai envie que transport (fun X => X A) (funextfun H) t ≡ t.
+
+D'après le lemme d'UniMaths transportf_funextfun, j'anticipe que avec l'univalence
+qui calcule, on aurait (à vérifier si c'est vrai dans cubicaltt par exemple)
+    transport (fun X => X A) (funextfun H) t ≡ transport (fun X => X) (H A) t
+
+Mais qu'est ce que H A sinon eq_refl ? et donc 
+  transport (fun X => X) (H A) t ≡ t
+
+(Question subsidiaire : est-ce que mon argument marcherait pour si je définis
+la fonction directement par f co := transport _ e co ?
+Probalement pas. Mais pourquoi, et est-ce un problème théorique ?
+)
+
+
+
+
+    *) 
 
 End leftadjoint.
 

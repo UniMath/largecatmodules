@@ -1,3 +1,5 @@
 ardef.v
 quotientfunctor.v
+eqdiag.v
+effectiveepis.v
 uniproof.v
