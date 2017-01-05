@@ -35,16 +35,17 @@ Section ContreExempleBenedikt.
         apply funextsec.
         intro v'.
         apply funextsec.
-        
-        induction v ,v'; exact (Empty_set_rect _ ).
+        intro h.
+        now apply (Empty_set_rect ).
     Defined.
 
     Lemma eq2 : eq_diag diag1 diag2.
     Proof.
       use tpair.
       - now induction v.
-      - intros v v'.
-        induction v ,v'; exact (Empty_set_rect _ ).
+      - cbn.
+        intros ??.
+        apply Empty_set_rect.
     Defined.
         
 
