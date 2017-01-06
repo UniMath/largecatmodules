@@ -271,7 +271,7 @@ de a et que u est un morphisme de modules.
 
   
   (* R'_μ is defined by the following diagram :
-
+<<
                   μ R
             R R  ----->   R
              |           |
@@ -279,7 +279,7 @@ de a et que u est un morphisme de modules.
              v           v
             R' R' ---->  R'
                   R'_μ
-
+>>
    *)
   Lemma compat_μ_projR : Π (X : SET) (x y : pr1 ((pr1 (## R □ ## R)) X)),
                             (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
@@ -526,11 +526,14 @@ Legend of the diagram :
 
       assert (huse := (horcomp_assoc projR projR projR c)).
       cbn.
+  Admitted.
+  (*
       TROP DE TEMPS ICI !
       apply huse.
     cbn.
    apply idpath.
 Qed.
+*)
   (* Le QED précédent prend énormément de temps.. pourquoi ? *)
 
   Definition R'_monad : Monad _ := (_ ,, R'_Monad_laws).
@@ -573,17 +576,21 @@ FIN DE LA PREMIERE ETAPE
         assert (epi :isEpi ( (horcomp projR projR) X)).
         {
           apply Pushouts_pw_epi.
-          apply PushoutsHSET.        
+          apply HSET_Pushouts.
           apply isEpi_horcomp; try apply Pushouts_pw_epi;
-            try apply PushoutsHSET; apply is_epi_proj_quot.
+            try apply HSET_Pushouts; apply is_epi_proj_quot.
         }
         apply epi.
 
+
+        (* Now the real work begins *)
         etrans.
 
+        (* use the monadicity of μ *)
         apply cancel_postcomposition.
         apply (nat_trans_ax (projR)).
         etrans.
+        
 
         
         rewrite assoc.        
@@ -591,25 +598,131 @@ FIN DE LA PREMIERE ETAPE
         symmetry.
         apply (Monad_Mor_μ (projR_monad)).
 
+        (* definition of u *)
         etrans.
         rewrite <- assoc.
         cpre.
         symmetry.
-        apply u_commutes.
-        
-        apply cancel_precomposition.
-        
-        rewrite assoc.
-        
-        etrans.
-        apply cancel_postcomposition.
-        symmetry.
-        apply (Monad_Mor_μ (projR_monad)).
-        cbn -[R' compose].
-        
+        apply u_def.
 
+        (* m is a morphism of monad *)
+        etrans.
+        apply (Monad_Mor_μ (pr1 m)).
+
+        (* Definition of u *)
+        etrans.
+        
+        cpost.
+        etrans.
+        etrans.
+        cpost.
+        apply u_def.        
+        cpre.
+        etrans.
+        apply cancel_functor_on_morph.
+        apply u_def.
+        apply functor_comp.
+
+        (* il s'agit de rememmtre les termes dans l'ordre *)
+
+        rewrite assoc.
+        cpost.
+        rewrite <- assoc.
+        cpre.
+        symmetry.
+        apply (nat_trans_ax (u m)).
+        rewrite assoc.
+        cbn.
+        reflexivity.
+      - intro X.
+        etrans.
+        cpost.
+        apply R'_η_def.
+
+        rewrite <- assoc.
+        rewrite <- u_def.
+        apply (Monad_Mor_η (pr1 m)).
     Qed.
+
+    Definition u_monad : Monad_Mor ( R'_monad) (pr1 S) :=
+      (_ ,, u_monad_laws).
+    
   End morphInitialU.
+
+  (* FIN DE LA TROISIEME ETAPE *)
+
+  Section R'Representation.
+
+     (* R'_μr is defined by the following diagram :
+<<
+                  μr R
+            a R  ----->  R
+             |           |
+         F R |           | projR
+             v           |
+            b R          |
+             |           |
+     b projR |           |
+             v           v
+           b R' -------> R'
+                R'_μr
+
+>>
+      *)
+
+    Local Notation zab F R X :=(pr1 (pr1 F (pr1 R) tt) X). (* (at level 3). *)
+    Check (pr1 b).
+
+    Definition triv_mor {C:Precategory} {A B:C} (f:C⟦ A,B⟧) :
+      mor_disp (D:=liftcat_disp C) tt tt f := tt.
+
+    Notation "[# b f ]" :=
+      (functor_over_on_morphisms (pr1 b)
+                                     (triv_mor (C:=(monadPrecategory _))
+                                                     f))
+        (at level 200) :arity_scope.
+
+    Check (functor_over_on_morphisms (pr1 b)
+                                     (triv_mor (C:=(monadPrecategory _))
+                                                     projR_monad)).
+
+    Check ([# b projR_monad ]).
+
+
+    Delimit Scope arity_scope with ar.
+    
+    (*                     (at level 3) : triv_mor_disp_scope. *)
+
+    Section eq_mr.
+      Context {S:BREP b} (m:R -->[ F] S).
+      Open Scope arity_scope.
+      Check ([# b projR_monad ]).
+
+      Lemma eq_mr : μr _ R ;; m =
+                    ;;
+                 (# b u_monad)%ar
+                    μr _ (pr1 S) 
+    End eq_mr.
+
+    
+  Lemma compat_μ_projR : Π (X : SET) x y,
+                          (( zab F R X ) ;;
+                                         pr1 (# (pr1 b)
+                                            (triv_mor (C:=(monadPrecategory _))
+                                                      projR_monad) )%mor_disp X)
+                                         x
+                         =
+                          (( zab F R X ) ;;
+                                         pr1 (# (pr1 b)
+                                            (triv_mor (C:=(monadPrecategory _))
+                                                      projR_monad) )%mor_disp X)
+                                         y
+                                         ->
+                                         ((μr _ R;;; projR) X) x = (μr _ R;;; projR) X y.
+  Proof.
+  Qed.
+    
+  End R'Representation.
 
 End leftadjoint.
 
