@@ -16,3 +16,8 @@
 /latex/*.fdb_latexmk
 /latex/*.fls
 /latex/coqdoc.sty
+*.vo
+*.glob
+*~
+*.aux
+*.v.d
