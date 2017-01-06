@@ -259,60 +259,6 @@ Ltac neweqsubst z :=
   let h := fresh in
   neweq z; [subst z| intro h; rewrite h; clear h z].
 
-  (* Attempt to prove that a nat trans that is pointwise the identity is a nat_trans.
-!! This is true only if F and G are equal on morphisms
-   *)
-  Lemma is_nat_trans_id_pw {B}{ C:precategory} {F G:functor B C} (f:Π x : B, C ⟦ F x, G x ⟧)
-        (heq: Π x,  F x = G x)
-        (heqf:Π x, f x = transportf (fun A =>  C ⟦ F x, A ⟧)
-                                    (heq x) (identity (F x) )) : is_nat_trans F G f.
-  Proof.
-    intros.
-    red.
-    intros b b' g.
-    rewrite heqf.
-    rewrite heqf.
-    clear heqf.
-    pose (g':= (#F g)).
-
-    clearbody g'.
-    simpl.
-    assert  (tr:= fun P Q f=> transport_map(P:=P) (Q:=Q)f (heq b')).
-    etrans.
-    symmetry.
-    assert (tr2 := fun Q f => tr (λ A : C, C ⟦ F b', A ⟧) Q f (identity _)).
-    simpl in tr2.
-    (*
-    (f (F b') p = transportf Q (heq b) (#F g ;; identity (F b'))
-     f (G b') (transportf (λ A : C0, C0 ⟦ F b', A ⟧) (heq b') (identity (F b')))
-       = #F g ;; transportf _ _ _ *)
-    assert (tr3 := tr2 _ (fun a p => #F g;;p)).
-    simpl in tr3.
-    apply tr3; simpl.
-    etrans.
-    match goal with |- transportf _ _ ?f  = _ => set (P := f) end.
-    neweqsubst P.
-    assert (z:# F g ;; identity (F b') = #F g).
-
-    apply (id_right (# F g)).
-    exact z.
-    reflexivity.
-    match goal with | |- _ = ?x => let ttyp := type of x in set (tty := ttyp) end.
-    symmetry; etrans.
-    symmetry; etrans.
-    apply (idpath (transportb (fun A => C ⟦A, G b'⟧) (heq b) ((identity _ ;; # G g)))).
-    clear; admit.
-    rewrite id_left.
-    clear.
-    set (yop := heq b).
-    set (yop2 := heq b').
-    clearbody yop yop2.
-    clear heq.
-    subst tty.
-    simpl.
-    unfold transportb.
-    cbn.
-    Abort.
 
 
 
@@ -1015,34 +961,26 @@ Qed.
   Proof.
 
     repeat apply tpair; intros; try apply homset_property.
-    - simpl.
-      unfold id_disp; simpl.
-      apply rep_ar_mor_mor_equiv.
-      intros c.
-      simpl.
-      etrans.  apply id_left.
+    -  apply rep_ar_mor_mor_equiv.
+       intros c.
+       etrans. apply id_left.
       symmetry.
       apply transport_arity_mor.
-    - simpl.
-      apply rep_ar_mor_mor_equiv.
-      intro c; simpl.
+    - apply rep_ar_mor_mor_equiv.
+      intro c.
       etrans. apply id_right.
       symmetry.
       apply transport_arity_mor.
     - set (heqf:= assoc f g h).
       apply rep_ar_mor_mor_equiv.
-      intros c; simpl.
+      intros c.
       etrans; cycle 1.
       symmetry.
       apply transport_arity_mor.
-      simpl.
+      cbn.
       now rewrite assoc.
-    - simpl.
-      unfold rep_ar_mor_mor; simpl.
-      apply isaset_rep_ar_mor_mor.
-      (* Why is it so long ??? *)
-  Admitted.
-
+    -  apply isaset_rep_ar_mor_mor.
+  Qed.
 
   Definition brep_disp : disp_precat arity_Precategory :=
     (brep_data ,, brep_axioms).
