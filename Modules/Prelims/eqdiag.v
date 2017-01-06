@@ -260,7 +260,10 @@ Proof.
 Qed.
 
 (* We don't want to use the equivalence with bare identity to show the 
-symmetry because we want computation (Defined) *)
+symmetry because we want computation (Defined)
+
+However it seems we need computation only or the first component
+ *)
 Lemma sym_eq_diag  {C : Precategory} {g : graph} (d d' : diagram g C) :
   eq_diag d d' -> eq_diag d' d.
 Proof.
@@ -268,20 +271,50 @@ Proof.
   set (eq_d1 := pr1 eq_d).
   set (eq_d2 := pr2 eq_d).
   use tpair.
-  intro v.    
-  apply (! (eq_d1 v)).
-  cbn.
-  intros v v' f.
-  specialize (eq_d2 v v' f).
-  symmetry.
-  unfold transportb.
-  rewrite pathsinv0inv0.
-  apply (transportf_transpose (P:=(λ obj : C, C ⟦ obj, dob d' v' ⟧))).
-  assert (eq_d2':=transportf_transpose (P:=(precategory_morphisms (dob d' v)))
-                                       _ _ _ (! eq_d2)).
-  rewrite eq_d2'.
-  unfold transportb; rewrite pathsinv0inv0.
-  apply (transport_swap (fun a b => C⟦b,a⟧)).
+  - intro v.    
+    apply (! (eq_d1 v)).
+  - (* here we use equality *)
+    unfold eq_d1.
+    assert (heqdag:eq_diag d' d).
+    + apply eq_is_eq_diag.
+      symmetry.
+      apply eq_diag_is_eq.
+      assumption.
+    +
+(*
+      assert(yop:= (pr2 heqdag)).
+      cbn in yop.
+    }
+    
+    
+    assert (eqd := eq_diag_is_eq _ _ eq_d).
+    clearbody eq_d2.
+    revert eq_d2.
+    induction eqd.
+    intros h v v' ed; specialize (h v v' ed).
+    revert h.
+    set (yop := pr1 eq_d v).
+    clearbody yop.
+    rewrite <- invmap
+    induction (yop).
+    
+    exact eq_d2.
+*)
+
+(* Proof without using equality *)
+    abstract (cbn;
+    intros v v' f;
+    specialize (eq_d2 v v' f);
+    symmetry;
+    unfold transportb;
+    rewrite pathsinv0inv0;
+    apply (transportf_transpose (P:=(λ obj : C, C ⟦ obj, dob d' v' ⟧)));
+    assert (eq_d2':=transportf_transpose (P:=(precategory_morphisms (dob d' v)))
+                                         _ _ _ (! eq_d2));
+    rewrite eq_d2';
+    unfold transportb; rewrite pathsinv0inv0;
+    apply (transport_swap (fun a b => C⟦b,a⟧))).
+
 Defined.
 
 Lemma eq_diag_mkcocone  :
@@ -404,6 +437,8 @@ Qed.
 This proof could be deduced from the previous if there was a lemma 
 that tells that colimits are limits in the dual category. Is there such one
 Benedikt ?
+
+TODO : montrer que les colimites sont les duals des limites.
 *)
 (* TODO refaire mieux en s'isnpirant de eq_diag_islimcone *)
 Lemma eq_diag_iscolimcocone:

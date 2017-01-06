@@ -11,7 +11,9 @@ Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.category_hset.
 
-Definition hset_Precategory : Precategory := (hset_precategory ,, has_homsets_HSET).
+(* Needed only for the definition of HSET_PreCategory *)
+Require Import Modules.Prelims.setscomplements.
+
 
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).

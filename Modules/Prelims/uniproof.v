@@ -4,9 +4,6 @@ In this file :
 
 - Proof that HSET has effective epis
 
-- Definition of nat trans between diagrams (actually not really useful for
-my goal : I rather use eq_diag)
-
 - Proof that given a category D with pushouts, if a natural transformation 
 between two functors of codomain D is an epi, then it is pointwise an epi 
 (Colims_pw_epi).
@@ -67,12 +64,16 @@ Require Import UniMath.CategoryTheory.limits.EffectiveEpis.
 
 Require Import UniMath.CategoryTheory.CocontFunctors.
 
+Require Import Modules.Prelims.epipw.
+Require Import Modules.Prelims.setscomplements.
+
 
 
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
+Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 
 (* Trouvé dans SubstitutionsSystem/Notation *)
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
@@ -87,778 +88,29 @@ Import EffectiveEpis.
 Require Import Modules.Prelims.ardef.
 Require Import Modules.Prelims.quotientfunctor.
 
-
-
-
-
-Section EquivPullbacks.
-  Import graphs.pullbacks.
-
-  (* wtf ? Il y a deux notions de pullback et je ne trouve pas le resultat suivant *)
-  Definition equiv_Pullback {C:Precategory} {a b c  : C} {f : C ⟦b, a⟧} {g : C ⟦c, a⟧}
-             (pb  : Pullback _ f g):
-    limits.pullbacks.Pullback f g.
-  Proof.
-    intros.
-    use  (limits.pullbacks.mk_Pullback _ _  (PullbackObject _ pb)
-                                       (PullbackPr1 _ pb) (PullbackPr2 _ pb) ).
-    apply PullbackSqrCommutes.
-    abstract (
-    apply equiv_isPullback_2;
-    try apply isPullback_Pullback;
-    apply homset_property).
-  Defined.
-End EquivPullbacks.
-
-Section kernel_pair_Set.
-
-  Local Notation SET := hset_Precategory.
-  Context  {A B:SET}.
-  Variable (f: SET ⟦A,B⟧).
-
-  Lemma Pullbacks_HSET : Pullbacks SET.
-    clear.
-  Admitted.
-
-  Definition kernel_pair_set : kernel_pair f.
-    red.
-    apply equiv_Pullback.
-    apply LimsHSET_of_shape.
-  Defined.
-
-    
-  Local Notation g := kernel_pair_set.
-
-  Import limits.pullbacks.
-
-  Lemma kernel_pair_eq
-        (a:pr1 (PullbackObject g)) :
-    f ( (PullbackPr1 g) a) = f ((PullbackPr2 g) a).
-  Proof.
-    intros.
-    assert (hg':=PullbackSqrCommutes g).
-    apply      toforallpaths in hg'.
-    apply hg'.
-  Qed.
-
-  Lemma isCoeqEpi (hf:issurjective f) : isCoequalizer _ _ _ (PullbackSqrCommutes g).
-  Proof.
-    intros.
-    red.
-    intros C u equ.
-
-    assert (hcompat :   Π x y : pr1 A, f x = f y → u x = u y).
-    {
-      intros x y eqfxy.
-            assert (hpb:=pullback_HSET_univprop_elements
-                     (PullbackSqrCommutes g) (isPullback_Pullback g) x y eqfxy).
-      assert( hpb' := pr2 (pr1 hpb)); simpl in hpb'.
-      destruct hpb' as [hx hy].
-      
-      etrans.
-      symmetry.
-      apply maponpaths.      
-      apply hx.
-      
-      symmetry.
-      etrans.
-      symmetry.
-      apply maponpaths.
-      apply hy.
-      
-      apply toforallpaths in equ.
-      symmetry.
-      apply equ.
-    }
-    
-    use (unique_exists (univ_surj (setproperty C) _ _ _ hf)).
-    - exact u.
-    - exact hcompat.
-    - simpl.
-      (* TODO parler à Benedikt : ici ça aurait été plus intéressatnd d'avoir une égalité dans univ_surj_ax *)
-      apply funextfun.
-      intros ?.
-      apply univ_surj_ax.
-    - intros ?; apply homset_property.
-    - intros ??; simpl.
-      apply funextfun.
-      use univ_surj_unique.
-      simpl in X.
-      apply toforallpaths in X.
-      exact X.
-  Qed.
-End kernel_pair_Set.
+Require Import Modules.Prelims.lib.
 
 
 
 
     
-
-
-
-Lemma EffectiveEpis_HSET : EpisAreEffective hset_precategory.
-Proof.
-  red.
-  clear.
-  intros A B f epif.
-  exists (kernel_pair_set f).
-  apply isCoeqEpi.
-  apply epiissurjectiontosets; [apply setproperty|].
-  intros C g1 g2 h .
-  apply toforallpaths.
-  apply (epif C    g1 g2).
-  now apply funextfun.
-Qed.
-    
-
-
-
-
-
-
-
-(* The following section is copied from Pullback_pointwise section in limits/Pullbacks.v
-
-Unfortunately, there is no such analogue in limits/Pushouts...
-
-I am interested in showing that if D has colimits, then a colimit in the category [C,D] is
-a colimit pointwise. I tried to derive this result from limits/graphs/colimits.v and the
-construction of ColimitFunctors, however the pointwise diagrams seems to behave badly
-(see tried example in the next section *)
-
 Set Automatic Introduction.
 
-      (** * Pushouts in functor categories *)
-Section pushouts_pointwise.
-
-(** Diagram for this section:
-<<
-          d
-    J -------> H
-    |          |
-  c |          | b
-    v          v
-    G -------> F
-         a
->>
- *)
-Local Notation "[ C , D , hs ]" := (functor_precategory C D hs).
-
-Context {C D : precategory} (hsD : has_homsets D).
-Let CD := [C, D, hsD].
-Context {F G H J : CD}.
-Context {a : CD ⟦G, F⟧}{b : CD ⟦H, F⟧}{c : CD⟦J,G⟧}{d : CD⟦J, H⟧}.
-
-Variable Hcomm : c ;; a = d ;; b.
-
-Arguments mk_Pushout {_ _ _ _ _ _ _ _ _ _ } _ .
-
-Let Hcommx x := nat_trans_eq_pointwise Hcomm x.
 
 
-
-Local Definition g (T : Π x, isPushout _ _ _ _ (Hcommx x))
-      E (h : CD ⟦ G,E ⟧) (k : CD ⟦ H,E⟧)
-      (Hhk : c;; h  = d ;; k ) : Π x, D ⟦ pr1 F x, pr1 E x ⟧.
-Proof.
-
-  intro x; apply (PushoutArrow (mk_Pushout (T x)) _ (pr1 h x) (pr1 k x)).
-  abstract (apply (nat_trans_eq_pointwise Hhk)).
-Defined.
-
-Local Lemma is_nat_trans_g (T : Π x, isPushout _ _ _ _ (Hcommx x))
-      E (h : CD ⟦ G, E ⟧) (k : CD ⟦ H, E ⟧)
-      (Hhk :  c;; h  = d ;; k) : is_nat_trans _ _ (λ x : C, g T E _ _ Hhk x).
-Proof.
-  intros x y f; unfold g.
-  apply (MorphismsOutofPushoutEqual (T x)).
-  + rewrite !assoc, (PushoutArrow_PushoutIn1 (mk_Pushout (T x))).
-    rewrite <- (nat_trans_ax a), <- assoc.
-    now rewrite (PushoutArrow_PushoutIn1 (mk_Pushout (T y))), (nat_trans_ax h).
-  + rewrite !assoc,(PushoutArrow_PushoutIn2 (mk_Pushout (T x))).
-    rewrite <- (nat_trans_ax b), <- assoc.
-    now rewrite (PushoutArrow_PushoutIn2 (mk_Pushout (T y))), (nat_trans_ax k).
-Qed.
-
-Lemma po_if_pointwise_po : (Π x, isPushout _ _ _ _ (Hcommx x)) ->
-                           isPushout _ _ _ _ Hcomm.
-Proof.
-  intro T.
-  use mk_isPushout; intros E h k Hhk.
-  use unique_exists.
-  - mkpair.
-    + intro x; apply (g T E h k Hhk).
-    + apply is_nat_trans_g.
-  - abstract (split; apply (nat_trans_eq hsD); intro x;
-              [ apply (PushoutArrow_PushoutIn1 (mk_Pushout (T x)))
-              | apply (PushoutArrow_PushoutIn2 (mk_Pushout (T x))) ]).
-  - abstract (intro; apply isapropdirprod; apply functor_category_has_homsets).
-  - abstract (intros t [h1 h2]; destruct h as [h Hh];
-              apply (nat_trans_eq hsD); intro x; apply PushoutArrowUnique;
-              [ apply (nat_trans_eq_pointwise h1) | apply (nat_trans_eq_pointwise h2) ]).
-Defined.
-
-
-
-End pushouts_pointwise.
 
 
 
   
  
 
-(* Definition of nat trans between diagrams *)
-Section diagramNatTrans.
-
-  Context {g:graph} {C:precategory} .
-
-  Local Notation diag := (diagram g C).
-  Local Notation "# F" := (dmor F)(at level 3).
-
-  (* TODO cf colimOfArrows *)
-  Definition is_diag_nat_trans {J J' : diag}
-             (t : Π x : vertex g, dob J x -->  dob J' x) :=
-    Π (x x' : vertex g)(f : edge x x'),
-    # J f ;; t x' = t x ;; #J' f.
-
-
-  Lemma isaprop_is_nat_trans (hs: has_homsets C) {J J' : diag}
-        (t : Π x : vertex g, dob J x -->  dob J' x) :
-    isaprop (is_diag_nat_trans t).
-  Proof.
-    repeat (apply impred; intro).
-    apply hs.
-  Qed. 
-  
-  Definition diag_nat_trans J J' :=
-    total2 (fun t : Π x : vertex g, dob J x -->  dob J' x => is_diag_nat_trans t).
-
-  Definition mk_diag_nat_trans {J J' }
-             (t : Π x : vertex g, dob J x --> dob J' x)
-             (H : is_diag_nat_trans  t) :
-  diag_nat_trans J J' := tpair _ t H.
-
-  Lemma isaset_diag_nat_trans  (hs: has_homsets C) J J'
-   : isaset (diag_nat_trans J J').
-  Proof.
-    apply (isofhleveltotal2 2).
-    + apply impred; intro t; apply hs.
-    + intro x; apply isasetaprop, isaprop_is_nat_trans, hs.
-  Qed.
-
-  Definition diag_nat_trans_data  {J J' : diag}
-           (a:diag_nat_trans J J') := pr1 a.
-  Coercion diag_nat_trans_data : diag_nat_trans >-> Funclass.
-
-  Definition diag_nat_trans_ax {J J' : diag}
-             (a:diag_nat_trans J J') : is_diag_nat_trans a := pr2 a.
-
-
-  (* Actually diagrams g -> C is a category but we just focus on the notion of
- iso *)
-  Definition are_inverse {J J':diag} (a :diag_nat_trans J J')
-    (b: diag_nat_trans J' J):=
-    ( Π v:vertex g, a v ;; b v = identity _)
-      ×  Π v:vertex g, b v ;; a v = identity _ .
-
-
-  
-  
-End diagramNatTrans.
-
-
-
-(* a transfo nat between two diagrams induces a lift of cocones *)
-Section liftCocone.
-
-  Context {g:graph} {C:precategory} {J J' : diagram g C}.
-  Context (m:diag_nat_trans J J') {c:C} .
-
-  Definition lift_cocone (cc: cocone J' c) : cocone J c.
-    assert (h := coconeInCommutes cc).
-    set (fin := (coconeIn cc)) in *.
-
-    apply (mk_cocone(fun v => m v ;; fin v)).
-        abstract(
-    intros u v e;
-    rewrite assoc, (diag_nat_trans_ax m), <- assoc, h; apply idpath).
-  Defined.
-
-  Definition lift_cone (cc: cone J c): cone J' c.
-    assert (h := coneOutCommutes cc).
-    set (fin := (coneOut cc)) in *.
-
-    apply (mk_cone(fun v =>  fin v;; m v)).
-    abstract(
-    intros u v e;    
-    rewrite <- assoc, <- (diag_nat_trans_ax m), assoc, h; apply idpath).
-  Defined.
-
-End liftCocone.
-
-Section isoCocone.
-
-  Context {g:graph} {C:precategory} {J J' : diagram g C}.
-
-
-
-  Section isCone.
-      Context  {c:C}.
-      Lemma iso_colimCocone   (cc: cocone J' c) (hs:has_homsets C) {a b}
-            (hinv:are_inverse (J:=J) (J':=J') a b)  :
-        isColimCocone J' c cc -> isColimCocone J c (lift_cocone a cc).
-      Proof.
-        intros iscolim c' cc'.
-        specialize (iscolim c' (lift_cocone b cc')).
-        apply (unique_exists (pr1 (pr1 iscolim))).
-        - intro v.
-          cbn.
-          etrans.
-          rewrite <- assoc.
-          apply cancel_precomposition.
-          apply (is_exists_unique iscolim v).
-          cbn.
-          rewrite assoc,(pr1 hinv).
-          apply id_left.
-        - intros y.
-          apply impred_isaprop.
-          intros; apply hs.
-        - intros y hy.
-          apply (eq_exists_unique _ _ iscolim).
-          intro v; specialize (hy v).
-          cbn in hy; cbn.
-          rewrite <- hy, assoc, assoc, (pr2 hinv), id_left.
-          apply idpath.
-      Qed.
-
-      Lemma iso_colimCocone'   (cc: cocone J' c) (hs:has_homsets C) {a b} (hinv:are_inverse (J:=J) (J':=J') a b)  :
-        isColimCocone J c (lift_cocone a cc) -> isColimCocone J' c cc.
-      Proof.
-        intros iscolim c' cc'.
-        specialize (iscolim c' (lift_cocone a cc')).
-        apply (unique_exists (pr1 (pr1 iscolim))).
-        - intro v.
-          cbn.
-          assert (hv:= (is_exists_unique iscolim v)).
-          cbn in hv.
-          assert (hv':=cancel_precomposition _ _ _ _ _ _ (b v) hv).
-          revert hv'.
-          repeat rewrite assoc.
-          now rewrite (pr2 hinv),id_left,id_left.
-        - intros y.
-          apply impred_isaprop.
-          intros; apply hs.
-        - intros y hy.
-          apply (eq_exists_unique _ _ iscolim).
-          intro v; specialize (hy v).
-          cbn in hy; cbn.
-          now rewrite <- assoc, hy.
-      Qed.
-
-  (* The proof could be simpler using the duality between limits and colimits
-but I did not find any proof in UniMath that limits are colimits in the dual category *)
-  Lemma iso_limCone   (cc: cone J c) (hs:has_homsets C) {a b} (hinv:are_inverse (J:=J) (J':=J') a b)  :
-    isLimCone J c cc -> isLimCone J' c (lift_cone a cc).
-  Proof.
-        intros iscolim c' cc'.
-    specialize (iscolim c' (lift_cone b cc')).
-    apply (unique_exists (pr1 (pr1 iscolim))).
-    - intro v.
-      cbn.
-      etrans.
-      rewrite assoc.
-      apply cancel_postcomposition.
-      apply (is_exists_unique iscolim v).
-      cbn.
-      rewrite <- assoc,(pr2 hinv).
-      apply id_right.
-    - intros y.
-      apply impred_isaprop.
-      intros; apply hs.
-    - intros y hy.
-      apply (eq_exists_unique _ _ iscolim).
-      intro v; specialize (hy v).
-      cbn in hy; cbn.
-      rewrite <- hy, <- assoc, <- assoc, (pr1 hinv), id_right.
-      apply idpath.
-  Qed.
-  End isCone.
-
-  Lemma iso_liftlimCone (hs:has_homsets C) {a b} (hinv:are_inverse (J:=J) (J':=J') a b) :
-    LimCone J -> LimCone J'.
-  Proof.
-    intros cc.
-    use mk_LimCone; cycle 2.
-    use (iso_limCone (limCone cc) hs hinv).
-    apply isLimCone_LimCone .
-  Defined.
-  
-  Lemma iso_liftcolimCocone (hs:has_homsets C) {a b} (hinv:are_inverse (J:=J) (J':=J') a b) :
-    ColimCocone J' -> ColimCocone J.
-  Proof.
-    intros cc.
-    use mk_ColimCocone; cycle 2.
-    use (iso_colimCocone (colimCocone cc) hs hinv).
-    apply isColimCocone_ColimCocone .
-  Qed.    
-
-
-End isoCocone.
 
 (* used as admit when Qed takes too long *)
 Lemma toolong : forall A, A.
 Admitted.                       
 
-(*
-  (* Exclusive lemma : the converse *)
-Lemma pointwise_po_if_po (hpo :Pushouts D) :   isPushout _ _ _ _ Hcomm ->
-                                               (Π x, isPushout _ _ _ _ (Hcommx x)).
-Proof.
-  intros T x.
-  assert (pocd := (hpo _ _ _ (pr1 c x) (pr1 d x))).
-  set (pocd2 := isPushout_Pushout pocd).
-  use mk_isPushout; intros E h k Hhk.
-  use unique_exists.
-  - mkpair.
-    + intro x; apply (g T E h k Hhk).
-    + apply is_nat_trans_g.
-  - abstract (split; apply (nat_trans_eq hsD); intro x;
-              [ apply (PushoutArrow_PushoutIn1 (mk_Pushout (T x)))
-              | apply (PushoutArrow_PushoutIn2 (mk_Pushout (T x))) ]).
-  - abstract (intro; apply isapropdirprod; apply functor_category_has_homsets).
-  - abstract (intros t [h1 h2]; destruct h as [h Hh];
-              apply (nat_trans_eq hsD); intro x; apply PushoutArrowUnique;
-              [ apply (nat_trans_eq_pointwise h1) | apply (nat_trans_eq_pointwise h2) ]).
-Defined.
-*)
-
-(* if colimits are computed pointwise, then a transfo nat which is an epi is
- pointwise an epi*)
-
-Section PointwiseEpi.
-
-
-  Definition functor_Precategory (C:precategory) (D:Precategory) : Precategory :=
-    (functor_precategory C D (homset_property D),,
-                         functor_category_has_homsets _ _ _).
-
-  Context { C :precategory} {D:Precategory} .
-
-  Local Notation CD := (functor_precategory C D (homset_property D)).
-  Local Notation CD_Pre := (functor_Precategory C D).
-
-
-  (* transfo nat between pushouts pw and pushout in D *)
-      (* Finalement inutile avec les puissants lemmes de transport 
- eq_diag_liftlimcone
-  Section pushouts.
-    Context {X Y Z :CD} {a:CD  ⟦ X, Y ⟧} {b:CD ⟦ X, Z⟧} (x:C).
-    Local Notation poD := (pushout_diagram D (pr1 a x) (pr1 b x)).
-    Local Notation po_pw := ((diagram_pointwise (homset_property D)
-                                                (pushout_diagram CD a b) x) ).
-
-    Definition poD_to_pw_data :  Π v : vertex _, dob poD v -->  dob po_pw v.
-      use StandardFiniteSets.three_rec_dep;simpl; apply identity.
-    Defined.
-
-    Definition pw_to_poD_data : Π v : vertex _, dob po_pw v -->  dob poD v.
-      use StandardFiniteSets.three_rec_dep;simpl; apply identity.
-    Defined.
-
-    Lemma is_nat_trans_poD_to_pw : is_diag_nat_trans poD_to_pw_data.
-      use StandardFiniteSets.three_rec_dep;
-        use StandardFiniteSets.three_rec_dep;
-        try exact (Empty_set_rect _ );
-      cbn;
-        unfold idfun; simpl;
-      now rewrite id_left, id_right.
-    Qed.
-
-    Lemma is_nat_trans_pw_to_poD : is_diag_nat_trans pw_to_poD_data.
-    Proof.
-      use StandardFiniteSets.three_rec_dep;
-        use StandardFiniteSets.three_rec_dep;
-        try exact (Empty_set_rect _ );
-      cbn;
-        unfold idfun; simpl;
-      now rewrite id_left, id_right.
-    Qed.      
-
-    Definition pw_to_poD : diag_nat_trans po_pw poD :=
-      mk_diag_nat_trans _ is_nat_trans_pw_to_poD.
-
-    Definition poD_to_pw : diag_nat_trans poD po_pw :=
-      mk_diag_nat_trans _ is_nat_trans_poD_to_pw.
-
-
-    Lemma is_inv_pw_poD : are_inverse pw_to_poD poD_to_pw.
-    Proof.
-      split; use StandardFiniteSets.three_rec_dep; apply id_left.
-    Qed.
-
-  End pushouts.
-*)
-
-  (* A colimit is a colimit pointwise *)
-  Lemma pw_colim
-        (g:graph) (J:diagram g CD)
-        (colimD: Π a : C, ColimCocone
-                 (diagram_pointwise (homset_property D) J a))
-(F:CD) (R:cocone J F) :
-    isColimCocone J F R ->
-    Π c : C,
-          isColimCocone (diagram_pointwise  (homset_property _)  J c) (pr1 F c)
-                        (cocone_pointwise  (homset_property _)  J F R c).
-  Proof.
-    intros  isColim c.
-    apply isColimFunctor_is_pointwise_Colim.
-    intros b; apply colimD.
-    assumption.
-  Qed.
-
-  Lemma cocone_pushout_pw {X Y Z :CD} {a:CD  ⟦ X, Y ⟧} {b:CD ⟦ X, Z⟧} {x c}
-        (cc : cocone (pushout_diagram D (pr1 a x) (pr1 b x))  c) :
-    cocone
-      (diagram_pointwise (homset_property D)
-                         (pushout_diagram CD a b) x) c.
-  Proof.
-    simple refine (mk_cocone _ _  ).
-    -
-    intro v.
-    specialize (pr1 cc v).
-    pattern v.
-   
-    use StandardFiniteSets.three_rec_dep;simpl; apply idfun.
-
-    -      
-    intros u v e;
-     specialize (pr2 cc u v e);
-     revert u v e;
-     use StandardFiniteSets.three_rec_dep;  use StandardFiniteSets.three_rec_dep; 
-        exact (Empty_set_rect _ ) || (exact (fun v h => h)).
-  Defined.
-
-  Import graphs.pushouts.
 
   
-  Lemma Colims_pw_epi (colimD : Pushouts D) (A B : CD) (a:CD⟦ A,B⟧)
-        (epia:isEpi a) : Π (x:C), isEpi (pr1 a x).
-  Proof.    
-    intro  x; simpl.
-    apply (epi_to_pushout (C:=CD_Pre)) in epia.
-    apply pushout_to_epi.
-    simpl.
-    apply equiv_isPushout1 in epia; [| apply homset_property].
-    apply equiv_isPushout2; [ apply homset_property|].
-
-    red in epia.
-    red.
-    
-    
-    apply pw_colim with (c:=x) in epia ; cycle 1.
-    {
-      intro c.
-      
-      unfold Pushouts in colimD.
-      specialize (colimD _ _ _ (pr1 a c) (pr1 a c)).
-      red in colimD.
-      use( eq_diag_liftcolimcocone _ _ colimD) . 
-      use tpair.
-      use StandardFiniteSets.three_rec_dep; apply idpath.
-      use StandardFiniteSets.three_rec_dep;  use StandardFiniteSets.three_rec_dep; 
-         exact (Empty_set_rect _ )||exact (fun _ => idpath _).
-    }
-
-    intros c cc.
-    specialize (epia c (cocone_pushout_pw cc)).
-    apply (unique_exists (pr1 (iscontrpr1 epia))).
-
-    - assert (hepi := pr2 (iscontrpr1 epia)); simpl in hepi.
-      intro v.
-      generalize v (hepi v).
-      use StandardFiniteSets.three_rec_dep; intro h; apply h.
-    - intros y.
-      apply impred_isaprop.
-      intros t.
-      apply homset_property.
-    - assert (hepi2 := eq_exists_unique _ _ epia); simpl in hepi2.
-      intros y hv; specialize (hepi2 y).
-      apply hepi2.
-      intros v; specialize (hv v).
-      revert v hv.
-      use StandardFiniteSets.three_rec_dep;intro h; apply h.
-  Qed.
-
-End PointwiseEpi.
-
-
-
-
-
-
-
-(* 
-
- Preuve qu'on peut relever les épi dans la catégorie des endo foncteurs sur Set
-Autrement dit :
-    f
- A ---> C
- |
- | p
- |
- \/
- B
-
-Si p est un épi et que pour tout x y dans A, p(x)=p(y) => f(x)=f(b)
-alors il existe une unique flèche de B vers C qui complète le diagramme.
-
-Ca vient du fait que les epis sont effectifs
-
-*)
-Section LiftEpiNatTrans.
-  
-  Local Notation SET := hset_Precategory.
-  Context { Cat:precategory}.
-  Local Notation "[ C , D , hs ]" := (functor_precategory C D hs).
-  Local Notation C_SET :=  ([Cat, SET, (homset_property SET)]).
-
-  Context {A B C:C_SET} (p:nat_trans (pr1 A) (pr1 B))
-          (f:nat_trans (pr1 A)(pr1 C)).
-
-  Hypothesis (comp_epi: Π (X:Cat)  (x y: pr1 (pr1 A X)),
-                        p X x =  p X y -> f X x = f X y).
-
-
-  Hypothesis (surjectivep : isEpi (C:=C_SET) p).
-
-  
-  Import graphs.pushouts.
-
-  Lemma PushoutsHSET : Pushouts SET.
-    red.
-    intros .
-    apply ColimsHSET_of_shape.
-  Qed.
-
-  Lemma EffectiveEpis_Functor_HSET : EpisAreEffective C_SET.
-  Proof.
-    intros F G m isepim.
-    apply isEffectivePw.
-    intro x.
-    apply EffectiveEpis_HSET.
-    apply (Colims_pw_epi PushoutsHSET).
-    assumption.
-  Qed.
-    
-  Definition univ_surj_nt :nat_trans ( (pr1 B )) ( (pr1 C )).
-
-    apply EffectiveEpis_Functor_HSET in surjectivep.
-    red in surjectivep.
-    set (coeq := limits.coequalizers.mk_Coequalizer _ _ _ _ (pr2 surjectivep)).
-    apply (limits.coequalizers.CoequalizerOut coeq _ f).
-    abstract(
-    apply (nat_trans_eq (homset_property _));
-    intro c;
-    apply funextfun;
-    intro x;
-    apply comp_epi;
-    assert (hcommut := limits.pullbacks.PullbackSqrCommutes (pr1 surjectivep));
-    eapply nat_trans_eq_pointwise in hcommut;
-    apply toforallpaths in hcommut;
-    apply hcommut).
-  Defined.
-
-  Import limits.coequalizers.
-
-  Lemma univ_surj_nt_ax : ( p  ;;; univ_surj_nt   )   = f .
-  Proof.
-    unfold univ_surj_nt; cbn.
-    set (coeq := mk_Coequalizer _ _ _ _ _).
-    apply (CoequalizerCommutes coeq).
-  Qed.
-
-  Lemma univ_surj_nt_ax_pw x  : ( p x ;; univ_surj_nt x  )    = f x .
-  Proof.
-    now rewrite <- univ_surj_nt_ax.
-  Qed.
-
-  
-  Lemma univ_surj_nt_ax_pw_pw x c : ( p x ;; univ_surj_nt x  ) c   = f x c.
-  Proof.
-    now rewrite <- univ_surj_nt_ax.
-  Qed.
-
-End LiftEpiNatTrans.
-
-Lemma is_pointwise_epi_from_set_nat_trans_epi (C:precategory)
-      (F G : functor C hset_Precategory) (f:nat_trans ( F) ( G))
-      (h:isEpi (C:=functor_Precategory C hset_Precategory) f)
-  : Π (x:C), isEpi (f x).
-Proof.
-  apply Colims_pw_epi.
-  apply PushoutsHSET.
-  apply h.
-Qed.
-
-
-
-  Lemma isEpi_pre_whisker (B C :precategory)( D:Precategory)
-         (G H : functor C D) ( K : functor B C) (f:nat_trans G H)
-    : (Π x, isEpi (* (C:= functor_Precategory _ _) *) (f x)) -> isEpi (C:=functor_Precategory B D )
-                                                    (x:= (G □ K)) (y:= (H □ K))
-                                                    (pre_whisker K f).
-  Proof.
-    clear.
-    intro isEpif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intro a.
-    apply isEpif.
-  Qed.
-  
-(* This is true for finitary endofunctors
-or assuming the axiom of choice
- *)
-  Lemma isEpi_post_whisker (B :precategory)(C D:Precategory)
-         (G H : functor B C) ( K : functor C D) (f:nat_trans G H)
-    : isEpi (C:= functor_Precategory _ _) f
-      -> isEpi (C:=functor_Precategory B D)
-              (x:= (K □ G)) (y:= (K □ H))
-              (post_whisker f K).
-  Proof.
-    clear.
-  Admitted.
-
-  Lemma horcomp_pre_post :
-    Π (C D:precategory) ( E : Precategory) (F F' : functor C D) (G G' : functor D E) (f:F ⟶ F') (g:G ⟶ G'),
-    horcomp f g = compose (C:=functor_Precategory C E) (a:= (G □ F)) (b:= (G' □ F)) (c:= (G' □ F'))
-                          (pre_whisker F g)
-                          (post_whisker f G').
-  Proof.
-    intros.
-    apply nat_trans_eq.
-    apply homset_property.
-    intros;
-    apply idpath.
-  Qed.    
-
-
-  Lemma isEpi_horcomp (B :precategory)(C D:Precategory)
-        (G H : functor B C) (G' H' : functor C D)
-        (f:nat_trans G H) (f':nat_trans G' H')
-    : isEpi (C:= functor_Precategory _ _) f
-      -> (Π x, isEpi  (f' x))
-      -> isEpi (C:=functor_Precategory B D)
-              (x:= (G' □ G)) (y:= (H' □ H))
-              (horcomp f f').
-  Proof.
-    intros epif epif'.
-    rewrite horcomp_pre_post.
-    apply isEpi_comp.
-    -now apply isEpi_pre_whisker.
-    -now apply isEpi_post_whisker.
-  Qed.
-
-
 (*
 A morphism of arity F : a -> b induces a functor between representation Rep(b) -> Rep(a)
 
@@ -929,17 +181,6 @@ Section leftadjoint.
     now rewrite eqz.
   Qed.
 
-  (* copié de ssreflect. Voir plus loin pour l'utilisation *)
-  Lemma master_key : unit.
-    exact tt.
-  Qed.
-  Definition locked {A} := unit_rect _  (fun x : A => x) master_key.
-  
-  Lemma lock A x : x = locked x :> A.
-  Proof.
-    unfold locked.
-    now destruct master_key.
-  Qed.    
 
   
   (* Foncteur candidat 
@@ -1004,10 +245,10 @@ de a et que u est un morphisme de modules.
       apply eqpr).
     Defined.
 
-    Lemma u_commutes : ## m = projR ;;; u.
+    Lemma u_def : Π x, ## m x = projR x ;; u x.
     Proof.
       symmetry.
-      apply univ_surj_nt_ax.
+      apply univ_surj_nt_ax_pw.
     Qed.
 
   End CandidatU.
@@ -1022,15 +263,8 @@ de a et que u est un morphisme de modules.
   Qed.
 
 
-  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
+
   (* Notation GODMENT a b := (horcomp a b) (only parsing). *)
-
-
-  Lemma comp_cat_comp {A B C:hSet} (f : A -> B) (g:B -> C) x :
-    g (f x) = compose (C:= SET) f g x.
-  Proof.
-    reflexivity.
-  Qed.
 
 
 
@@ -1060,9 +294,16 @@ de a et que u est un morphisme de modules.
     neweqsubst z.
     etrans.
     apply Monad_Mor_μ.
-    match goal with |- nat_trans_data ?z' _ ;;_ ;; _ = _ => set (z := z') end.
-    neweqsubst z.      
-    apply u_commutes.
+   
+    etrans.
+    apply cancel_postcomposition.
+    etrans.
+    apply cancel_postcomposition.
+    apply u_def.
+    apply cancel_precomposition.
+    apply cancel_functor_on_morph.
+    apply u_def.
+
     etrans.
     apply cancel_postcomposition.
     etrans.
@@ -1115,25 +356,9 @@ de a et que u est un morphisme de modules.
     simpl.
     cbn.
    *)
-  Lemma cancel_functor_on_morph :
-    Π (C C' : precategory_ob_mor)
-      (F : functor_data C C') (a b : C) (m m': C ⟦ a, b ⟧) ,
-    m = m' -> #F m = #F m'.
-  Proof.
-    intros ??????? e.
-    now destruct e.
-  Qed.
 
-  Lemma horcomp_assoc : Π {B C D E : precategory} {H H':functor B C}
-        {F F' : functor C D}
-        {G G'  : functor D E} (a: H ⟶ H')(b: F ⟶ F') (c:G ⟶ G') x,
-      ((c ∙∙ b) ∙∙ a) x = (c ∙∙( b ∙∙ a)) x.
-  Proof.
-    intros.
-    cbn.
-    symmetry.
-    now rewrite functor_comp,assoc.
-  Qed.
+
+
   
   Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
   Proof.
@@ -1203,10 +428,10 @@ quotients in basics/Sets.v
        *)
       assert (epi :isEpi (horcomp (horcomp projR projR) projR c)).
       {
-        apply Colims_pw_epi.
-        apply PushoutsHSET.        
-        apply isEpi_horcomp;[   apply isEpi_horcomp|]; try apply Colims_pw_epi;
-          try apply PushoutsHSET; apply is_epi_proj_quot.
+        apply Pushouts_pw_epi.
+        apply HSET_Pushouts.        
+        apply isEpi_horcomp;[   apply isEpi_horcomp|]; try apply Pushouts_pw_epi;
+          try apply HSET_Pushouts; apply is_epi_proj_quot.
       }
       apply epi.
 
@@ -1301,86 +526,90 @@ Legend of the diagram :
 
       assert (huse := (horcomp_assoc projR projR projR c)).
       cbn.
+      TROP DE TEMPS ICI !
       apply huse.
-cbn.
-apply idpath.
+    cbn.
+   apply idpath.
 Qed.
-(* Le QED précédent prend énormément de temps.. pourquoi ? *)
-  
+  (* Le QED précédent prend énormément de temps.. pourquoi ? *)
+
+  Definition R'_monad : Monad _ := (_ ,, R'_Monad_laws).
+
   (*
-  Je veux expliquer ici pourquoi avec l'univalence computationnelle je n'ai plus
-besoin de mon égalité spécifique entre diagrammes eq_diag en prenant
- l'exemple du transport de cone pour un produit binaire
 
-Soit g un graphe discret (sans arrête), qu'on identifie avec le type de ses sommets.
+FIN DE LA PREMIERE ETAPE
 
-Ici on prend l'exemple d'un graphe à 2 sommets A et B :
-  g := A + B
+   *)
 
-Soit C une catégorie, qu'on identifie avec le type de ses objets.
-On note C⟦X,Y⟧ le type des morphismes entre les objets X, Y de C
+  Lemma projR_monad_laws: Monad_Mor_laws (T':= R'_monad) projR.
+  Proof.
+    split.
+    - intro X.
+      symmetry.
+      apply R'_μ_def.
+    - intro X.
+      symmetry.
+      apply R'_η_def.
+  Qed.
 
-Le type des diagrammes de g vers C est le suivant : g -> C
-
-Le type des cones sur un diagrame J est le suivant : 
-   cone J = Σ (c:C), Π x:g, C⟦c, J x⟧
-
-Supposons que j'ai une égalité entre deux diagrammes : e : J = J'
-Alors j'ai une fonction f : cone J -> cone J'
-que je définis par f co := (pr1 co, fun x => transport _ e (pr2 co x))
-
-'transport' est la fonction de transport. 
-Le premier argument est le type à transporter, le second l'égalité à utiliser,
-et le troisième le terme à transporter.
+  Definition projR_monad : Monad_Mor (pr1 R) (R'_monad) :=
+    (_ ,, projR_monad_laws).
 
 
-Maintenant, Supposons que pour démontrer que J=J', j'ai utilisé l'axiome
-d'égalité extensionnelle des fonctions : e := funextfun H
-funextfun est l'axiome et H est de type Π x, J x = J' x
+  (* FIN DE LA SECONDE ETAPE *)
 
-En particulier, supposons que J A ≡ J' A et J B ≡ J' B convertiblement.
-donc la preuve H consiste simplement à faire une disjonction de cas sur le sommet
-du graphe g (A ou B) et à appliquer eq_refl
+  Section morphInitialU.
+    Context {S:BREP b} (m:R -->[ F] S).
 
+    Ltac cpre :=  apply cancel_precomposition.
+    Ltac cpost :=  apply cancel_postcomposition.
+    
 
-Ce que je voudrais pour des raisons techniques et/ou pratiques,
-c'est que  pr2 co A ≡ pr2 (f co) A et pr2 c B ≡ pr2 (f co) B convertiblement.
+    Lemma u_monad_laws : Monad_Mor_laws (T:= R'_monad) (T':=## S) (u m).
+    Proof.
+      red.
+      split.
+      - intro X.
+        assert (epi :isEpi ( (horcomp projR projR) X)).
+        {
+          apply Pushouts_pw_epi.
+          apply PushoutsHSET.        
+          apply isEpi_horcomp; try apply Pushouts_pw_epi;
+            try apply PushoutsHSET; apply is_epi_proj_quot.
+        }
+        apply epi.
 
-Bien sûr ce n'est pas le cas si l'univalence est un axiome.
-En effet déplions un peu la chose pour le premier cas :
+        etrans.
 
-pr2 (f co) A ≡ transport (fun X => C⟦pr1 c, X⟧) 
-                              (funextfun H) (pr2 co A)
+        apply cancel_postcomposition.
+        apply (nat_trans_ax (projR)).
+        etrans.
 
-C'est clair que ça va pas calculer en coq normal. Voyons pourquoi cela
-devrait se réduire vers pr2 co A dans le cas où l'univalence calcule 
-(cubicaltt il paraît).
+        
+        rewrite assoc.        
+        apply cancel_postcomposition.
+        symmetry.
+        apply (Monad_Mor_μ (projR_monad)).
 
-Partons d'un exemple plus simple.
+        etrans.
+        rewrite <- assoc.
+        cpre.
+        symmetry.
+        apply u_commutes.
+        
+        apply cancel_precomposition.
+        
+        rewrite assoc.
+        
+        etrans.
+        apply cancel_postcomposition.
+        symmetry.
+        apply (Monad_Mor_μ (projR_monad)).
+        cbn -[R' compose].
+        
 
-J'ai une preuve e que deux fonctions (J J' : A+B -> T)
- sont égales via égalité extensionnelle e= funextfun H, 
-via une simple disjonction de cas suivi de eq_refl.
-
-J'ai un terme de type t : J A.
-J'ai envie que transport (fun X => X A) (funextfun H) t ≡ t.
-
-D'après le lemme d'UniMaths transportf_funextfun, j'anticipe que avec l'univalence
-qui calcule, on aurait (à vérifier si c'est vrai dans cubicaltt par exemple)
-    transport (fun X => X A) (funextfun H) t ≡ transport (fun X => X) (H A) t
-
-Mais qu'est ce que H A sinon eq_refl ? et donc 
-  transport (fun X => X) (H A) t ≡ t
-
-(Question subsidiaire : est-ce que mon argument marcherait pour si je définis
-la fonction directement par f co := transport _ e co ?
-Probalement pas. Mais pourquoi, et est-ce un problème théorique ?
-)
-
-
-
-
-    *) 
+    Qed.
+  End morphInitialU.
 
 End leftadjoint.
 
