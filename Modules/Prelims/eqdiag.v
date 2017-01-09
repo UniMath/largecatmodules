@@ -1,137 +1,41 @@
 (**
 
 - Custom notion of equality between diagrams (eq_diag) over the same graph
+- Transports of cones and cocones between equal diagrams.
+- Limits/Colimits are the same for equal diagrams.
 
- Definition of a specific notion of equality (eq_diag) between
-diagrams to circumvent the fact that axiom of functional extensionality
-stops reduction with the standard equality.
+This notion of equality is useful to make the link between standard 
+diagrams (pushouts, coequalizers, ...) in a functor category and
+the induced pointwise diagram given an object of the source category
 
-- Various proofs about equals diagrams : they define the same limits/colimits.
-This is used to switch between the pointwise definition of a diagram on vector
-and the definition of the pointwise diagram.
+Example of the binary product :
 
+Let
+- C,D be two categories, 
+- A and B two functors from C to D
+- x an object of C
 
+Let J := binproduct_diagram  (A x) (B x)
+Let J' := diagram_pointwise (binproduct_diagram A B) x.
 
-Using functional extensionality, eq_diag is equivalent to equality.
+J and J' are not definitionnally equal. 
 
-The main interest is the proof that lims/colims are the same for two 
-eq_diag diagrams.
+Let co a cone of J based on c.
 
-Example in case the graph is an equalizer graph.
+Using a (not too stupid) proof (e : eq_diag J J'), we can transport the cone co 
+with eq_diag_mkcone to get a cone co' of J' based on c that satisfies the 
+definitional equalities :
+  coneOut co' true  ≡ coneOut co true
+  coneOut co' false ≡ coneOut co false
 
-Let C,D be two categories. Let J be the following diagram
-<<
- F --> G
-   -->
->>
+(true and false are the two vertices of the binproduct graph).
 
-Let x be an object of C.
-We have the following diagram J' :
-<<
-
-F x --> G x
-    --> 
-
->>
-
-However J' is not definitionally equal to diagram_pointwise J x.
-
-The proof that it is eq_diag equal to J' allows to convert the colimit of one
-diagram into another, and the colimits arrows are really computing, which
-is not the case if one would abruptly use the proof of 'raw' equality between J'
-and diagram_pointwise J x
+This equality would not be needed if functional extensionality computed.
 
  *)
 
 
 
-  (*
-
-Je veux expliquer ici pourquoi je pense qu'avec l'univalence
-computationnelle je n'ai plus
-besoin de mon égalité spécifique entre diagrammes eq_diag en prenant
- l'exemple du transport de cone pour un produit binaire
-
-Soit g un graphe discret (sans arrête), qu'on identifie avec le type
-de ses sommets.
-
-Ici on prend l'exemple d'un graphe à 2 sommets A et B :
-  g := A + B
-
-Soit C une catégorie, qu'on identifie avec le type de ses objets.
-On note C⟦X,Y⟧ le type des morphismes entre les objets X, Y de C
-
-Le type des diagrammes de g vers C est le suivant : g -> C
-
-Le type des cones sur un diagrame J est le suivant :
-   cone J = Σ (c:C), Π x:g, C⟦c, J x⟧
-
-Supposons que j'ai une égalité entre deux diagrammes : e : J = J'
-Alors j'ai une fonction f : cone J -> cone J'
-que je définis par f co := (pr1 co, fun x => transport _ e (pr2 co x))
-
-'transport' est la fonction de transport.
-Le premier argument est le type à transporter, le second l'égalité à utiliser,
-et le troisième le terme à transporter.
-
-Un type vaut mieux qu'un long discours :
-transport : Π (X : UU) (P : X → UU) (x x' : X), x = x' → P x → P x'
-(UU == Type)
-
-Maintenant, Supposons que pour démontrer que J=J', j'ai utilisé l'axiome
-d'égalité extensionnelle des fonctions : e := funextfun H
-funextfun est l'axiome d'égalité extensionnelle et H est de type Π x, J x = J' x
-
-En particulier, supposons que J A ≡ J' A et J B ≡ J' B convertiblement.
-donc la preuve H consiste simplement à faire une disjonction de cas
-sur le sommet
-du graphe g (A ou B) et à appliquer eq_refl
-
-
-Ce que je voudrais pour des raisons techniques et/ou pratiques,
-c'est que  pr2 co A ≡ pr2 (f co) A et pr2 c B ≡ pr2 (f co) B convertiblement.
-
-Bien sûr ce n'est pas le cas si l'univalence est un axiome.
-En effet déplions un peu la chose pour le premier cas :
-
-pr2 (f co) A ≡ transport (fun X => C⟦pr1 c, X⟧)
-                              (funextfun H) (pr2 co A)
-
-C'est clair que ça va pas calculer en coq normal. Voyons pourquoi cela
-devrait se réduire vers pr2 co A dans le cas où l'univalence calcule
-(cubicaltt il paraît).
-
-Partons d'un exemple plus simple.
-
-J'ai une preuve e que deux fonctions (J J' : A+B -> T)
- sont égales via égalité extensionnelle e= funextfun H,
-via une simple disjonction de cas suivi de eq_refl.
-
-J'ai un terme de type t : J A.
-J'ai envie que transport (fun X => X A) (funextfun H) t ≡ t convertiblement
-
-D'après le lemme d'UniMaths transportf_funextfun, j'anticipe que avec
-l'univalence
-qui calcule, on aurait (à vérifier si c'est vrai dans cubicaltt par exemple)
-    transport (fun X => X A) (funextfun H) t ≡ transport (fun X => X)
-(H A) t convertiblement
-
-Mais qu'est ce que H A sinon eq_refl ? et donc
-  transport (fun X => X) (H A) t ≡ t convertiblement
-
-(Question à laquelle je n'ai pas réfléchi : est-ce qu'avec
-l'univalence computationnnelle, ça calculerait si je définissais la
-fonction directement par f co := transport _ e co ?
-
-Oui,je pense, à condition d'ajouter la règle apparemment bénine que les
-transports triviaux réduisent (ie si P x ne dépend pas de x en fait dans
-transportf P _ _)
-
-Y'a -til cette règle dans Cubicaltt ?
-
-
-
-    *) 
 
 
 Require Import UniMath.Foundations.Basics.PartD.
@@ -183,9 +87,11 @@ Qed.
 
 
 (* stolen from TypeTheory/Display_Cats/Auxiliary.v *)
-(** Very handy for reasoning with “dependent paths” — e.g. for algebra in displayed categories.  TODO: perhaps upstream to UniMath?
+(** Very handy for reasoning with “dependent paths” — 
 
-Note: similar to [transportf_pathsinv0_var], [transportf_pathsinv0'], but not quite a special case of them, or (as far as I can find) any other library lemma.
+Note: similar to [transportf_pathsinv0_var], [transportf_pathsinv0'], 
+but not quite a special case of them, or (as far as I can find) any other 
+library lemma.
 *)
 Lemma transportf_transpose {X : UU} {P : X → UU}
   {x x' : X} (e : x = x') (y : P x) (y' : P x')
@@ -194,6 +100,14 @@ Proof.
   intro H; destruct e; exact H.
 Defined.
 
+
+Lemma transportf2_comp  {X  : UU} (P : X -> X → UU) (x x'  : X)
+      (ex : x = x')  (t:P x x) :
+  transportf (fun y => P y y) ex t = transportf (fun y => P y x') ex
+                                             (transportf (fun y => P x y) ex t).
+Proof.
+  now induction ex.
+Qed.
 
 Definition eq_diag  {C : Precategory} {g : graph} (d d' : diagram g C) :=
   Σ (eq_v : Π v: vertex g, dob d v = dob d' v), Π (v v':vertex g) (f:edge v v'),
@@ -207,14 +121,6 @@ Proof.
   induction e.
   exists (fun x => idpath _).
   exact (fun x y z => idpath _).
-Qed.
-
-Lemma transportf2_comp  {X  : UU} (P : X -> X → UU) (x x'  : X)
-      (ex : x = x')  (t:P x x) :
-  transportf (fun y => P y y) ex t = transportf (fun y => P y x') ex
-                                             (transportf (fun y => P x y) ex t).
-Proof.
-  now induction ex.
 Qed.
 
 Lemma eq_diag_is_eq {C : Precategory} {g : graph} (d d' : diagram g C) :
@@ -242,27 +148,25 @@ Proof.
     apply funextsec; intro ed.
     specialize (autreq v v' ed).
     rewrite  <- (pathsinv0inv0 (eqv v)) in autreq.
-    symmetry in autreq.
+    apply pathsinv0 in autreq.
     apply transportf_transpose in autreq.
     unfold dmor in autreq.
     rewrite autreq.
     rewrite pathsinv0inv0.
     etrans.
-    symmetry.
+    eapply pathsinv0.
     apply (  transport_map (P:=P) (Q:=_) (fun x tp => tp  v v' ed)).
     etrans.
     apply (transportf_funextfun (fun x => C⟦ pr1 d' v,x⟧)).
     apply maponpaths.
     etrans.
-    symmetry.
+    eapply pathsinv0.
     apply (  transport_map (P:=P2) (Q:=_) (fun x tp => tp  v v' ed)).
     apply (transportf_funextfun (fun x => C⟦ x,pr1 d v'⟧)).
 Qed.
 
 (* We don't want to use the equivalence with bare identity to show the 
-symmetry because we want computation (Defined)
-
-However it seems we need computation only or the first component
+apply pathsinv0 because we want computation (Defined)
  *)
 Lemma sym_eq_diag  {C : Precategory} {g : graph} (d d' : diagram g C) :
   eq_diag d d' -> eq_diag d' d.
@@ -277,35 +181,15 @@ Proof.
     unfold eq_d1.
     assert (heqdag:eq_diag d' d).
     + apply eq_is_eq_diag.
-      symmetry.
+      apply pathsinv0.
       apply eq_diag_is_eq.
       assumption.
     +
-(*
-      assert(yop:= (pr2 heqdag)).
-      cbn in yop.
-    }
-    
-    
-    assert (eqd := eq_diag_is_eq _ _ eq_d).
-    clearbody eq_d2.
-    revert eq_d2.
-    induction eqd.
-    intros h v v' ed; specialize (h v v' ed).
-    revert h.
-    set (yop := pr1 eq_d v).
-    clearbody yop.
-    rewrite <- invmap
-    induction (yop).
-    
-    exact eq_d2.
-*)
-
 (* Proof without using equality *)
     abstract (cbn;
     intros v v' f;
     specialize (eq_d2 v v' f);
-    symmetry;
+    apply pathsinv0;
     unfold transportb;
     rewrite pathsinv0inv0;
     apply (transportf_transpose (P:=(λ obj : C, C ⟦ obj, dob d' v' ⟧)));
@@ -334,16 +218,16 @@ Proof.
   abstract(
       intros u v e; simpl;
       rewrite <- ( coconeInCommutes cc u v e);
-      apply (pathscomp0 (b:=transportb (precategory_morphisms (dob d' u)) (heq v) (dmor d' e) ;; (coconeIn cc v)));
+      apply (pathscomp0 (b:=transportb (precategory_morphisms (dob d' u)) (heq v)
+                                       (dmor d' e) ;; (coconeIn cc v)));
       [
         unfold transportb; (set (z:= ! heq v));
         rewrite <- (pathsinv0inv0 (heq v));
-        symmetry;
+        apply pathsinv0;
         apply transport_compose|];
-
       etrans; [
         apply cancel_postcomposition;
-        symmetry; apply heq2|];
+        eapply pathsinv0; apply heq2|];
       clear;
       now destruct (heq u)).
 Defined.
@@ -376,7 +260,7 @@ Proof.
         apply (transport_swap (fun a b => C⟦a,b⟧))|];
       etrans;[
         apply maponpaths;
-        symmetry;
+        eapply pathsinv0;
         apply heq2|];
       unfold heq;
       induction (pr1 heq_d u);
@@ -410,7 +294,7 @@ Proof.
     cbn in islim.
     cbn.
     etrans.
-    symmetry.
+    eapply pathsinv0.
     apply transport_target_postcompose.
     etrans.
     apply maponpaths.
@@ -433,14 +317,10 @@ Proof.
     apply idpath.
 Qed.
 
-(** same proof : dual 
+(** The dual proof .
 This proof could be deduced from the previous if there was a lemma 
-that tells that colimits are limits in the dual category. Is there such one
-Benedikt ?
-
-TODO : montrer que les colimites sont les duals des limites.
-*)
-(* TODO refaire mieux en s'isnpirant de eq_diag_islimcone *)
+stating that colimits are limits in the dual category. 
+ *)
 Lemma eq_diag_iscolimcocone:
   Π {C : Precategory} {g : graph} {d : diagram g C} 
     (d' : diagram g C)
@@ -467,7 +347,7 @@ Proof.
     cbn.
     etrans.
     rewrite <- (pathsinv0inv0 (eq_d1 v)).
-    symmetry.
+    eapply pathsinv0.
     apply transport_source_precompose.
     etrans.
     apply maponpaths.
@@ -493,8 +373,6 @@ Proof.
 Qed.
 
 
-
-
 Definition eq_diag_liftcolimcocone
            {C : Precategory} {g : graph} {d : diagram g C} 
            (d' : diagram g C)
@@ -510,6 +388,3 @@ Definition eq_diag_liftlimcone
            (cc:LimCone d ) : LimCone d'
   := mk_LimCone _ _ _ (eq_diag_islimcone _ eq_d
                                          (isLimCone_LimCone cc)).
-
-
-
