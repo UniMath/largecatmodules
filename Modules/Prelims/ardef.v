@@ -448,6 +448,9 @@ Section LargeCatMod.
 
 End LargeCatMod.
 
+Inductive phantom {A:UU} (x:A) :UU := ttp.
+
+Arguments ttp {_} _.
 
 (* a category can be viewed as a display category with singletons.
 *)
@@ -455,14 +458,11 @@ Section LiftCatDispCat.
 
   Context (C:Precategory).
 
-  Definition unit_hom := unit.
-  Definition unit_ob := unit.
-  Definition tt_hom := tt.
-  Definition tt_ob := tt.
+  
 
 
   Definition liftcat_disp_ob_mor : disp_precat_ob_mor C:=
-    ((fun _ => unit_ob) ,, fun  _ _ _ _ _ => unit_hom).
+    ((fun x => phantom x) ,, fun  _ _ _ _ f => phantom f).
 
   Definition liftcat_id_comp : disp_precat_id_comp _ liftcat_disp_ob_mor.
   Proof.
@@ -470,24 +470,38 @@ Section LiftCatDispCat.
     -
       intros x xx.
       simpl.
-      exact tt_hom.
+      apply  ttp.
     - intros x y z f g xx yy zz ff gg.
-      exact tt_ob.
+      apply ttp.
   Defined.
 
 
   Definition liftcat_data : disp_precat_data _
     := (liftcat_disp_ob_mor ,, liftcat_id_comp).
 
-  Lemma uniq_tt (x:unit) : x=tt.
-    now destruct x.
+  Lemma uniq_tt (A:UU) (x:A) (y:phantom x): y=ttp x.
+    now destruct y.
   Qed.
+
+  Lemma iscontr_ttp (A:UU) (x:A) :iscontr (phantom x).
+  Proof.
+    intros A x.
+    exists (ttp x).
+    now destruct t.
+  Qed.
+
+  Lemma isasetphantom (A:UU) (x:A) : isaset (phantom x).
+  Proof.
+    intros A x.
+    apply isasetifcontr.
+    apply iscontr_ttp.
+  Qed.    
 
   Lemma liftcat_axioms : disp_precat_axioms _ liftcat_data.
   Proof.
     repeat apply tpair; intros; try apply homset_property; try  now rewrite uniq_tt;
       symmetry;    rewrite uniq_tt.
-    exact isasetunit.
+    apply isasetphantom.
   Qed.
 
   Definition liftcat_disp : disp_precat _ :=
@@ -656,7 +670,7 @@ Section LargeCatRep.
 
   (* a representation is a monad with a module morphisme from arity to itself *)
   Definition rep_ar (ar: ARITY) :=
-    Σ (R:MONAD), RModule_Mor R (((ar:functor_over _ _ _):functor_over_data _ _ _) R tt_ob) (Θ R).
+    Σ (R:MONAD), RModule_Mor R (((ar:functor_over _ _ _):functor_over_data _ _ _) R (ttp R) ) (Θ R).
 
   Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
 
@@ -667,7 +681,7 @@ Section LargeCatRep.
   Definition functor_from_module {D:precategory} {R:MONAD} (S:RModule R D) : functor C D :=
     pr1 (pr1 S).
 
-  Definition ar_obj (a:ARITY) (M:MONAD)  := pr1 a M tt_ob.
+  Definition ar_obj (a:ARITY) (M:MONAD)  := pr1 a M (ttp M).
 
   Delimit Scope arity_scope with ar.
   (* ne marche pas.. *)
@@ -680,14 +694,14 @@ Section LargeCatRep.
     simpl.
     intros.
     apply (functor_over_on_morphisms a).
-    exact tt_hom.
+    apply ttp.
   Defined.
 
   Lemma ar_mor_eq (a:ARITY) {M N:MONAD} (f:MONAD  ⟦ M,N ⟧) :
     @functor_over_on_morphisms
       (monadPrecategory C) (monadPrecategory C)
       (functor_identity (precategory_Monad_data C)) (liftcat_disp (monadPrecategory C))
-      (bmod_disp C C) (functor_over_data_from_functor_over a) M N tt_ob tt_ob f tt_hom =
+      (bmod_disp C C) (functor_over_data_from_functor_over a) M N (ttp _) (ttp _) f (ttp _) =
     ar_mor a f .
   Proof.
     reflexivity.
@@ -698,10 +712,14 @@ Section LargeCatRep.
 
   Delimit Scope arity_scope with ar.
 
+  Definition armor_ob {a b : ARITY} (f:ARITY⟦a,b⟧) (R:MONAD) :=
+    (pr1 (pr1 f R (ttp R))).
+
   Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
              (g:MONAD ⟦ M, N ⟧) :=
+        Π c,  ((μr M) c);; (pr1 g c) =   pr1 (#a g )%ar c ;; armor_ob f N  c ;; μr N c .
         (* or the other way around a g ;;; f N : it is the same thanks to the naturality of f *)
-    Π c,  ((μr M) ;;; pr1 g) c = (pr1 (pr1 f M tt) ;;;  pr1 (#b g )%ar ;;; μr N) c.
+    (* Π c,  ((μr M) c);; (pr1 g c) = armor_ob f M  c ;;  pr1 (#b g )%ar c ;; μr N c . *)
 
   Lemma isaprop_rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
         (g:MONAD ⟦ M, N ⟧) :
@@ -732,7 +750,11 @@ Section LargeCatRep.
     := pr1 h.
 
   Definition rep_ar_mor_law1 {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
-           {f: ARITY ⟦ a, b ⟧} (h:rep_ar_mor_mor a b M N f) := pr2 h.
+             {f: ARITY ⟦ a, b ⟧} (h:rep_ar_mor_mor a b M N f) :
+    Π c,  ((μr M) c);; (pr1 (pr1 h) c) =   pr1 (#a h )%ar c ;; armor_ob f N  c ;; μr N c 
+    (* Π c,  ((μr M) c);; pr1 (monad_morphism_from_rep_ar_mor_mor h) c = *)
+    (*       armor_ob f M  c ;;  pr1 (#b (monad_morphism_from_rep_ar_mor_mor h ))%ar c ;; μr N c  *)
+    := pr2 h.
 
 
 
@@ -743,19 +765,20 @@ Section LargeCatRep.
     (rep_ar_mor_law RM RM (identity _) (Monad_identity _)).
     intros.
     intro c.
-    simpl.
-    rewrite -> id_right, id_left.
-    symmetry.
-    rewrite <- id_left.
+    apply pathsinv0.
+    etrans.
     apply cancel_postcomposition.
-    unfold ar_mor.
-    match goal with
-    | |- nat_trans_data (pr1 ?f) c = _  => set (z := f)
-    end.
-    neweqsubst z.
-    change tt_hom with (@id_disp _ (LMONAD) (pr1 RM) tt).
-    now apply (functor_over_id a).
-    reflexivity.
+    (* apply id_left *)
+    apply id_right.
+    etrans.
+    apply cancel_postcomposition.
+    eapply nat_trans_eq_pointwise.
+    apply maponpaths.
+    apply (functor_over_id a).
+    etrans.
+    apply id_left.
+    apply pathsinv0.
+    apply id_right.
   Qed.
 
   Definition brep_id  (a : ARITY) (RM : brep_disp_ob_mor a) : RM -->[ identity a] RM.
@@ -779,8 +802,9 @@ Section LargeCatRep.
   Qed.
 
 
+
   Lemma eq_ar_pointwise  (a b c : ARITY) ( f : ARITY ⟦ a, b ⟧) ( g : ARITY ⟦ b, c ⟧) (R:MONAD) x :
-    (pr1 (pr1 (f ;; g) R tt)) x = (pr1 (pr1 f R tt) ;;; pr1 (pr1 g R tt)) x .
+    armor_ob (f ;; g) R  x = armor_ob f R x ;; armor_ob g R x .
     intros.
     simpl.
     match goal with
@@ -794,7 +818,7 @@ Section LargeCatRep.
 
       assert (h:= transport_disp_mor (d:=GEN_ARITY) e (xx:=a) (yy:=c) funf typet).
       etrans.
-      assert (h2 := h (fun a b => pr1 (pr1 b R tt) x)).
+      assert (h2 := h (fun a b => pr1 (pr1 b R (ttp _)) x)).
       apply h2.
       simpl.
       rewrite id_right.
@@ -821,13 +845,13 @@ Qed.
         (* (xx : _ x) *)
         (* (yy : pr1 _ y) *)
 
-        (ff : pr1 x R tt -->[ f] pr1 y S tt)
+        (ff : pr1 x R (ttp _) -->[ f] pr1 y S (ttp _))
         (c : C) :
       pr1 (transportf _ e ff) c  = pr1 ff c .
   Proof.
     intros.
     simpl.
-    now destruct e.
+    now induction e.
   Qed.
   (* type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
 
@@ -862,18 +886,24 @@ Qed.
     apply cancel_postcomposition.
 
     etrans.
-    apply cancel_postcomposition.
+    apply cancel_precomposition.
+    (* apply cancel_postcomposition. *)
     apply eq_ar_pointwise.
 
-    apply cancel_precomposition.
-    set (z := (# ( c))%ar _).
+    apply cancel_postcomposition.
+    (* apply (functor_over_comp a). *)
+    (* apply cancel_precomposition. *)
+    (* set (z := (# ( c))%ar _). *)
+    set (z := (# ( a))%ar _).
     neweqsubst z.
-    assert( hc:= (@functor_over_comp _ _ _ _ _ ( c)) (pr1 R) (pr1 S) (pr1 T) tt tt tt
-                                                    (pr1 α) (pr1  β) tt tt).
-    apply hc.
+    apply(  (@functor_over_comp _ _ _ _ _ (a (* c *))) (pr1 R) (pr1 S) (pr1 T) (ttp _) (ttp _)
+                                                     (ttp _)
+                                                    (pr1 α) (pr1  β) (ttp _) (ttp _)).
+
     simpl.
     rewrite ar_mor_eq,ar_mor_eq,id_right.
     reflexivity.
+
     simpl.
 
     repeat rewrite assoc.
@@ -881,23 +911,28 @@ Qed.
     apply cancel_postcomposition.
     repeat rewrite <- assoc.
     apply cancel_precomposition.
-    (* naturality of g *)
-    simpl in g.
+    (* naturality of f (* g *) *)
+    simpl in f.
     simpl.
-    unfold ar_mor.
-    pr1_norm.
+    unfold ar_mor,armor_ob.
+    
+    (* pr1_norm. *)
     simpl.
-    set (z:= pr1 g).
+    set (z:= pr1 f (* g *)).
     simpl in z.
     unfold nat_trans_over_data in z.
     simpl in z.
-    assert (hg := pr2 g).
+    assert (hg := pr2 f (* g *)).
     simpl in hg.
     unfold nat_trans_over_axioms in hg.
     simpl in hg.
-    assert (hg':= fun a b c=> hg a b c tt tt tt).
-    simpl in hg'.
-    assert (hg'' := hg' (pr1 R) (pr1 S) (pr1 α)).
+    assert (hg':= fun a b c=> hg a b c (ttp _) (ttp _) (ttp _)).    
+
+    evar (A:Monad C).
+    evar (B:Monad C).
+    evar (m:Monad_Mor A B).
+    (* assert (hg'' := hg' (pr1 R) (pr1 S) (pr1 α)). *)
+    assert (hg'' := hg' A B m).
     simpl in hg''.
     simpl.
     match type of hg'' with
@@ -908,8 +943,9 @@ Qed.
     simpl in heqx.
     rewrite id_right in heqx.
     cbn in heqx.
-    symmetry.
+    (* symmetry. *)
     etrans.
+    subst A B m.
     apply heqx.
     unfold xb.
     etrans.

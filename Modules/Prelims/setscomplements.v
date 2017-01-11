@@ -231,6 +231,8 @@ Section LiftEpiNatTrans.
 
   Import limits.coequalizers.
 
+  (* Definition univ_surj_nt_coeq :  *)
+
   Lemma univ_surj_nt_ax : nat_trans_comp _ _ _ p  univ_surj_nt   = f .
   Proof.
     unfold univ_surj_nt; cbn.
@@ -248,6 +250,17 @@ Section LiftEpiNatTrans.
   Proof.
     now rewrite <- univ_surj_nt_ax.
   Qed.
+
+ Lemma univ_surj_nt_unique : Π g  (H : nat_trans_comp _ _ _ p  g   = f )
+                               b, g b = univ_surj_nt b.
+ Proof.
+   intros g hg b.
+   apply nat_trans_eq_pointwise.
+   unfold univ_surj_nt.
+   set (coeq := mk_Coequalizer _ _ _ _ _).
+   use (isCoequalizerOutUnique _ _ _ _ (isCoequalizer_Coequalizer coeq)).
+   apply hg.
+ Qed.
 
 End LiftEpiNatTrans.
 

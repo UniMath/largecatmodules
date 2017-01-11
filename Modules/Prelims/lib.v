@@ -63,7 +63,10 @@ Proof.
 Qed.
 
 (* This is true for finitary endofunctors
-or assuming the axiom of choice
+or assuming the axiom of choice if the target
+category has effective epis
+(because in this case, any epi is absolute)
+
  *)
 Lemma isEpi_post_whisker (B :precategory)(C D:Precategory)
       (G H : functor B C) ( K : functor C D) (f:nat_trans G H)
