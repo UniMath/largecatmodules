@@ -120,6 +120,16 @@ Proof.
   now rewrite functor_comp,assoc.
 Qed.
 
+Lemma compose_nat_trans : Π {C D:precategory} {F G H} (a:nat_trans F G)
+                            (b:nat_trans G H) (X:C),  a X ;; b X =
+                                                      nat_trans_comp
+                                                        (C:=C) (C':=D)
+                                                        F G H a b X.
+Proof.
+  intros; apply idpath.
+Qed.
+
+
 (* copié de ssreflect. Pour l'instant inutile *)
 Lemma master_key : unit.
   exact tt.

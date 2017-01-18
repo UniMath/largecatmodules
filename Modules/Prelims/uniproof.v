@@ -99,8 +99,8 @@ Set Automatic Introduction.
 
 
 (* used as admit when Qed takes too long *)
-Lemma toolong : forall A, A.
-Admitted.                       
+(* Lemma toolong : forall A, A. *)
+(* Admitted.                        *)
 
 (* faithul functors reflect epimorphisms *)
 Section FaithFulReflectEpis.
@@ -302,8 +302,15 @@ de a et que u est un morphisme de modules.
 
 
 
+SearchPattern (_ -> ?f ?x = ?f ?y).
 
-  
+Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
+  f = g -> f t1 = f t2 ->g t1 = g t2.
+Proof.
+  now induction 1.
+Qed.
+
+
   (* R'_μ is defined by the following diagram :
 <<
                   μ R
@@ -324,13 +331,15 @@ de a et que u est un morphisme de modules.
     apply rel_eq_proj_quot.
     intros S f.
     rewrite comp_cat_comp.
-    match goal with |- ?f0 x = ?t => set (z:=f0); change t with (z y) end.
-    neweqsubst z.
+    symmetry.
+    rewrite comp_cat_comp.
+    eapply changef_path.
+    symmetry.
     etrans.
-    apply Monad_Mor_μ.
+    apply (Monad_Mor_μ (pr1 f)).
    
     etrans.
-    apply cancel_postcomposition.
+    apply (cancel_postcomposition (C:=SET)).
     etrans.
     apply cancel_postcomposition.
     apply u_def.
@@ -339,7 +348,7 @@ de a et que u est un morphisme de modules.
     apply u_def.
 
     etrans.
-    apply cancel_postcomposition.
+    apply (cancel_postcomposition (C:=SET)).
     etrans.
     symmetry.      
     apply  (assoc (C:=SET) (projR (## R X)) (u f (## R X))).
@@ -357,8 +366,10 @@ de a et que u est un morphisme de modules.
     apply maponpaths.
     apply maponpaths.
     apply maponpaths.
-    apply toolong.
-    (* exact hxy. *)
+    apply pathsinv0.
+    cbn.
+    cbn in hxy.
+    apply hxy.
   Qed.
 
   Lemma isEpi_def_R'_μ: isEpi (C:= functor_Precategory _ _) (projR ∙∙ projR).
@@ -401,7 +412,7 @@ de a et que u est un morphisme de modules.
   Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
   Proof.
     repeat split.
-    -       cbn -[R' compose identity].
+    - 
       intro c.
       use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ (projR)).
       apply is_epi_proj_quot.
@@ -416,6 +427,7 @@ de a et que u est un morphisme de modules.
       rewrite <- assoc.
       etrans.
       apply (cancel_precomposition _ _ _ (R' c)).
+      cbn.
       apply R'_μ_def.
       
       rewrite assoc, id_right.
@@ -447,8 +459,9 @@ de a et que u est un morphisme de modules.
       rewrite assoc, id_right.
       rewrite (Monad_law2 (T:=pr1 R)).
       now rewrite id_left.
-    - intro c.             
+    - intro c.
       cbn -[R' compose].
+ 
       (* Note : 
 
 If I write instead :
@@ -471,6 +484,24 @@ quotients in basics/Sets.v
         apply isEpi_horcomp;[   apply isEpi_horcomp|]; try apply Pushouts_pw_epi;
           try apply HSET_Pushouts; apply is_epi_proj_quot.
       }
+
+(*
+      match goal with
+        |- ?x = ?y => 
+        let u := type of x in
+        set (u' :=u) ;      
+        cbn in u'; change (x = y :> u') end.
+        let v := type of y in
+         ; set(v' := v);
+        evar (x':u); evar (y':v) ;
+          assert (h1:x=x'); subst x' ;
+            [|assert (h2 :y=y'); subst y'] end.
+
+      cbn in u'.
+      cbn in v'.
+      apply funextfun;    intro x;    cbn; apply idpath.
+      apply funextfun;    intro x;    cbn; apply idpath.
+*)
       apply epi.
 
       (* To understand the proof, see the string diagram muproof sent to
@@ -482,13 +513,12 @@ Legend of the diagram :
 - i = projR
 *)      
       etrans.
-
       (* First equality *)
       etrans.
-
       apply assoc.
-
       rewrite horcomp_pre_post.
+
+      
       
       etrans.
       apply (cancel_postcomposition (C:=SET)).
@@ -499,16 +529,19 @@ Legend of the diagram :
       cbn -[R' compose horcomp].
       reflexivity.
 
-      etrans.
-      rewrite <- assoc.      
+      
+      rewrite <- assoc.
+ 
       apply (cancel_precomposition SET).
       rewrite <- (functor_comp (C:=SET) (C':=SET)).
       apply cancel_functor_on_morph.
       apply R'_μ_def.
       
       rewrite functor_comp,assoc.
-      apply cancel_postcomposition.
+      apply (cancel_postcomposition (C:=SET)).
       symmetry.
+      cbn.
+      TROP LONG !!
       apply (nat_trans_ax (projR)).
 
       (* second equality *)
@@ -736,14 +769,6 @@ or rather the following one
       Context {S:BREP b} (m:R -->[ F] S).
 
 
-      Lemma compose_nat_trans : Π {C D:precategory} {F G H} (a:nat_trans F G)
-                                  (b:nat_trans G H) (X:C),  a X ;; b X =
-                                                            nat_trans_comp
-                                                              (C:=C) (C':=D)
-                                                              F G H a b X.
-      Proof.
-        intros; apply idpath.
-      Qed.
       
       Lemma eq_mr' X : μr _ R X ;; ## m X = armor_ob _ F (pr1 R) X ;;
                     pr1 (# b (projR_monad))%ar X ;;
