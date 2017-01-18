@@ -398,13 +398,12 @@ Qed.
   Qed.
 
   Definition R'_Monad_data : Monad_data C := ((R' ,, R'_μ) ,, R'_η).
-  (*
-  Goal Π c, identity (R'_Monad_data c) = identity (R'_Monad_data c).
-    intro c.
-    unfold R'_Monad_data.
-    simpl.
-    cbn.
-   *)
+
+  TROP LONG
+  Lemma impossible :  Π c : SET,
+  # R'_Monad_data ((μ R'_Monad_data) c) ;; (μ R'_Monad_data) c =
+  (μ R'_Monad_data) (R'_Monad_data c) ;; (μ R'_Monad_data) c.
+  Proof.
 
 
 
@@ -534,7 +533,7 @@ Legend of the diagram :
  
       apply (cancel_precomposition SET).
       rewrite <- (functor_comp (C:=SET) (C':=SET)).
-      apply cancel_functor_on_morph.
+      apply cancel_functor_on_morph.      
       apply R'_μ_def.
       
       rewrite functor_comp,assoc.
