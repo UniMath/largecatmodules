@@ -11,9 +11,9 @@ to the previously mentionned for surjections.
 
 
  *)
-Require Import UniMath.Foundations.Basics.PartD.
-Require Import UniMath.Foundations.Basics.Propositions.
-Require Import UniMath.Foundations.Basics.Sets.
+Require Import UniMath.Foundations.PartD.
+Require Import UniMath.Foundations.Propositions.
+Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.precategories.
 Require Import UniMath.CategoryTheory.functor_categories.
@@ -47,15 +47,13 @@ Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.kernels.
 Require Import UniMath.CategoryTheory.limits.pullbacks.
 Require Import UniMath.CategoryTheory.limits.coequalizers.
-Require Import UniMath.CategoryTheory.limits.EffectiveEpis.
 
 
 Require Import UniMath.CategoryTheory.CocontFunctors.
 
 Require Import UniMath.CategoryTheory.GrothendieckTopos.
 
-Require Import Modules.Prelims.epipw.
-Require Import Modules.Prelims.effectiveepis.
+Require Import UniMath.CategoryTheory.EpiFacts.
 
 
 Definition hset_Precategory : Precategory := (hset_precategory ,, has_homsets_HSET).

@@ -1,7 +1,4 @@
 ardef.v
-eqdiag.v
-effectiveepis.v
-epipw.v
 setscomplements.v
 quotientfunctor.v
 lib.v

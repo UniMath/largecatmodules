@@ -23,9 +23,9 @@ Preuve d'André à traduire.
 
 *)
 
-Require Import UniMath.Foundations.Basics.PartD.
-Require Import UniMath.Foundations.Basics.Propositions.
-Require Import UniMath.Foundations.Basics.Sets.
+Require Import UniMath.Foundations.PartD.
+Require Import UniMath.Foundations.Propositions.
+Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.precategories.
 Require Import UniMath.CategoryTheory.functor_categories.
@@ -33,6 +33,7 @@ Require Import UniMath.CategoryTheory.UnicodeNotations.
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import UniMath.CategoryTheory.Epis.
+Require Import UniMath.CategoryTheory.EpiFacts.
 
 Require Import UniMath.CategoryTheory.Monads.
 Require Import UniMath.CategoryTheory.RModules. 
@@ -59,14 +60,10 @@ Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.kernels.
 Require Import UniMath.CategoryTheory.limits.pullbacks.
 Require Import UniMath.CategoryTheory.limits.coequalizers.
-Require Import UniMath.CategoryTheory.limits.EffectiveEpis.
-
 
 Require Import UniMath.CategoryTheory.CocontFunctors.
 
-Require Import Modules.Prelims.epipw.
 Require Import Modules.Prelims.setscomplements.
-
 
 
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
@@ -79,10 +76,6 @@ Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
-(* En attendant que la pull request soit acceptée dans UniMaths  *)
-Require Import Modules.Prelims.effectiveepis.
-Require Import Modules.Prelims.eqdiag.
-Import EffectiveEpis.
 
 
 Require Import Modules.Prelims.ardef.
