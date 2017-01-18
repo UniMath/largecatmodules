@@ -163,9 +163,8 @@ Section LiftEpiNatTrans.
   
   Local Notation SET := hset_precategory.
   Context { CC:precategory}.
-  (* Local Notation "[ C , D , hs ]" := (functor_precategory C D hs). *)
   Local Notation C_SET :=  (functor_precategory CC SET has_homsets_HSET).
-  (* ([Cat, SET, (homset_property SET)]). *)
+
 
   Context {A B C:functor CC SET} (p:nat_trans A B)
           (f:nat_trans A C).
@@ -222,12 +221,12 @@ Section LiftEpiNatTrans.
   Qed.
 
   
-  Lemma univ_surj_nt_ax_pw_pw x c : (p x ;; univ_surj_nt x) c   = f x c.
+  Lemma univ_surj_nt_ax_pw_pw x c : (p x ;; univ_surj_nt x) c = f x c.
   Proof.
     now rewrite <- univ_surj_nt_ax.
   Qed.
 
- Lemma univ_surj_nt_unique : Π g  (H : nat_trans_comp _ _ _ p  g   = f )
+ Lemma univ_surj_nt_unique : Π g  (H : nat_trans_comp _ _ _ p  g = f)
                                b, g b = univ_surj_nt b.
  Proof.
    intros g hg b.
