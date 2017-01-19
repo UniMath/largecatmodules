@@ -1316,11 +1316,11 @@ Qed.
       now rewrite eqm'.
       apply Monad_Mor_equiv in eqm'2.
       apply nat_trans_eq.
-      apply homset_property.
+      apply has_homsets_HSET.
       intro X.
       eapply nat_trans_eq_pointwise in eqm'2.
       apply eqm'2.
-      apply homset_property.
+      apply has_homsets_HSET.
     Qed.      
     
   End uUnique.
