@@ -399,66 +399,74 @@ Qed.
 
   Definition R'_Monad_data : Monad_data C := ((R' ,, R'_μ) ,, R'_η).
 
-  TROP LONG
-  Lemma impossible :  Π c : SET,
-  # R'_Monad_data ((μ R'_Monad_data) c) ;; (μ R'_Monad_data) c =
-  (μ R'_Monad_data) (R'_Monad_data c) ;; (μ R'_Monad_data) c.
+ 
+
+  Lemma R'_Monad_law_η1 : Π c : SET, R'_η (R' c) ;; R'_μ c = identity (R' c).
   Proof.
+    intro c.
+    use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ (projR)).
+    apply is_epi_proj_quot.
+    repeat rewrite assoc.
+    etrans.
+    apply (cancel_postcomposition (b:=R' (R' c))).
+    apply (cancel_postcomposition _ ((η ## R) (## R c) ;; # (## R) (projR _))).
+    apply (nat_trans_ax (η ## R)).
+
+    rewrite <- assoc.
+    rewrite <- assoc.
+    etrans.
+    apply (cancel_precomposition _ _ _ (R' c)).
+    cbn.
+    apply R'_μ_def.
+    
+    rewrite assoc, id_right.
+    etrans.
+    apply cancel_postcomposition.
+    apply (Monad_law1 (T:=pr1 R)).
+    apply id_left.
+  Qed.
 
 
+  Lemma R'_Monad_law_η2 : Π c : SET, # R' (R'_η c) ;; R'_μ c = identity (R' c).
+  Proof.
+    intro c.
+    etrans.
+    apply cancel_postcomposition.
+    etrans.
+    apply cancel_functor_on_morph.
+    apply R'_η_def.
+    apply functor_comp.
+    use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR).
+    apply is_epi_proj_quot.
+    repeat rewrite assoc.
+    etrans.
+    (apply cancel_postcomposition).
+    apply cancel_postcomposition.
+    symmetry.
+    apply (nat_trans_ax (projR)).
+    rewrite <- assoc.
+    rewrite <- assoc.
+    etrans.
+    apply cancel_precomposition.
+    apply R'_μ_def.
+    rewrite assoc, id_right.
+    rewrite (Monad_law2 (T:=pr1 R)).
+    now rewrite id_left.
+  Qed.
 
+  (* TROP LONG !! *)
+  trop LONG
+  Lemma R'_Monad_law_μ :  Π c : SET,
+  # R' (R'_μ  c) ;; R'_μ c = R'_μ (R' c) ;; R'_μ c.
   
   Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
   Proof.
     repeat split.
-    - 
-      intro c.
-      use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ (projR)).
-      apply is_epi_proj_quot.
-
-      repeat rewrite assoc.
-      etrans.
-      apply (cancel_postcomposition (b:=R' (R' c))).
-      apply (cancel_postcomposition _ ((η ## R) (## R c) ;; # (## R) (projR _))).
-      apply (nat_trans_ax (η ## R)).
-
-      rewrite <- assoc.
-      rewrite <- assoc.
-      etrans.
-      apply (cancel_precomposition _ _ _ (R' c)).
+    -  apply R'_Monad_law_η1.
+    -  apply R'_Monad_law_η2.
+    - intro c.
       cbn.
-      apply R'_μ_def.
-      
-      rewrite assoc, id_right.
-      etrans.
-      apply cancel_postcomposition.
-      apply (Monad_law1 (T:=pr1 R)).
-      apply id_left.
-      
-    - intro c.
-      etrans.
-      apply cancel_postcomposition.
-      etrans.
-      apply cancel_functor_on_morph.
-      apply R'_η_def.
-      apply functor_comp.
-      use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR).
-      apply is_epi_proj_quot.
-      repeat rewrite assoc.
-      etrans.
-      (apply cancel_postcomposition).
-      apply cancel_postcomposition.
-      symmetry.
-      apply (nat_trans_ax (projR)).
-      rewrite <- assoc.
-      rewrite <- assoc.
-      etrans.
-      apply cancel_precomposition.
-      apply R'_μ_def.
-      rewrite assoc, id_right.
-      rewrite (Monad_law2 (T:=pr1 R)).
-      now rewrite id_left.
-    - intro c.
+      apply funextfun.
       cbn -[R' compose].
  
       (* Note : 
