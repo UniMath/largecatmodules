@@ -454,20 +454,29 @@ Qed.
     now rewrite id_left.
   Qed.
 
-  (* TROP LONG !! *)
-  trop LONG
-  Lemma R'_Monad_law_μ :  Π c : SET,
-  # R' (R'_μ  c) ;; R'_μ c = R'_μ (R' c) ;; R'_μ c.
-  
-  Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
+  Lemma assochor c : (projR ∙∙ projR) (## R c) ;; # (R' □ R') (projR c)
+                  = (projR ∙∙ (projR ∙∙ projR)) c.
   Proof.
-    repeat split.
-    -  apply R'_Monad_law_η1.
-    -  apply R'_Monad_law_η2.
-    - intro c.
-      cbn.
-      apply funextfun.
-      cbn -[R' compose].
+    apply funextfun.
+
+    intro x.
+    cbn.
+    (* assert (hmap :=fun t1 t2 => (maponpaths (R'_μ (R' c) ) (t1:=t1) (t2:=t2))). *)
+    (* cbn in hmap. *)
+    (* apply hmap. *)
+    (* clear hmap. *)
+    set (y:= functor_on_morphisms _ _).
+    assert (hp := fun a b c f g => toforallpaths _ _ _ (functor_comp R' a b c f g)).
+    
+    apply pathsinv0.
+    cbn.
+    subst y.
+    use hp.
+  Qed.
+  Lemma R'_Monad_law_μ :  Π c : SET,
+                                # R' (R'_μ  c) ;; R'_μ c = R'_μ (R' c) ;; R'_μ c.
+  Proof.
+    intro c.
  
       (* Note : 
 
@@ -491,24 +500,6 @@ quotients in basics/Sets.v
         apply isEpi_horcomp;[   apply isEpi_horcomp|]; try apply Pushouts_pw_epi;
           try apply HSET_Pushouts; apply is_epi_proj_quot.
       }
-
-(*
-      match goal with
-        |- ?x = ?y => 
-        let u := type of x in
-        set (u' :=u) ;      
-        cbn in u'; change (x = y :> u') end.
-        let v := type of y in
-         ; set(v' := v);
-        evar (x':u); evar (y':v) ;
-          assert (h1:x=x'); subst x' ;
-            [|assert (h2 :y=y'); subst y'] end.
-
-      cbn in u'.
-      cbn in v'.
-      apply funextfun;    intro x;    cbn; apply idpath.
-      apply funextfun;    intro x;    cbn; apply idpath.
-*)
       apply epi.
 
       (* To understand the proof, see the string diagram muproof sent to
@@ -522,7 +513,7 @@ Legend of the diagram :
       etrans.
       (* First equality *)
       etrans.
-      apply assoc.
+      apply (assoc (C:=SET)).
       rewrite horcomp_pre_post.
 
       
@@ -547,11 +538,11 @@ Legend of the diagram :
       rewrite functor_comp,assoc.
       apply (cancel_postcomposition (C:=SET)).
       symmetry.
-      cbn.
-      TROP LONG !!
+      apply cancel_postcomposition.
       apply (nat_trans_ax (projR)).
 
       (* second equality *)
+      etrans.
       rewrite <- assoc.
       rewrite <- assoc.
       apply (cancel_precomposition (SET)).     
@@ -599,19 +590,21 @@ Legend of the diagram :
       rewrite <- assoc.
       reflexivity.
 
-      etrans.
+  
       apply cancel_postcomposition.
 
-      assert (huse := (horcomp_assoc projR projR projR c)).
-      cbn.
-  Admitted.
-  (*
-      TROP DE TEMPS ICI !
-      apply huse.
-    cbn.
-   apply idpath.
-Qed.
-*)
+      (* association of horcomposition *)
+      apply assochor.
+  Qed.
+
+    Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
+  Proof.
+    repeat split.
+    -  apply R'_Monad_law_η1.
+    -  apply R'_Monad_law_η2.
+    - apply R'_Monad_law_μ.
+  Qed.
+
   (* Le QED précédent prend énormément de temps.. pourquoi ? *)
 
   Definition R'_monad : Monad _ := (_ ,, R'_Monad_laws).

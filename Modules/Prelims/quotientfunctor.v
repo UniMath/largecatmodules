@@ -63,7 +63,13 @@ Section QuotientFunctor.
   Hypothesis (congru: Π (x y:D) (f:D⟦ x,  y⟧), iscomprelrelfun (hequiv x) (hequiv y) (#R f)).
 
   (* Definition of the quotient functor *)
-  Definition quot_functor_ob (d:D) := setquotinset (hequiv d).
+  Definition quot_functor_ob (d:D) :hSet. (* := setquotinset (hequiv d). *)
+  Proof.
+    intro d.
+    mkpair.
+    apply (setquot (hequiv d)).
+    abstract (apply isasetsetquot).
+  Defined.
   Definition quot_functor_mor (d d' : D) (f : D ⟦d, d'⟧)
     : C ⟦quot_functor_ob d, quot_functor_ob d' ⟧ :=
     fun (c:quot_functor_ob d) =>  setquotfun (hequiv d) (hequiv d') (#R f) (congru d d' f) c.
