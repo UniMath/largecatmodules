@@ -408,10 +408,12 @@ Qed.
     apply is_epi_proj_quot.
     repeat rewrite assoc.
     etrans.
-    apply (cancel_postcomposition (b:=R' (R' c))).
+    apply cancel_postcomposition.
+    (* cbn. *)
+    (* apply cancel_postcomposition. *)
+    (* apply (cancel_postcomposition (b:=R' (R' c))). *)
     apply (cancel_postcomposition _ ((η ## R) (## R c) ;; # (## R) (projR _))).
     apply (nat_trans_ax (η ## R)).
-
     rewrite <- assoc.
     rewrite <- assoc.
     etrans.
@@ -455,20 +457,109 @@ Qed.
   Qed.
 
   (* TROP LONG !! *)
-  trop LONG
-  Lemma R'_Monad_law_μ :  Π c : SET,
-  # R' (R'_μ  c) ;; R'_μ c = R'_μ (R' c) ;; R'_μ c.
-  
+  (* trop LONG *)
+  Check ( (R' ∘ R'_μ)).
+  Check ( (R'_μ ø R') ).
+  (* Lemma R'_Monad_law_μ : *)
+  (*   (R' ∘ R'_μ) ;;; R'_μ = (R'_μ ø R') ;;; R'_μ. *)
+  (*   (*  R'_μ c (# R' (R'_μ c) x) = R'_μ c (R'_μ (R' c) x). *) *)
+  (*   ( *)
+  (*   # R' (R'_μ  c) ;; R'_μ c = R'_μ (R' c) ;; R'_μ c. *)
+
+(*     Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25). *)
+(* Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity). *)
+
+  (* (λ x : (R' (R' (R' c)):hSet), R'_μ c (# R' (R'_μ c) x)) = (λ x : (R' (R' (R' c)):hSet), R'_μ c (R'_μ (R' c) x)). *)
+  Check(fun c =>  (projR ∙∙ (projR ∙∙ projR)) c : SET⟦_, R' (R' (R' c))⟧).
+  Check (fun c => R' (R' (R' c))).
+  Check (fun c => (R'_μ (R' c))).
+  Lemma myadmit (A:UU) : A.
+    Admitted.
+  Goal Π c:hSet,Π (f:pr1 (R' (R' (R' c))) → pr1 (R' (R' c))), f = (R'_μ (R' c)).
+    intros c f.
+    set (t:=(R'_μ (R' c))).
+    set (x:=(R' □ R') (R' c)).
+    cbn in x.
+    cbn in t.
+    assert (f=t).
+    apply myadmit.
+  Abort.
+    
+  Check (fun c => (R'_μ (R' c)): pr1 (R' (R' (R' c))) → pr1 (R' (R' c))).
+  (* Check (fun c => (R'_μ (R' c)):  SET⟦ R' (R' (R' c)), (R' (R' c))⟧). *)
+  Check (fun (c:hSet) => compose (b:=R' (R' (R' c)))   (((projR ∙∙ (projR ∙∙ projR)) c): SET⟦_, R' (R' (R' c))⟧) ((R'_μ (R' c)): pr1 ( R' (R' (R' c))) -> _)).
+  (* =  (projR ∙∙ (projR ∙∙ projR)) c ;; (R'_μ (R' c) ;; R'_μ c)). *)
+  Check (fun c =>  (R'_μ (R' c) ;; R'_μ c)).
+  Lemma R'_Monad_law3' (c:SET) :
+    (projR ∙∙ projR) (## R c) ;; # (R' □ R') (projR c) ;; ((R'_μ (R' c) ;; R'_μ c)(* :(pr1 (R' (R' (R' c))) -> pr1 (R' c)) *)) =
+    (projR ∙∙ (projR ∙∙ projR)) c ;; ((R'_μ (R' c) ;; R'_μ c):(pr1 (R' (R' (R' c))) -> pr1 (R' c))).
+  Proof.
+    apply funextfun.
+    intro x.
+    cbn.
+    apply maponpaths.
+    (* assert (huse :=  (horcomp_assoc projR projR projR c)). *)
+    (* cbn in huse. *)
+    (* apply toforallpaths in huse. *)
+
+    assert (hmap :=fun t1 t2 => (maponpaths (R'_μ (R' c) ) (t1:=t1) (t2:=t2))).
+    cbn in hmap.
+    apply hmap.
+    clear hmap.
+    set (y:= functor_on_morphisms _ _).
+    assert (hp := fun a b c f g => toforallpaths _ _ _ (functor_comp R' a b c f g)).
+    
+    apply pathsinv0.
+    cbn.
+    subst y.
+    use hp.
+    Admitted.
+
+
+  Lemma R'_μ_compat c :  (projR ∙∙ (projR ∙∙ projR)) c ;; (# R' (R'_μ c) ;; R'_μ c) =
+                         (projR ∙∙ (projR ∙∙ projR)) c ;; ((R'_μ (R' c) ;; R'_μ c):(pr1 (R' (R' (R' c))) -> _)).
+  Proof.
+  Admitted.
+  Check (fun c => # R' (R'_μ c) ;; R'_μ c).
+  Check (fun c =>  (R'_μ) (R' c) ;; R'_μ c).
+  Lemma R'_Monad_μ c : # R' (R'_μ c) ;; R'_μ c  =
+                       ((R'_μ) (R' c) ;; R'_μ c : (pr1 (R' (R' (R' c))) -> pr1 (R' c))).
+    Admitted.
+  (* (projR ∙∙ (projR ∙∙ projR)) c ;; (λ x : R' (R' (R' c)), R'_μ c (R'_μ (R' c) x)). *)
+
+  Opaque R'_Monad_data.
+  Opaque R'.
+
+  Definition R'_Monad_data' : Monad_data C := ((R' ,, myadmit _) ,, myadmit _).
+  Opaque isasetsetquot.
+
   Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
   Proof.
-    repeat split.
-    -  apply R'_Monad_law_η1.
-    -  apply R'_Monad_law_η2.
-    - intro c.
+    repeat split; apply myadmit.
+  Qed.
+    -  (* apply R'_Monad_law_η1. *)
+      apply myadmit.
+    -       apply myadmit. (* apply R'_Monad_law_η2. *)
+    -    exact R'_Monad_μ.
+  Qed.
       cbn.
       apply funextfun.
-      cbn -[R' compose].
- 
+      intro x.
+      (* cbn -[R' compose]. *)
+      assert (h:= R'_Monad_μ c).
+      cbn in h.
+      paths
+      match type of h with ?f = ?g => set (f':=f); set (g':=g) end.
+      assert (h':= toforallpaths _ _ _ h).
+      apply toforallpaths in h.
+      cbn in h.
+      apply h.
+      match goal with |- ?x = _ => let t := type of x in set (t':=t) end.
+      cbn in t'.
+      exact h.
+      apply R'_Monad_μ.
+
+  (* R'_μ c (# R' (R'_μ c) x) = R'_μ c (R'_μ (R' c) x) *)
       (* Note : 
 
 If I write instead :
@@ -491,6 +582,7 @@ quotients in basics/Sets.v
         apply isEpi_horcomp;[   apply isEpi_horcomp|]; try apply Pushouts_pw_epi;
           try apply HSET_Pushouts; apply is_epi_proj_quot.
       }
+      
 
 (*
       match goal with
@@ -508,8 +600,16 @@ quotients in basics/Sets.v
       cbn in v'.
       apply funextfun;    intro x;    cbn; apply idpath.
       apply funextfun;    intro x;    cbn; apply idpath.
-*)
+ *)
+      cbn.
+      cbn in epi.
+      (* cbn. *)
       apply epi.
+      assert (h:= R'_μ_compat c).
+      cbn in h.
+      exact h.
+  Qed.
+      apply R'_μ_compat.
 
       (* To understand the proof, see the string diagram muproof sent to
 Benedikt.
@@ -522,7 +622,7 @@ Legend of the diagram :
       etrans.
       (* First equality *)
       etrans.
-      apply assoc.
+      apply (assoc.
       rewrite horcomp_pre_post.
 
       
@@ -547,13 +647,18 @@ Legend of the diagram :
       rewrite functor_comp,assoc.
       apply (cancel_postcomposition (C:=SET)).
       symmetry.
-      cbn.
-      TROP LONG !!
-      apply (nat_trans_ax (projR)).
+      apply cancel_postcomposition.
+      apply (nat_trans_ax projR).
 
       (* second equality *)
-      rewrite <- assoc.
-      rewrite <- assoc.
+      etrans.
+      etrans.
+      eapply pathsinv0.
+      apply assoc.
+      eapply pathsinv0.
+      apply assoc.
+
+      etrans.
       apply (cancel_precomposition (SET)).     
       apply (R'_μ_def c).
 
@@ -599,11 +704,39 @@ Legend of the diagram :
       rewrite <- assoc.
       reflexivity.
 
+      cbn.
+      assert (h:= R'_Monad_law3' c).
+      cbn in h.
+      exact h.
+  Qed.
+      exact (R'_Monad_law3' c).
+      use R'_Monad_law3'.
       etrans.
       apply cancel_postcomposition.
 
-      assert (huse := (horcomp_assoc projR projR projR c)).
+      assert (huse :=  (horcomp_assoc projR projR projR c)).
+      cbn in huse.
+      apply toforallpaths in huse.
+      apply funextfun.
+      intro x.
+      match goal with |- ?f x = _ => set (g:= f) end.
+      cbn in g.
+      cbn in g.
+      specialize (huse x).
+      cbn in huse.
       cbn.
+      match goal with |- _ = ?f x =>
+                      idtac end.
+                      set (g:=f) end.
+      eapply pathsinv0.
+      etrans.
+      set (g := _ x).
+      exact huse.
+
+      cbn.
+      cbn in huse.
+      apply huse.
+      apply huse.
   Admitted.
   (*
       TROP DE TEMPS ICI !
