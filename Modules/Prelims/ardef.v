@@ -21,6 +21,8 @@ Require Import TypeTheory.Displayed_Cats.Core.
 Require Import TypeTheory.Displayed_Cats.Constructions.
 Require Import TypeTheory.Displayed_Cats.Fibrations.
 
+Require Import Modules.Prelims.lib.
+
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
@@ -30,14 +32,15 @@ Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
-
+(*
 Ltac pr1_norm  :=
   match goal with
     |- context f [pr1 ?T] =>
     let x:=type of (pr1 T) in
     change (pr1 T) with (T:x) (* (RModule_data_from_RModule _ _ T) *)
   end.
-
+ *)
+(*
 Ltac receq t t' :=
   let u := constr:( ( t , t') )  in
   match u with
@@ -55,7 +58,7 @@ Ltac my_f_equal :=
   match goal with
   | |- paths ?x ?y => receq x y; try reflexivity
  end.
-
+*)
 
 Ltac pathvia b := (apply (@pathscomp0 _ _ b _ )).
 
@@ -183,31 +186,36 @@ Section Pullback_module.
       rewrite <- (functor_comp T).
       specialize (hm c).
       simpl in hm.
-      repeat pr1_norm.
-      rewrite hm; clear hm.
+      etrans.
+      apply cancel_postcomposition.
+      apply cancel_functor_on_morph.
+      apply hm.
+
       rewrite functor_comp.
       rewrite <- assoc.
-      specialize (hT1 c).
-      simpl in hT1.
-      simpl.
-      rewrite hT1; clear hT1.
+      etrans.
+      apply cancel_precomposition.
+      apply hT1.
       repeat rewrite functor_comp.
-
       assert (hs := nat_trans_ax (σ M' T)).
-      simpl.
-      simpl in hs.
-      repeat rewrite assoc.
-      my_f_equal.
-      repeat rewrite <- assoc.
-      rewrite <- hs.
-      reflexivity.
+      
+      etrans.
+      rewrite <- assoc.
+      apply cancel_precomposition.
+      rewrite assoc.
+      apply cancel_postcomposition.
+      apply (nat_trans_ax (σ M' T)).
+      now repeat rewrite assoc.
   Qed.
-
 
   Definition pullback_module : RModule M C := tpair _ _ pbm_laws.
 
-
 End Pullback_module.
+
+Tactic Notation "cpre" uconstr(x) := apply (cancel_precomposition x).
+Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition (C:=x)).
+(* Ltac cpre x :=  apply (cancel_precomposition x). *)
+(* Ltac cpost x :=  apply (cancel_postcomposition (C:=x)). *)
 
 (*
 
@@ -224,30 +232,26 @@ Section Pullback_Module_Morphism.
   Local Notation pbmT := (pullback_module m T).
   Local Notation pbmT' := (pullback_module m T').
 
-  Lemma pbm_mor_law : RModule_Mor_laws M (T:=pbmT) (T':=pbmT') (pr1 n).
+  Lemma pbm_mor_law : RModule_Mor_laws M (T:=pbmT) (T':=pbmT') n.
     intros b.
     set (pbmT := pullback_module m T).
     set (pbmT' := pullback_module m T').
-    assert (hn:= RModule_Mor_σ _ n b).
-    simpl in hn.
-    revert hn.
-    pr1_norm ;  simpl.
-    auto.
-    intros hn.
-    rewrite <- assoc.
-    rewrite <- hn.
-    clear hn.
+    cbn.
+    eapply pathscomp0;revgoals.
+    rewrite <-assoc.
+    cpre _.
+    apply RModule_Mor_σ.    
     repeat rewrite assoc.
-    my_f_equal.
-    rewrite (nat_trans_ax n).
-    reflexivity.
+    cpost _.
+    apply pathsinv0.
+    apply nat_trans_ax.
   Qed.
 
   Definition pbm_mor  : RModule_Mor _  pbmT pbmT'  := ( _ ,, pbm_mor_law).
 
 
 End Pullback_Module_Morphism.
-
+(*
   (* adds a new equation z = ?x *)
 Ltac neweq z :=
   let t := type of z in
@@ -258,7 +262,7 @@ Ltac neweq z :=
 Ltac neweqsubst z :=
   let h := fresh in
   neweq z; [subst z| intro h; rewrite h; clear h z].
-
+*)
 
 
 
@@ -273,9 +277,7 @@ the identity morphism in M'.
 *)
 Section Pullback_Identity_Module.
 
-
     Context {B} {M':Monad B}  {C:precategory} {T  :RModule M' C}.
-
 
     Local Notation pbmid := (pullback_module (Monad_identity M') T).
 
@@ -290,10 +292,10 @@ Section Pullback_Identity_Module.
       red.
       intros b; simpl.
       rewrite id_left,id_right.
-      pr1_norm.
-      rewrite Precategories.Functor_identity.
-      rewrite id_left.
-      reflexivity.
+      etrans.
+      cpost _.
+      apply Precategories.Functor_identity.
+      apply id_left.
     Qed.
 
     Definition pbm_id  : RModule_Mor _ T pbmid := (_ ,, pbm_id_law) .
@@ -361,8 +363,7 @@ Section LargeCatMod.
   Definition bmod_id_comp : disp_precat_id_comp _ bmod_disp_ob_mor.
   Proof.
     split.
-    -
-      intros x xx.
+    - intros x xx.
       simpl.
       apply pbm_id.
     - intros x y z f g xx yy zz ff gg.
@@ -383,7 +384,7 @@ Section LargeCatMod.
         (ff : xx -->[ f] yy)
         (c : C) : (pr1 (transportf (mor_disp xx yy) e ff) c = pr1 ff c).
   Proof.
-    destruct e.
+    induction e.
     intros.
     apply idpath.
   Qed.
@@ -394,47 +395,35 @@ Section LargeCatMod.
     repeat apply tpair; intros; try apply homset_property.
     - simpl.
       unfold id_disp; simpl.
-
       apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
       apply nat_trans_eq; try apply homset_property.
       intros c; simpl.
       simpl.
       rewrite assoc; simpl.
-      etrans. Focus 2. eapply pathsinv0.
+      apply pathsinv0.
+      etrans.
       apply bmod_transport.
-      cbn. simpl. unfold pbm_mor_comp.
-      unfold transportb.
-      rewrite id_left.
-      rewrite id_right.
-      apply idpath.
-    -
-      set (heqf := id_right f).
+      now rewrite id_right,id_left.
+    - set (heqf := id_right f).
       apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
       apply nat_trans_eq; try apply homset_property.
       simpl.
       intros c.
       rewrite id_right,id_right.
       revert ff.
-
-      destruct (heqf).
+      induction (heqf).
       intros; simpl.
       reflexivity.
     - set (heqf:= assoc f g h).
       apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
       apply nat_trans_eq; try apply homset_property.
       intros c; simpl.
-      (* rewrite id_right,id_right. *)
-      (* rewrite assoc. *)
-      etrans; cycle 1.
+      apply pathsinv0.
+      etrans.
       (* set (z:= (ff:nat c ;; gg c ;; hh c). *)
-      symmetry.
-
       clearbody heqf.
-
-      (* impossible de faire un destruct ici... *)
-
       apply bmod_transport.
-      simpl.
+      cbn.
       repeat rewrite id_right.
       rewrite assoc.
       reflexivity.
@@ -452,14 +441,13 @@ Inductive phantom {A:UU} (x:A) :UU := ttp.
 
 Arguments ttp {_} _.
 
+Notation TTP := (ttp _) (only parsing).
+
 (* a category can be viewed as a display category with singletons.
 *)
 Section LiftCatDispCat.
 
   Context (C:Precategory).
-
-  
-
 
   Definition liftcat_disp_ob_mor : disp_precat_ob_mor C:=
     ((fun x => phantom x) ,, fun  _ _ _ _ f => phantom f).
@@ -467,8 +455,7 @@ Section LiftCatDispCat.
   Definition liftcat_id_comp : disp_precat_id_comp _ liftcat_disp_ob_mor.
   Proof.
     split.
-    -
-      intros x xx.
+    - intros x xx.
       simpl.
       apply  ttp.
     - intros x y z f g xx yy zz ff gg.
@@ -487,7 +474,7 @@ Section LiftCatDispCat.
   Proof.
     intros A x.
     exists (ttp x).
-    now destruct t.
+    apply uniq_tt.
   Qed.
 
   Lemma isasetphantom (A:UU) (x:A) : isaset (phantom x).
@@ -640,17 +627,12 @@ Section LargeCatRep.
   Local Notation LMONAD := (liftcat_disp MONAD).
   Local Notation BMOD := (bmod_disp C C).
   Local Notation GEN_ARITY := (disp_functor_precat _ _ LMONAD BMOD).
+  
   (* Arities are display functors over the identity *)
-
-
   Local Notation ARITY :=  (fiber_precategory GEN_ARITY (functor_identity _)).
 
   Definition arity_Precategory : Precategory :=
     (ARITY,, has_homsets_fiber GEN_ARITY (functor_identity _)).
-
-
-
-
 
   (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
   Lemma right_inverse_arity3  (ar:ARITY )
@@ -663,14 +645,14 @@ Section LargeCatRep.
     apply homset_property.
   Qed.
 
-
-
   Local Notation Θ := taut_rmod.
 
 
   (* a representation is a monad with a module morphisme from arity to itself *)
   Definition rep_ar (ar: ARITY) :=
-    Σ (R:MONAD), RModule_Mor R (((ar:functor_over _ _ _):functor_over_data _ _ _) R (ttp R) ) (Θ R).
+    Σ (R:MONAD),
+    RModule_Mor R (((ar:functor_over _ _ _):functor_over_data _ _ _) R (ttp R) )
+                (Θ R).
 
   Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
 
