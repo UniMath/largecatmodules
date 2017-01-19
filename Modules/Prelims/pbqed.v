@@ -1,3 +1,20 @@
+(*
+This file contains an example to argue that isasetsetquot should be defined with
+ Qed instead of Defined in UniMath.Foundations.Sets. Opaque isasetsetquot
+is not sufficient.
+
+I would like to define a structure of monad on a quotiented endofunctor on Set. 
+The definition of the quotient functor is pointwise a quotient, so it relies
+on isasetsetquot :  Π (X : UU) (R : hrel X), isaset (setquot R).
+
+However, Coq loops when if iasetsetquot is not defined with Qed (see end of file)
+
+This is excerpt from a real case use.
+
+Ambroise LAFONT
+
+*)
+
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
@@ -15,7 +32,6 @@ Require Import UniMath.CategoryTheory.Monads.
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
-Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 
 Lemma myadmit (A:UU) : A.
 Admitted.
@@ -30,9 +46,9 @@ Let X be an object of C
 Let ~_X a family of equivalence relations on RX satisfying
 if x ~_X y and f : X -> Y, then f(x) ~_Y f(y).
 
-(in other words, ~ is a functor RxR -> hProp )
-
 Then we can define R' := R/~ as a functor which to any X associates R'X := RX / ~_X
+
+And there is an epimorphism projR :  R --> R'
 
  *)
 Section QuotientFunctor.
@@ -102,7 +118,7 @@ Section QuotientFunctor.
     Lemma R'_Monad_laws_def : Monad_laws R'_Monad_def.
     Proof.
       repeat split; apply myadmit.
-      (* too long *)
+      (* too long. Actually, the third monad law (about μ) is the culprit *)
     Qed.
     
   End QedVsDefined.
