@@ -226,25 +226,9 @@ is so slow when R' is definitely equal to quot_functor !
 
 *)
   Definition R' := ( quot_functor (pr1 (pr1 R)) _ congr_equivc).
-  (* Opaque R'. *)
 
-(*
-  Lemma bizarre c: (* forall (R':functor SET SET),  *)  R' ((R' □ R') c) = (R' □ R') (R' c).
-    (* intros ?. *)
-
-    reflexivity.
-  Qed.
-*)
-    (* cbn - [R']. *)
-    (* reflexivity. *)
-    (* !! amazing 
-Qed takes so long !!!
-*)
-  (* Admitted.  *)
 
   Definition projR : (## R) ⟶ R':= proj_quot _ _ congr_equivc.
-
-  (* Definition projR_lock : (## R) ⟶ R':= proj_quot _ _ congr_equivc. *)
 
   Arguments projR : simpl never.
   Arguments R' : simpl never.
@@ -297,12 +281,6 @@ de a et que u est un morphisme de modules.
   Qed.
 
 
-
-  (* Notation GODMENT a b := (horcomp a b) (only parsing). *)
-
-
-
-SearchPattern (_ -> ?f ?x = ?f ?y).
 
 Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
   f = g -> f t1 = f t2 ->g t1 = g t2.
@@ -632,8 +610,6 @@ FIN DE LA PREMIERE ETAPE
 
   (* FIN DE LA SECONDE ETAPE *)
 
-    Ltac cpre :=  apply cancel_precomposition.
-    Ltac cpost :=  apply cancel_postcomposition.
 
   
   Section morphInitialU.
@@ -674,7 +650,7 @@ FIN DE LA PREMIERE ETAPE
         (* definition of u *)
         etrans.
         rewrite <- assoc.
-        cpre.
+        cpre _.
         symmetry.
         apply u_def.
 
@@ -685,12 +661,12 @@ FIN DE LA PREMIERE ETAPE
         (* Definition of u *)
         etrans.
         
-        cpost.
+        cpost _.
         etrans.
         etrans.
-        cpost.
+        cpost _.
         apply u_def.        
-        cpre.
+        cpre _.
         etrans.
         apply cancel_functor_on_morph.
         apply u_def.
@@ -699,9 +675,9 @@ FIN DE LA PREMIERE ETAPE
         (* il s'agit de rememmtre les termes dans l'ordre *)
 
         rewrite assoc.
-        cpost.
+        cpost _.
         rewrite <- assoc.
-        cpre.
+        cpre _.
         symmetry.
         apply (nat_trans_ax (u m)).
         rewrite assoc.
@@ -709,9 +685,8 @@ FIN DE LA PREMIERE ETAPE
         reflexivity.
       - intro X.
         etrans.
-        cpost.
+        cpost _.
         apply R'_η_def.
-
         rewrite <- assoc.
         rewrite <- u_def.
         apply (Monad_Mor_η (pr1 m)).
@@ -782,9 +757,9 @@ or rather the following one
         (* Définition de u *)
         apply pathsinv0.
         etrans.        
-        cpost.
+        cpost _.
         rewrite <- assoc.
-        cpre.
+        cpre _.
         assert (yop:= @functor_over_comp_var _ _ _ _ _ b ).
         assert (yop2 := fun xx yy zz  =>yop _ _ _ xx yy zz projR_monad (u_monad m)).
         assert (yop3 := yop2 (ttp _) (ttp _) (ttp _) (ttp _) (ttp _)).
@@ -796,7 +771,7 @@ or rather the following one
         apply pathsinv0 in yop4.
         apply yop4.
         apply homset_property.
-        cpost.
+        cpost _.
 
         etrans; cycle 1.
         symmetry.
@@ -823,15 +798,17 @@ or rather the following one
          cbn -[compose].
          apply idpath.
 
-        cpre.
+        cpre _.
         cbn.
         unfold idfun; cbn.
         unfold ar_mor; cbn.
 
         (* match goal with |- [(_ (#b )%mor_disp X)] = _ => (set (x' := x)) end. *)
         match goal with |- (nat_trans_data (pr1 (_ (ttp ?x)))) X = _ => (set (x' := x)) end.
-        apply pathsinv0.
-        match goal with |- context H [(nat_trans_data (pr1 (_ (ttp ?x)))) X]  => (set (y' := x)) end.
+        set (y':=pr1 m).
+        (* assert x' *)
+        (* apply pathsinv0. *)
+        (* match goal with |- context H [(nat_trans_data (pr1 (_ (ttp ?x)))) X]  => (set (y' := x)) end. *)
         assert(heq: x'=y').
         {
           subst x' y'.
@@ -842,9 +819,10 @@ or rather the following one
           intro X'.
           apply pathsinv0.
           apply (u_def m).
-
         }
-        induction heq.
+        subst y'.
+        clearbody x'.
+        rewrite heq.
         reflexivity.
       Qed.
 
@@ -861,8 +839,8 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
       Proof.
         etrans.
         apply eq_mr'.
-        cpost.
-        cpost.
+        cpost _.
+        cpost _.
         symmetry.
         etrans.
 
@@ -918,7 +896,7 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
 
   (* F preserve the epis *)
   Class FpreserveR' := FepiR' :
-     isEpi(C:=functor_Precategory _ _) ( (armor_ob _ F ( R'_monad))).
+     isEpi (C:=functor_precategory HSET HSET has_homsets_HSET) (pr1 (armor_ob _ F ( R'_monad))).
   (* a preserve les epis *)
   Class apreserveepi := aepiR : Π M N (f:monadPrecategory _⟦M,N⟧),
                                 isEpi f -> isEpi (C:= functor_Precategory _ _) (pr1 ( # a f)%ar).
@@ -933,7 +911,8 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
 
   Lemma isEpi_def_R'_μr : isEpi
                             (compose (C:=functor_Precategory _ _)
-                                     (pr1 ((# a)%ar projR_monad)) (armor_ob SET F R'_monad)).
+                                     (pr1 ((# a)%ar projR_monad))
+                                     (pr1 (armor_ob SET F R'_monad))).
   Proof.
     apply (isEpi_comp (functor_Precategory _ _));[|apply FepiR'].
     apply aepiR;    apply isEpi_projR_monad.
@@ -952,7 +931,7 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
 
   Definition R'_μr_def :
     Π (X:SET),
-    (pr1 (# a (projR_monad))%ar) X ;;    armor_ob _ F ( R'_monad) X;;R'_μr X  
+    ( (# a (projR_monad))%ar) X ;;    armor_ob _ F R'_monad X;;R'_μr X  
     =  μr _ R X ;; projR X .
   Proof.
     intro x.
@@ -1167,6 +1146,18 @@ Qed.
 
   End R'Representation.
 
+
+  Lemma cancel_ar_on {a'}
+        {R' (* : BREP a*)}                  (*  *)
+        (* {F' : PARITY ⟦ a', b' ⟧ *)
+        {S (* : BREP b *)}
+        (m m' : Monad_Mor R' S)
+        (X : SET) : m = m' ->
+                    (# a')%ar m X = (# a')%ar m' X .
+  Proof.
+    intro e; now induction e.
+  Qed.
+
   (* u morphisme de représentation *)
   Section uRepresentation.
     Context {S:BREP b} (m:R -->[ F] S).
@@ -1197,14 +1188,14 @@ Qed.
       apply assoc.
       
       etrans.
-      cpost.
+      cpost _.
       (*  apply (R'_μr_def X) takes a long time, but use is immediate *)
       use (R'_μr_def X).
 
       (* faire disparaitre le u avec u_def *)
       etrans.
       rewrite <- assoc.
-      cpre.      
+      cpre _.      
       eapply pathsinv0.
       apply (u_def m).
 
@@ -1213,26 +1204,23 @@ Qed.
       apply (rep_ar_mor_law1 _ m X).
       
       rewrite assoc.
-      cpost.
+      cpost _.
 
       (* on réécrit m *)
       etrans.
-      cpost.
-      unfold ar_mor.
-
-      match goal with |- (nat_trans_data (pr1 (_ (ttp ?x)))) X = _ => (set (x' := x)) end.
-      assert (hx' : x' = compose (C:=monadPrecategory _) projR_monad (u_monad m)).
+      cpost _.
+      apply (cancel_ar_on _ (compose (C:=monadPrecategory _) projR_monad (u_monad m))).
       use (invmap (Monad_Mor_equiv _ _ _)).
       { apply homset_property. }
       { apply nat_trans_eq.
         apply homset_property.
         apply (u_def m).
       }
-      rewrite hx'.
 
       etrans.
 
       etrans.
+      cpost _.
       use (nat_trans_eq_pointwise _ X); cycle 1.
       apply maponpaths.
       assert (yop:= @functor_over_comp _ _ _ _ _ a ).
@@ -1240,18 +1228,18 @@ Qed.
       assert (yop3 := yop2 (ttp _) (ttp _) (ttp _) (ttp _) (ttp _)).
       apply yop3.
       (* todo : systématiser la séquence préécdente *)
-
-      apply brep_transport.
+      cpost _.
+      cbn -[compose].
       apply idpath.
 
 
       etrans.
-      cpost.
+      cpost _.
       eapply (pathsinv0 (b:=pr1 (#a projR_monad)%ar X ;; pr1 (#a (u_monad m))%ar X )).
       reflexivity.
       etrans.
       rewrite <- assoc.
-      cpre.
+      cpre _.
       etrans.
       assert (hF :=nat_trans_over_ax  (f:= (u_monad m)) (xx:=ttp _) (xx':=ttp _) F (ttp _)).
       apply RModule_Mor_equiv in hF.
@@ -1269,10 +1257,10 @@ Qed.
       intro x.
       cbn.
       apply idpath.
-Qed.
+    Qed.
 
 
-        Definition u_rep : R'_rep -->[(nat_trans_over_id (pr1 b))] S := (_ ,, u_rep_laws).
+    Definition u_rep : R'_rep -->[(nat_trans_over_id (pr1 b))] S := (_ ,, u_rep_laws).
       
   End uRepresentation.
 
@@ -1284,15 +1272,6 @@ Qed.
 
     Variable u'_rep : R'_rep -->[(nat_trans_over_id (pr1 b))] S.
 
-(* Lemma rep_ar_mor_mor_equiv {C : precategory} (hs : has_homsets C) *)
-(*   {T T' : RModule C} (α β : RModule_Mor T T') *)
-(*   : α = β ≃ (pr1 α = pr1 β). *)
-(* Proof. *)
-(*   apply subtypeInjectivity; intro a. *)
-(*   apply isaprop_RModule_Mor_laws, hs. *)
-(* Defined. *)
-
-    
     Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm)).
     Proof.
       set (m' := (projR_rep ;; u'_rep)%mor_disp).
@@ -1305,7 +1284,7 @@ Qed.
       revert X.
       apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
       set (m := (pr1 hm ;; id_disp S)%mor_disp).
-      assert (eqm':m' = m). (* transportf (fun z => R -->[z] S) (id_right _) m' = (pr1 hm)). *)
+      assert (eqm':m' = m).
       {
         subst m.
         rewrite id_right_disp .
