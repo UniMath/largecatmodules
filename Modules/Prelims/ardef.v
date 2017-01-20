@@ -372,7 +372,6 @@ Section LargeCatMod.
       exact (compose ff pbm_gf).
   Defined.
 
-
   Definition bmod_data : disp_precat_data _
     := (bmod_disp_ob_mor ,, bmod_id_comp).
 
@@ -623,16 +622,37 @@ Section LargeCatRep.
 
   Variable (C :Precategory).
 
-  Local Notation MONAD := (monadPrecategory C).
-  Local Notation LMONAD := (liftcat_disp MONAD).
+  Local Notation MONAD := (Monad C).
+  Local Notation PRE_MONAD := (monadPrecategory C).
+  Local Notation LMONAD := (liftcat_disp (PRE_MONAD)).
   Local Notation BMOD := (bmod_disp C C).
   Local Notation GEN_ARITY := (disp_functor_precat _ _ LMONAD BMOD).
   
+  Local Notation PRE_ARITY :=
+    (fiber_precategory GEN_ARITY (functor_identity _)).
   (* Arities are display functors over the identity *)
-  Local Notation ARITY :=  (fiber_precategory GEN_ARITY (functor_identity _)).
+  Definition arity := (functor_over (C:=PRE_MONAD) (C':=PRE_MONAD)
+                      (functor_identity (precategory_Monad_data C)) LMONAD BMOD).
+  Local Notation ARITY := arity.
+
+  Coercion functor_over_from_ar (a:ARITY) :
+    (functor_over (C:=PRE_MONAD) (C':=PRE_MONAD)
+                  (functor_identity (precategory_Monad_data C)) LMONAD BMOD)
+  := a.
+
+  Definition arity_Mor (a b:arity) :=
+    nat_trans_over
+      (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
+                    (functor_identity _)) a b.
+
+  Coercion nat_trans_over_from_arity_Mor {a b} (f:arity_Mor a b) :
+    nat_trans_over
+      (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
+                    (functor_identity _)) a b
+    := f.
 
   Definition arity_Precategory : Precategory :=
-    (ARITY,, has_homsets_fiber GEN_ARITY (functor_identity _)).
+    (PRE_ARITY,, has_homsets_fiber GEN_ARITY (functor_identity _)).
 
   (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
   Lemma right_inverse_arity3  (ar:ARITY )
@@ -651,27 +671,31 @@ Section LargeCatRep.
   (* a representation is a monad with a module morphisme from arity to itself *)
   Definition rep_ar (ar: ARITY) :=
     Σ (R:MONAD),
-    RModule_Mor R (((ar:functor_over _ _ _):functor_over_data _ _ _) R (ttp R) )
+    RModule_Mor R (ar (* (((ar:functor_over _ _ _):functor_over_data _ _ _)  *)R (ttp R) )
                 (Θ R).
 
   Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
 
   Definition μr {ar:ARITY} (X:rep_ar ar) := pr2 X.
 
-  Definition functor_from_monad (R:MONAD) : functor C C := pr1 (pr1 R).
+  Definition functor_from_monad (R:MONAD) : functor C C := R.
 
   Definition functor_from_module {D:precategory} {R:MONAD} (S:RModule R D) : functor C D :=
-    pr1 (pr1 S).
+    S.
 
-  Definition ar_obj (a:ARITY) (M:MONAD)  := pr1 a M (ttp M).
+  (* Coercion functor_over_from_arity (a:ARITY): *)
+  (*   functor_over_data (functor_identity (monadPrecategory C)) LMONAD BMOD *)
+  (*   := a. *)
+
+  Definition ar_obj (a:ARITY) (M:MONAD) : RModule M _ := a M (ttp M).
 
   Delimit Scope arity_scope with ar.
   (* ne marche pas.. *)
   (* Coercion ar_obj : ARITY >-> Funclass. *)
   Notation AO := ar_obj.
 
-  Definition ar_mor (a:ARITY) {M N:MONAD} (f:MONAD  ⟦ M,N ⟧) :
-    ((ar_obj a M )  -->[f] (ar_obj a N))%mor_disp.
+  Definition ar_mor (a:ARITY) {M N:MONAD} (f:Monad_Mor  M N ) :
+      RModule_Mor M (AO a M) (pullback_module f (AO a N)).
   Proof.
     simpl.
     intros.
@@ -679,11 +703,13 @@ Section LargeCatRep.
     apply ttp.
   Defined.
 
-  Lemma ar_mor_eq (a:ARITY) {M N:MONAD} (f:MONAD  ⟦ M,N ⟧) :
+  Lemma ar_mor_eq (a:ARITY) {M N:MONAD} (f:Monad_Mor  M N ) :
     @functor_over_on_morphisms
       (monadPrecategory C) (monadPrecategory C)
-      (functor_identity (precategory_Monad_data C)) (liftcat_disp (monadPrecategory C))
-      (bmod_disp C C) (functor_over_data_from_functor_over a) M N (ttp _) (ttp _) f (ttp _) =
+      (functor_identity (precategory_Monad_data C))
+      (liftcat_disp (monadPrecategory C))
+      (bmod_disp C C)
+      (functor_over_data_from_functor_over a) M N (ttp _) (ttp _) f (ttp _) =
     ar_mor a f .
   Proof.
     reflexivity.
@@ -693,30 +719,34 @@ Section LargeCatRep.
                       (at level 3) : arity_scope.
 
   Delimit Scope arity_scope with ar.
+    
 
-  Definition armor_ob {a b : ARITY} (f:ARITY⟦a,b⟧) (R:MONAD) :=
-    (pr1 (pr1 f R (ttp R))).
+  Definition armor_ob {a b : ARITY} (f:arity_Mor a b) (R:MONAD) :
+    RModule_Mor _  (AO a R)
+                (pullback_module ((nat_trans_id (functor_identity PRE_MONAD)) R)
+                                 (AO b R))
+    (* : a R (ttp R) ⟶ pullback_module ((nat_trans_id (functor_identity PRE_MONAD)) R) (AO b R  *)
+    := f R TTP.
 
-  Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
-             (g:MONAD ⟦ M, N ⟧) :=
-        Π c,  ((μr M) c);; (pr1 g c) =   pr1 (#a g )%ar c ;; armor_ob f N  c ;; μr N c .
-        (* or the other way around a g ;;; f N : it is the same thanks to the naturality of f *)
+  Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b)
+             (f: arity_Mor a b) (g:Monad_Mor M N) :=
+    Π c,  ((μr M) c);; (g c) =    (#a g )%ar c ;; armor_ob f N  c ;; μr N c .
+  (* or the other way around a g ;;; f N : it is the same thanks to the naturality of f *)
     (* Π c,  ((μr M) c);; (pr1 g c) = armor_ob f M  c ;;  pr1 (#b g )%ar c ;; μr N c . *)
 
-  Lemma isaprop_rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
-        (g:MONAD ⟦ M, N ⟧) :
-    isaprop (rep_ar_mor_law (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧)
-                            (g:MONAD ⟦ M, N ⟧)).
+  Lemma isaprop_rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b)
+        (f: arity_Mor a b) (g:Monad_Mor M N) :
+    isaprop (rep_ar_mor_law (M:rep_ar a) (N: rep_ar b) f g).
   Proof.
     intros.
     apply impred; intro c.
     apply homset_property.
   Qed.
 
-  Definition rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧) :=
-    Σ g:MONAD ⟦ M, N ⟧, rep_ar_mor_law  M N f g.
+  Definition rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) f :=
+    Σ g:Monad_Mor M N, rep_ar_mor_law  M N f g.
 
-  Lemma isaset_rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) (f: ARITY ⟦ a, b ⟧) :
+  Lemma isaset_rep_ar_mor_mor (a b : ARITY) (M:rep_ar a) (N: rep_ar b) f :
     isaset (rep_ar_mor_mor a b M N f).
   Proof.
     intros.
@@ -728,23 +758,24 @@ Section LargeCatRep.
   Qed.
 
   Coercion monad_morphism_from_rep_ar_mor_mor {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
-           {f: ARITY ⟦ a, b ⟧} (h:rep_ar_mor_mor a b M N f) : MONAD ⟦ M, N ⟧
+           {f} (h:rep_ar_mor_mor a b M N f) : Monad_Mor M N
     := pr1 h.
 
   Definition rep_ar_mor_law1 {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
-             {f: ARITY ⟦ a, b ⟧} (h:rep_ar_mor_mor a b M N f) :
-    Π c,  ((μr M) c);; (pr1 (pr1 h) c) =   pr1 (#a h )%ar c ;; armor_ob f N  c ;; μr N c 
+             {f} (h:rep_ar_mor_mor a b M N f) :
+    Π c,  ((μr M) c);; ( h c) =    (#a h )%ar c ;; armor_ob f N  c ;; μr N c 
     (* Π c,  ((μr M) c);; pr1 (monad_morphism_from_rep_ar_mor_mor h) c = *)
     (*       armor_ob f M  c ;;  pr1 (#b (monad_morphism_from_rep_ar_mor_mor h ))%ar c ;; μr N c  *)
     := pr2 h.
 
 
 
-  Definition brep_disp_ob_mor : disp_precat_ob_mor ARITY:= (rep_ar,, rep_ar_mor_mor).
+  Definition brep_disp_ob_mor : disp_precat_ob_mor PRE_ARITY:=
+    (rep_ar,, rep_ar_mor_mor).
 
 
   Lemma brep_id_law (a : ARITY) (RM : brep_disp_ob_mor a) :
-    (rep_ar_mor_law RM RM (identity _) (Monad_identity _)).
+    (rep_ar_mor_law RM RM (identity (C:=PRE_ARITY) _) (Monad_identity _)).
     intros.
     intro c.
     apply pathsinv0.
@@ -763,7 +794,9 @@ Section LargeCatRep.
     apply id_right.
   Qed.
 
-  Definition brep_id  (a : ARITY) (RM : brep_disp_ob_mor a) : RM -->[ identity a] RM.
+  Definition brep_id  (a : ARITY) (RM : brep_disp_ob_mor a) :
+    RM -->[ identity (C:=PRE_ARITY) a] RM.
+  Proof.
     intros.
     exists (Monad_identity _).
     apply brep_id_law.
@@ -784,30 +817,7 @@ Section LargeCatRep.
   Qed.
 
 
-
-  Lemma eq_ar_pointwise  (a b c : ARITY) ( f : ARITY ⟦ a, b ⟧) ( g : ARITY ⟦ b, c ⟧) (R:MONAD) x :
-    armor_ob (f ;; g) R  x = armor_ob f R x ;; armor_ob g R x .
-    intros.
-    simpl.
-    match goal with
-    | |- ?x = _ => let t:=type of ( x) in set (typet := t)
-    end.
-    - unfold compose.
-      simpl.
-      match goal with
-        | |- context g [transportf _ ?eg ?funf'] => set (funf := funf'); set (e:= eg)
-      end.
-
-      assert (h:= transport_disp_mor (d:=GEN_ARITY) e (xx:=a) (yy:=c) funf typet).
-      etrans.
-      assert (h2 := h (fun a b => pr1 (pr1 b R (ttp _)) x)).
-      apply h2.
-      simpl.
-      rewrite id_right.
-      reflexivity.
-Qed.
-
-  Lemma transport_arity_mor (x y : ARITY) (f g : ARITY ⟦ x, y ⟧)
+  Lemma transport_arity_mor (x y : ARITY) (f g : arity_Mor x y)
         (e : f = g)
         (xx : brep_disp_ob_mor x)
         (yy : brep_disp_ob_mor y)
@@ -819,10 +829,9 @@ Qed.
     intros.
     apply idpath.
   Qed.
-
   Lemma brep_transport    (x y : ARITY)
         (R S:MONAD)
-        (f g : MONAD ⟦ R, S ⟧)
+        (f g : Monad_Mor R S )
         (e : f = g)
         (* (xx : _ x) *)
         (* (yy : pr1 _ y) *)
@@ -835,19 +844,68 @@ Qed.
     simpl.
     now induction e.
   Qed.
+
+
+  Lemma transport_arity_mor' (x y : ARITY) f g 
+        (e : f = g)
+        (ff : nat_trans_over f x y)
+(* mor_disp (D:=GEN_ARITY) x y f) *)
+        (R:MONAD)
+        (c : C) :
+    pr1 (pr1 (transportf (mor_disp (D:=GEN_ARITY) x y) e ff) R TTP) c
+    = pr1 (pr1 ff R TTP) c.
+  Proof.
+    now induction e.
+  Qed.
+  (* initule *)
+  Lemma eq_ar_pointwise  (a b c : ARITY) ( f : arity_Mor a b) (g : arity_Mor b c)
+        (R:MONAD) x :
+    armor_ob (compose (C:=PRE_ARITY) f g) R x = armor_ob f R x ;; armor_ob g R x .
+  Proof.
+    intros.
+    cbn.
+    etrans.
+    use (transport_arity_mor' a c _ ).
+    cbn.
+    now rewrite  id_right.
+  Qed.
+
   (* type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
+  Lemma rep_ar_mor_mor_equiv (a b : ARITY) (R:brep_disp_ob_mor a)
+        (S:brep_disp_ob_mor b) (f:arity_Mor a b)
+        (a b: R -->[ f] S) :
+    (Π c, pr1 (pr1 a) c = pr1 (pr1 b) c) -> a = b.
+    intros.
+    use (invmap (subtypeInjectivity _ _ _ _  )) ; cycle 1.
+    use (invmap (Monad_Mor_equiv _ _  _  )) ; cycle 1.
+    apply nat_trans_eq.
+    apply homset_property.
+    assumption.
+    apply homset_property.
+    intro g.
+    apply isaprop_rep_ar_mor_law.
+  Qed.
+  Lemma rep_ar_mor_mor_equiv_inv {a b : ARITY} {R:brep_disp_ob_mor a}
+        {S:brep_disp_ob_mor b} {f:arity_Mor  a b}
+        (u v: R -->[ f] S) : u = v -> (Π c, pr1 (pr1 u) c = pr1 (pr1 v) c).
+  Proof.
+    intros.
+    now induction X.
+  Qed.
+
 
   (** Defining the composition in brep *)
 
-  Lemma brep_comp_law  (a b c : ARITY) (f : ARITY ⟦ a, b ⟧) (g : ARITY ⟦ b, c ⟧)
+  Lemma brep_comp_law  (a b c : ARITY) (f : arity_Mor a b) (g : arity_Mor b c)
              (R : brep_disp_ob_mor a) (S : brep_disp_ob_mor b)    (T : brep_disp_ob_mor c)
              (α:R -->[ f ] S) (β:S -->[g]  T) :
-    (rep_ar_mor_law R T (f;;g)
-                    ( monad_morphism_from_rep_ar_mor_mor α ;; monad_morphism_from_rep_ar_mor_mor β)).
+    (rep_ar_mor_law R T (compose (C:=PRE_ARITY) f g)
+                    (compose (C:=PRE_MONAD) (monad_morphism_from_rep_ar_mor_mor α)
+                             ( monad_morphism_from_rep_ar_mor_mor  β))).
   Proof.
     intros.
     intros x.
-    simpl.
+    cbn.
 
     rewrite assoc.
     etrans.
@@ -867,83 +925,46 @@ Qed.
     etrans.
     apply cancel_postcomposition.
 
-    etrans.
-    apply cancel_precomposition.
-    (* apply cancel_postcomposition. *)
-    apply eq_ar_pointwise.
-
-    apply cancel_postcomposition.
-    (* apply (functor_over_comp a). *)
-    (* apply cancel_precomposition. *)
-    (* set (z := (# ( c))%ar _). *)
+    
+    apply cancel_precomposition. 
+    use (transport_arity_mor' a c _ _ _ _ (pr1 T) x).
     set (z := (# ( a))%ar _).
-    neweqsubst z.
-    apply(  (@functor_over_comp _ _ _ _ _ (a (* c *))) (pr1 R) (pr1 S) (pr1 T) (ttp _) (ttp _)
+    set (hc := (@functor_over_comp _ _ _ _ _ (a (* c *))) (pr1 R) (pr1 S) (pr1 T) (ttp _) (ttp _)
                                                      (ttp _)
                                                     (pr1 α) (pr1  β) (ttp _) (ttp _)).
+    assert (hz := pathscomp0 (a:=z) (idpath _) hc).
+    rewrite hz.
 
     simpl.
-    rewrite ar_mor_eq,ar_mor_eq,id_right.
-    reflexivity.
-
-    simpl.
+    rewrite ar_mor_eq,ar_mor_eq,id_right, id_right.
 
     repeat rewrite assoc.
     apply cancel_postcomposition.
     apply cancel_postcomposition.
     repeat rewrite <- assoc.
     apply cancel_precomposition.
-    (* naturality of f (* g *) *)
-    simpl in f.
-    simpl.
-    unfold ar_mor,armor_ob.
-    
-    (* pr1_norm. *)
-    simpl.
-    set (z:= pr1 f (* g *)).
-    simpl in z.
-    unfold nat_trans_over_data in z.
-    simpl in z.
-    assert (hg := pr2 f (* g *)).
-    simpl in hg.
-    unfold nat_trans_over_axioms in hg.
-    simpl in hg.
-    assert (hg':= fun a b c=> hg a b c (ttp _) (ttp _) (ttp _)).    
-
-    evar (A:Monad C).
-    evar (B:Monad C).
-    evar (m:Monad_Mor A B).
-    (* assert (hg'' := hg' (pr1 R) (pr1 S) (pr1 α)). *)
-    assert (hg'' := hg' A B m).
-    simpl in hg''.
-    simpl.
-    match type of hg'' with
-    | ?a = ?b => set (xa := a) in *; set (xb := b) in *
-    end.
-    assert (heqx: pr1 xa x = pr1 xb x).
-    now rewrite hg''.
-    simpl in heqx.
-    rewrite id_right in heqx.
-    cbn in heqx.
-    (* symmetry. *)
+    assert (hg':= nat_trans_eq_pointwise
+                    (RModule_Mor_equiv _ (homset_property _) _ _
+                      (pr2 f _ _ (pr1 β) (ttp _) (ttp _) (ttp _)) ) x).
+    cbn in hg'.
+    rewrite id_right in hg'.
     etrans.
-    subst A B m.
-    apply heqx.
-    unfold xb.
-    etrans.
-    apply brep_transport.
-    simpl.
-    now rewrite id_right.
+    apply hg'.
+    (* set (e:=is_nat_trans_id _ _ _ _). *)
+    clear.
+    unfold transportb.
+    set (e:= ! _).
+    induction e.
+    cbn.
+    rewrite id_right.
+    apply idpath.
   Qed.
 
-
-
-
-  Definition brep_comp (a b c : ARITY) (f : ARITY ⟦ a, b ⟧) (g : ARITY ⟦ b, c ⟧)
+  Definition brep_comp (a b c : ARITY) f g
              (RMa : brep_disp_ob_mor a) (RMb : brep_disp_ob_mor b)    (RMc : brep_disp_ob_mor c)
              (mab:RMa -->[ f ] RMb) (mbc:RMb -->[g]  RMc) : RMa -->[f;;g] RMc.
     intros.
-    exists (pr1 mab;; pr1 mbc).
+    exists (compose (C:=PRE_MONAD) (pr1 mab) (pr1 mbc)).
     apply brep_comp_law.
   Defined.
 
@@ -959,19 +980,6 @@ Qed.
   Definition brep_data : disp_precat_data _
     := (brep_disp_ob_mor ,, brep_id_comp).
 
-  Lemma rep_ar_mor_mor_equiv (a b : ARITY) (R:brep_data a) (S:brep_data b) (f:ARITY  ⟦ a, b ⟧)
-        (a b: R -->[ f] S) :
-    (Π c, pr1 (pr1 a) c = pr1 (pr1 b) c) -> a = b.
-    intros.
-    use (invmap (subtypeInjectivity _ _ _ _  )) ; cycle 1.
-    use (invmap (Monad_Mor_equiv _ _  _  )) ; cycle 1.
-    apply nat_trans_eq.
-    apply homset_property.
-    assumption.
-    apply homset_property.
-    intro g.
-    apply isaprop_rep_ar_mor_law.
-  Qed.
 
 
 
