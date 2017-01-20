@@ -54,6 +54,7 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 
 Definition hset_Precategory : Precategory := (hset_precategory ,, has_homsets_HSET).
 
+(* section copié dans hset_precategory_structure *)
 (** 
 The set category has kernel pairs
 *)
@@ -71,16 +72,6 @@ Section kernel_pair_Set.
     
   Local Notation g := kernel_pair_set.
 
-  Lemma kernel_pair_eq
-        (a:pr1hSet (PullbackObject g)) :
-    f ( (PullbackPr1 g) a) = f ((PullbackPr2 g) a).
-  Proof.
-    intros.
-    assert (hg':=PullbackSqrCommutes g).
-    apply toforallpaths in hg'.
-    apply hg'.
-  Qed.
-
   Lemma isCoeqKernelPairsSet (hf:issurjective f) : isCoequalizer _ _ _ (PullbackSqrCommutes g).
   Proof.
     intros.
@@ -90,7 +81,8 @@ Section kernel_pair_Set.
     {
       intros x y eqfxy.
             assert (hpb:=pullback_HSET_univprop_elements
-                     (PullbackSqrCommutes g) (isPullback_Pullback g) x y eqfxy).
+                           (PullbackSqrCommutes g) (isPullback_Pullback g) x y eqfxy).
+            (* pullback_HSET_elements_unique *)
       assert( hpb' := pr2 (pr1 hpb)); simpl in hpb'.
       destruct hpb' as [hx hy].
       etrans.
@@ -123,7 +115,7 @@ Section kernel_pair_Set.
   Qed.
 End kernel_pair_Set.
  
-
+(* copié dans .._structure *)
 Lemma EffectiveEpis_HSET : EpisAreEffective hset_precategory.
 Proof.
   red.
@@ -173,7 +165,8 @@ Section LiftEpiNatTrans.
                         p X x =  p X y -> f X x = f X y).
 
   Hypothesis (surjectivep : isEpi (C:=C_SET) p).
-  
+
+  (* copié dans category_hsets *)
   Lemma HSET_Pushouts : graphs.pushouts.Pushouts SET.
     red.
     intros .
@@ -191,7 +184,7 @@ Section LiftEpiNatTrans.
     assumption.
   Qed.
     
-  Definition univ_surj_nt :nat_trans B C.
+  Definition univ_surj_nt : nat_trans B C.
     apply EffectiveEpis_Functor_HSET in surjectivep.
     red in surjectivep.
     set (coeq := limits.coequalizers.mk_Coequalizer _ _ _ _ (pr2 surjectivep)).
