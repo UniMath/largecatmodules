@@ -31,7 +31,16 @@ Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 
+Tactic Notation "cpre" uconstr(x) := apply (cancel_precomposition x).
+Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition (C:=x)).
+
 Set Automatic Introduction.
+
+Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
+  f = g -> f t1 = f t2 ->g t1 = g t2.
+Proof.
+  now induction 1.
+Qed.
 Lemma comp_cat_comp {A B C:hSet} (f : A -> B) (g:B -> C) x :
   g (f x) = compose (C:= SET) f g x.
 Proof.

@@ -32,36 +32,6 @@ Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
-(*
-Ltac pr1_norm  :=
-  match goal with
-    |- context f [pr1 ?T] =>
-    let x:=type of (pr1 T) in
-    change (pr1 T) with (T:x) (* (RModule_data_from_RModule _ _ T) *)
-  end.
- *)
-(*
-Ltac receq t t' :=
-  let u := constr:( ( t , t') )  in
-  match u with
-    (?f ?x, ?f' ?x') =>
-    let h := fresh in
-    cut (x=x');[intro h; try rewrite h; clear h;
-                receq f f'|]
-  | (?x,?x')=>
-    let h := fresh in
-    cut (x=x');[intro h; try rewrite h; clear h|]
-  end.
-
-
-Ltac my_f_equal :=
-  match goal with
-  | |- paths ?x ?y => receq x y; try reflexivity
- end.
-*)
-
-Ltac pathvia b := (apply (@pathscomp0 _ _ b _ )).
-
 (**
 TODO : To be moved in the files Monads and modules
 
@@ -212,10 +182,6 @@ Section Pullback_module.
 
 End Pullback_module.
 
-Tactic Notation "cpre" uconstr(x) := apply (cancel_precomposition x).
-Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition (C:=x)).
-(* Ltac cpre x :=  apply (cancel_precomposition x). *)
-(* Ltac cpost x :=  apply (cancel_postcomposition (C:=x)). *)
 
 (*
 
@@ -683,15 +649,10 @@ Section LargeCatRep.
   Definition functor_from_module {D:precategory} {R:MONAD} (S:RModule R D) : functor C D :=
     S.
 
-  (* Coercion functor_over_from_arity (a:ARITY): *)
-  (*   functor_over_data (functor_identity (monadPrecategory C)) LMONAD BMOD *)
-  (*   := a. *)
 
   Definition ar_obj (a:ARITY) (M:MONAD) : RModule M _ := a M (ttp M).
 
   Delimit Scope arity_scope with ar.
-  (* ne marche pas.. *)
-  (* Coercion ar_obj : ARITY >-> Funclass. *)
   Notation AO := ar_obj.
 
   Definition ar_mor (a:ARITY) {M N:MONAD} (f:Monad_Mor  M N ) :
@@ -725,7 +686,6 @@ Section LargeCatRep.
     RModule_Mor _  (AO a R)
                 (pullback_module ((nat_trans_id (functor_identity PRE_MONAD)) R)
                                  (AO b R))
-    (* : a R (ttp R) ⟶ pullback_module ((nat_trans_id (functor_identity PRE_MONAD)) R) (AO b R  *)
     := f R TTP.
 
   Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b)
@@ -764,8 +724,6 @@ Section LargeCatRep.
   Definition rep_ar_mor_law1 {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
              {f} (h:rep_ar_mor_mor a b M N f) :
     Π c,  ((μr M) c);; ( h c) =    (#a h )%ar c ;; armor_ob f N  c ;; μr N c 
-    (* Π c,  ((μr M) c);; pr1 (monad_morphism_from_rep_ar_mor_mor h) c = *)
-    (*       armor_ob f M  c ;;  pr1 (#b (monad_morphism_from_rep_ar_mor_mor h ))%ar c ;; μr N c  *)
     := pr2 h.
 
 
@@ -833,9 +791,6 @@ Section LargeCatRep.
         (R S:MONAD)
         (f g : Monad_Mor R S )
         (e : f = g)
-        (* (xx : _ x) *)
-        (* (yy : pr1 _ y) *)
-
         (ff : pr1 x R (ttp _) -->[ f] pr1 y S (ttp _))
         (c : C) :
       pr1 (transportf _ e ff) c  = pr1 ff c .
@@ -849,7 +804,6 @@ Section LargeCatRep.
   Lemma transport_arity_mor' (x y : ARITY) f g 
         (e : f = g)
         (ff : nat_trans_over f x y)
-(* mor_disp (D:=GEN_ARITY) x y f) *)
         (R:MONAD)
         (c : C) :
     pr1 (pr1 (transportf (mor_disp (D:=GEN_ARITY) x y) e ff) R TTP) c
@@ -857,7 +811,7 @@ Section LargeCatRep.
   Proof.
     now induction e.
   Qed.
-  (* initule *)
+
   Lemma eq_ar_pointwise  (a b c : ARITY) ( f : arity_Mor a b) (g : arity_Mor b c)
         (R:MONAD) x :
     armor_ob (compose (C:=PRE_ARITY) f g) R x = armor_ob f R x ;; armor_ob g R x .

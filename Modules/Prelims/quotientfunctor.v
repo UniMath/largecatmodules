@@ -126,4 +126,15 @@ Section QuotientFunctor.
     apply toforallpaths in eqfg.
     apply eqfg.
   Qed.
+  Lemma eq_proj_quot_rel X x y : proj_quot X x = proj_quot X y -> hequiv X x y.
+  Proof.
+    intros X x y.
+    apply invmap.
+    apply (weqpathsinsetquot (hequiv X)).
+  Qed.
+  Lemma rel_eq_proj_quot X x y : hequiv X x y ->proj_quot X x = proj_quot X y.
+  Proof.
+    intros X x y.
+    apply (weqpathsinsetquot (hequiv X)).
+  Qed.
 End QuotientFunctor.

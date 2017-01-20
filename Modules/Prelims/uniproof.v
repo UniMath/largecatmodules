@@ -89,19 +89,6 @@ Require Import Modules.Prelims.lib.
     
 Set Automatic Introduction.
 
-
-
-
-
-
-  
- 
-
-
-(* used as admit when Qed takes too long *)
-(* Lemma toolong : forall A, A. *)
-(* Admitted.                        *)
-
 (* faithul functors reflect epimorphisms *)
 Section FaithFulReflectEpis.
   Context {C D : precategory} (U: functor C D).
@@ -233,15 +220,26 @@ is so slow when R' is definitely equal to quot_functor !
   Arguments projR : simpl never.
   Arguments R' : simpl never.
 
-(* TODO : déplacer dans quotient vector.v *)
-  Lemma eq_proj_quot_rel X x y : projR X x = projR X y ->equivc x y.
+  (* TODO: utiliser partout ce lemme où c'est nécessaire *)
+  Lemma isEpi_projR : isEpi (C:=functor_Precategory _ _) projR.
   Proof.
-    apply invmap.
-    apply (weqpathsinsetquot (eqrel_equivc X)).
+    apply is_epi_proj_quot.
   Qed.
-  Lemma rel_eq_proj_quot X x y : equivc x y ->projR X x = projR X y.
+  Lemma isEpi_projR_pw : Π x, isEpi (projR x).
   Proof.
-    apply (weqpathsinsetquot (eqrel_equivc X)).
+    apply Pushouts_pw_epi.
+    apply HSET_Pushouts.
+    apply isEpi_projR.
+  Qed.
+
+(* TODO : déplacer dans quotient vector.v *)
+  Lemma eq_projR_rel X x y : projR X x = projR X y ->equivc x y.
+  Proof.
+    apply eq_proj_quot_rel.
+  Qed.
+  Lemma rel_eq_projR X x y : equivc x y ->projR X x = projR X y.
+  Proof.
+    apply (rel_eq_proj_quot _ _ congr_equivc) .
   Qed.
 
   
@@ -282,11 +280,6 @@ de a et que u est un morphisme de modules.
 
 
 
-Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
-  f = g -> f t1 = f t2 ->g t1 = g t2.
-Proof.
-  now induction 1.
-Qed.
 
 
   (* R'_μ is defined by the following diagram :
@@ -432,25 +425,12 @@ Qed.
     now rewrite id_left.
   Qed.
 
-  Lemma assochor c : (projR ∙∙ projR) (## R c) ;; # (R' □ R') (projR c)
+  Lemma assoc_ppprojR c : (projR ∙∙ projR) (## R c) ;; # (R' □ R') (projR c)
                   = (projR ∙∙ (projR ∙∙ projR)) c.
   Proof.
-    apply funextfun.
-
-    intro x.
-    cbn.
-    (* assert (hmap :=fun t1 t2 => (maponpaths (R'_μ (R' c) ) (t1:=t1) (t2:=t2))). *)
-    (* cbn in hmap. *)
-    (* apply hmap. *)
-    (* clear hmap. *)
-    set (y:= functor_on_morphisms _ _).
-    assert (hp := fun a b c f g => toforallpaths _ _ _ (functor_comp R' a b c f g)).
-    
-    apply pathsinv0.
-    cbn.
-    subst y.
-    use hp.
+    apply (horcomp_assoc projR projR projR c).
   Qed.
+
   Lemma R'_Monad_law_μ :  Π c : SET,
                                 # R' (R'_μ  c) ;; R'_μ c = R'_μ (R' c) ;; R'_μ c.
   Proof.
@@ -572,7 +552,7 @@ Legend of the diagram :
       apply cancel_postcomposition.
 
       (* association of horcomposition *)
-      apply assochor.
+      apply assoc_ppprojR.
   Qed.
 
     Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
@@ -607,6 +587,11 @@ FIN DE LA PREMIERE ETAPE
   Definition projR_monad : Monad_Mor (pr1 R) (R'_monad) :=
     (_ ,, projR_monad_laws).
 
+  Lemma isEpi_projR_monad : isEpi (C:=monadPrecategory _) projR_monad.
+  Proof.    
+    apply (faithful_reflects_epis (forgetMonad _));
+      [ apply forgetMonad_faithful|apply is_epi_proj_quot].
+  Qed.
 
   (* FIN DE LA SECONDE ETAPE *)
 
@@ -903,11 +888,6 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
 
   Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
 
-  Lemma isEpi_projR_monad : isEpi (C:=monadPrecategory _) projR_monad.
-  Proof.    
-    apply (faithful_reflects_epis (forgetMonad _));
-      [ apply forgetMonad_faithful|apply is_epi_proj_quot].
-  Qed.
 
   Lemma isEpi_def_R'_μr : isEpi
                             (compose (C:=functor_Precategory _ _)
@@ -939,17 +919,6 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
     apply (univ_surj_nt_ax_pw ((pr1 (# a (projR_monad))%ar)  ;;;    armor_ob _ F ( R'_monad) ))).
   Qed.
 
-  (* TODO: remonter ce lemme et l'utiliser partout *)
-  Lemma isEpi_projR : isEpi (C:=functor_Precategory _ _) projR.
-  Proof.
-    apply is_epi_proj_quot.
-  Qed.
-  Lemma isEpi_projR_pw : Π x, isEpi (projR x).
-  Proof.
-    apply Pushouts_pw_epi.
-    apply HSET_Pushouts.
-    apply isEpi_projR.
-  Qed.
 
   Lemma R'_μr_module_laws : RModule_Mor_laws _ (T:=pr1 (ar_obj _ b R'_monad))
                                              (T':=  taut_rmod R'_monad)
