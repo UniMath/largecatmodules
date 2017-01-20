@@ -1,5 +1,5 @@
+lib.v
 ardef.v
 setscomplements.v
 quotientfunctor.v
-lib.v
 uniproof.v
