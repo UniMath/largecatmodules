@@ -49,3 +49,8 @@ Lemma final (l:List) : P l.
     apply IHn.
 Defined.
 
+End list_induction.
+
+Definition length (l:List) := final (fun _ => nat) 0 (fun _ _ n => S n) l.
+
+Eval compute in (length nil).
