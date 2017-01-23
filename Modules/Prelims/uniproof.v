@@ -62,8 +62,8 @@ Require Import UniMath.CategoryTheory.limits.pullbacks.
 Require Import UniMath.CategoryTheory.limits.coequalizers.
 
 Require Import UniMath.CategoryTheory.CocontFunctors.
+Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
-Require Import Modules.Prelims.setscomplements.
 
 
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
@@ -109,6 +109,7 @@ Section FaithFulReflectEpis.
 End FaithFulReflectEpis.
 
 
+(* mis dans UniMtaths *)
 Section ForgetMonad.
   Context (C:Precategory).
 
@@ -228,9 +229,17 @@ is so slow when R' is definitely equal to quot_functor !
   Lemma isEpi_projR_pw : Π x, isEpi (projR x).
   Proof.
     apply Pushouts_pw_epi.
-    apply HSET_Pushouts.
+    apply PushoutsHSET_from_Colims.
     apply isEpi_projR.
   Qed.
+
+  Lemma isEpi_projR_projR : isEpi (C:=functor_Precategory _ _) (projR ∙∙ projR).
+  Proof.
+    apply isEpi_horcomp. 
+    apply isEpi_projR.
+    apply isEpi_projR_pw.
+  Qed.
+
 
 (* TODO : déplacer dans quotient vector.v *)
   Lemma eq_projR_rel X x y : projR X x = projR X y ->equivc x y.
@@ -454,9 +463,10 @@ quotients in basics/Sets.v
       assert (epi :isEpi (horcomp (horcomp projR projR) projR c)).
       {
         apply Pushouts_pw_epi.
-        apply HSET_Pushouts.        
-        apply isEpi_horcomp;[   apply isEpi_horcomp|]; try apply Pushouts_pw_epi;
-          try apply HSET_Pushouts; apply is_epi_proj_quot.
+        apply PushoutsHSET_from_Colims.
+        apply isEpi_horcomp.
+        apply isEpi_projR_projR.
+        apply isEpi_projR_pw.
       }
       apply epi.
 
@@ -610,9 +620,8 @@ FIN DE LA PREMIERE ETAPE
         assert (epi :isEpi ( (horcomp projR projR) X)).
         {
           apply Pushouts_pw_epi.
-          apply HSET_Pushouts.
-          apply isEpi_horcomp; try apply Pushouts_pw_epi;
-            try apply HSET_Pushouts; apply is_epi_proj_quot.
+          apply PushoutsHSET_from_Colims.
+          apply isEpi_projR_projR.
         }
         apply epi.
 
@@ -932,12 +941,12 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
                                                           armor_ob _ F ( R'_monad) )    ∙∙ projR) X)).
     {
       apply Pushouts_pw_epi.
-      apply HSET_Pushouts.
+      apply PushoutsHSET_from_Colims.
       apply isEpi_horcomp.
       apply isEpi_projR.
       intro Y.
       apply Pushouts_pw_epi.
-      apply HSET_Pushouts.
+      apply PushoutsHSET_from_Colims.
       apply isEpi_def_R'_μr.
     }
     apply epi.

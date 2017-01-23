@@ -40,6 +40,7 @@ Monads and Modules are more than precategories : they are Precategories (homset 
 *)
 Section PrecatModulesMonads.
 
+  (* mis dans UniMaths *)
   Section MonadPrecategory.
     Variable  (C:Precategory).
 
@@ -64,6 +65,7 @@ Section PrecatModulesMonads.
 
   End MonadPrecategory.
 
+  (* mis dans UniMaths *)
   Section ModulePrecategory.
 
     (* We don't need the hypothesis that C has homsets *)

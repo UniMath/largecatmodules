@@ -11,8 +11,6 @@ Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.category_hset.
 
-(* Needed only for the definition of HSET_PreCategory *)
-Require Import Modules.Prelims.setscomplements.
 
 
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
@@ -65,7 +63,6 @@ Section QuotientFunctor.
   (* Definition of the quotient functor *)
   Definition quot_functor_ob (d:D) :hSet. (* := setquotinset (hequiv d). *)
   Proof.
-    intro d.
     mkpair.
     apply (setquot (hequiv d)).
     abstract (apply isasetsetquot).
@@ -128,13 +125,11 @@ Section QuotientFunctor.
   Qed.
   Lemma eq_proj_quot_rel X x y : proj_quot X x = proj_quot X y -> hequiv X x y.
   Proof.
-    intros X x y.
     apply invmap.
     apply (weqpathsinsetquot (hequiv X)).
   Qed.
   Lemma rel_eq_proj_quot X x y : hequiv X x y ->proj_quot X x = proj_quot X y.
   Proof.
-    intros X x y.
     apply (weqpathsinsetquot (hequiv X)).
   Qed.
 End QuotientFunctor.
