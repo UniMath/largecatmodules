@@ -82,6 +82,7 @@ Require Import Modules.Prelims.ardef.
 Require Import Modules.Prelims.quotientfunctor.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.modules.
 
 
 
@@ -1156,7 +1157,7 @@ Qed.
       {
 
           apply Pushouts_pw_epi.
-          apply HSET_Pushouts.
+          apply PushoutsHSET_from_Colims.
           apply isEpi_def_R'_μr.
       }
       
