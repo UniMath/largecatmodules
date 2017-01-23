@@ -78,7 +78,7 @@ Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
 
 
-Require Import Modules.Prelims.ardef.
+Require Import Modules.Prelims.arities.
 Require Import Modules.Prelims.quotientfunctor.
 
 Require Import Modules.Prelims.lib.

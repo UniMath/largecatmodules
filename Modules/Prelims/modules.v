@@ -290,3 +290,104 @@ Section Pullback_Composition.
 
     Definition pbm_mor_comp : RModule_Mor _ comp_pbm pbm_comp := (_ ,, pbm_mor_comp_law).
 End Pullback_Composition.
+
+(**
+The pullback module/morphism construction allow to construct a large category of modules over monads
+where objects are pairs (Monad, Module over this monad).
+*)
+Section LargeCatMod.
+
+  Context (C:Precategory).
+
+
+  (* range of modules *)
+  Context (D:Precategory).
+
+
+
+
+  Local Notation MONAD := (monadPrecategory C).
+  Local Notation MODULE R := (precategory_RModule R _ (homset_property D)).
+
+  Definition bmod_disp_ob_mor : disp_precat_ob_mor MONAD.
+  Proof.
+    exists (fun R : MONAD => ob (MODULE R)).
+    intros xx' yy' g h ff'.
+    exact (precategory_morphisms  g ( pullback_module  ff'  h )).
+  Defined.
+
+  Definition bmod_id_comp : disp_precat_id_comp _ bmod_disp_ob_mor.
+  Proof.
+    split.
+    - intros x xx.
+      simpl.
+      apply pbm_id.
+    - intros x y z f g xx yy zz ff gg.
+      set (pbm_g := pbm_mor f gg).
+      set (pbm_gf := (RModule_composition _ pbm_g (pbm_mor_comp f g _))).
+      exact (compose ff pbm_gf).
+  Defined.
+
+  Definition bmod_data : disp_precat_data _
+    := (bmod_disp_ob_mor ,, bmod_id_comp).
+
+  (* Peut etre que c'est le genre de pb qui intéresse André.. Cf utilisation de foo *)
+  Lemma bmod_transport (x y : MONAD) (f g : MONAD ⟦ x, y ⟧)
+        (e : f = g)
+        (xx : bmod_data x)
+        (yy : pr1 bmod_data y)
+        (ff : xx -->[ f] yy)
+        (c : C) : (pr1 (transportf (mor_disp xx yy) e ff) c = pr1 ff c).
+  Proof.
+    induction e.
+    intros.
+    apply idpath.
+  Qed.
+
+
+  Lemma bmod_axioms : disp_precat_axioms MONAD bmod_data.
+  Proof.
+    repeat apply tpair; intros; try apply homset_property.
+    - simpl.
+      unfold id_disp; simpl.
+      apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+      apply nat_trans_eq; try apply homset_property.
+      intros c; simpl.
+      simpl.
+      rewrite assoc; simpl.
+      apply pathsinv0.
+      etrans.
+      apply bmod_transport.
+      now rewrite id_right,id_left.
+    - set (heqf := id_right f).
+      apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+      apply nat_trans_eq; try apply homset_property.
+      simpl.
+      intros c.
+      rewrite id_right,id_right.
+      revert ff.
+      induction (heqf).
+      intros; simpl.
+      reflexivity.
+    - set (heqf:= assoc f g h).
+      apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+      apply nat_trans_eq; try apply homset_property.
+      intros c; simpl.
+      apply pathsinv0.
+      etrans.
+      (* set (z:= (ff:nat c ;; gg c ;; hh c). *)
+      clearbody heqf.
+      apply bmod_transport.
+      cbn.
+      repeat rewrite id_right.
+      rewrite assoc.
+      reflexivity.
+    - simpl.
+      apply rmodule_category_has_homsets.
+  Qed.
+
+  Definition bmod_disp : disp_precat MONAD:=
+    (bmod_data ,, bmod_axioms).
+
+
+End LargeCatMod.
