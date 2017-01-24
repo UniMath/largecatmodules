@@ -136,7 +136,7 @@ Module List2.
 
   Lemma myisapropishinh :Π X : UU, isaprop (ishinh_UU X).
     exact isapropishinh.
-  Qed.
+    Defined.
   Lemma myisasetsetquot: Π (X : UU) (R : hrel X), isaset (setquot R).
     exact @isasetsetquot.
   Qed.
@@ -161,6 +161,40 @@ Definition List : hSet :=
 Definition nil_chain : Chain := (1,, inl tt). (* (1,,(One,,tt)). *)
 Definition nil : List := setquotpr eqr nil_chain. (*  *)
 
+Definition cons_chain (a:TT) (l:Chain) : Chain.
+  use tpair.
+  exact (S (pr1 l)).
+  apply inr.
+  exact (a,,pr2 l).
+Defined.
+
+Lemma myadmit (A:UU) : A.
+  admit.
+  Admitted.
+Lemma isasetChain: isaset Chain.
+Proof.
+  apply myadmit.
+Qed.
+
+Lemma isasetList : isaset List.
+apply myadmit.
+Qed.
+
+Definition ChainSet : hSet := (_ ,, isasetChain).
+Definition ListSet : hSet := (_ ,, isasetList).
+
+Lemma compat_cons (a:TT) : iscomprelfun eqr (cons_chain a).
+apply myadmit.
+Qed.
+
+
+Definition cons_list_chain (a:TT) (l:List) : ChainSet.
+  use (setquotuniv eqr _ _ _ l).
+  apply (cons_chain a).
+  apply compat_cons.
+  Defined.
+
+Definition cons (a:TT) (l:List) := setquotpr eqr (cons_list_chain a l).
 (** The induction principle for lists defined using foldr *)
 Section list_induction.
 
@@ -205,58 +239,53 @@ Lemma test : chain_to_P nil_chain = P0.
   apply idpath.
 Qed.
 
-Lemma myadmit (A:UU) : A.
-  admit.
-  Admitted.
 
 Lemma compat_chainP : iscomprelfun eqr chain_to_P.
 apply myadmit.
 Qed.
 
-Definition final (l: List) : P .
+Definition list_ind_non_dep (l: List) : P .
   use (setquotuniv eqr _ _ _ l).
   exact chain_to_P.
   exact compat_chainP.
 Defined.
-
-Lemma fnil : final nil = P0.
+ 
+Lemma fnil : list_ind_non_dep nil = P0.
   apply idpath.
 Qed.
 
-Definition cons_chain (a:TT) (l:Chain) : Chain.
-  use tpair.
-  exact (S (pr1 l)).
-  apply inr.
-  exact (a,,pr2 l).
-Defined.
+ 
+Lemma fcons a l : list_ind_non_dep (cons a l) = Pc a (list_ind_non_dep l).
+  cbn.
+  unfold cons_list_chain.
+  revert l.
+  eapply surjectionisepitosets.
+  apply  issurjsetquotpr.
+  apply setproperty.
+  intro x.
+  apply idpath.
+  Qed.
+End list_induction.
 
-Lemma isasetChain: isaset Chain.
-Proof.
-  apply myadmit.
-Qed.
+Section list_induction_dep.
 
-Definition ChainSet : hSet := (_ ,, isasetChain).
+Variables (P : List -> hSet) (PhSet : Π l, isaset (P l)).
+Variables (P0 : P nil)
+          (Pc : Π a l, P l -> P (cons a l)).
 
-Lemma compat_cons (a:TT) : iscomprelfun eqr (cons_chain a).
+
+Let P' := Σ l, P l.
+Let P'0 : P' := (nil,, P0).
+Let P'c : TT -> P' -> P' := fun t a => (cons t (pr1 a),, Pc t (pr1 a) (pr2 a)).
+
+Lemma isasetP' : isaset P'.
 apply myadmit.
 Qed.
 
+Definition P'Set : hSet := (_ ,, isasetP').
 
-Definition cons_list_chain (a:TT) (l:List) : ChainSet.
-  use (setquotuniv eqr _ _ _ l).
-  apply (cons_chain a).
-  apply compat_cons.
-  Defined.
+Definition intermede (l:List) : P'Set.
+  eapply (list_ind_non_dep).
 
-Definition cons (a:TT) (l:List) := setquotpr eqr (cons_list_chain a l).
- 
-
-Lemma fcons a l : final (cons a l) = Pc a (final l).
-  cbn.
-  apply idpath.
-  (* il faut d'abord détruire l pour avoir la réduction *)
-  destruct l.
-  apply idpath.
-Qed.
-End list_induction.
+End list_induction_dep.
 End List2.
