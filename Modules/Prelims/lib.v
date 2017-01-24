@@ -47,16 +47,6 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma cancel_functor_on_morph :
-  Π (C C' : precategory_ob_mor)
-    (F : functor_data C C') (a b : C) (m m': C ⟦ a, b ⟧) ,
-  m = m' -> #F m = #F m'.
-Proof.
-  intros ??????? e.
-  now destruct e.
-Qed.
-
-
 
 Lemma isEpi_pre_whisker (B C :precategory)( D:Precategory)
       (G H : functor C D) ( K : functor B C) (f:nat_trans G H)

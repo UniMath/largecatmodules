@@ -325,7 +325,7 @@ de a et que u est un morphisme de modules.
     apply cancel_postcomposition.
     apply u_def.
     apply cancel_precomposition.
-    apply cancel_functor_on_morph.
+    apply maponpaths.
     apply u_def.
 
     etrans.
@@ -414,7 +414,7 @@ de a et que u est un morphisme de modules.
     etrans.
     apply cancel_postcomposition.
     etrans.
-    apply cancel_functor_on_morph.
+    apply maponpaths.
     apply R'_η_def.
     apply functor_comp.
     use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR).
@@ -501,7 +501,7 @@ Legend of the diagram :
  
       apply (cancel_precomposition SET).
       rewrite <- (functor_comp (C:=SET) (C':=SET)).
-      apply cancel_functor_on_morph.      
+      apply maponpaths.      
       apply R'_μ_def.
       
       rewrite functor_comp,assoc.
@@ -663,7 +663,7 @@ FIN DE LA PREMIERE ETAPE
         apply u_def.        
         cpre _.
         etrans.
-        apply cancel_functor_on_morph.
+        apply maponpaths.
         apply u_def.
         apply functor_comp.
 

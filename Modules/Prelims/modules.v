@@ -161,7 +161,7 @@ Section Pullback_module.
       simpl in hm.
       etrans.
       apply cancel_postcomposition.
-      apply cancel_functor_on_morph.
+      apply maponpaths.
       apply hm.
 
       rewrite functor_comp.
