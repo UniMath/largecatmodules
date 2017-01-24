@@ -286,6 +286,31 @@ Definition P'Set : hSet := (_ ,, isasetP').
 
 Definition intermede (l:List) : P'Set.
   eapply (list_ind_non_dep).
+  apply P'0 .                   
+  apply P'c.
+  exact l.
+Defined.
+
+Definition list_ind (l:List) : P l.
+  set (x:= pr2 (intermede l)).
+  cbn in x.
+  assert (h:l=pr1 (intermede l)).
+   eapply (surjectionisepitosets _ (idfun _)(fun x => pr1 (intermede x))).
+  apply  issurjsetquotpr.
+  apply isasetList.
+  intro x'.
+  unfold idfun.
+  cbn.
+  assert (h:=compat_chainP).
+  unfold iscomprelfun in h.
+  assert (test:=setquotpr eqr x' ).
+  unfold chain_to_P.
+  cbn.
+  
+  apply compat_chainP.
+  apply idpath.
+
+    := pr2 (intermede l).
 
 End list_induction_dep.
 End List2.
