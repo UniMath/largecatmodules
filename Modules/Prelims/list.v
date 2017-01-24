@@ -125,12 +125,10 @@ Module List2.
     - intro heq.
       cbn.
       clear h.
-      rewrite heq in l'.
-      exact (l' = injF l).
+      exact (injF l = transportf _ heq l').
     - intros.
       exact Empty_set.
-      Qed.
-  (* Defined. *)
+  Defined.
 
   Definition Chain := Σ n, Listn n.
 
@@ -291,26 +289,120 @@ Definition intermede (l:List) : P'Set.
   exact l.
 Defined.
 
-Definition list_ind (l:List) : P l.
-  set (x:= pr2 (intermede l)).
-  cbn in x.
-  assert (h:l=pr1 (intermede l)).
-   eapply (surjectionisepitosets _ (idfun _)(fun x => pr1 (intermede x))).
+Lemma eq_refl_nat (n:nat) (e:n=n) : e = idpath _.
+  apply proofirrelevance.
+  apply isasetnat.
+Defined.
+Lemma pr1_intermede l : pr1 (intermede (setquotpr _ l)) = setquotpr _ l.
+  Proof.
+    cbn.
+    Abort.
+Lemma pr1_intermede_nil  : pr1 (intermede nil) = nil.
+  Proof.
+    apply idpath.
+    Qed.
+
+  (* setquotunivprop *)
+Lemma pr1_intermede l : pr1 (intermede l) = l.
+Proof.
+   eapply (surjectionisepitosets _ (fun x => pr1 (intermede x))(idfun _)).
+   (* c'est ce lemme qui fait bloquer la réduction, à cause de setquotl0 qui ne calcule pas,
+je pense que c'est à cause de funext *)
   apply  issurjsetquotpr.
   apply isasetList.
   intro x'.
   unfold idfun.
   cbn.
-  assert (h:=compat_chainP).
-  unfold iscomprelfun in h.
-  assert (test:=setquotpr eqr x' ).
-  unfold chain_to_P.
+  clear l.
+  destruct x' as [n l].
+  induction n.
   cbn.
-  
-  apply compat_chainP.
+  exact (Empty_set_rect  (fun x => pr1 (empty_rect _ x) = setquotpr eqr (0,,x))  l).
+  cbn.
+  induction l as [ttu |l IHl].
+
+   - cbn.
+     unfold nil.
+     apply (iscompsetquotpr eqr).
+     cbn.
+     intro R.
+     intro h.
+     unfold nil_chain.
+     elim n.
+     + destruct ttu.
+       apply eqrelrefl.
+     + intros p hp.
+       eapply eqreltrans.
+       apply hp.
+       apply h.
+       cbn.
+       apply hinhpr.
+       unfold list_rel.
+       set (heq := isdeceqnat _ _).
+       induction heq as [eqr|eqrl].
+       * cbn.
+         clear.
+         assert (heq:eqr = idpath _).
+         {
+           apply proofirrelevance.
+           apply isasetnat.
+         }
+         now rewrite heq.
+       * eapply Empty_set_rect.
+         apply eqrl.
+         apply idpath.
+   - cbn.
+     apply (iscompsetquotpr eqr).
+     cbn.
+     intros R hR.
+     apply myadmit.
+     Defined.
+
+Definition list_ind (l:List) : P l.
+  set (x:= pr2 (intermede l)).
+  cbn in x.
+  rewrite pr1_intermede in x. 
+  exact x.
+Defined.
+
+(* e' := setquotl0 eqr nil (nil_chain,, eqrelrefl eqr nil_chain) : setquotpr eqr nil_chain = ni *)
+Lemma setquotpr_nil : setquotpr eqr nil_chain = nil.
   apply idpath.
+  Qed.
 
-    := pr2 (intermede l).
+Goal  setquotpr eqr nil_chain = nil.
+  set (e':=setquotl0 eqr nil (nil_chain,, eqrelrefl eqr nil_chain)).
+  cbn in e'.
+  unfold setquotl0 in e'.
+  cbn in e'.
+  Check ((pr1setquot rel) ).
+  set (e'' := funextsec _ _ _ _) in e'.
+  cbn in e''.
+  unfold invmaponpathsincl in e'.
+  cbn in e'.
+  clearbody e''.
+  set (e2 := weqonpathsincl _ _ _ _) in e'.
+  cbn in e2.
+  compute in e'.
+  Abort.
 
+Lemma fnil2 : list_ind nil = P0.
+  cbn.
+unfold list_ind.
+cbn.
+set (e:= paths_rect _ _ _ _ _ _ ).
+cbn in e.
+set (e' := (setquotl0 eqr nil (nil_chain,, eqrelrefl eqr nil_chain))) in e.
+cbn in e'.
+setquotl0
+apply idpath.
+unfold pr1_intermede.
+Abort.
 End list_induction_dep.
+
+Lemma fnil2 (P:hSet) (P0:P) (Pc:TT -> P -> P): list_ind  (fun _ => P) P0 (fun t _ => Pc t) nil = P0.
+  apply idpath.
+  Abort.
+
+
 End List2.
