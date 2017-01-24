@@ -79,12 +79,13 @@ End List1.
 Module List2.
   Open Scope stn.
   Section def.
-    (* Variable (TT : UU). *)
-    Local Notation TT := nat.
-  Definition One : two := ● 0.
-  Definition Two : two := ● 1.
+    Variable (TT : UU).
+    (* Local Notation TT := nat *)
+  (* Definition One : two := ● 0. *)
+  (* Definition Two : two := ● 1. *)
 
-  Definition sum (A:UU) (B:UU) := Σ (x:two), two_rec (A:=UU) A B x.
+  (* Definition sum (A:UU) (B:UU) := Σ (x:two), two_rec (A:=UU) A B x *)
+  Notation sum := coprod (only parsing).
 
   (* à base de quotient *)
   Definition F (A:UU) :UU := sum unit (TT×A).
@@ -92,12 +93,15 @@ Module List2.
   Definition Listn (n:nat) := itern ∅ F n.
 
   Definition Fmor1 {A B:UU} (C:UU) (f: A -> B) (x:sum C A) : sum C B.
-    use tpair.
-   exact (pr1 x).
-   generalize (pr2 x).
-    use (two_rec_dep (fun a => two_rec C A a -> two_rec C B a) _ _ (pr1 x));cbn.
-    apply idfun.
-    exact f.
+    induction x as [l|t].
+    now apply inl.
+   (*  use tpair. *)
+   (* exact (pr1 x). *)
+   (* generalize (pr2 x). *)
+   (*  use (two_rec_dep (fun a => two_rec C A a -> two_rec C B a) _ _ (pr1 x));cbn. *)
+    (* apply idfun. *)
+    (* exact f. *)
+    apply inr; apply f; exact t.
   Defined.
 
   Definition Fmor {A B:UU} (f:A -> B) : F A -> F B.
@@ -154,7 +158,7 @@ Local Definition eqr : eqrel Chain := eqrelpair _ iseqrel_rel.
 Definition List : hSet :=
   hSetpair (setquot eqr) (isasetsetquot _).
 
-Definition nil_chain : Chain := (1,,(One,,tt)).
+Definition nil_chain : Chain := (1,, inl tt). (* (1,,(One,,tt)). *)
 Definition nil : List := setquotpr eqr nil_chain. (*  *)
 
 (** The induction principle for lists defined using foldr *)
@@ -166,6 +170,13 @@ Variables (P0 : P )
 
 Definition algP : F P -> P.
   intro h.
+  induction h as [_|x].
+  now apply P0.
+  apply Pc.
+  exact (pr1 x).
+  exact (pr2 x).
+
+  (*
   generalize (pr2 h).
   use (two_rec_dep (fun a => two_rec _ _ a -> P) _ _(pr1 h)).
   - intros _; exact P0.
@@ -174,22 +185,21 @@ Definition algP : F P -> P.
     apply Pc.
     apply (pr1 h').
     apply (pr2 h').
+*)
 Defined.
+
 
 Definition chain_to_P (l:Chain) : P.
   generalize (pr2 l).
-  destruct (pr1 l).
+  induction (pr1 l).
   - use Empty_set_rect. (* intros ?; cbn in X. exact P0. *)
-  - induction ( n) as [|p IHp].
-    + intros ?; exact P0.
-    + clear n.
-    intro l'.
-    apply Pc.
-    apply (pr1 l').
-    apply algP.
-    revert l'.
-    apply Fmor.
-    apply IHp.
+  - intro h.
+    induction h as [_|x].
+    + apply P0.                  
+    + apply Pc.
+      exact (pr1 x).
+      apply IHn.
+      exact (pr2 x).
 Defined.
 Lemma test : chain_to_P nil_chain = P0.
   apply idpath.
