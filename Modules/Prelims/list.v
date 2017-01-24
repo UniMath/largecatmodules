@@ -223,17 +223,37 @@ Lemma fnil : final nil = P0.
   apply idpath.
 Qed.
 
-Definition cons_chain (a:nat) (l:Chain) : Chain.
+Definition cons_chain (a:TT) (l:Chain) : Chain.
   use tpair.
   exact (S (pr1 l)).
-  use tpair.
-  exact Two.
+  apply inr.
   exact (a,,pr2 l).
 Defined.
 
-Definition cons_list_chain (a:nat) (l:List) : Chain.
+Lemma isasetChain: isaset Chain.
+Proof.
+  apply myadmit.
+Qed.
 
-Lemma fcons a l : final (cons a l) = Pc a l (final l).
+Definition ChainSet : hSet := (_ ,, isasetChain).
+
+Lemma compat_cons (a:TT) : iscomprelfun eqr (cons_chain a).
+apply myadmit.
+Qed.
+
+
+Definition cons_list_chain (a:TT) (l:List) : ChainSet.
+  use (setquotuniv eqr _ _ _ l).
+  apply (cons_chain a).
+  apply compat_cons.
+  Defined.
+
+Definition cons (a:TT) (l:List) := setquotpr eqr (cons_list_chain a l).
+ 
+
+Lemma fcons a l : final (cons a l) = Pc a (final l).
+  cbn.
+  apply idpath.
   (* il faut d'abord détruire l pour avoir la réduction *)
   destruct l.
   apply idpath.
