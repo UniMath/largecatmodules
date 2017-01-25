@@ -122,7 +122,7 @@ Section LargeCatRep.
   Variable (C :Precategory).
 
   Local Notation MONAD := (Monad C).
-  Local Notation PRE_MONAD := (monadPrecategory C).
+  Local Notation PRE_MONAD := (Precategory_Monad C).
   Local Notation LMONAD := (liftcat_disp (PRE_MONAD)).
   Local Notation BMOD := (bmod_disp C C).
   Local Notation GEN_ARITY := (disp_functor_precat _ _ LMONAD BMOD).
@@ -164,7 +164,7 @@ Section LargeCatRep.
     apply homset_property.
   Qed.
 
-  Local Notation Θ := taut_rmod.
+  Local Notation Θ := tautological_RModule.
 
 
   (* a representation is a monad with a module morphisme from arity to itself *)
@@ -189,7 +189,7 @@ Section LargeCatRep.
   Notation AO := ar_obj.
 
   Definition ar_mor (a:ARITY) {M N:MONAD} (f:Monad_Mor  M N ) :
-      RModule_Mor M (AO a M) (pullback_module f (AO a N)).
+      RModule_Mor M (AO a M) (pb_RModule f (AO a N)).
   Proof.
     simpl.
     intros.
@@ -199,9 +199,9 @@ Section LargeCatRep.
 
   Lemma ar_mor_eq (a:ARITY) {M N:MONAD} (f:Monad_Mor  M N ) :
     @functor_over_on_morphisms
-      (monadPrecategory C) (monadPrecategory C)
+      (Precategory_Monad C) (Precategory_Monad C)
       (functor_identity (precategory_Monad_data C))
-      (liftcat_disp (monadPrecategory C))
+      (liftcat_disp (Precategory_Monad C))
       (bmod_disp C C)
       (functor_over_data_from_functor_over a) M N (ttp _) (ttp _) f (ttp _) =
     ar_mor a f .
@@ -217,7 +217,7 @@ Section LargeCatRep.
 
   Definition armor_ob {a b : ARITY} (f:arity_Mor a b) (R:MONAD) :
     RModule_Mor _  (AO a R)
-                (pullback_module ((nat_trans_id (functor_identity PRE_MONAD)) R)
+                (pb_RModule ((nat_trans_id (functor_identity PRE_MONAD)) R)
                                  (AO b R))
     := f R TTP.
 
@@ -244,7 +244,7 @@ Section LargeCatRep.
   Proof.
     intros.
     apply isaset_total2 .
-    apply monad_category_has_homsets.
+    apply has_homsets_Monad.
     intros.
     apply isasetaprop.
     apply isaprop_rep_ar_mor_law.

@@ -1,5 +1,4 @@
 lib.v
 modules.v
 arities.v
-quotientfunctor.v
 uniproof.v

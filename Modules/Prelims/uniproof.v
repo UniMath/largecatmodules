@@ -79,7 +79,6 @@ Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
 
 Require Import Modules.Prelims.arities.
-Require Import Modules.Prelims.quotientfunctor.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
@@ -90,48 +89,6 @@ Require Import Modules.Prelims.modules.
     
 Set Automatic Introduction.
 
-(* faithul functors reflect epimorphisms *)
-Section FaithFulReflectEpis.
-  Context {C D : precategory} (U: functor C D).
-  Hypothesis (hU : faithful U).
-
-  Lemma faithful_reflects_epis {a b:C} (f:C⟦a,b⟧) : isEpi (#U f) -> isEpi f.
-  Proof.
-    intro hf.
-    intros c u v huv.
-    eapply invmaponpathsincl.
-    apply hU.
-    cbn.
-    apply hf.
-    do 2  rewrite <- functor_comp.
-    now rewrite huv.
-  Qed.
-  
-End FaithFulReflectEpis.
-
-
-(* mis dans UniMtaths *)
-Section ForgetMonad.
-  Context (C:Precategory).
-
-  Definition forgetMonad :
-    functor (monadPrecategory C) (functor_Precategory C C).
-  Proof.
-    use mk_functor.
-    use mk_functor_data.
-    - exact (fun M => pr1 M:functor C C).
-    - exact (fun M N f => pr1 f).
-    - abstract (split; red; intros;  reflexivity).
-  Defined.
-
-  Lemma forgetMonad_faithful : faithful forgetMonad.
-  Proof.
-    intros M N.
-    apply isinclpr1.
-    apply isaprop_Monad_Mor_laws.
-    apply homset_property.
-  Qed.
-End ForgetMonad.
   
   
 (*
@@ -217,7 +174,7 @@ is so slow when R' is definitely equal to quot_functor !
   Definition R' := ( quot_functor (pr1 (pr1 R)) _ congr_equivc).
 
 
-  Definition projR : (## R) ⟶ R':= proj_quot _ _ congr_equivc.
+  Definition projR : (## R) ⟶ R':= pr_quot_functor _ _ congr_equivc.
 
   Arguments projR : simpl never.
   Arguments R' : simpl never.
@@ -225,11 +182,11 @@ is so slow when R' is definitely equal to quot_functor !
   (* TODO: utiliser partout ce lemme où c'est nécessaire *)
   Lemma isEpi_projR : isEpi (C:=functor_Precategory _ _) projR.
   Proof.
-    apply is_epi_proj_quot.
+    apply isEpi_pr_quot_functor.
   Qed.
   Lemma isEpi_projR_pw : Π x, isEpi (projR x).
   Proof.
-    apply Pushouts_pw_epi.
+    apply (Pushouts_pw_epi (C:=SET) (D:=SET)).
     apply PushoutsHSET_from_Colims.
     apply isEpi_projR.
   Qed.
@@ -242,14 +199,14 @@ is so slow when R' is definitely equal to quot_functor !
   Qed.
 
 
-(* TODO : déplacer dans quotient vector.v *)
   Lemma eq_projR_rel X x y : projR X x = projR X y ->equivc x y.
   Proof.
-    apply eq_proj_quot_rel.
+    use invmap.
+    apply (weqpathsinpr_quot_functor (D:=SET) _ _ congr_equivc).
   Qed.
   Lemma rel_eq_projR X x y : equivc x y ->projR X x = projR X y.
   Proof.
-    apply (rel_eq_proj_quot _ _ congr_equivc) .
+    apply (weqpathsinpr_quot_functor (D:=SET) _ _ congr_equivc).
   Qed.
 
   
@@ -264,10 +221,10 @@ de a et que u est un morphisme de modules.
     Context {S:BREP b} (m:R -->[ F] S).
 
     Definition u : nat_trans (pr1 R') (## S).
-      apply (univ_surj_nt projR (## m)); [| apply is_epi_proj_quot].
+      apply (univ_surj_nt projR (## m)) ; [| apply isEpi_projR].
       abstract(
       intros X x y eqpr;
-      apply eq_proj_quot_rel in eqpr;
+      apply eq_projR_rel in eqpr;
       apply eqpr).
     Defined.
 
@@ -309,7 +266,7 @@ de a et que u est un morphisme de modules.
   Proof.
     intros X x y.
     intros hxy.
-    apply rel_eq_proj_quot.
+    apply rel_eq_projR.
     intros S f.
     rewrite comp_cat_comp.
     symmetry.
@@ -355,9 +312,7 @@ de a et que u est un morphisme de modules.
 
   Lemma isEpi_def_R'_μ: isEpi (C:= functor_Precategory _ _) (projR ∙∙ projR).
   Proof.
-    apply isEpi_horcomp;
-      [|apply is_pointwise_epi_from_set_nat_trans_epi];
-      apply is_epi_proj_quot.
+    apply isEpi_projR_projR.
   Qed.
   
   Definition R'_μ  : nat_trans ( R'□  R')  ( R').
@@ -386,7 +341,7 @@ de a et que u est un morphisme de modules.
   Proof.
     intro c.
     use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ (projR)).
-    apply is_epi_proj_quot.
+    apply isEpi_projR.
     repeat rewrite assoc.
     etrans.
     apply (cancel_postcomposition (b:=R' (R' c))).
@@ -418,7 +373,7 @@ de a et que u est un morphisme de modules.
     apply R'_η_def.
     apply functor_comp.
     use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR).
-    apply is_epi_proj_quot.
+    apply isEpi_projR.
     repeat rewrite assoc.
     etrans.
     (apply cancel_postcomposition).
@@ -598,10 +553,10 @@ FIN DE LA PREMIERE ETAPE
   Definition projR_monad : Monad_Mor (pr1 R) (R'_monad) :=
     (_ ,, projR_monad_laws).
 
-  Lemma isEpi_projR_monad : isEpi (C:=monadPrecategory _) projR_monad.
+  Lemma isEpi_projR_monad : isEpi (C:=Precategory_Monad _) projR_monad.
   Proof.    
-    apply (faithful_reflects_epis (forgetMonad _));
-      [ apply forgetMonad_faithful|apply is_epi_proj_quot].
+    apply (faithful_reflects_epis (forgetfunctor_Monad _));
+      [ apply forgetMonad_faithful|apply isEpi_projR].
   Qed.
 
   (* FIN DE LA SECONDE ETAPE *)
@@ -869,7 +824,7 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
   Proof.
     intros X x y comp.
     
-    apply rel_eq_proj_quot.
+    apply rel_eq_projR.
     intros S m.
     assert (h:= eq_mr m X).
     apply toforallpaths in h.
@@ -893,7 +848,7 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
   Class FpreserveR' := FepiR' :
      isEpi (C:=functor_precategory HSET HSET has_homsets_HSET) (pr1 (armor_ob _ F ( R'_monad))).
   (* a preserve les epis *)
-  Class apreserveepi := aepiR : Π M N (f:monadPrecategory _⟦M,N⟧),
+  Class apreserveepi := aepiR : Π M N (f:Precategory_Monad _⟦M,N⟧),
                                 isEpi f -> isEpi (C:= functor_Precategory _ _) (pr1 ( # a f)%ar).
 
   Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
@@ -931,7 +886,7 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
 
 
   Lemma R'_μr_module_laws : RModule_Mor_laws _ (T:=pr1 (ar_obj _ b R'_monad))
-                                             (T':=  taut_rmod R'_monad)
+                                             (T':=  tautological_RModule R'_monad)
                                              R'_μr.
   Proof.
     intro X.
@@ -1098,7 +1053,7 @@ faire reculer b_R' p
 Qed.    
 
   Definition R'_μr_module :RModule_Mor _ (ar_obj _ b R'_monad)
-                                       ( taut_rmod R'_monad) :=
+                                       ( tautological_RModule R'_monad) :=
     (_ ,, R'_μr_module_laws).
 
 
@@ -1188,7 +1143,7 @@ Qed.
       (* on réécrit m *)
       etrans.
       cpost _.
-      apply (cancel_ar_on _ (compose (C:=monadPrecategory _) projR_monad (u_monad m))).
+      apply (cancel_ar_on _ (compose (C:=Precategory_Monad _) projR_monad (u_monad m))).
       use (invmap (Monad_Mor_equiv _ _ _)).
       { apply homset_property. }
       { apply nat_trans_eq.
