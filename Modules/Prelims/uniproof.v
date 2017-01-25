@@ -100,22 +100,21 @@ F is an epimorphism)
 Section leftadjoint.
 
 
-  Local Notation C := hset_Precategory.
   Local Notation SET := hset_Precategory.
-  Local Notation PARITY := (arity_Precategory C).
-  Local Notation BREP := (brep_disp C).
+  Local Notation PARITY := (arity_Precategory SET).
+  Local Notation BREP := (brep_disp SET).
 
   Variables (a b:PARITY) (R:BREP a)
             (F:PARITY ⟦ a, b⟧).
 
   Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 
-  Definition equivc   {c:ob C} (x y:pr1 ( ## R c)) :=
+  Definition equivc   {c:ob SET} (x y:pr1 ( ## R c)) :=
                                   (Π (S:BREP b) ( f : R -->[F] S),
                                    pr1 (pr1 f) c x = ## f c y).
 
 
-  Lemma isaprop_equivc_xy (c:ob C) x y : isaprop (equivc (c:=c) x y).
+  Lemma isaprop_equivc_xy (c:ob SET) x y : isaprop (equivc (c:=c) x y).
     intros.
     apply impred_isaprop.
     intros S.
@@ -124,7 +123,7 @@ Section leftadjoint.
     apply setproperty.
   Qed.
 
-  Definition equivc_xy_prop (c:ob C) x y : hProp :=
+  Definition equivc_xy_prop (c:ob SET) x y : hProp :=
     (equivc  (c:=c) x y ,, isaprop_equivc_xy c x y).
 
   Definition hrel_equivc c : hrel _ := fun x y => equivc_xy_prop c x y.
@@ -143,7 +142,7 @@ Section leftadjoint.
 
   Definition eqrel_equivc c : eqrel _ := (_ ,, iseqrel_equivc c).
 
-  Lemma congr_equivc: Π (x y:C) (f:C⟦ x,  y⟧), iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
+  Lemma congr_equivc: Π (x y:SET) (f:SET⟦ x,  y⟧), iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
     intros.
     red.
     intros z z' eqz.
@@ -237,7 +236,7 @@ de a et que u est un morphisme de modules.
   End CandidatU.
 
 
-  Definition R'_η : (functor_identity C) ⟶ R' := η (## R) ;;; projR .
+  Definition R'_η : (functor_identity SET) ⟶ R' := η (## R) ;;; projR .
 
   Lemma R'_η_def : Π x, R'_η x =  η (## R) x ;; projR x.
   Proof.
@@ -333,7 +332,7 @@ de a et que u est un morphisme de modules.
     apply univ_surj_nt_ax_pw.
   Qed.
 
-  Definition R'_Monad_data : Monad_data C := ((R' ,, R'_μ) ,, R'_η).
+  Definition R'_Monad_data : Monad_data SET := ((R' ,, R'_μ) ,, R'_η).
 
  
 
@@ -1057,7 +1056,7 @@ Qed.
     (_ ,, R'_μr_module_laws).
 
 
-  Definition R'_rep : (brep_disp C b).
+  Definition R'_rep : (brep_disp SET b).
     use tpair.
     - exact R'_monad.
     - exact R'_μr_module.
