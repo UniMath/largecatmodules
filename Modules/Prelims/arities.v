@@ -34,6 +34,68 @@ Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
 Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 
 
+(* 
+-(* Une première définition possible des arités, en tant que functor_lifting
+-
+-Inconvénient : ce n'est pas démontré dans la bibliothèque DisplayCat que les functor_lifting
+-forment une catégorie. Il faudra donc démontrer que les arités forment une catégorie.
+-
+-.*)
+-Module Arites1.
+-  Section Arities.
+-
+-    Variables (C D:Precategory).
+-
+-    Local Notation MONAD := (monadPrecategory C).
+-    Local Notation BMOD := (bmod_disp C D).
+-
+-    (* Définitions des arités *)
+-    Definition arity := functor_lifting BMOD (functor_identity MONAD).
+-
+-
+-    (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
+-    Lemma right_inverse_arity  (ar:arity ) :
+-      ((pr1_precat BMOD)□ (lifted_functor ar) )    =  (functor_identity MONAD).
+-    Proof.
+-      intros.
+-      apply subtypeEquality; [| reflexivity].
+-      red.
+-      intros;  apply isaprop_is_functor.
+-      apply homset_property.
+-    Qed.
+-
+-    (* Réciproque : si on a un foncteur qui vérifié ça, alors on a un functor lifting qui vaut
+-lui-même *)
+-
+-    Section Reciproque.
+-
+-      Variable (F:functor MONAD (total_precat BMOD)).
+-      Hypothesis (hF :  ((pr1_precat (bmod_disp C D))□ F) = (functor_identity (monadPrecategory C))).
+-
+-      Definition ar_inv_ob (x:MONAD): BMOD x.
+-        intro x.
+-
+-        unfold BMOD; simpl.
+-        change x with (functor_identity MONAD x).
+-        rewrite <- hF.
+-        exact (pr2 (F x)).
+-      Defined.
+-
+-      Definition ar_inv_data : section_disp_data BMOD.
+-        exists ar_inv_ob.
+-        intros.
+-        unfold mor_disp.
+-        (* Trop dur, il faut faire des transport c'est trop la galère *)
+-        change f with (#(functor_identity MONAD) f).
+-        (* rewrite <- hF. *)
+-      Abort.
+-
+-
+-    End Reciproque.
+-
+-  End Arities.
+-End Arites1.
+*)
 Inductive phantom {A:UU} (x:A) :UU := ttp.
 
 Arguments ttp {_} _.
