@@ -77,6 +77,8 @@ Proof.
   clear.
 Admitted.
 
+(*
+Le mettre dans UniMath
 Lemma horcomp_pre_post :
   Π (C D:precategory) ( E : Precategory) (F F' : functor C D) (G G' : functor D E) (f:F ⟶ F') (g:G ⟶ G'),
   horcomp f g = compose (C:=functor_Precategory C E) (a:= (G □ F)) (b:= (G' □ F)) (c:= (G' □ F'))
@@ -89,6 +91,7 @@ Proof.
   intros;
     apply idpath.
 Qed.    
+*)
 
 
 Lemma isEpi_horcomp (B :precategory)(C D:Precategory)
