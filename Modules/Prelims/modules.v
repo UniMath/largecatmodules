@@ -2,16 +2,15 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
-Require Import UniMath.CategoryTheory.precategories.
+Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.UnicodeNotations.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 
 Require Import UniMath.CategoryTheory.Monads.
 (* Require Import Modules.Prelims.modules. *)
-Require Import UniMath.CategoryTheory.RModules.
+Require Import UniMath.CategoryTheory.LModules.
 
 
 Require Import TypeTheory.Auxiliary.Auxiliary.
@@ -44,9 +43,9 @@ the identity morphism in M'.
 *)
 Section Pullback_Identity_Module.
 
-    Context {B} {M':Monad B}  {C:precategory} {T  :RModule M' C}.
+    Context {B} {M':Monad B}  {C:precategory} {T : LModule M' C}.
 
-    Local Notation pbmid := (pb_RModule (Monad_identity M') T).
+    Local Notation pbmid := (pb_LModule (Monad_identity M') T).
 
     Lemma  pbm_id_is_nat_trans  :  is_nat_trans T  pbmid (fun x => identity _).
       red; intros; simpl.
@@ -55,17 +54,17 @@ Section Pullback_Identity_Module.
 
     Definition pbm_id_nat_trans : nat_trans T pbmid  := (_ ,, pbm_id_is_nat_trans).
 
-    Lemma pbm_id_law : RModule_Mor_laws _ (T:=T) (T':=pbmid) pbm_id_nat_trans.
+    Lemma pbm_id_law : LModule_Mor_laws _ (T:=T) (T':=pbmid) pbm_id_nat_trans.
       red.
       intros b; simpl.
       rewrite id_left,id_right.
       etrans.
       cpost _.
-      apply Precategories.Functor_identity.
+      apply functor_id.
       apply id_left.
     Qed.
 
-    Definition pbm_id  : RModule_Mor _ T pbmid := (_ ,, pbm_id_law) .
+    Definition pbm_id  : LModule_Mor _ T pbmid := (_ ,, pbm_id_law) .
 
 End Pullback_Identity_Module.
 
@@ -78,10 +77,10 @@ between m*(m'*(T'')) and (m o m')*(T'')
 Section Pullback_Composition.
 
    Context {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory}
-     {M'': Monad B} (m' : Monad_Mor M' M'') (T'' : RModule M'' C).
+     {M'': Monad B} (m' : Monad_Mor M' M'') (T'' : LModule M'' C).
 
-    Local Notation comp_pbm := (pb_RModule m (pb_RModule m' T'')).
-    Local Notation pbm_comp := (pb_RModule (Monad_composition m  m') T'').
+    Local Notation comp_pbm := (pb_LModule m (pb_LModule m' T'')).
+    Local Notation pbm_comp := (pb_LModule (Monad_composition m  m') T'').
 
     Lemma pbm_mor_comp_is_nat_trans
       : is_nat_trans comp_pbm pbm_comp (fun x => identity _).
@@ -93,12 +92,12 @@ Section Pullback_Composition.
 
     Definition pbm_mor_comp_nat_trans := (_ ,, pbm_mor_comp_is_nat_trans ).
 
-    Lemma pbm_mor_comp_law : RModule_Mor_laws (T:=comp_pbm) (T':=pbm_comp) _ pbm_mor_comp_nat_trans.
+    Lemma pbm_mor_comp_law : LModule_Mor_laws (T:=comp_pbm) (T':=pbm_comp) _ pbm_mor_comp_nat_trans.
       intros b; simpl.
       now rewrite id_left,id_right, (functor_comp T''), assoc.
     Qed.
 
-    Definition pbm_mor_comp : RModule_Mor _ comp_pbm pbm_comp := (_ ,, pbm_mor_comp_law).
+    Definition pbm_mor_comp : LModule_Mor _ comp_pbm pbm_comp := (_ ,, pbm_mor_comp_law).
 End Pullback_Composition.
 
 (**
@@ -107,36 +106,37 @@ where objects are pairs (Monad, Module over this monad).
 *)
 Section LargeCatMod.
 
-  Context (C:Precategory).
+  Context (C: category).
 
 
   (* range of modules *)
-  Context (D:Precategory).
+  Context (D:category).
 
 
-  Local Notation MONAD := (Precategory_Monad C).
-  Local Notation MODULE R := (precategory_RModule R D).
+  Local Notation MONAD := (category_Monad C).
+  Local Notation MODULE R := (category_LModule R D).
 
-  Definition bmod_disp_ob_mor : disp_precat_ob_mor MONAD.
+  Definition bmod_disp_ob_mor : disp_cat_ob_mor MONAD.
   Proof.
     exists (fun R : MONAD => ob (MODULE R)).
     intros xx' yy' g h ff'.
-    exact (precategory_morphisms  g ( pb_RModule  ff'  h )).
+    exact (precategory_morphisms  g ( pb_LModule  ff'  h )).
   Defined.
 
-  Definition bmod_id_comp : disp_precat_id_comp _ bmod_disp_ob_mor.
+  Definition bmod_id_comp : disp_cat_id_comp _ bmod_disp_ob_mor.
   Proof.
     split.
     - intros x xx.
       simpl.
       apply pbm_id.
     - intros x y z f g xx yy zz ff gg.
-      set (pbm_g := pb_RModule_Mor f gg).
-      set (pbm_gf := (RModule_composition _ pbm_g (pbm_mor_comp f g _))).
-      exact (compose ff pbm_gf).
+      set (pbm_g := pb_LModule_Mor f gg).
+      set (pbm_gf := (LModule_composition _ pbm_g (pbm_mor_comp f g _))).
+      simpl in ff.
+      exact (compose (C:=category_LModule _ _ ) ff pbm_gf).
   Defined.
 
-  Definition bmod_data : disp_precat_data _
+  Definition bmod_data : disp_cat_data _
     := (bmod_disp_ob_mor ,, bmod_id_comp).
 
   (* Peut etre que c'est le genre de pb qui intéresse André.. Cf utilisation de foo *)
@@ -153,12 +153,12 @@ Section LargeCatMod.
   Qed.
 
 
-  Lemma bmod_axioms : disp_precat_axioms MONAD bmod_data.
+  Lemma bmod_axioms : disp_cat_axioms MONAD bmod_data.
   Proof.
     repeat apply tpair; intros; try apply homset_property.
     - simpl.
       unfold id_disp; simpl.
-      apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+      apply (invmap ((@LModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
       apply nat_trans_eq; try apply homset_property.
       intros c; simpl.
       simpl.
@@ -168,7 +168,7 @@ Section LargeCatMod.
       apply bmod_transport.
       now rewrite id_right,id_left.
     - set (heqf := id_right f).
-      apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+      apply (invmap ((@LModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
       apply nat_trans_eq; try apply homset_property.
       simpl.
       intros c.
@@ -178,7 +178,7 @@ Section LargeCatMod.
       intros; simpl.
       reflexivity.
     - set (heqf:= assoc f g h).
-      apply (invmap ((@RModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+      apply (invmap ((@LModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
       apply nat_trans_eq; try apply homset_property.
       intros c; simpl.
       apply pathsinv0.
@@ -190,11 +190,9 @@ Section LargeCatMod.
       repeat rewrite id_right.
       rewrite assoc.
       reflexivity.
-    - simpl.
-      apply has_homsets_RModule.
   Qed.
 
-  Definition bmod_disp : disp_precat MONAD:=
+  Definition bmod_disp : disp_cat MONAD:=
     (bmod_data ,, bmod_axioms).
 
 
