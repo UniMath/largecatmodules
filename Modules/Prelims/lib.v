@@ -24,8 +24,8 @@ Require Import TypeTheory.Displayed_Cats.Fibrations.
 
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
-Require Import UniMath.CategoryTheory.category_hset.
-Require Import UniMath.CategoryTheory.category_hset_structures.
+Require Import UniMath.CategoryTheory.categories.category_hset.
+Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Epis.
 
 Local Notation "'SET'" := hset_precategory.

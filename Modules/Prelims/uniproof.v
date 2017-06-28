@@ -47,8 +47,8 @@ Require Import TypeTheory.Displayed_Cats.Fibrations.
 
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
-Require Import UniMath.CategoryTheory.category_hset.
-Require Import UniMath.CategoryTheory.category_hset_structures.
+Require Import UniMath.CategoryTheory.categories.category_hset.
+Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.limits.graphs.pullbacks.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.limits.graphs.limits.
@@ -343,9 +343,10 @@ de a et que u est un morphisme de modules.
     repeat rewrite assoc.
     etrans.
     apply (cancel_postcomposition (b:=R' (R' c))).
-
-(*
-    apply (cancel_postcomposition _ ((η ## R) (## R c) ;; # (## R) (projR _))).
+    
+    unfold R'_η.
+    etrans;[apply assoc|].
+    apply cancel_postcomposition.
     apply (nat_trans_ax (η ## R)).
 
     rewrite <- assoc.
@@ -361,8 +362,6 @@ de a et que u est un morphisme de modules.
     apply (Monad_law1 (T:=pr1 R)).
     apply id_left.
   Qed.
-*)
-Admitted.
 
   Lemma R'_Monad_law_η2 : ∏ c : SET, # R' (R'_η c) ;; R'_μ c = identity (R' c).
   Proof.
