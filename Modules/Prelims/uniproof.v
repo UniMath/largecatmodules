@@ -27,16 +27,15 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
-Require Import UniMath.CategoryTheory.precategories.
+Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.UnicodeNotations.
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Require Import UniMath.CategoryTheory.Monads.
-Require Import UniMath.CategoryTheory.RModules. 
+Require Import UniMath.CategoryTheory.LModules. 
 
 
 Require Import TypeTheory.Auxiliary.Auxiliary.
@@ -100,7 +99,7 @@ F is an epimorphism)
 Section leftadjoint.
 
 
-  Local Notation SET := hset_Precategory.
+  Local Notation "'SET'" := hset_category.
   Local Notation PARITY := (arity_Precategory SET).
   Local Notation BREP := (brep_disp SET).
 
@@ -110,7 +109,7 @@ Section leftadjoint.
   Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 
   Definition equivc   {c:ob SET} (x y:pr1 ( ## R c)) :=
-                                  (Π (S:BREP b) ( f : R -->[F] S),
+                                  (∏ (S:BREP b) ( f : R -->[F] S),
                                    pr1 (pr1 f) c x = ## f c y).
 
 
@@ -142,7 +141,7 @@ Section leftadjoint.
 
   Definition eqrel_equivc c : eqrel _ := (_ ,, iseqrel_equivc c).
 
-  Lemma congr_equivc: Π (x y:SET) (f:SET⟦ x,  y⟧), iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
+  Lemma congr_equivc: ∏ (x y:SET) (f:SET⟦ x,  y⟧), iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
     intros.
     red.
     intros z z' eqz.
@@ -179,18 +178,18 @@ is so slow when R' is definitely equal to quot_functor !
   Arguments R' : simpl never.
 
   (* TODO: utiliser partout ce lemme où c'est nécessaire *)
-  Lemma isEpi_projR : isEpi (C:=functor_Precategory _ _) projR.
+  Lemma isEpi_projR : isEpi (C:=functor_category _ _) projR.
   Proof.
     apply isEpi_pr_quot_functor.
   Qed.
-  Lemma isEpi_projR_pw : Π x, isEpi (projR x).
+  Lemma isEpi_projR_pw : ∏ x, isEpi (projR x).
   Proof.
     apply (Pushouts_pw_epi (C:=SET) (D:=SET)).
     apply PushoutsHSET_from_Colims.
     apply isEpi_projR.
   Qed.
 
-  Lemma isEpi_projR_projR : isEpi (C:=functor_Precategory _ _) (projR ∙∙ projR).
+  Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR).
   Proof.
     apply isEpi_horcomp. 
     apply isEpi_projR.
@@ -227,7 +226,7 @@ de a et que u est un morphisme de modules.
       apply eqpr).
     Defined.
 
-    Lemma u_def : Π x, ## m x = projR x ;; u x.
+    Lemma u_def : ∏ x, ## m x = projR x ;; u x.
     Proof.
       symmetry.
       apply univ_surj_nt_ax_pw.
@@ -238,7 +237,7 @@ de a et que u est un morphisme de modules.
 
   Definition R'_η : (functor_identity SET) ⟶ R' := η (## R) ;;; projR .
 
-  Lemma R'_η_def : Π x, R'_η x =  η (## R) x ;; projR x.
+  Lemma R'_η_def : ∏ x, R'_η x =  η (## R) x ;; projR x.
   Proof.
     intro x.
     apply idpath.
@@ -259,7 +258,7 @@ de a et que u est un morphisme de modules.
                   R'_μ
 >>
    *)
-  Lemma compat_μ_projR : Π (X : SET) (x y : pr1 ((pr1 (## R □ ## R)) X)),
+  Lemma compat_μ_projR : ∏ (X : SET) (x y : pr1 ((pr1 (## R □ ## R)) X)),
                             (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
                             (μ ## R;;; projR) X x = (μ ## R;;; projR) X y.
   Proof.
@@ -296,7 +295,7 @@ de a et que u est un morphisme de modules.
     apply nat_trans_ax.
 
     apply cancel_postcomposition.
-    apply (functor_comp _ _ _ _ (projR X) (u f X)).
+    apply (functor_comp _ (projR X) (u f X)).
     repeat rewrite assoc.
     reflexivity.
     cbn.
@@ -309,7 +308,7 @@ de a et que u est un morphisme de modules.
     apply hxy.
   Qed.
 
-  Lemma isEpi_def_R'_μ: isEpi (C:= functor_Precategory _ _) (projR ∙∙ projR).
+  Lemma isEpi_def_R'_μ: isEpi (C:= functor_category _ _) (projR ∙∙ projR).
   Proof.
     apply isEpi_projR_projR.
   Qed.
@@ -324,7 +323,7 @@ de a et que u est un morphisme de modules.
     - apply isEpi_def_R'_μ.
   Defined.
 
-  Lemma R'_μ_def : Π (x:SET),
+  Lemma R'_μ_def : ∏ (x:SET),
                      (projR ∙∙ projR) x ;; R'_μ x = μ (## R) x ;; projR x .
   Proof.
     intro x.
@@ -336,7 +335,7 @@ de a et que u est un morphisme de modules.
 
  
 
-  Lemma R'_Monad_law_η1 : Π c : SET, R'_η (R' c) ;; R'_μ c = identity (R' c).
+  Lemma R'_Monad_law_η1 : ∏ c : SET, R'_η (R' c) ;; R'_μ c = identity (R' c).
   Proof.
     intro c.
     use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ (projR)).
@@ -344,6 +343,8 @@ de a et que u est un morphisme de modules.
     repeat rewrite assoc.
     etrans.
     apply (cancel_postcomposition (b:=R' (R' c))).
+
+(*
     apply (cancel_postcomposition _ ((η ## R) (## R c) ;; # (## R) (projR _))).
     apply (nat_trans_ax (η ## R)).
 
@@ -360,9 +361,10 @@ de a et que u est un morphisme de modules.
     apply (Monad_law1 (T:=pr1 R)).
     apply id_left.
   Qed.
+*)
+Admitted.
 
-
-  Lemma R'_Monad_law_η2 : Π c : SET, # R' (R'_η c) ;; R'_μ c = identity (R' c).
+  Lemma R'_Monad_law_η2 : ∏ c : SET, # R' (R'_η c) ;; R'_μ c = identity (R' c).
   Proof.
     intro c.
     etrans.
@@ -395,7 +397,7 @@ de a et que u est un morphisme de modules.
     apply (horcomp_assoc projR projR projR c).
   Qed.
 
-  Lemma R'_Monad_law_μ :  Π c : SET,
+  Lemma R'_Monad_law_μ :  ∏ c : SET,
                                 # R' (R'_μ  c) ;; R'_μ c = R'_μ (R' c) ;; R'_μ c.
   Proof.
     intro c.
@@ -552,7 +554,7 @@ FIN DE LA PREMIERE ETAPE
   Definition projR_monad : Monad_Mor (pr1 R) (R'_monad) :=
     (_ ,, projR_monad_laws).
 
-  Lemma isEpi_projR_monad : isEpi (C:=Precategory_Monad _) projR_monad.
+  Lemma isEpi_projR_monad : isEpi (C:=category_Monad _) projR_monad.
   Proof.    
     apply (faithful_reflects_epis (forgetfunctor_Monad _));
       [ apply forgetMonad_faithful|apply isEpi_projR].
@@ -709,11 +711,11 @@ or rather the following one
         cpost _.
         rewrite <- assoc.
         cpre _.
-        assert (yop:= @functor_over_comp_var _ _ _ _ _ b ).
+        assert (yop:= @disp_functor_comp_var _ _ _ _ _ b ).
         assert (yop2 := fun xx yy zz  =>yop _ _ _ xx yy zz projR_monad (u_monad m)).
         assert (yop3 := yop2 (ttp _) (ttp _) (ttp _) (ttp _) (ttp _)).
         
-        apply RModule_Mor_equiv in yop3.
+        apply LModule_Mor_equiv in yop3.
         match type of yop3 with ?x = _ => let x' := type of x in set (typ := x') end.
         cbn in typ.
         assert (yop4 := nat_trans_eq_pointwise yop3 X).
@@ -733,8 +735,8 @@ or rather the following one
          (* rewrite compose_nat_trans. *)
          (* revert X. *)
          (* use nat_trans_eq_pointwise; cycle 1. *)
-         assert (hF :=nat_trans_over_ax  (f:=pr1 m) (xx:=ttp _) (xx':=ttp _) F (ttp _)).
-         apply RModule_Mor_equiv in hF.
+         assert (hF :=disp_nat_trans_ax  (f:=pr1 m) (xx:=ttp _) (xx':=ttp _) F (ttp _)).
+         apply LModule_Mor_equiv in hF.
          eapply nat_trans_eq_pointwise in hF.
          apply hF.
          apply homset_property.
@@ -794,10 +796,10 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
         etrans.
 
         assert( hf:=
-                  (nat_trans_over_ax ( F) (xx':= ttp (pr1 R)) (xx:=ttp R'_monad)
+                  (disp_nat_trans_ax ( F) (xx':= ttp (pr1 R)) (xx:=ttp R'_monad)
                                      (ttp (projR_monad))                                     
               )).
-        apply RModule_Mor_equiv in hf.
+        apply LModule_Mor_equiv in hf.
         eapply nat_trans_eq_pointwise in hf.
         apply hf.        
         apply homset_property.
@@ -813,7 +815,7 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
     End eq_mr.
 
     Lemma compat_μr_projR :
-      Π (X : SET) x y,
+      ∏ (X : SET) x y,
       ( pr1 (# a projR_monad )%ar X ;; armor_ob _ F ( R'_monad) X) x
       =       ( pr1 (# a projR_monad )%ar X ;; armor_ob _ F (R'_monad) X) y
       (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) x *)
@@ -847,18 +849,18 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
   Class FpreserveR' := FepiR' :
      isEpi (C:=functor_precategory HSET HSET has_homsets_HSET) (pr1 (armor_ob _ F ( R'_monad))).
   (* a preserve les epis *)
-  Class apreserveepi := aepiR : Π M N (f:Precategory_Monad _⟦M,N⟧),
-                                isEpi f -> isEpi (C:= functor_Precategory _ _) (pr1 ( # a f)%ar).
+  Class apreserveepi := aepiR : ∏ M N (f:category_Monad _⟦M,N⟧),
+                                isEpi f -> isEpi (C:= functor_category _ _) (pr1 ( # a f)%ar).
 
   Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
 
 
   Lemma isEpi_def_R'_μr : isEpi
-                            (compose (C:=functor_Precategory _ _)
+                            (compose (C:=functor_category _ _)
                                      (pr1 ((# a)%ar projR_monad))
                                      (pr1 (armor_ob SET F R'_monad))).
   Proof.
-    apply (isEpi_comp (functor_Precategory _ _));[|apply FepiR'].
+    apply (isEpi_comp (functor_category _ _));[|apply FepiR'].
     apply aepiR;    apply isEpi_projR_monad.
   Qed.
   
@@ -874,7 +876,7 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
   Defined.
 
   Definition R'_μr_def :
-    Π (X:SET),
+   ∏ (X:SET),
     ( (# a (projR_monad))%ar) X ;;    armor_ob _ F R'_monad X;;R'_μr X  
     =  μr _ R X ;; projR X .
   Proof.
@@ -884,8 +886,8 @@ Le lien entre les deux se fait grâce à la naturalité de F *)
   Qed.
 
 
-  Lemma R'_μr_module_laws : RModule_Mor_laws _ (T:=pr1 (ar_obj _ b R'_monad))
-                                             (T':=  tautological_RModule R'_monad)
+  Lemma R'_μr_module_laws : LModule_Mor_laws _ (T:=pr1 (ar_obj _ b R'_monad))
+                                             (T':=  tautological_LModule R'_monad)
                                              R'_μr.
   Proof.
     intro X.
@@ -1004,7 +1006,7 @@ faire reculer b_R' p
     apply (cancel_precomposition SET).
     apply (cancel_precomposition SET).
     
-    assert (hb := RModule_Mor_σ _ (  ( pr1 F R'_monad (ttp _))) X).
+    assert (hb := LModule_Mor_σ _ (  ( pr1 F R'_monad (ttp _))) X).
 (* On se fait emmerder à cause de # b identitye = identite *)
     assert (hid := functor_id (pr1 (pr1 b R'_monad (ttp R'_monad))) (R' X)).
     use (pathscomp0 _ hb).
@@ -1022,7 +1024,7 @@ faire reculer b_R' p
     apply cancel_postcomposition.
     (* ici negro *)
 
-    assert (ha := RModule_Mor_σ _ (  ( ((# a)%ar projR_monad))) ( X)).
+    assert (ha := LModule_Mor_σ _ (  ( ((# a)%ar projR_monad))) ( X)).
     use (pathscomp0 _ ha).
     (* un petit de natural transformation_ax s'impose pour mettre projR_monad en premier *)
     etrans.
@@ -1045,14 +1047,14 @@ faire reculer b_R' p
     etrans.
     (* m_R est un morphism de module *)
 
-    assert (hm := RModule_Mor_σ _ (  ( (μr  SET R )) ) X).
+    assert (hm := LModule_Mor_σ _ (  ( (μr  SET R )) ) X).
     symmetry.
     apply hm.
     apply idpath.
 Qed.    
 
-  Definition R'_μr_module :RModule_Mor _ (ar_obj _ b R'_monad)
-                                       ( tautological_RModule R'_monad) :=
+  Definition R'_μr_module :LModule_Mor _ (ar_obj _ b R'_monad)
+                                       ( tautological_LModule R'_monad) :=
     (_ ,, R'_μr_module_laws).
 
 
@@ -1099,7 +1101,7 @@ Qed.
 
     (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
     
-    Lemma u_rep_laws : rep_ar_mor_law SET R'_rep S (nat_trans_over_id (pr1 b))
+    Lemma u_rep_laws : rep_ar_mor_law SET R'_rep S (disp_nat_trans_id (pr1 b))
                                       (u_monad m).
     Proof.
       intro X.
@@ -1142,7 +1144,7 @@ Qed.
       (* on réécrit m *)
       etrans.
       cpost _.
-      apply (cancel_ar_on _ (compose (C:=Precategory_Monad _) projR_monad (u_monad m))).
+      apply (cancel_ar_on _ (compose (C:=category_Monad _) projR_monad (u_monad m))).
       use (invmap (Monad_Mor_equiv _ _ _)).
       { apply homset_property. }
       { apply nat_trans_eq.
@@ -1156,7 +1158,7 @@ Qed.
       cpost _.
       use (nat_trans_eq_pointwise _ X); cycle 1.
       apply maponpaths.
-      assert (yop:= @functor_over_comp _ _ _ _ _ a ).
+      assert (yop:= @disp_functor_comp _ _ _ _ _ a ).
       assert (yop2 := fun xx yy zz  =>yop _ _ _ xx yy zz projR_monad (u_monad m)).
       assert (yop3 := yop2 (ttp _) (ttp _) (ttp _) (ttp _) (ttp _)).
       apply yop3.
@@ -1174,8 +1176,8 @@ Qed.
       rewrite <- assoc.
       cpre _.
       etrans.
-      assert (hF :=nat_trans_over_ax  (f:= (u_monad m)) (xx:=ttp _) (xx':=ttp _) F (ttp _)).
-      apply RModule_Mor_equiv in hF.
+      assert (hF :=disp_nat_trans_ax  (f:= (u_monad m)) (xx:=ttp _) (xx':=ttp _) F (ttp _)).
+      apply LModule_Mor_equiv in hF.
       eapply nat_trans_eq_pointwise in hF.
       apply hF.
       apply homset_property.
@@ -1193,7 +1195,7 @@ Qed.
     Qed.
 
 
-    Definition u_rep : R'_rep -->[(nat_trans_over_id (pr1 b))] S := (_ ,, u_rep_laws).
+    Definition u_rep : R'_rep -->[(disp_nat_trans_id (pr1 b))] S := (_ ,, u_rep_laws).
       
   End uRepresentation.
 
@@ -1203,7 +1205,7 @@ Qed.
     Context {S:BREP b} (hm: iscontr (R -->[ F] S)).
     Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
 
-    Variable u'_rep : R'_rep -->[(nat_trans_over_id (pr1 b))] S.
+    Variable u'_rep : R'_rep -->[(disp_nat_trans_id (pr1 b))] S.
 
     Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm)).
     Proof.

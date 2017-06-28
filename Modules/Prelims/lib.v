@@ -2,15 +2,17 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
-Require Import UniMath.CategoryTheory.precategories.
+Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
+(*
 Require Import UniMath.CategoryTheory.UnicodeNotations.
+*)
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import UniMath.CategoryTheory.Epis.
 
 Require Import UniMath.CategoryTheory.Monads.
-Require Import UniMath.CategoryTheory.RModules. 
+Require Import UniMath.CategoryTheory.LModules. 
 
 
 Require Import TypeTheory.Auxiliary.Auxiliary.
@@ -26,7 +28,7 @@ Require Import UniMath.CategoryTheory.category_hset.
 Require Import UniMath.CategoryTheory.category_hset_structures.
 Require Import UniMath.CategoryTheory.Epis.
 
-Local Notation SET := hset_precategory.
+Local Notation "'SET'" := hset_precategory.
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
@@ -48,9 +50,9 @@ Proof.
 Qed.
 
 
-Lemma isEpi_pre_whisker (B C :precategory)( D:Precategory)
+Lemma isEpi_pre_whisker (B C :precategory)( D: category)
       (G H : functor C D) ( K : functor B C) (f:nat_trans G H)
-  : (Π x, isEpi (* (C:= functor_Precategory _ _) *) (f x)) -> isEpi (C:=functor_Precategory B D )
+  : (∏ x, isEpi (* (C:= functor_Precategory _ _) *) (f x)) -> isEpi (C:=functor_category B D )
                                                                    (x:= (G □ K)) (y:= (H □ K))
                                                                    (pre_whisker K f).
 Proof.
@@ -67,10 +69,10 @@ category has effective epis
 (because in this case, any epi is absolute)
 
  *)
-Lemma isEpi_post_whisker (B :precategory)(C D:Precategory)
+Lemma isEpi_post_whisker (B :precategory)(C D: category)
       (G H : functor B C) ( K : functor C D) (f:nat_trans G H)
-  : isEpi (C:= functor_Precategory _ _) f
-    -> isEpi (C:=functor_Precategory B D)
+  : isEpi (C:= functor_category _ _) f
+    -> isEpi (C:=functor_category B D)
             (x:= (K □ G)) (y:= (K □ H))
             (post_whisker f K).
 Proof.
@@ -94,12 +96,12 @@ Qed.
 *)
 
 
-Lemma isEpi_horcomp (B :precategory)(C D:Precategory)
+Lemma isEpi_horcomp (B :precategory)(C D: category)
       (G H : functor B C) (G' H' : functor C D)
       (f:nat_trans G H) (f':nat_trans G' H')
-  : isEpi (C:= functor_Precategory _ _) f
-    -> (Π x, isEpi  (f' x))
-    -> isEpi (C:=functor_Precategory B D)
+  : isEpi (C:= functor_category _ _) f
+    -> (∏ x, isEpi  (f' x))
+    -> isEpi (C:= functor_category B D)
             (x:= (G' □ G)) (y:= (H' □ H))
             (horcomp f f').
 Proof.
@@ -111,7 +113,7 @@ Proof.
 Qed.
 
 
-Lemma horcomp_assoc : Π {B C D E : precategory} {H H':functor B C}
+Lemma horcomp_assoc : ∏ {B C D E : precategory} {H H':functor B C}
                         {F F' : functor C D}
                         {G G'  : functor D E} (a: H ⟶ H')(b: F ⟶ F') (c:G ⟶ G') x,
                       ((c ∙∙ b) ∙∙ a) x = (c ∙∙( b ∙∙ a)) x.
@@ -122,7 +124,7 @@ Proof.
   now rewrite functor_comp,assoc.
 Qed.
 
-Lemma compose_nat_trans : Π {C D:precategory} {F G H} (a:nat_trans F G)
+Lemma compose_nat_trans : ∏ {C D:precategory} {F G H} (a:nat_trans F G)
                             (b:nat_trans G H) (X:C),  a X ;; b X =
                                                       nat_trans_comp
                                                         (C:=C) (C':=D)
