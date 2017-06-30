@@ -760,32 +760,11 @@ Proof.
   cpre _.
   cbn.
   unfold idfun; cbn.
-  unfold ar_mor; cbn.
-
-(*
-
-  (* match goal with |- [(_ (#b )%mor_disp X)] = _ => (set (x' := x)) end. *)
-  (*
-        match goal with |- (nat_trans_data (pr1 (_ (ttp ?x)))) X = _ => (set (x' := x)) end.
-   *)
-  apply funextsec.
-  intro. 
-(*
-  Unset Printing Notations.
-*)
-  idtac. 
-  Set Printing Implicit.
-  idtac.
-  cha
-  set (y':=pr1 m).
-  (* assert x' *)
-  (* apply pathsinv0. *)
-  
-  match goal with |- context H [(nat_trans_data (pr1 (_ (ttp ?x)))) X]  => (set (y' := x)) end. *)
-  (*
-        assert(heq: x'=y').
-        {
-          subst x' y'.
+  unfold disp_functor_on_morphisms.
+  set (mor1 := Monad_composition _ _ ).
+  set (mor2 := pr1 m).
+  assert (heq:mor1 = mor2).
+  {
           use (invmap (Monad_Mor_equiv _ _ _)).
           apply (homset_property SET).
           apply nat_trans_eq.
@@ -793,24 +772,9 @@ Proof.
           intro X'.
           apply pathsinv0.
           apply (u_def m).
-        }
-   *)
-
-(*
-  subst y'.
-  (*
-        clearbody x'.
-*)
-  apply funextsec. 
-  intro. cbn.
-  unfold mor_disp.
-  simpl.
-  apply idpath.
-  rewrite heq.
-  reflexivity.
-Qed.
-*)
-Admitted.
+  }
+  now destruct heq.
+  Qed.
 
       (* Peut etre(surement! TODO) il y a une preuve plus rapide qu'en passant
 par eq_mr', mais vu que je viens de le démontrer autant l'utiliser
