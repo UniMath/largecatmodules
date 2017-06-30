@@ -4,34 +4,21 @@ Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.whiskering.
-Require Import UniMath.CategoryTheory.limits.terminal.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
 
 Require Import UniMath.CategoryTheory.Monads.
 (* Require Import Modules.Prelims.modules. *)
 Require Import UniMath.CategoryTheory.LModules.
-
 
 Require Import TypeTheory.Auxiliary.Auxiliary.
 Require Import TypeTheory.Auxiliary.UnicodeNotations.
 Require Import TypeTheory.Displayed_Cats.Auxiliary.
 Require Import TypeTheory.Displayed_Cats.Core.
 Require Import TypeTheory.Displayed_Cats.Constructions.
+(*
 Require Import TypeTheory.Displayed_Cats.Fibrations.
-
+*)
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
-
-Local Notation "# F" := (functor_on_morphisms F)(at level 3).
-Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
-Local Notation "G □ F" := (functor_composite F G) (at level 35).
-Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
-
-(* Trouvé dans SubstitutionsSystem/Notation *)
-Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
-Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
-
 
 (* 
 -(* Une première définition possible des arités, en tant que functor_lifting
@@ -95,62 +82,62 @@ Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
 -  End Arities.
 -End Arites1.
 *)
+
+(*
 Inductive phantom {A:UU} (x:A) :UU := ttp.
 
 Arguments ttp {_} _.
 
 Notation TTP := (ttp _) (only parsing).
+*)
 
 (* a category can be viewed as a display category with singletons.
 *)
 Section LiftCatDispCat.
 
-  Context (C:category).
+Context (C:category).
 
-  Definition liftcat_disp_ob_mor : disp_cat_ob_mor C:=
-    ((fun x => phantom x) ,, fun  _ _ _ _ f => phantom f).
+Definition liftcat_disp_ob_mor : disp_cat_ob_mor C:=
+  ((fun x => unit) ,, fun  _ _ _ _ f => unit).
 
-  Definition liftcat_id_comp : disp_cat_id_comp _ liftcat_disp_ob_mor.
-  Proof.
-    split.
-    - intros x xx.
-      simpl.
-      apply  ttp.
-    - intros x y z f g xx yy zz ff gg.
-      apply ttp.
-  Defined.
+Definition liftcat_id_comp : disp_cat_id_comp _ liftcat_disp_ob_mor.
+Proof.
+  split.
+  - intros x xx.
+    apply  tt.
+  - intros x y z f g xx yy zz ff gg.
+    apply tt.
+Defined.
 
 
-  Definition liftcat_data : disp_cat_data _
-    := (liftcat_disp_ob_mor ,, liftcat_id_comp).
+Definition liftcat_data : disp_cat_data _
+  := (liftcat_disp_ob_mor ,, liftcat_id_comp).
 
-  Lemma uniq_tt (A:UU) (x:A) (y:phantom x): y=ttp x.
-    now destruct y.
-  Qed.
+Lemma uniq_tt (y : unit): y = tt.
+Proof.
+  now destruct y.
+Qed.
 
-  Lemma iscontr_ttp (A:UU) (x:A) :iscontr (phantom x).
-  Proof.
-    intros A x.
-    exists (ttp x).
-    apply uniq_tt.
-  Qed.
+Lemma iscontr_ttp : iscontr unit.
+Proof.
+  apply iscontrunit.
+Qed.
 
-  Lemma isasetphantom (A:UU) (x:A) : isaset (phantom x).
-  Proof.
-    intros A x.
-    apply isasetifcontr.
-    apply iscontr_ttp.
-  Qed.    
+Lemma isasetphantom : isaset unit.
+Proof.
+  intros A x.
+  apply isasetifcontr.
+  apply iscontr_ttp.
+Qed.    
 
-  Lemma liftcat_axioms : disp_cat_axioms _ liftcat_data.
-  Proof.
-    repeat apply tpair; intros; try apply homset_property; try  now rewrite uniq_tt;
-      symmetry;    rewrite uniq_tt.
-    apply isasetphantom.
-  Qed.
+Lemma liftcat_axioms : disp_cat_axioms _ liftcat_data.
+Proof.
+  repeat apply tpair; intros; try apply homset_property; try  now rewrite uniq_tt;
+  symmetry;    rewrite uniq_tt.
+  apply isasetphantom.
+Qed.
 
-  Definition liftcat_disp : disp_cat _ :=
-    (liftcat_data ,, liftcat_axioms).
+Definition liftcat_disp : disp_cat _ := (liftcat_data ,, liftcat_axioms).
 
 
 End LiftCatDispCat.
@@ -178,60 +165,61 @@ That's how the large category of representations is built.
 
 
 *)
+
 Section LargeCatRep.
 
-  Variable (C :category).
-
-  Local Notation MONAD := (Monad C).
-  Local Notation PRE_MONAD := (category_Monad C).
-  Local Notation LMONAD := (liftcat_disp (PRE_MONAD)).
-  Local Notation BMOD := (bmod_disp C C).
-  Local Notation GEN_ARITY := (disp_functor_cat _ _ LMONAD BMOD).
+Variable (C :category).
   
-  Local Notation PRE_ARITY :=
-    (fiber_precategory GEN_ARITY (functor_identity _)).
-  (* Arities are display functors over the identity *)
-  Definition arity := (disp_functor (C:=PRE_MONAD) (C':=PRE_MONAD)
-                      (functor_identity (precategory_Monad_data C)) LMONAD BMOD).
-  Local Notation ARITY := arity.
+Local Notation MONAD := (Monad C).
+Local Notation PRE_MONAD := (category_Monad C).
+Local Notation LMONAD := (liftcat_disp (PRE_MONAD)).
+Local Notation BMOD := (bmod_disp C C).
+Local Notation GEN_ARITY := (disp_functor_cat _ _ LMONAD BMOD).
+  
+Local Notation PRE_ARITY :=
+  (fiber_precategory GEN_ARITY (functor_identity _)).
+(* Arities are display functors over the identity *)
+Definition arity := (disp_functor (C:=PRE_MONAD) (C':=PRE_MONAD)
+                                  (functor_identity (precategory_Monad_data C)) LMONAD BMOD).
+Local Notation ARITY := arity.
 
-  Coercion functor_over_from_ar (a:ARITY) :
-    (disp_functor (C:=PRE_MONAD) (C':=PRE_MONAD)
-                  (functor_identity (precategory_Monad_data C)) LMONAD BMOD)
+Coercion functor_over_from_ar (a:ARITY) :
+  (disp_functor (C:=PRE_MONAD) (C':=PRE_MONAD)
+                (functor_identity (precategory_Monad_data C)) LMONAD BMOD)
   := a.
 
-  Definition arity_Mor (a b:arity) :=
-    disp_nat_trans
-      (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
-                    (functor_identity _)) a b.
+Definition arity_Mor (a b:arity) :=
+  disp_nat_trans
+    (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
+                  (functor_identity _)) a b.
 
-  Coercion nat_trans_over_from_arity_Mor {a b} (f:arity_Mor a b) :
-    disp_nat_trans
-      (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
-                    (functor_identity _)) a b
-    := f.
+Coercion nat_trans_over_from_arity_Mor {a b} (f:arity_Mor a b) :
+  disp_nat_trans
+    (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
+                  (functor_identity _)) a b
+  := f.
 
-  Definition arity_Precategory : category :=
-    (PRE_ARITY,, has_homsets_fiber_category GEN_ARITY (functor_identity _)).
+Definition arity_Precategory : category :=
+  (PRE_ARITY,, has_homsets_fiber_category GEN_ARITY (functor_identity _)).
 
-  (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
-  Lemma right_inverse_arity3  (ar:ARITY )
-    :  ((pr1_category BMOD)□ (total_functor ar) )    =  (pr1_category LMONAD).
-  Proof.
-    intros.
-    apply subtypeEquality; [| reflexivity].
-    red.
-    intros;  apply isaprop_is_functor.
-    apply homset_property.
-  Qed.
+(* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
+Lemma right_inverse_arity3  (ar:ARITY )
+:  ((pr1_category BMOD)□ (total_functor ar) )    =  (pr1_category LMONAD).
+Proof.
+  intros.
+  apply subtypeEquality; [| reflexivity].
+  red.
+  intros;  apply isaprop_is_functor.
+  apply homset_property.
+Qed.
 
-  Local Notation Θ := tautological_LModule.
+Local Notation Θ := tautological_LModule.
 
 
   (* a representation is a monad with a module morphisme from arity to itself *)
   Definition rep_ar (ar: ARITY) :=
     ∑ (R:MONAD),
-    LModule_Mor R (ar (* (((ar:functor_over _ _ _):functor_over_data _ _ _)  *)R (ttp R) )
+    LModule_Mor R (ar (* (((ar:functor_over _ _ _):functor_over_data _ _ _)  *)R (tt) )
                 (Θ R).
 
   Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
@@ -244,7 +232,7 @@ Section LargeCatRep.
     S.
 
 
-  Definition ar_obj (a:ARITY) (M:MONAD) : LModule M _ := a M (ttp M).
+  Definition ar_obj (a:ARITY) (M:MONAD) : LModule M _ := a M (tt).
 
   Delimit Scope arity_scope with ar.
   Notation AO := ar_obj.
@@ -255,7 +243,7 @@ Section LargeCatRep.
     simpl.
     intros.
     apply (disp_functor_on_morphisms a).
-    apply ttp.
+    apply tt.
   Defined.
 
   Lemma ar_mor_eq (a:ARITY) {M N:MONAD} (f:Monad_Mor  M N ) :
@@ -264,7 +252,7 @@ Section LargeCatRep.
       (functor_identity (precategory_Monad_data C))
       (liftcat_disp (category_Monad C))
       (bmod_disp C C)
-      (disp_functor_data_from_disp_functor a) M N (ttp _) (ttp _) f (ttp _) =
+      (disp_functor_data_from_disp_functor a) M N (tt) (tt) f (tt) =
     ar_mor a f .
   Proof.
     reflexivity.
@@ -280,7 +268,7 @@ Section LargeCatRep.
     LModule_Mor _  (AO a R)
                 (pb_LModule ((nat_trans_id (functor_identity PRE_MONAD)) R)
                                  (AO b R))
-    := f R TTP.
+    := f R tt.
 
   Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b)
              (f: arity_Mor a b) (g:Monad_Mor M N) :=
@@ -385,7 +373,7 @@ Section LargeCatRep.
         (R S:MONAD)
         (f g : Monad_Mor R S )
         (e : f = g)
-        (ff : pr1 x R (ttp _) -->[ f] pr1 y S (ttp _))
+        (ff : pr1 x R (tt) -->[ f] pr1 y S (tt))
         (c : C) :
       pr1 (transportf _ e ff) c  = pr1 ff c .
   Proof.
@@ -400,8 +388,8 @@ Section LargeCatRep.
         (ff : disp_nat_trans f x y)
         (R:MONAD)
         (c : C) :
-    pr1 (pr1 (transportf (mor_disp (D:=GEN_ARITY) x y) e ff) R TTP) c
-    = pr1 (pr1 ff R TTP) c.
+    pr1 (pr1 (transportf (mor_disp (D:=GEN_ARITY) x y) e ff) R tt) c
+    = pr1 (pr1 ff R tt) c.
   Proof.
     now induction e.
   Qed.
@@ -477,9 +465,9 @@ Section LargeCatRep.
     apply cancel_precomposition. 
     use (transport_arity_mor' a c _ _ _ _ (pr1 T) x).
     set (z := (# ( a))%ar _).
-    set (hc := (@disp_functor_comp _ _ _ _ _ (a (* c *))) (pr1 R) (pr1 S) (pr1 T) (ttp _) (ttp _)
-                                                     (ttp _)
-                                                    (pr1 α) (pr1  β) (ttp _) (ttp _)).
+    set (hc := (@disp_functor_comp _ _ _ _ _ (a (* c *))) (pr1 R) (pr1 S) (pr1 T) (tt) (tt)
+                                                     (tt)
+                                                    (pr1 α) (pr1  β) (tt) (tt)).
     assert (hz := pathscomp0 (a:=z) (idpath _) hc).
     rewrite hz.
 
@@ -493,7 +481,7 @@ Section LargeCatRep.
     apply cancel_precomposition.
     assert (hg':= nat_trans_eq_pointwise
                     (LModule_Mor_equiv _ (homset_property _) _ _
-                      (pr2 f _ _ (pr1 β) (ttp _) (ttp _) (ttp _)) ) x).
+                      (pr2 f _ _ (pr1 β) (tt) (tt) (tt)) ) x).
     cbn in hg'.
     rewrite id_right in hg'.
     etrans.
