@@ -155,22 +155,22 @@ Local Notation LMONAD := (liftcat_disp (PRE_MONAD)).
 Local Notation BMOD := (bmod_disp C C).
 Local Notation GEN_ARITY := (disp_functor_cat _ _ LMONAD BMOD).
   
-Local Notation PRE_ARITY :=
+
+Local Notation PRE_ARITY  :=
   (fiber_precategory GEN_ARITY (functor_identity _)).
+
+
 (* Arities are display functors over the identity *)
-Definition arity := (disp_functor (C:=PRE_MONAD) (C':=PRE_MONAD)
-                                  (functor_identity (precategory_Monad_data C)) LMONAD BMOD).
+Notation arity  := (disp_functor (functor_identity _) LMONAD BMOD).
 Local Notation ARITY := arity.
 
-Coercion functor_over_from_ar (a:ARITY) :
-  (disp_functor (C:=PRE_MONAD) (C':=PRE_MONAD)
-                (functor_identity (precategory_Monad_data C)) LMONAD BMOD)
-  := a.
 
-Definition arity_Mor (a b:arity) :=
-  disp_nat_trans
-    (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
-                  (functor_identity _)) a b.
+(* Question B: why do you not define the category of arities to be the fiber 
+               category over the identity functor on PRE_MONAD ? *)
+Definition arity_Mor (a b : arity) :=
+  disp_nat_trans (nat_trans_id (functor_identity _)) 
+                 a 
+                 b.
 
 Coercion nat_trans_over_from_arity_Mor {a b} (f:arity_Mor a b) :
   disp_nat_trans
