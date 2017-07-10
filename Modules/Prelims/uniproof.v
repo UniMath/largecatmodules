@@ -850,15 +850,14 @@ Qed.
     
 
 (* F preserve the epis *)
-Class FpreserveR' := FepiR' :
-                       isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
+Definition FpreserveR' := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
                              (pr1 (F `` R'_monad)).
 (* a preserve les epis *)
-Class apreserveepi := aepiR : ∏ M N (f:category_Monad _⟦M,N⟧),
+Definition apreserveepi := ∏ M N (f:category_Monad _⟦M,N⟧),
                               isEpi f -> isEpi
                                           (C:= functor_category _ _) (pr1 ( # a f)%ar).
 
-Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
+Context (Fepi:FpreserveR') (aepi:apreserveepi).
 
 
 Lemma isEpi_def_R'_μr : isEpi
@@ -866,8 +865,8 @@ Lemma isEpi_def_R'_μr : isEpi
                                    (pr1 ((# a)%ar projR_monad))
                                    (pr1 (F `` R'_monad)%ar)).
 Proof.
-  apply (isEpi_comp (functor_category _ _));[|apply FepiR'].
-  apply aepiR;    apply isEpi_projR_monad.
+  apply (isEpi_comp (functor_category _ _));[|apply Fepi].
+  apply aepi;    apply isEpi_projR_monad.
 Qed.
 
 Definition R'_μr  : nat_trans (pr1 ( b` R'_monad)) R'.
@@ -1100,14 +1099,14 @@ Qed.
 Section uRepresentation.
 
 Context {S:BREP b} (m:R -->[ F] S).
-Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
+Context (Fepi:FpreserveR') (aepi:apreserveepi).
 
 Open Scope arity_scope.
   
   
 (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
 
-Lemma u_rep_laws : rep_ar_mor_law SET R'_rep S (disp_nat_trans_id (pr1 b))
+Lemma u_rep_laws : rep_ar_mor_law SET (R'_rep Fepi aepi) S (disp_nat_trans_id (pr1 b))
                                   (u_monad m).
 Proof.
   intro X.
@@ -1120,7 +1119,7 @@ Proof.
     
     apply Pushouts_pw_epi.
     apply PushoutsHSET_from_Colims.
-    apply isEpi_def_R'_μr.
+    apply isEpi_def_R'_μr; assumption.
   }
   
   apply epi.
@@ -1131,7 +1130,7 @@ Proof.
   etrans.
   cpost _.
   (*  apply (R'_μr_def X) takes a long time, but use is immediate *)
-  use (R'_μr_def X).
+  use (R'_μr_def Fepi aepi X).
   
   (* faire disparaitre le u avec u_def *)
   etrans.
@@ -1201,21 +1200,21 @@ Proof.
 Qed.
 
 
-    Definition u_rep : R'_rep -->[(disp_nat_trans_id (pr1 b))] S := (_ ,, u_rep_laws).
+Definition u_rep : (R'_rep Fepi aepi) -->[(disp_nat_trans_id (pr1 b))] S := (_ ,, u_rep_laws).
       
-  End uRepresentation.
+End uRepresentation.
 
   (* FIN DE LA PARTIE 6 *)
 
  Section uUnique.
  Context {S:BREP b} (hm: iscontr (R -->[ F] S)).
- Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
+ Context (Fepi:FpreserveR') (aepi:apreserveepi).
 
- Variable u'_rep : R'_rep -->[(disp_nat_trans_id (pr1 b))] S.
+ Variable u'_rep : (R'_rep Fepi aepi) -->[(disp_nat_trans_id (pr1 b))] S.
  
- Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm)).
+ Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm) Fepi aepi).
  Proof.
-   set (m' := (projR_rep ;; u'_rep)%mor_disp).
+   set (m' := (projR_rep Fepi aepi ;; u'_rep)%mor_disp).
    apply rep_ar_mor_mor_equiv.
    intro X.
    
