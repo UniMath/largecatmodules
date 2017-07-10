@@ -100,7 +100,7 @@ Section leftadjoint.
 
 
 Local Notation "'SET'" := hset_category.
-Local Notation PARITY := (arity_Precategory SET).
+Local Notation PARITY := (arity_category SET).
 Local Notation REP := (rep_disp SET).
 
 Variables (a b:PARITY) (R:REP a)

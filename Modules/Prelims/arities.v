@@ -187,7 +187,7 @@ Section LargeCatRep.
     := f.
 
 
-  Definition arity_Precategory : category :=
+  Definition arity_category : category :=
     (PRECAT_ARITY,, has_homsets_fiber_category GEN_ARITY (functor_identity _)).
 
   (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
@@ -502,7 +502,7 @@ Qed.
     := (rep_disp_ob_mor ,, rep_id_comp).
 
 
-  Lemma rep_axioms : disp_cat_axioms arity_Precategory rep_data.
+  Lemma rep_axioms : disp_cat_axioms arity_category rep_data.
   Proof.
     repeat apply tpair; intros; try apply homset_property.
     -  apply rep_ar_mor_mor_equiv.
@@ -526,7 +526,7 @@ Qed.
   -  apply isaset_rep_ar_mor_mor.
 Qed.
 
-Definition rep_disp : disp_cat arity_Precategory := rep_data ,, rep_axioms.
+Definition rep_disp : disp_cat arity_category := rep_data ,, rep_axioms.
 
 End LargeCatRep.
 
