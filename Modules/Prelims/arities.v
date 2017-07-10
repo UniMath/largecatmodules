@@ -211,16 +211,6 @@ Section LargeCatRep.
 
   Infix "`" := ar_obj (at level 25) : arity_scope .
 
-  (* A representation is a monad with a module morphisme from its image by the arity
- to itself *)
-  Definition rep_ar (ar: ARITY) :=
-    ∑ (R:MONAD),
-    LModule_Mor R (ar`R) (Θ R).
-
-  Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
-
-  Definition μr {ar:ARITY} (X:rep_ar ar) := pr2 X.
-
   (* An arity evaluated on a monad morphism gives a module morphisms between
 the images of the codomain/domain *)
   Definition ar_mor (a:ARITY) {M N:MONAD} (f:Monad_Mor  M N ) :
@@ -238,6 +228,21 @@ the images of the codomain/domain *)
     := f R tt.
 
   Infix "``" := ar_mor_pw (at level 25) : arity_scope .
+
+  (* We define the displayed category of representations of an arity
+We could also define it as a displayed category over the monads
+and we have no idea what that would look like *)
+
+  (* A representation is a monad with a module morphisme from its image by the arity
+ to itself *)
+  Definition rep_ar (ar: ARITY) :=
+    ∑ (R:MONAD),
+    LModule_Mor R (ar`R) (Θ R).
+
+  Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
+
+  Definition μr {ar:ARITY} (X:rep_ar ar) := pr2 X.
+
 
   Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b)
              (f: arity_Mor a b) (g:Monad_Mor M N) :=
@@ -270,18 +275,15 @@ the images of the codomain/domain *)
            {f} (h:rep_ar_mor_mor a b M N f) : Monad_Mor M N
     := pr1 h.
 
-  Definition rep_ar_mor_law1 {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
+  Definition rep_ar_mor_ax {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
              {f} (h:rep_ar_mor_mor a b M N f) :
-    ∏ c,  ((μr M) c);; ( h c) =    (#a h )%ar c ;; ( f`` N)  c ;; μr N c 
+    ∏ c,  ((μr M) c);; ( h c) = (#a h )%ar c ;; ( f`` N)  c ;; μr N c 
     := pr2 h.
 
-
-
-  Definition brep_disp_ob_mor : disp_cat_ob_mor PRECAT_ARITY:=
+  Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_ARITY :=
     (rep_ar,, rep_ar_mor_mor).
 
-
-  Lemma brep_id_law (a : ARITY) (RM : brep_disp_ob_mor a) :
+  Lemma rep_id_law (a : ARITY) (RM : rep_disp_ob_mor a) :
     rep_ar_mor_law RM RM (identity (C:=PRECAT_ARITY) _) (Monad_identity _).
   Proof.
     intros.
@@ -302,14 +304,15 @@ the images of the codomain/domain *)
     apply id_right.
   Qed.
 
-  Definition brep_id  (a : ARITY) (RM : brep_disp_ob_mor a) :
+  Definition rep_id  (a : ARITY) (RM : rep_disp_ob_mor a) :
     RM -->[ identity (C:=PRECAT_ARITY) a] RM.
   Proof.
     intros.
     exists (Monad_identity _).
-    apply brep_id_law.
+    apply rep_id_law.
   Defined.
 
+  (*
   Lemma transport_disp_mor {C} {d:disp_cat C} {x y : C} {f g : C ⟦ x, y ⟧}
         (e : f = g)
         {xx : d x}     {yy : d y}
@@ -323,21 +326,22 @@ the images of the codomain/domain *)
     intros.
     apply idpath.
   Qed.
+*)
 
 
   Lemma transport_arity_mor (x y : ARITY) (f g : arity_Mor x y)
         (e : f = g)
-        (xx : brep_disp_ob_mor x)
-        (yy : brep_disp_ob_mor y)
+        (xx : rep_disp_ob_mor x)
+        (yy : rep_disp_ob_mor y)
         (ff : xx -->[ f] yy)
         (c : C) :
     pr1 (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 (pr1 ff) c.
   Proof.
-    destruct e.
-    intros.
-    apply idpath.
+    now induction e.
   Qed.
-  Lemma brep_transport (x y : ARITY)
+
+  (*
+  Lemma rep_transport (x y : ARITY)
         (R S:MONAD)
         (f g : Monad_Mor R S )
         (e : f = g)
@@ -349,9 +353,10 @@ the images of the codomain/domain *)
     simpl.
     now induction e.
   Qed.
+*)
 
 
-  Lemma transport_arity_mor' (x y : ARITY) f g 
+ Lemma transport_arity_mor' (x y : ARITY) f g 
         (e : f = g)
         (ff : disp_nat_trans f x y)
         (R:MONAD)
@@ -376,8 +381,8 @@ the images of the codomain/domain *)
 *)
 
   (* type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
-  Lemma rep_ar_mor_mor_equiv (a b : ARITY) (R:brep_disp_ob_mor a)
-        (S:brep_disp_ob_mor b) (f:arity_Mor a b)
+  Lemma rep_ar_mor_mor_equiv (a b : ARITY) (R:rep_disp_ob_mor a)
+        (S:rep_disp_ob_mor b) (f:arity_Mor a b)
         (a b: R -->[ f] S) :
     (∏ c, pr1 (pr1 a) c = pr1 (pr1 b) c) -> a = b.
   Proof.
@@ -393,8 +398,8 @@ the images of the codomain/domain *)
   Qed.
 
   (*
-Lemma rep_ar_mor_mor_equiv_inv {a b : ARITY} {R:brep_disp_ob_mor a}
-      {S:brep_disp_ob_mor b} {f:arity_Mor  a b}
+Lemma rep_ar_mor_mor_equiv_inv {a b : ARITY} {R:rep_disp_ob_mor a}
+      {S:rep_disp_ob_mor b} {f:arity_Mor  a b}
       (u v: R -->[ f] S) 
   : u = v -> (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c).
 Proof.
@@ -403,10 +408,10 @@ Proof.
 Qed.
    *)
 
-  (** Defining the composition in brep *)
+  (** Defining the composition in rep *)
 
-  Lemma brep_comp_law  (a b c : ARITY) (f : arity_Mor a b) (g : arity_Mor b c)
-        (R : brep_disp_ob_mor a) (S : brep_disp_ob_mor b)    (T : brep_disp_ob_mor c)
+  Lemma rep_comp_law  (a b c : ARITY) (f : arity_Mor a b) (g : arity_Mor b c)
+        (R : rep_disp_ob_mor a) (S : rep_disp_ob_mor b)    (T : rep_disp_ob_mor c)
         (α:R -->[ f ] S) (β:S -->[g]  T) :
     (rep_ar_mor_law R T (compose (C:=PRECAT_ARITY) f g)
                     (compose (C:=PRE_MONAD) (monad_morphism_from_rep_ar_mor_mor α)
@@ -419,13 +424,13 @@ Qed.
     rewrite assoc.
     etrans.
     apply cancel_postcomposition.
-    use rep_ar_mor_law1.
+    use rep_ar_mor_ax.
     simpl.
     
     etrans.
     rewrite <- assoc.
     apply cancel_precomposition.
-    use rep_ar_mor_law1.
+    use rep_ar_mor_ax.
     
     simpl.
     (* Cf diagramme à ce point *)
@@ -471,33 +476,33 @@ Qed.
     apply idpath.
   Qed.
 
-  Definition brep_comp (a b c : ARITY) f g
-             (RMa : brep_disp_ob_mor a) 
-             (RMb : brep_disp_ob_mor b)    
-             (RMc : brep_disp_ob_mor c)
+  Definition rep_comp (a b c : ARITY) f g
+             (RMa : rep_disp_ob_mor a) 
+             (RMb : rep_disp_ob_mor b)    
+             (RMc : rep_disp_ob_mor c)
              (mab : RMa -->[ f ] RMb) 
              (mbc:RMb -->[g]  RMc) 
     : RMa -->[f;;g] RMc.
   Proof.
     intros.
     exists (compose (C:=PRE_MONAD) (pr1 mab) (pr1 mbc)).
-    apply brep_comp_law.
+    apply rep_comp_law.
   Defined.
 
 
-  Definition brep_id_comp : disp_cat_id_comp _ brep_disp_ob_mor.
+  Definition rep_id_comp : disp_cat_id_comp _ rep_disp_ob_mor.
   Proof.
     split.
-    - apply brep_id.
-    - apply brep_comp.
+    - apply rep_id.
+    - apply rep_comp.
   Defined.
 
 
-  Definition brep_data : disp_cat_data _
-    := (brep_disp_ob_mor ,, brep_id_comp).
+  Definition rep_data : disp_cat_data _
+    := (rep_disp_ob_mor ,, rep_id_comp).
 
 
-  Lemma brep_axioms : disp_cat_axioms arity_Precategory brep_data.
+  Lemma rep_axioms : disp_cat_axioms arity_Precategory rep_data.
   Proof.
     repeat apply tpair; intros; try apply homset_property.
     -  apply rep_ar_mor_mor_equiv.
@@ -521,7 +526,7 @@ Qed.
   -  apply isaset_rep_ar_mor_mor.
 Qed.
 
-Definition brep_disp : disp_cat arity_Precategory := brep_data ,, brep_axioms.
+Definition rep_disp : disp_cat arity_Precategory := rep_data ,, rep_axioms.
 
 End LargeCatRep.
 

@@ -101,15 +101,15 @@ Section leftadjoint.
 
 Local Notation "'SET'" := hset_category.
 Local Notation PARITY := (arity_Precategory SET).
-Local Notation BREP := (brep_disp SET).
+Local Notation REP := (rep_disp SET).
 
-Variables (a b:PARITY) (R:BREP a)
+Variables (a b:PARITY) (R:REP a)
           (F:PARITY ⟦ a, b⟧).
 
 Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 
 Definition equivc   {c:ob SET} (x y:pr1 ( ## R c)) :=
-                                  (∏ (S:BREP b) ( f : R -->[F] S),
+                                  (∏ (S:REP b) ( f : R -->[F] S),
                                    pr1 (pr1 f) c x = ## f c y).
 
 
@@ -221,7 +221,7 @@ de a et que u est un morphisme de modules.
    *)
 Section CandidatU.
 
-Context {S:BREP b} (m:R -->[ F] S).
+Context {S:REP b} (m:R -->[ F] S).
   
 Definition u : nat_trans (pr1 R') (## S).
 Proof.
@@ -571,7 +571,7 @@ Qed.
   
 Section morphInitialU.
 
-Context {S:BREP b} (m:R -->[ F] S).
+Context {S:REP b} (m:R -->[ F] S).
 
     
 
@@ -699,7 +699,7 @@ or rather the following one
 
 Section eq_mr.
    
-Context {S:BREP b} (m:R -->[ F] S).
+Context {S:REP b} (m:R -->[ F] S).
 
       
 Lemma eq_mr' X : μr _ R X ;; ## m X = 
@@ -710,7 +710,7 @@ Lemma eq_mr' X : μr _ R X ;; ## m X =
 Proof.
   etrans.
   (* 1. m est un morphisme de representation *)
-  apply rep_ar_mor_law1.
+  apply rep_ar_mor_ax.
   
   (* Définition de u *)
   apply pathsinv0.
@@ -1060,7 +1060,7 @@ Definition R'_μr_module :LModule_Mor _ (b` R'_monad)
   (_ ,, R'_μr_module_laws).
 
 
-Definition R'_rep : (brep_disp SET b).
+Definition R'_rep : (rep_disp SET b).
   use tpair.
   - exact R'_monad.
   - exact R'_μr_module.
@@ -1085,9 +1085,9 @@ End R'Representation.
 
 
 Lemma cancel_ar_on {a'}
-      {R' (* : BREP a*)}                  (*  *)
+      {R' (* : REP a*)}                  (*  *)
       (* {F' : PARITY ⟦ a', b' ⟧ *)
-      {S (* : BREP b *)}
+      {S (* : REP b *)}
       (m m' : Monad_Mor R' S)
       (X : SET) : m = m' ->
                   (# a')%ar m X = (# a')%ar m' X .
@@ -1098,7 +1098,7 @@ Qed.
   (* u morphisme de représentation *)
 Section uRepresentation.
 
-Context {S:BREP b} (m:R -->[ F] S).
+Context {S:REP b} (m:R -->[ F] S).
 Context (Fepi:FpreserveR') (aepi:apreserveepi).
 
 Open Scope arity_scope.
@@ -1141,7 +1141,7 @@ Proof.
   
   (* utiliser le fait que m est un morphisme de representation *)
   etrans.
-  apply (rep_ar_mor_law1 _ m X).
+  apply (rep_ar_mor_ax _ m X).
   
   rewrite assoc.
   cpost _.
@@ -1207,7 +1207,7 @@ End uRepresentation.
   (* FIN DE LA PARTIE 6 *)
 
  Section uUnique.
- Context {S:BREP b} (hm: iscontr (R -->[ F] S)).
+ Context {S:REP b} (hm: iscontr (R -->[ F] S)).
  Context (Fepi:FpreserveR') (aepi:apreserveepi).
 
  Variable u'_rep : (R'_rep Fepi aepi) -->[(disp_nat_trans_id (pr1 b))] S.
