@@ -701,10 +701,9 @@ Section eq_mr.
    
 Context {S:BREP b} (m:R -->[ F] S).
 
-
       
 Lemma eq_mr' X : μr _ R X ;; ## m X = 
-                 armor_ob _ F (pr1 R) X ;;
+                 (F`` (pr1 R))%ar X ;;
                           pr1 (# b (projR_monad))%ar X ;;
                           pr1 (# b (u_monad m))%ar X ;;
                           μr _ ( S) X.
@@ -781,7 +780,7 @@ par eq_mr', mais vu que je viens de le démontrer autant l'utiliser
 Le lien entre les deux se fait grâce à la naturalité de F *)
 Lemma eq_mr X : μr _ R X ;; ## m X =
                 pr1 (# a (projR_monad))%ar X ;;
-                    armor_ob _ F ( R'_monad) X ;;
+                    (F`` ( R'_monad))%ar X ;;
                     (*    pr1 (# b (projR_monad))%ar X ;; *)
                     pr1 (# b (u_monad m))%ar X ;;
                     μr _ ( S) X.
@@ -818,10 +817,11 @@ Qed.
       
 End eq_mr.
 
+Open Scope arity_scope.
 Lemma compat_μr_projR :
       ∏ (X : SET) x y,
-      ( pr1 (# a projR_monad )%ar X ;; armor_ob _ F ( R'_monad) X) x
-      =       ( pr1 (# a projR_monad )%ar X ;; armor_ob _ F (R'_monad) X) y
+      ( pr1 (# a projR_monad )%ar X ;;  (F `` R'_monad) X) x
+      =       ( pr1 (# a projR_monad )%ar X ;; (F `` R'_monad) X) y
       (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) x *)
       (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) y *)
       ->
@@ -849,12 +849,14 @@ Qed.
 
     
 
-  (* F preserve the epis *)
+(* F preserve the epis *)
 Class FpreserveR' := FepiR' :
-                       isEpi (C:=functor_precategory HSET HSET has_homsets_HSET) (pr1 (armor_ob _ F ( R'_monad))).
-  (* a preserve les epis *)
+                       isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
+                             (pr1 (F `` R'_monad)).
+(* a preserve les epis *)
 Class apreserveepi := aepiR : ∏ M N (f:category_Monad _⟦M,N⟧),
-                                isEpi f -> isEpi (C:= functor_category _ _) (pr1 ( # a f)%ar).
+                              isEpi f -> isEpi
+                                          (C:= functor_category _ _) (pr1 ( # a f)%ar).
 
 Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
 
@@ -862,17 +864,17 @@ Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
 Lemma isEpi_def_R'_μr : isEpi
                           (compose (C:=functor_category _ _)
                                    (pr1 ((# a)%ar projR_monad))
-                                   (pr1 (armor_ob SET F R'_monad))).
+                                   (pr1 (F `` R'_monad)%ar)).
 Proof.
   apply (isEpi_comp (functor_category _ _));[|apply FepiR'].
   apply aepiR;    apply isEpi_projR_monad.
 Qed.
 
-Definition R'_μr  : nat_trans (pr1 ( ar_obj _ b R'_monad)) R'.
+Definition R'_μr  : nat_trans (pr1 ( b` R'_monad)) R'.
 Proof.
   apply (univ_surj_nt (* (A:= ##R □ ##R) (B:=functor_composite R' R')                     *)
            
-           ( pr1 (# a projR_monad )%ar ;;;(( armor_ob _ F (R'_monad)  )   ))
+           ( pr1 (# a projR_monad )%ar ;;;(( F`` (R'_monad)  )   ))
            (μr _ R  ;;; projR)).
   (* asbtract these *)
   -  apply compat_μr_projR.      
@@ -881,16 +883,16 @@ Defined.
 
 Definition R'_μr_def :
   ∏ (X:SET),
-  ( (# a (projR_monad))%ar) X ;;    armor_ob _ F R'_monad X;;R'_μr X  
+  ( (# a (projR_monad))%ar) X ;; (F`` R'_monad) X;;R'_μr X  
   =  μr _ R X ;; projR X .
 Proof.
   intro x.
   abstract(
-      apply (univ_surj_nt_ax_pw ((pr1 (# a (projR_monad))%ar)  ;;;    armor_ob _ F ( R'_monad) ))).
+      apply (univ_surj_nt_ax_pw ((pr1 (# a (projR_monad))%ar)  ;;; (F ``  R'_monad) ))).
 Qed.
 
 
-Lemma R'_μr_module_laws : LModule_Mor_laws _ (T:=pr1 (ar_obj _ b R'_monad))
+Lemma R'_μr_module_laws : LModule_Mor_laws _ (T:=pr1 (b ` R'_monad))
                                            (T':=  tautological_LModule R'_monad)
                                            R'_μr.
 Proof.
@@ -899,7 +901,7 @@ Proof.
   (* En vrai, je n'ai pas besoin ici que ce soit un epi pointwise (me semble-t-il)*)
   assert (epi : isEpi (* (C:=functor_Precategory SET SET) *)
                   ((  ( (pr1 (# a (projR_monad))%ar)  ;;;
-                                                      armor_ob _ F ( R'_monad) )    ∙∙ projR) X)).
+                                                      (F ``  R'_monad) )    ∙∙ projR) X)).
   {
     apply Pushouts_pw_epi.
     apply PushoutsHSET_from_Colims.
@@ -927,7 +929,7 @@ Proof.
   rewrite <- (assoc (C:=SET)).
   apply (cancel_precomposition SET).
   symmetry.
-  apply (nat_trans_ax (armor_ob SET F R'_monad)).
+  apply (nat_trans_ax (F`` R'_monad)).
   (* je dois faire avance le #a projR_monad en avec la naturalité de a *)
   rewrite  (assoc (C:=SET)).
   apply (cancel_postcomposition (C:=SET)).
@@ -990,7 +992,7 @@ faire reculer b_R' p
   rewrite <- (assoc (C:=SET)).
   apply (cancel_precomposition SET).
   symmetry.
-  apply (nat_trans_ax ((armor_ob SET F R'_monad))).
+  apply (nat_trans_ax ((F`` R'_monad))).
   
   rewrite assoc.
   apply cancel_postcomposition.
@@ -1054,7 +1056,7 @@ faire reculer b_R' p
     apply idpath.
 Qed.    
 
-Definition R'_μr_module :LModule_Mor _ (ar_obj _ b R'_monad)
+Definition R'_μr_module :LModule_Mor _ (b` R'_monad)
                                      ( tautological_LModule R'_monad) :=
   (_ ,, R'_μr_module_laws).
 
@@ -1099,6 +1101,8 @@ Section uRepresentation.
 
 Context {S:BREP b} (m:R -->[ F] S).
 Context {Fepi:FpreserveR'} {aepi:apreserveepi}.
+
+Open Scope arity_scope.
   
   
 (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
@@ -1111,7 +1115,7 @@ Proof.
   (* but : utiliser R'_μr_def *)
   assert (epi : isEpi (* (C:=functor_Precategory SET SET) *)
                   (   ((pr1 (# a (projR_monad))%ar)  ;;;
-                                                     armor_ob _ F ( R'_monad) )X    )).
+                                                     (F``  R'_monad) )X    )).
   {
     
     apply Pushouts_pw_epi.
