@@ -100,20 +100,26 @@ Section leftadjoint.
 
 
 Local Notation "'SET'" := hset_category.
-Local Notation PARITY := (arity_category SET).
+Local Notation CAT_ARITY := (arity_category SET).
 Local Notation REP := (rep_disp SET).
 
-Variables (a b:PARITY) (R:REP a)
-          (F:PARITY ⟦ a, b⟧).
+Variables (a b:CAT_ARITY) (R:REP a)
+          (F:CAT_ARITY ⟦ a, b⟧).
 
 Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 
-Definition equivc   {c:ob SET} (x y:pr1 ( ## R c)) :=
+(*
+On any set X we define the following equivalence relation on R X : 
+   x ~ y
+iff for any representation morphism f : R -> F*(S) (where S is a b-representation)
+  f x = f y.
+*)
+Definition equivc   {X:ob SET} (x y:pr1 ( ## R X)) :=
                                   (∏ (S:REP b) ( f : R -->[F] S),
-                                   pr1 (pr1 f) c x = ## f c y).
+                                   pr1 (pr1 f) X x = ## f X y).
 
 
-Lemma isaprop_equivc_xy (c:ob SET) x y : isaprop (equivc (c:=c) x y).
+Lemma isaprop_equivc_xy (c:ob SET) x y : isaprop (equivc (X:=c) x y).
 Proof.
   intros.
   apply impred_isaprop.
@@ -124,7 +130,7 @@ Proof.
 Qed.
 
 Definition equivc_xy_prop (c:ob SET) x y : hProp :=
-  (equivc  (c:=c) x y ,, isaprop_equivc_xy c x y).
+  (equivc  (X:=c) x y ,, isaprop_equivc_xy c x y).
 
 Definition hrel_equivc c : hrel _ := fun x y => equivc_xy_prop c x y.
 
@@ -143,37 +149,36 @@ Qed.
 
 Definition eqrel_equivc c : eqrel _ := (_ ,, iseqrel_equivc c).
 
-Lemma congr_equivc: ∏ (x y:SET) (f:SET⟦ x,  y⟧), iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
+(* For any f : X -> Y, #R f is compatible with previous equivalence relation *)
+Lemma congr_equivc (x y:SET) (f:SET⟦ x,  y⟧):
+                    iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
 Proof.
-  intros.
-  red.
-  intros z z' eqz.
-  intros S g.
-  cbn in eqz.
-  unfold equivc in eqz.
-  
+  intros z z' eqz S g.
   assert (hg := nat_trans_ax (pr1 (pr1 g)) x y f).
-  
+  cbn in eqz.
   apply toforallpaths in hg.
-  etrans.
-  apply hg.
-  symmetry; etrans. apply hg.
+  etrans;[apply hg|].
+  apply pathsinv0.
+  etrans;[apply hg|].
+  unfold equivc in eqz.
   cbn.
   now rewrite eqz.
 Qed.
 
 
   
-  (* Foncteur candidat 
+(* We define the quotient functor of R by these equivalence relations
 
+The following comment may be outdated
+----
 I need to make it not convertible to quot_functor otherwise
 Coq takes a long time to check or compute things.
 For example :   R' ((R' □ R') c) = (R' □ R') (R' c) by reflexivity
 is so slow when R' is definitely equal to quot_functor !
+----
 
 *)
-Definition R' := ( quot_functor (pr1 (pr1 R)) _ congr_equivc).
-
+Definition R': functor SET SET := quot_functor (pr1 (pr1 R)) _ congr_equivc.
 
 Definition projR : (## R) ⟶ R':= pr_quot_functor _ _ congr_equivc.
 
@@ -1086,7 +1091,7 @@ End R'Representation.
 
 Lemma cancel_ar_on {a'}
       {R' (* : REP a*)}                  (*  *)
-      (* {F' : PARITY ⟦ a', b' ⟧ *)
+      (* {F' : CAT_ARITY ⟦ a', b' ⟧ *)
       {S (* : REP b *)}
       (m m' : Monad_Mor R' S)
       (X : SET) : m = m' ->
