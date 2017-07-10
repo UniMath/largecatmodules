@@ -145,6 +145,7 @@ That's how the large category of representations is built.
 
 *)
 
+
 Section LargeCatRep.
 
 Variable (C :category).
@@ -164,6 +165,9 @@ Local Notation PRE_ARITY  :=
 Notation arity  := (disp_functor (functor_identity _) LMONAD BMOD).
 Local Notation ARITY := arity.
 
+Goal arity = ob PRE_ARITY.
+reflexivity.
+Abort.
 
 (* Question B: why do you not define the category of arities to be the fiber 
                category over the identity functor on PRE_MONAD ? *)
@@ -172,11 +176,16 @@ Definition arity_Mor (a b : arity) :=
                  a 
                  b.
 
+Goal ∏ a b : PRE_ARITY, arity_Mor a b = a --> b.
+reflexivity.
+Abort.
+
 Coercion nat_trans_over_from_arity_Mor {a b} (f:arity_Mor a b) :
   disp_nat_trans
     (nat_trans_id (C:=PRE_MONAD) (C':=PRE_MONAD)
                   (functor_identity _)) a b
   := f.
+
 
 Definition arity_Precategory : category :=
   (PRE_ARITY,, has_homsets_fiber_category GEN_ARITY (functor_identity _)).
@@ -197,17 +206,11 @@ Local Notation Θ := tautological_LModule.
 (* a representation is a monad with a module morphisme from arity to itself *)
 Definition rep_ar (ar: ARITY) :=
   ∑ (R:MONAD),
-  LModule_Mor R (ar (* (((ar:functor_over _ _ _):functor_over_data _ _ _)  *) R tt) (Θ R).
+  LModule_Mor R (ar R tt) (Θ R).
 
 Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
 
 Definition μr {ar:ARITY} (X:rep_ar ar) := pr2 X.
-
-Definition functor_from_monad (R:MONAD) : functor C C := R.
-
-Definition functor_from_module {D:precategory} {R:MONAD} (S:LModule R D) : functor C D :=
-  S.
-
 
 Definition ar_obj (a:ARITY) (M:MONAD) : LModule M _ := a M (tt).
 
@@ -344,7 +347,7 @@ Proof.
   intros.
   apply idpath.
 Qed.
-Lemma brep_transport    (x y : ARITY)
+Lemma brep_transport (x y : ARITY)
       (R S:MONAD)
       (f g : Monad_Mor R S )
       (e : f = g)
