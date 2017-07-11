@@ -63,12 +63,10 @@ Require Import UniMath.CategoryTheory.limits.coequalizers.
 Require Import UniMath.CategoryTheory.CocontFunctors.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
-
-
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
-Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
+Local Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 
 (* Trouvé dans SubstitutionsSystem/Notation *)
 Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
@@ -107,8 +105,6 @@ Variables (a b:CAT_ARITY) (R:REP a)
 
 Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 
-(* Section QuotientMonad. *)
-  (* Definition R': functor SET SET := quot_functor (pr1 (pr1 R)) _ congr_equivc. *)
 
 
 Section QuotientMonad.
