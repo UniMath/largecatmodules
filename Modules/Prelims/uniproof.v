@@ -66,7 +66,6 @@ Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
 
 Local Notation "# F" := (functor_on_morphisms F)(at level 3).
-Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
@@ -180,43 +179,39 @@ is so slow when R' is definitely equal to quot_functor !
 *)
 Definition R': functor SET SET := quot_functor (pr1 (pr1 R)) _ congr_equivc.
 
-Definition projR : (## R) ⟶ R':= pr_quot_functor _ _ congr_equivc.
+Definition projR : (## R) ⟹ R':= pr_quot_functor _ _ congr_equivc.
 
 Arguments projR : simpl never.
 Arguments R' : simpl never.
 
+Lemma isEpi_projR_pw : ∏ x, isEpi (projR x).
+Proof.
+  apply isEpi_pw_pr_quot_functor.
+Qed.
   (* TODO: utiliser partout ce lemme où c'est nécessaire *)
 Lemma isEpi_projR : isEpi (C:=functor_category _ _) projR.
 Proof.
   apply isEpi_pr_quot_functor.
 Qed.
 
-Lemma isEpi_projR_pw : ∏ x, isEpi (projR x).
-Proof.
-  apply (Pushouts_pw_epi (C:=SET) (D:=SET)).
-  apply PushoutsHSET_from_Colims.
-  apply isEpi_projR.
-Qed.
-
 Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR).
 Proof.
   apply isEpi_horcomp. 
-  apply isEpi_projR.
-  apply isEpi_projR_pw.
+  - apply isEpi_projR.
+  - apply isEpi_projR_pw.
 Qed.
 
 
-Lemma eq_projR_rel X x y : projR X x = projR X y ->equivc x y.
+Lemma eq_projR_rel X x y : projR X x = projR X y -> equivc x y.
 Proof.
   use invmap.
   apply (weqpathsinpr_quot_functor (D:=SET) _ _ congr_equivc).
 Qed.
-Lemma rel_eq_projR X x y : equivc x y ->projR X x = projR X y.
+Lemma rel_eq_projR X x y : equivc x y -> projR X x = projR X y.
 Proof.
   apply (weqpathsinpr_quot_functor (D:=SET) _ _ congr_equivc).
 Qed.
 
-  
 
   (* R' est un pseudo objet initial au sens suivant :
      Quel que soit        g : R ---> S morphisme dans la catégorie des représentations de a
@@ -246,7 +241,7 @@ Qed.
 End CandidatU.
 
 
-Definition R'_η : (functor_identity SET) ⟶ R' := η (## R) ;;; projR .
+Definition R'_η : (functor_identity SET) ⟹ R' := η (## R) ;;; projR .
 
 Lemma R'_η_def : ∏ x, R'_η x =  η (## R) x ;; projR x.
 Proof.
