@@ -107,64 +107,17 @@ Variables (a b:CAT_ARITY) (R:REP a)
 
 Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 
-(*
-On any set X we define the following equivalence relation on R X : 
-   x ~ y
-iff for any representation morphism f : R -> F*(S) (where S is a b-representation)
-  f x = f y.
-*)
-Definition equivc   {X:ob SET} (x y:pr1 ( ## R X)) :=
-                                  (∏ (S:REP b) ( f : R -->[F] S),
-                                   pr1 (pr1 f) X x = ## f X y).
+(* Section QuotientMonad. *)
+  (* Definition R': functor SET SET := quot_functor (pr1 (pr1 R)) _ congr_equivc. *)
 
 
-Lemma isaprop_equivc_xy (c:ob SET) x y : isaprop (equivc (X:=c) x y).
-Proof.
-  intros.
-  apply impred_isaprop.
-  intros S.
-  apply impred_isaprop.
-  intros f.
-  apply setproperty.
-Qed.
+Section QuotientMonad.
 
-Definition equivc_xy_prop (c:ob SET) x y : hProp :=
-  (equivc  (X:=c) x y ,, isaprop_equivc_xy c x y).
+Context {eqrel_equivc : ∏ c, eqrel ((## R c):hSet)}
+  (congr_equivc : ∏ (x y:SET) (f:SET⟦x,y⟧),
+                    iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f)).
 
-Definition hrel_equivc c : hrel _ := fun x y => equivc_xy_prop c x y.
-
-Lemma iseqrel_equivc c : iseqrel (hrel_equivc c).
-Proof.
-  unfold hrel_equivc, equivc_xy_prop, equivc; simpl;
-  repeat split.
-  -  intros x y z. cbn.
-     intros h1 h2 S f.
-     now rewrite h1,h2.
-  - intros x y; cbn.
-    intros h S f.
-    now symmetry.
-Qed.
-
-
-Definition eqrel_equivc c : eqrel _ := (_ ,, iseqrel_equivc c).
-
-(* For any f : X -> Y, #R f is compatible with previous equivalence relation *)
-Lemma congr_equivc (x y:SET) (f:SET⟦ x,  y⟧):
-                    iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
-Proof.
-  intros z z' eqz S g.
-  assert (hg := nat_trans_ax (pr1 (pr1 g)) x y f).
-  cbn in eqz.
-  apply toforallpaths in hg.
-  etrans;[apply hg|].
-  apply pathsinv0.
-  etrans;[apply hg|].
-  unfold equivc in eqz.
-  cbn.
-  now rewrite eqz.
-Qed.
-
-
+Let equivc {c:hSet} x y := eqrel_equivc c x y.
   
 (* We define the quotient functor of R by these equivalence relations
 
@@ -212,35 +165,6 @@ Proof.
   apply (weqpathsinpr_quot_functor (D:=SET) _ _ congr_equivc).
 Qed.
 
-
-  (* R' est un pseudo objet initial au sens suivant :
-     Quel que soit        g : R ---> S morphisme dans la catégorie des représentations de a
-     il existe un unique  u : R'---> S tel que g = u o projR
-C'est un pseudo objet car il reste à montrer que R' est bien dans la catégorie des représentations
-de a et que u est un morphisme de modules.
-   *)
-Section CandidatU.
-
-Context {S:REP b} (m:R -->[ F] S).
-  
-Definition u : nat_trans (pr1 R') (## S).
-Proof.
-  apply (univ_surj_nt projR (## m)) ; [| apply isEpi_projR].
-  abstract(
-      intros X x y eqpr;
-      apply eq_projR_rel in eqpr;
-      apply eqpr).
-Defined.
-
-Lemma u_def : ∏ x, ## m x = projR x ;; u x.
-Proof.
-  symmetry.
-  apply univ_surj_nt_ax_pw.
-Qed.
-
-End CandidatU.
-
-
 Definition R'_η : (functor_identity SET) ⟹ R' := η (## R) ;;; projR .
 
 Lemma R'_η_def : ∏ x, R'_η x =  η (## R) x ;; projR x.
@@ -248,10 +172,6 @@ Proof.
   intro x.
   apply idpath.
 Qed.
-
-
-
-
 
   (* R'_μ is defined by the following diagram :
 <<
@@ -264,60 +184,15 @@ Qed.
                   R'_μ
 >>
    *)
-Lemma compat_μ_projR : ∏ (X : SET) (x y : pr1 ((pr1 (## R □ ## R)) X)),
+(* The following condition is required about the equivalence relation
+to make a monad out of R' *)
+Definition compat_μ_projR_def := ∏ (X : SET) (x y : pr1 ((pr1 (## R □ ## R)) X)),
                        (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
                        (μ ## R;;; projR) X x = (μ ## R;;; projR) X y.
-Proof.
-  intros X x y.
-  intros hxy.
-  apply rel_eq_projR.
-  intros S f.
-  rewrite comp_cat_comp.
-  symmetry.
-  rewrite comp_cat_comp.
-  eapply changef_path.
-  symmetry.
-  etrans.
-  apply (Monad_Mor_μ (pr1 f)).
-   
-  etrans.
-  apply (cancel_postcomposition (C:=SET)).
-  etrans.
-  apply cancel_postcomposition.
-  apply u_def.
-  apply cancel_precomposition.
-  apply maponpaths.
-  apply u_def.
-  
-  etrans.
-  apply (cancel_postcomposition (C:=SET)).
-  etrans.
-  symmetry.      
-  apply  (assoc (C:=SET) (projR (## R X)) (u f (## R X))).
-  apply cancel_precomposition.
-  etrans.
-  
-  symmetry.
-  apply nat_trans_ax.
 
-  apply cancel_postcomposition.
-  apply (functor_comp _ (projR X) (u f X)).
-  repeat rewrite assoc.
-  reflexivity.
-  cbn.
-  apply maponpaths.
-  apply maponpaths.
-  apply maponpaths.
-  apply pathsinv0.
-  cbn.
-  cbn in hxy.
-  apply hxy.
-Qed.
 
-Lemma isEpi_def_R'_μ: isEpi (C:= functor_category _ _) (projR ∙∙ projR).
-Proof.
-  apply isEpi_projR_projR.
-Qed.
+
+Variable (compat_μ_projR:compat_μ_projR_def).
   
 Definition R'_μ  : nat_trans ( R'□  R')  ( R').
 Proof.
@@ -326,7 +201,7 @@ Proof.
                       (μ  (## R) ;;; projR)).
   (* asbtract these *)
   -  apply compat_μ_projR.
-  - apply isEpi_def_R'_μ.
+  - apply isEpi_projR_projR.
 Defined.
 
 Lemma R'_μ_def : ∏ (x:SET),
@@ -567,8 +442,159 @@ Qed.
 
   (* FIN DE LA SECONDE ETAPE *)
 
+End QuotientMonad.
+(*
+On any set X we define the following equivalence relation on R X : 
+   x ~ y
+iff for any representation morphism f : R -> F*(S) (where S is a b-representation)
+  f x = f y.
+*)
 
+
+
+Definition equivc   {X:ob SET} (x y:pr1 ( ## R X)) :=
+                                  (∏ (S:REP b) ( f : R -->[F] S),
+                                   pr1 (pr1 f) X x = ## f X y).
+
+Lemma isaprop_equivc_xy (c:ob SET) x y : isaprop (equivc (X:=c) x y).
+Proof.
+  intros.
+  apply impred_isaprop.
+  intros S.
+  apply impred_isaprop.
+  intros f.
+  apply setproperty.
+Qed.
+
+Definition equivc_xy_prop (c:ob SET) x y : hProp :=
+  (equivc  (X:=c) x y ,, isaprop_equivc_xy c x y).
+
+Definition hrel_equivc c : hrel _ := fun x y => equivc_xy_prop c x y.
+
+Lemma iseqrel_equivc c : iseqrel (hrel_equivc c).
+Proof.
+  unfold hrel_equivc, equivc_xy_prop, equivc; simpl;
+  repeat split.
+  -  intros x y z. cbn.
+     intros h1 h2 S f.
+     now rewrite h1,h2.
+  - intros x y; cbn.
+    intros h S f.
+    now symmetry.
+Qed.
+
+
+Definition eqrel_equivc c : eqrel _ := (_ ,, iseqrel_equivc c).
+
+(* For any f : X -> Y, #R f is compatible with previous equivalence relation *)
+Lemma congr_equivc (x y:SET) (f:SET⟦ x,  y⟧):
+                    iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# (## R) f).
+Proof.
+  intros z z' eqz S g.
+  assert (hg := nat_trans_ax (pr1 (pr1 g)) x y f).
+  cbn in eqz.
+  apply toforallpaths in hg.
+  etrans;[apply hg|].
+  apply pathsinv0.
+  etrans;[apply hg|].
+  unfold equivc in eqz.
+  cbn.
+  now rewrite eqz.
+Qed.
+
+Arguments R' : simpl never.
+Arguments projR : simpl never.
+
+Let R' := R' congr_equivc.
+Let projR := projR congr_equivc.
+Let eq_projR_rel := eq_projR_rel congr_equivc.
+
+
+  (* R' est un pseudo objet initial au sens suivant :
+     Quel que soit        g : R ---> S morphisme dans la catégorie des représentations de a
+     il existe un unique  u : R'---> S tel que g = u o projR
+C'est un pseudo objet car il reste à montrer que R' est bien dans la catégorie des représentations
+de a et que u est un morphisme de modules.
+   *)
+Section CandidatU.
+
+Context {S:REP b} (m:R -->[ F] S).
   
+Definition u : nat_trans (pr1 R') (## S).
+Proof.
+  apply (univ_surj_nt projR (## m)) ; [| apply isEpi_projR].
+  abstract(
+      intros X x y eqpr;
+        apply eq_projR_rel in eqpr;
+      use eqpr).
+Defined.
+
+Lemma u_def : ∏ x, ## m x = projR x ;; u x.
+Proof.
+  symmetry.
+  apply univ_surj_nt_ax_pw.
+Qed.
+
+End CandidatU.
+
+
+
+
+
+
+Lemma compat_μ_projR :(compat_μ_projR_def congr_equivc).
+Proof.
+  intros X x y.
+  intros hxy.
+  apply rel_eq_projR.
+  intros S f.
+  rewrite comp_cat_comp.
+  symmetry.
+  rewrite comp_cat_comp.
+  eapply changef_path.
+  symmetry.
+  etrans.
+  apply (Monad_Mor_μ (pr1 f)).
+   
+  etrans.
+  apply (cancel_postcomposition (C:=SET)).
+  etrans.
+  apply cancel_postcomposition.
+  apply u_def.
+  apply cancel_precomposition.
+  apply maponpaths.
+  apply u_def.
+  
+  etrans.
+  apply (cancel_postcomposition (C:=SET)).
+  etrans.
+  symmetry.      
+  apply  (assoc (C:=SET) (projR (## R X)) (u f (## R X))).
+  apply cancel_precomposition.
+  etrans.
+  
+  symmetry.
+  apply nat_trans_ax.
+
+  apply cancel_postcomposition.
+  apply (functor_comp _ (projR X) (u f X)).
+  repeat rewrite assoc.
+  reflexivity.
+  cbn.
+  apply maponpaths.
+  apply maponpaths.
+  apply maponpaths.
+  (* set (z:=(projR (## R X);; # (leftadjoint.R' congr_equivc) (projR X))). *)
+  (* apply (maponpaths ( *)
+  (* cbn. *)
+  (* assert (h:=fun T2 f => maponpaths (T2:=T2) f hxy). *)
+  apply pathsinv0.
+  cbn.
+  apply hxy.
+Qed.
+  
+Let R'_monad  := R'_monad congr_equivc compat_μ_projR.
+Let projR_monad  := projR_monad congr_equivc compat_μ_projR.
 Section morphInitialU.
 
 Context {S:REP b} (m:R -->[ F] S).
@@ -1085,10 +1111,10 @@ End R'Representation.
 
 
 Lemma cancel_ar_on {a'}
-      {R' (* : REP a*)}                  (*  *)
+      {R'' (* : REP a*)}                  (*  *)
       (* {F' : CAT_ARITY ⟦ a', b' ⟧ *)
       {S (* : REP b *)}
-      (m m' : Monad_Mor R' S)
+      (m m' : Monad_Mor R'' S)
       (X : SET) : m = m' ->
                   (# a')%ar m X = (# a')%ar m' X .
 Proof.
