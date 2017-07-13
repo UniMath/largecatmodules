@@ -184,20 +184,26 @@ de a et que u est un morphisme de modules.
 Section CandidatU.
 
 Context {S:REP b} (m:R -->[ F] S).
+
+Lemma compat_m :  ∏ (X : SET) (x y : ((pr1 R) X:hSet)),
+  (quotientmonad.projR congr_equivc) X x = (quotientmonad.projR congr_equivc) X y
+  → (pr1 m) X x = (pr1 m) X y.
+Proof.
+  intros X x y eqpr;
+        apply eq_projR_rel in eqpr;
+      use eqpr.
+Qed.
+
   
 Definition u : nat_trans (pr1 R') (## S).
 Proof.
-  apply (univ_surj_nt projR (## m)) ; [| apply isEpi_projR].
-  abstract(
-      intros X x y eqpr;
-        apply eq_projR_rel in eqpr;
-      use eqpr).
+  apply (quotientmonad.u congr_equivc _ (pr1 m)).
+  apply compat_m.
 Defined.
 
 Lemma u_def : ∏ x, ## m x = projR x ;; u x.
 Proof.
-  symmetry.
-  apply univ_surj_nt_ax_pw.
+  apply (quotientmonad.u_def).
 Qed.
 
 End CandidatU.
@@ -207,7 +213,7 @@ End CandidatU.
 
 
 
-Lemma compat_μ_projR :(compat_μ_projR_def congr_equivc).
+Lemma compat_μ_projR : compat_μ_projR_def congr_equivc.
 Proof.
   intros X x y.
   intros hxy.
@@ -265,83 +271,11 @@ Section morphInitialU.
 Context {S:REP b} (m:R -->[ F] S).
 
     
+Arguments quotientmonad.u_monad [R _ _] _ [_] _ .
 
-Lemma u_monad_laws : Monad_Mor_laws (T:= R'_monad) (T':=## S) (u m).
-Proof.
-  red.
-  split.
-  - intro X.
-    assert (epi :isEpi ( (horcomp projR projR) X)).
-    {
-      apply Pushouts_pw_epi.
-      apply PushoutsHSET_from_Colims.
-      apply isEpi_projR_projR.
-    }
-    apply epi.
-    
+Definition u_monad {S} (m:R -->[ F] S) :=
+  quotientmonad.u_monad compat_μ_projR (S:=pr1 S) (pr1 m) (compat_m m).
 
-    (* Now the real work begins *)
-    etrans.
-    
-    (* use the monadicity of μ *)
-    apply cancel_postcomposition.
-    apply (nat_trans_ax (projR)).
-    etrans.
-    
-    
-        
-    rewrite assoc.        
-    apply cancel_postcomposition.
-    symmetry.
-    apply (Monad_Mor_μ (projR_monad)).
-    
-    (* definition of u *)
-    etrans.
-    rewrite <- assoc.
-    cpre _.
-    symmetry.
-    apply u_def.
-    
-    (* m is a morphism of monad *)
-    etrans.
-    apply (Monad_Mor_μ (pr1 m)).
-    
-    (* Definition of u *)
-    etrans.
-    
-    cpost _.
-    etrans.
-    etrans.
-    cpost _.
-    apply u_def.        
-    cpre _.
-    etrans.
-    apply maponpaths.
-    apply u_def.
-    apply functor_comp.
-    
-    (* il s'agit de rememmtre les termes dans l'ordre *)
-    
-    rewrite assoc.
-    cpost _.
-    rewrite <- assoc.
-    cpre _.
-    symmetry.
-    apply (nat_trans_ax (u m)).
-    rewrite assoc.
-    cbn.
-    reflexivity.
-  - intro X.
-    etrans.
-    cpost _.
-    apply R'_η_def.
-    rewrite <- assoc.
-    rewrite <- u_def.
-    apply (Monad_Mor_η (pr1 m)).
-Qed.
-
-Definition u_monad : Monad_Mor ( R'_monad) (pr1 S) :=
-      (_ ,, u_monad_laws).
     
 End morphInitialU.
 
@@ -396,7 +330,7 @@ Context {S:REP b} (m:R -->[ F] S).
 Lemma eq_mr' X : μr _ R X ;; ## m X = 
                  (F`` (pr1 R))%ar X ;;
                           pr1 (# b (projR_monad))%ar X ;;
-                          pr1 (# b (u_monad m))%ar X ;;
+                          pr1 (# b (u_monad (m)))%ar X ;;
                           μr _ ( S) X.
 Proof.
   etrans.

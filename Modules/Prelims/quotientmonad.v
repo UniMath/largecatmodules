@@ -367,6 +367,96 @@ Qed.
 
   (* FIN DE LA SECONDE ETAPE *)
 
+Variables (S:Monad SET) (m: Monad_Mor R S)
+  (compatm: ∏ (X:SET) (x y : (R X:hSet)), projR X x = projR X y → m X x = m X y).
+
+Local Definition u : nat_trans R' S.
+Proof.
+  apply (univ_surj_nt projR (m)) ; [| apply isEpi_projR].
+  apply compatm.
+Defined.
+
+Local Lemma u_def : ∏ x, m x = projR x · u x.
+Proof.
+  symmetry.
+  apply univ_surj_nt_ax_pw.
+Qed.
+
+Local Lemma u_monad_laws : Monad_Mor_laws (T:= R'_monad) (T':= S) u.
+Proof.
+  red.
+  split.
+  - intro X.
+    assert (epi :isEpi ( (horcomp projR projR) X)).
+    {
+      apply Pushouts_pw_epi.
+      apply PushoutsHSET_from_Colims.
+      apply isEpi_projR_projR.
+    }
+    apply epi.
+    
+
+    (* Now the real work begins *)
+    etrans.
+    
+    (* use the monadicity of μ *)
+    apply cancel_postcomposition.
+    apply (nat_trans_ax (projR)).
+    etrans.
+    
+    
+        
+    rewrite assoc.        
+    apply cancel_postcomposition.
+    symmetry.
+    apply (Monad_Mor_μ (projR_monad)).
+    
+    (* definition of u *)
+    etrans.
+    rewrite <- assoc.
+    cpre _.
+    symmetry.
+    apply u_def.
+    
+    (* m is a morphism of monad *)
+    etrans.
+    apply (Monad_Mor_μ (m)).
+    
+    (* Definition of u *)
+    etrans.
+    
+    cpost _.
+    etrans.
+    etrans.
+    cpost _.
+    apply u_def.        
+    cpre _.
+    etrans.
+    apply maponpaths.
+    apply u_def.
+    apply functor_comp.
+    
+    (* il s'agit de rememmtre les termes dans l'ordre *)
+    
+    rewrite assoc.
+    cpost _.
+    rewrite <- assoc.
+    cpre _.
+    symmetry.
+    apply (nat_trans_ax (u )).
+    rewrite assoc.
+    cbn.
+    reflexivity.
+  - intro X.
+    etrans.
+    cpost _.
+    apply R'_η_def.
+    rewrite <- assoc.
+    rewrite <- u_def.
+    apply (Monad_Mor_η (m)).
+Qed.
+Local Definition u_monad : Monad_Mor ( R'_monad) S :=
+      (_ ,, u_monad_laws).
 End QuotientMonad.
   
 Arguments projR : simpl never.
