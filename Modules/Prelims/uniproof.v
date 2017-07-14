@@ -34,8 +34,8 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
-Require Import UniMath.CategoryTheory.Monads.
-Require Import UniMath.CategoryTheory.LModules. 
+Require Import UniMath.CategoryTheory.Monads.Monads.
+Require Import UniMath.CategoryTheory.Monads.LModules. 
 
 
 Require Import TypeTheory.Auxiliary.Auxiliary.

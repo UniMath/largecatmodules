@@ -1,7 +1,7 @@
 
 Require Import UniMath.Foundations.PartD.
 
-Require Import UniMath.CategoryTheory.Monads.
+Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.functor_categories.
@@ -461,4 +461,4 @@ End QuotientMonad.
   
 Arguments projR : simpl never.
 Arguments R' : simpl never.
-Arguments quotientmonad.u_monad [R _ _] _ [_] _ .
+Arguments u_monad [R _ _] _ [_] _ .

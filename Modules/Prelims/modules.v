@@ -4,8 +4,8 @@ Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.Monads.
-Require Import UniMath.CategoryTheory.LModules.
+Require Import UniMath.CategoryTheory.Monads.Monads.
+Require Import UniMath.CategoryTheory.Monads.LModules.
 
 Require Import TypeTheory.Auxiliary.Auxiliary.
 Require Import TypeTheory.Auxiliary.UnicodeNotations.
