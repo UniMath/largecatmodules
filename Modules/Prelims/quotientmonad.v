@@ -461,3 +461,4 @@ End QuotientMonad.
   
 Arguments projR : simpl never.
 Arguments R' : simpl never.
+Arguments quotientmonad.u_monad [R _ _] _ [_] _ .

@@ -134,6 +134,7 @@ Proof.
 Qed.
 
 
+(*
 (* copié de ssreflect. Pour l'instant inutile *)
 Lemma master_key : unit.
   exact tt.
@@ -145,3 +146,5 @@ Proof.
   unfold locked.
   now destruct master_key.
 Qed.    
+
+*)

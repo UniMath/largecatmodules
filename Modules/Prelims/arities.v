@@ -241,12 +241,12 @@ and we have no idea what that would look like *)
 
   Coercion Monad_from_rep_ar (ar:ARITY) (X:rep_ar ar) : MONAD := pr1 X.
 
-  Definition μr {ar:ARITY} (X:rep_ar ar) := pr2 X.
+  Definition rep_τ {ar:ARITY} (X:rep_ar ar) := pr2 X.
 
 
   Definition rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b)
              (f: arity_Mor a b) (g:Monad_Mor M N) :=
-    ∏ c, μr M c ;; g c = (#a g)%ar c ;;  (f `` N) c ;; μr N c .
+    ∏ c, rep_τ M c ;; g c = (#a g)%ar c ;;  (f `` N) c ;; rep_τ N c .
 
   Lemma isaprop_rep_ar_mor_law {a b : ARITY} (M:rep_ar a) (N: rep_ar b)
         (f: arity_Mor a b) (g:Monad_Mor M N) :
@@ -277,7 +277,7 @@ and we have no idea what that would look like *)
 
   Definition rep_ar_mor_ax {a b : ARITY} {M:rep_ar a} {N: rep_ar b}
              {f} (h:rep_ar_mor_mor a b M N f) :
-    ∏ c,  ((μr M) c);; ( h c) = (#a h )%ar c ;; ( f`` N)  c ;; μr N c 
+    ∏ c,  ((rep_τ M) c);; ( h c) = (#a h )%ar c ;; ( f`` N)  c ;; rep_τ N c 
     := pr2 h.
 
   Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_ARITY :=
