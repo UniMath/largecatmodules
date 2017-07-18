@@ -1,8 +1,8 @@
 
 Require Import UniMath.Foundations.PartD.
 
-Require Import UniMath.CategoryTheory.Monads.
-Require Import UniMath.CategoryTheory.LModules.
+Require Import UniMath.CategoryTheory.Monads.Monads.
+Require Import UniMath.CategoryTheory.Monads.LModules. 
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.functor_categories.
