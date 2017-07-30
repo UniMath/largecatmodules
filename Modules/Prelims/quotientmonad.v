@@ -192,6 +192,15 @@ Proof.
   apply (horcomp_assoc projR projR projR c).
 Qed.
 
+Lemma isEpi_horcomp_pointwise c : isEpi ((projR ∙∙ (projR ∙∙ projR)) c).
+Proof.
+  apply Pushouts_pw_epi.
+  apply PushoutsHSET_from_Colims.
+  apply isEpi_horcomp.
+  apply isEpi_projR_projR.
+  apply isEpi_projR_pw.
+Defined.
+
 Lemma R'_Monad_law_μ : ∏ c : SET,
                              # R' (R'_μ  c) · R'_μ c = R'_μ (R' c) · R'_μ c.
 Proof.
@@ -212,24 +221,17 @@ Qed for some proof, and I suspect somewhere in the section about
 quotients in basics/Sets.v
 
        *)
-  assert (epi : isEpi (horcomp (horcomp projR projR) projR c)).
-  {
-    apply Pushouts_pw_epi.
-    apply PushoutsHSET_from_Colims.
-    apply isEpi_horcomp.
-    apply isEpi_projR_projR.
-    apply isEpi_projR_pw.
-  }
-  apply epi.
 
-      (* To understand the proof, see the string diagram muproof sent to
-Benedikt.
+  apply isEpi_horcomp_pointwise.
+
+  (* To understand the proof, see the string diagram muproof sent to Benedikt.
 
 Legend of the diagram :
 - μ = μ R
 - ν = R'_μ
 - i = projR
 *)      
+
   etrans.
   (* First equality *)
   { etrans.
@@ -252,56 +254,51 @@ Legend of the diagram :
   }  
   (* second equality *)
   etrans.
-  rewrite <- assoc.
-  rewrite <- assoc.
-  apply (cancel_precomposition (SET)).     
-  apply (R'_μ_def c).
-  
+  { 
+    rewrite <- assoc.
+    rewrite <- assoc.
+    apply (cancel_precomposition (SET)).     
+    apply (R'_μ_def c).
+  }
   (* third equality *)
   etrans.
-  rewrite assoc.
+  { rewrite assoc.
+    etrans.
+    { apply cancel_postcomposition.
+      apply (Monad_law3 (T:=R) c). }
+    
+    (* Fourth equality *)
+    rewrite <- assoc.
   
-  etrans.
-  apply cancel_postcomposition.
-  apply (Monad_law3 (T:=R) c).
+    etrans.
+    { apply cancel_precomposition.
+      symmetry.
+      apply R'_μ_def. }
   
-  (* Fourth equality *)
-  rewrite <- assoc.
+    rewrite assoc.      
+    apply cancel_postcomposition.
   
-  etrans.
-  apply cancel_precomposition.
-  symmetry.
-  apply R'_μ_def.
-  
-  rewrite assoc.      
-  apply cancel_postcomposition.
-  
-  (* Fifth equality *)
-  etrans.
-  cbn -[projR compose].
-  rewrite (assoc (C:=SET)).
-  apply (cancel_postcomposition SET).
-  symmetry.
-  apply R'_μ_def.
-  
+    (* Fifth equality *)
+    etrans.
+    { cbn -[projR compose].
+      rewrite (assoc (C:=SET)).
+      apply (cancel_postcomposition SET).
+      symmetry.
+      apply R'_μ_def.
+    }
   
   (* Close to the end *)
-  etrans.
-  rewrite <- assoc.
-  apply (cancel_precomposition SET).
-  symmetry.
-  apply (nat_trans_ax (R'_μ) ( R c)).
-  
-  rewrite assoc.
-  reflexivity.
-  
-  etrans.
-  rewrite <- assoc.
-  reflexivity.
-  
-  
-  apply cancel_postcomposition.
-  
+    etrans.
+    { rewrite <- assoc.
+      apply (cancel_precomposition SET).
+      symmetry.
+      apply (nat_trans_ax (R'_μ) ( R c)). 
+    }
+    rewrite assoc.
+    reflexivity.
+  }
+  etrans; [apply (!assoc _ _ _ ) |].
+  apply cancel_postcomposition.  
   (* association of horcomposition *)
   apply assoc_ppprojR.
 Qed.
@@ -319,10 +316,8 @@ Qed.
 Definition R'_monad : Monad _ := _ ,, R'_Monad_laws.
 
 (*
-
 FIN DE LA PREMIERE ETAPE
-
- *)
+*)
 
 Lemma projR_monad_laws: Monad_Mor_laws (T':= R'_monad) projR.
 Proof.
@@ -363,12 +358,11 @@ Proof.
   apply univ_surj_nt_ax_pw.
 Qed.
 
-Local Lemma u_monad_laws : Monad_Mor_laws (T:= R'_monad) (T':= S) u.
+Lemma u_monad_mor_law1 
+  : ∏ a : SET, (μ R'_monad) a · u a = u (R'_monad a) · # S (u a) · (μ S) a.
 Proof.
-  red.
-  split.
-  - intro X.
-    assert (epi :isEpi ( (horcomp projR projR) X)).
+intro X.
+    assert (epi : isEpi (horcomp projR projR X)).
     {
       apply Pushouts_pw_epi.
       apply PushoutsHSET_from_Colims.
@@ -428,6 +422,13 @@ Proof.
     rewrite assoc.
     cbn.
     reflexivity.
+Qed.
+
+Local Lemma u_monad_laws : Monad_Mor_laws (T:= R'_monad) (T':= S) u.
+Proof.
+  red.
+  split.
+  - exact u_monad_mor_law1.
   - intro X.
     etrans.
     cpost _.
