@@ -37,13 +37,11 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 
-
 Require Import TypeTheory.Auxiliary.Auxiliary.
 Require Import TypeTheory.Auxiliary.UnicodeNotations.
 Require Import TypeTheory.Displayed_Cats.Auxiliary.
 Require Import TypeTheory.Displayed_Cats.Core.
 Require Import TypeTheory.Displayed_Cats.Constructions.
-Require Import TypeTheory.Displayed_Cats.Fibrations.
 
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
@@ -401,7 +399,7 @@ Definition isEpi_FR' := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET
 (* a preserve les epis *)
 Definition a_preserves_epi := ∏ M N (f:category_Monad _⟦M,N⟧),
                               isEpi f -> isEpi
-                                          (C:= functor_category _ _) (pr1 ( # a f)%ar).
+                                          (C:= functor_category _ _) (pr1 (#a f)%ar).
 
 Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
 
@@ -425,7 +423,6 @@ Proof.
 Qed.
 
 
-
 (*
 Definition R'_rep_τ  : nat_trans (pr1 ( b` R'_monad)) R'.
 Proof.
@@ -443,7 +440,7 @@ Definition R'_rep_τ_module
 
 Definition R'_rep_τ_def :
   ∏ (X:SET),
-  ((# a (projR_monad))%ar) X ;; (F`` R'_monad) X ;; R'_rep_τ_module X  
+  (# a (projR_monad)%ar) X ;; (F`` R'_monad) X ;; R'_rep_τ_module X  
   = 
   rep_τ _ R X ;; projR X .
 Proof.
@@ -537,7 +534,8 @@ Qed.
 
 Definition u_rep : (R'_rep Fepi aepi) -->[identity b] S 
   := _ ,, u_rep_laws.
-      
+
+
 End uRepresentation.
   (* FIN DE LA PARTIE 6 *)
 
@@ -548,25 +546,25 @@ Context (Fepi : isEpi_FR') (aepi : a_preserves_epi).
 
 Variable u'_rep : (R'_rep Fepi aepi) -->[identity b] S.
 
-Let m : R -->[ F;; identity b] S
+Let foo : R -->[ F;; identity b] S
   := (projR_rep Fepi aepi ;; u'_rep)%mor_disp.
 
-Let m' : R -->[ F;; identity b] S
-  := (pr1 hm ;; id_disp S)%mor_disp.
+Let foo' : R -->[ F;; identity b] S
+  := (iscontrpr1 hm ;; id_disp S)%mor_disp.
 
-Lemma proj_u'_equal_mor : m = m'.
+Lemma proj_u'_equal_mor : foo = foo'.
 Proof.
-  unfold m, m'.
+  unfold foo, foo'.
   rewrite id_right_disp .
   apply transportf_transpose .
-  apply (pr2 hm).
+  apply (iscontr_uniqueness hm).
 Defined.
  
 Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm) Fepi aepi).
 Proof.
   apply rep_ar_mor_mor_equiv.
   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
-  assert (eqm'2 : pr1 m = pr1 m').
+  assert (eqm'2 : pr1 foo = pr1 foo').
   { exact (maponpaths pr1 proj_u'_equal_mor). }
   apply Monad_Mor_equiv in eqm'2.
   - apply nat_trans_eq.
