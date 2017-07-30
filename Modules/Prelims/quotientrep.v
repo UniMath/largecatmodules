@@ -172,12 +172,8 @@ Proof.
     (* π est un morphisme de moande (par définition) *)
     apply R'_μ_def.
   }
-  rewrite assoc.
-  etrans.
-  { apply cancel_postcomposition.
-    apply (LModule_Mor_σ R τ). 
-  }
-  reflexivity.
+  do 2 rewrite assoc. apply cancel_postcomposition.
+  apply (LModule_Mor_σ R τ).
 Qed.
 
 
@@ -204,29 +200,30 @@ Proof.
   apply R'_rep_τ_def.
 Qed.
 
-Lemma R'_rep_τ_module_laws : LModule_Mor_laws _ (T:=b)
-                                           (T':=  tautological_LModule R'_monad)
-                                           R'_rep_τ.
+Lemma R'_rep_τ_module_laws 
+  : LModule_Mor_laws _ 
+                     (T:=b)
+                     (T':= tautological_LModule R'_monad)
+                     R'_rep_τ.
 Proof.
   intro X.
   
   (* En vrai, je n'ai pas besoin ici que ce soit un epi pointwise (me semble-t-il)*)
   assert (epi : isEpi (* (C:=functor_Precategory SET SET) *)
-                  ((  ( 
-                                                      h )    ∙∙ projR) X)).
+                  ((h ∙∙ projR) X)
+         ).
   {
     apply Pushouts_pw_epi.
-    apply PushoutsHSET_from_Colims.
-    apply isEpi_horcomp.
-    apply isEpi_projR.
-    intro Y.
-    apply Pushouts_pw_epi.
-    apply PushoutsHSET_from_Colims.
-    apply isEpih.
+    - apply PushoutsHSET_from_Colims.
+    - apply isEpi_horcomp.
+      + apply isEpi_projR.
+      + intro Y.
+        apply Pushouts_pw_epi.
+        * apply PushoutsHSET_from_Colims.
+        * apply isEpih.
   }
   apply epi.
-  etrans.
-  { apply τ'_law_eq1. }
+  etrans; [ apply τ'_law_eq1 |].
   apply pathsinv0.
   apply τ'_law_eq2.
 Qed.    
@@ -334,7 +331,7 @@ Proof.
     eapply pathsinv0.
     apply quotientmonad.u_def.
   }
-  now apply compat_m_rep.
+  apply compat_m_rep.
 Qed.
 
 End QuotientMonad.
