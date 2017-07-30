@@ -12,11 +12,9 @@ Require Import UniMath.CategoryTheory.Categories.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
-
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Require Import Modules.Prelims.lib.
-
 
 Local Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 Local Notation "'SET'" := hset_category.
@@ -24,27 +22,18 @@ Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 
 Open Scope cat.
 
-(* Trouvé dans SubstitutionsSystem/Notation *)
-(* Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25). *)
-(* Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity). *)
-
-
-
-
-
-
     
 Set Automatic Introduction.
 
 Section QuotientMonad.
 
-  Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (( R c):hSet)}
-          (congr_equivc : ∏ (x y:SET) (f:SET⟦x,y⟧),
-                          iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f)).
+Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
+        (congr_equivc : ∏ (x y : SET) (f : SET⟦x,y⟧),
+                        iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f)).
 
 Let equivc {c:hSet} x y := eqrel_equivc c x y.
   
-(* We define the quotient functor of R by these equivalence relations
+(** We define the quotient functor of R by these equivalence relations
 
 The following comment may be outdated
 ----
@@ -55,6 +44,7 @@ is so slow when R' is definitely equal to quot_functor !
 ----
 
 *)
+
 Definition R': functor SET SET := quot_functor (pr1 (pr1 R)) _ congr_equivc.
 
 Definition projR : (R:functor _ _) ⟹ R':= pr_quot_functor _ _ congr_equivc.
@@ -111,15 +101,15 @@ Qed.
    *)
 (* The following condition is required about the equivalence relation
 to make a monad out of R' *)
-Definition compat_μ_projR_def := ∏ (X : SET) (x y : pr1 ((pr1 (R □ R)) X)),
-                       (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
-                       (μ R;;; projR) X x = (μ R;;; projR) X y.
+Definition compat_μ_projR_def 
+  := ∏ (X : SET) (x y : pr1 ((pr1 (R □ R)) X)),
+     (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
+     (μ R;;; projR) X x = (μ R;;; projR) X y.
 
 
-
-Variable (compat_μ_projR:compat_μ_projR_def).
+Variable compat_μ_projR : compat_μ_projR_def.
   
-Definition R'_μ  : nat_trans ( R'□  R')  ( R').
+Definition R'_μ  : R'□  R' ⟹ R'.
 Proof.
   apply (univ_surj_nt (A:= R □ R) (B:=functor_composite R' R')                    
                       ( projR ∙∙ projR)
@@ -148,24 +138,23 @@ Proof.
   apply isEpi_projR.
   repeat rewrite assoc.
   etrans.
-  apply (cancel_postcomposition (b:=R' (R' c))).
-  
-  unfold R'_η.
-  etrans;[apply assoc|].
-  apply cancel_postcomposition.
-  apply (nat_trans_ax (η  R)).
-  
+  { apply cancel_postcomposition. 
+    unfold R'_η.
+    etrans;[apply assoc|].
+    apply cancel_postcomposition.
+    apply (nat_trans_ax (η  R)).
+  }  
   rewrite <- assoc.
   rewrite <- assoc.
   etrans.
-  apply (cancel_precomposition _ _ _ (R' c)).
-  cbn.
-  apply R'_μ_def.
-  
+  { apply (cancel_precomposition _ _ _ (R' c)).
+    cbn.
+    apply R'_μ_def.
+  }
   rewrite assoc, id_right.
   etrans.
-  apply cancel_postcomposition.
-  apply (Monad_law1 (T:=R)).
+  { apply cancel_postcomposition.
+    apply (Monad_law1 (T:=R)). }
   apply id_left.
 Qed.
 
@@ -196,14 +185,16 @@ Proof.
   now rewrite id_left.
 Qed.
 
-Lemma assoc_ppprojR c : (projR ∙∙ projR) ( R c) · # (R' □ R') (projR c)
-                        = (projR ∙∙ (projR ∙∙ projR)) c.
+Lemma assoc_ppprojR c 
+  : (projR ∙∙ projR) ( R c) · # (R' □ R') (projR c)
+    = 
+    (projR ∙∙ (projR ∙∙ projR)) c.
 Proof.
   apply (horcomp_assoc projR projR projR c).
 Qed.
 
-Lemma R'_Monad_law_μ :  ∏ c : SET,
-                              # R' (R'_μ  c) · R'_μ c = R'_μ (R' c) · R'_μ c.
+Lemma R'_Monad_law_μ : ∏ c : SET,
+                             # R' (R'_μ  c) · R'_μ c = R'_μ (R' c) · R'_μ c.
 Proof.
   intro c.
  
@@ -222,7 +213,7 @@ Qed for some proof, and I suspect somewhere in the section about
 quotients in basics/Sets.v
 
        *)
-  assert (epi :isEpi (horcomp (horcomp projR projR) projR c)).
+  assert (epi : isEpi (horcomp (horcomp projR projR) projR c)).
   {
     apply Pushouts_pw_epi.
     apply PushoutsHSET_from_Colims.
@@ -245,14 +236,12 @@ Legend of the diagram :
   etrans.
   apply (assoc (C:=SET)).
   rewrite horcomp_pre_post.
-  
-      
+    
+  etrans.
+  apply cancel_postcomposition. 
   
   etrans.
-  apply (cancel_postcomposition (C:=SET)).
-  
-  etrans.
-  apply (cancel_postcomposition (C:=SET)).
+  apply cancel_postcomposition.
   unfold compose.
   cbn -[R' compose horcomp].
   reflexivity.
@@ -266,7 +255,7 @@ Legend of the diagram :
   apply R'_μ_def.
   
   rewrite functor_comp,assoc.
-  apply (cancel_postcomposition (C:=SET)).
+  apply (cancel_postcomposition).
   symmetry.
   apply cancel_postcomposition.
   apply (nat_trans_ax (projR)).
@@ -301,7 +290,7 @@ Legend of the diagram :
   etrans.
   cbn -[projR compose].
   rewrite (assoc (C:=SET)).
-  apply (cancel_postcomposition (C:=SET)).
+  apply (cancel_postcomposition SET).
   symmetry.
   apply R'_μ_def.
   
@@ -335,15 +324,15 @@ Proof.
   - apply R'_Monad_law_μ.
 Qed.
 
-  (* Le QED précédent prend énormément de temps.. pourquoi ? *)
+(* Le QED précédent prend énormément de temps.. pourquoi ? *)
 
-Definition R'_monad : Monad _ := (_ ,, R'_Monad_laws).
+Definition R'_monad : Monad _ := _ ,, R'_Monad_laws.
 
-  (*
+(*
 
 FIN DE LA PREMIERE ETAPE
 
-   *)
+ *)
 
 Lemma projR_monad_laws: Monad_Mor_laws (T':= R'_monad) projR.
 Proof.
@@ -367,8 +356,10 @@ Qed.
 
   (* FIN DE LA SECONDE ETAPE *)
 
-Variables (S:Monad SET) (m: Monad_Mor R S)
-  (compatm: ∏ (X:SET) (x y : (R X:hSet)), projR X x = projR X y → m X x = m X y).
+Variables (S : Monad SET) 
+          (m : Monad_Mor R S)
+          (compatm : ∏ (X:SET) (x y : (R X : hSet)), 
+                     projR X x = projR X y → m X x = m X y).
 
 Local Definition u : nat_trans R' S.
 Proof.
