@@ -21,7 +21,6 @@ Local Notation "'SET'" := hset_category.
 Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 
 Open Scope cat.
-
     
 Set Automatic Introduction.
 
@@ -233,33 +232,24 @@ Legend of the diagram :
 *)      
   etrans.
   (* First equality *)
-  etrans.
-  apply (assoc (C:=SET)).
-  rewrite horcomp_pre_post.
-    
-  etrans.
-  apply cancel_postcomposition. 
-  
-  etrans.
-  apply cancel_postcomposition.
-  unfold compose.
-  cbn -[R' compose horcomp].
-  reflexivity.
-
-  
-  rewrite <- assoc.
-  
-  apply (cancel_precomposition SET).
-  rewrite <- (functor_comp (C:=SET) (C':=SET)).
-  apply maponpaths.      
-  apply R'_μ_def.
-  
-  rewrite functor_comp,assoc.
-  apply (cancel_postcomposition).
-  symmetry.
-  apply cancel_postcomposition.
-  apply (nat_trans_ax (projR)).
-  
+  { etrans.
+    apply (assoc (C:=SET)).
+    rewrite horcomp_pre_post.    
+    etrans.
+    { 
+      apply cancel_postcomposition.       
+      etrans. use (! assoc _ _ _ ).
+      apply (cancel_precomposition SET).
+      etrans; [ apply (!functor_comp R' _ _ ) | ].
+      apply maponpaths.      
+      apply R'_μ_def.
+    }
+    rewrite functor_comp,assoc.
+    apply (cancel_postcomposition).
+    symmetry.
+    apply cancel_postcomposition.
+    apply (nat_trans_ax (projR)).
+  }  
   (* second equality *)
   etrans.
   rewrite <- assoc.
