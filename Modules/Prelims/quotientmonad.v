@@ -81,12 +81,6 @@ Qed.
 
 Definition R'_η : (functor_identity SET) ⟹ R' := η R ;;; projR .
 
-Lemma R'_η_def : ∏ x, R'_η x =  η R x · projR x.
-Proof.
-  intro x.
-  apply idpath.
-Qed.
-
   (* R'_μ is defined by the following diagram :
 <<
                   μ R
@@ -98,22 +92,22 @@ Qed.
                   R'_μ
 >>
    *)
-(* The following condition is required about the equivalence relation
+
+(** The following condition is required about the equivalence relation
 to make a monad out of R' *)
+
 Definition compat_μ_projR_def 
   := ∏ (X : SET) (x y : pr1 ((pr1 (R □ R)) X)),
      (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
      (μ R;;; projR) X x = (μ R;;; projR) X y.
 
-
 Variable compat_μ_projR : compat_μ_projR_def.
   
-Definition R'_μ  : R'□  R' ⟹ R'.
+Definition R'_μ  : R' □  R' ⟹ R'.
 Proof.
   apply (univ_surj_nt (A:= R □ R) (B:=functor_composite R' R')                    
                       ( projR ∙∙ projR)
                       (μ  ( R) ;;; projR)).
-  (* asbtract these *)
   -  apply compat_μ_projR.
   - apply isEpi_projR_projR.
 Defined.
@@ -161,24 +155,22 @@ Lemma R'_Monad_law_η2 : ∏ c : SET, # R' (R'_η c) · R'_μ c = identity (R' c
 Proof.
   intro c.
   etrans.
-    apply cancel_postcomposition.
-    etrans.
-    { apply maponpaths.
-      apply R'_η_def. }
-    apply functor_comp.
-    use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR).
-    apply isEpi_projR.
+  { apply cancel_postcomposition.    
+    apply functor_comp. }
+  use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR isEpi_projR).
   repeat rewrite assoc.
   etrans.
-    apply cancel_postcomposition.
+  { apply cancel_postcomposition.
     apply cancel_postcomposition.
     symmetry.
     apply (nat_trans_ax (projR)).
+  }
   rewrite <- assoc.
   rewrite <- assoc.
   etrans.
-    apply cancel_precomposition.
+  { apply cancel_precomposition.
     apply R'_μ_def.
+  }
   rewrite assoc, id_right.
   rewrite (Monad_law2 (T:=R)).
   now rewrite id_left.
@@ -263,17 +255,13 @@ Legend of the diagram :
   (* third equality *)
   etrans.
   { rewrite assoc.
-    etrans.
-    { apply cancel_postcomposition.
-      apply (Monad_law3 (T:=R) c). }
+    etrans. { apply cancel_postcomposition, (Monad_law3 (T:=R) c). }
     
     (* Fourth equality *)
     rewrite <- assoc.
   
     etrans.
-    { apply cancel_precomposition.
-      symmetry.
-      apply R'_μ_def. }
+    { apply cancel_precomposition. symmetry. apply R'_μ_def. }
   
     rewrite assoc.      
     apply cancel_postcomposition.
@@ -326,8 +314,7 @@ Proof.
     symmetry.
     apply R'_μ_def.
   - intro X.
-    symmetry.
-    apply R'_η_def.
+    apply idpath.
 Qed.
 
 Definition projR_monad : Monad_Mor (R) (R'_monad) :=
@@ -361,83 +348,72 @@ Qed.
 Lemma u_monad_mor_law1 
   : ∏ a : SET, (μ R'_monad) a · u a = u (R'_monad a) · # S (u a) · (μ S) a.
 Proof.
-intro X.
-    assert (epi : isEpi (horcomp projR projR X)).
-    {
-      apply Pushouts_pw_epi.
-      apply PushoutsHSET_from_Colims.
-      apply isEpi_projR_projR.
-    }
-    apply epi.
+  intro X.
+  assert (epi : isEpi (horcomp projR projR X)).
+  {
+    apply Pushouts_pw_epi.
+    apply PushoutsHSET_from_Colims.
+    apply isEpi_projR_projR.
+  }
+  apply epi.
     
-
-    (* Now the real work begins *)
-    etrans.
-    
-    (* use the monadicity of μ *)
-    apply cancel_postcomposition.
+  (* Now the real work begins *)
+  etrans.
+  {  apply cancel_postcomposition.
     apply (nat_trans_ax (projR)).
-    etrans.
-    
-    
-        
-    rewrite assoc.        
+  }
+  etrans. (* use the monadicity of μ *)
+  { rewrite assoc.        
     apply cancel_postcomposition.
     symmetry.
     apply (Monad_Mor_μ (projR_monad)).
+  }
     
-    (* definition of u *)
-    etrans.
-    rewrite <- assoc.
-    cpre _.
-    symmetry.
-    apply u_def.
+  (* definition of u *)
+  etrans. { rewrite <- assoc. cpre _. symmetry. apply u_def. }
     
-    (* m is a morphism of monad *)
-    etrans.
-    apply (Monad_Mor_μ (m)).
+  (* m is a morphism of monad *)
+  etrans; [ apply (Monad_Mor_μ m) |].
     
-    (* Definition of u *)
+  (* Definition of u *)
+  etrans.  
+  { cpost _.
     etrans.
-    
-    cpost _.
-    etrans.
-    etrans.
-    cpost _.
-    apply u_def.        
-    cpre _.
-    etrans.
-    apply maponpaths.
-    apply u_def.
-    apply functor_comp.
-    
-    (* il s'agit de rememmtre les termes dans l'ordre *)
-    
+    { etrans. { cpost _.  apply u_def. }
+      cpre _ .
+      etrans.
+      { apply maponpaths. apply u_def. }
+      apply functor_comp.
+    }    
+    (* il s'agit de rememmtre les termes dans l'ordre *)    
     rewrite assoc.
     cpost _.
     rewrite <- assoc.
     cpre _.
     symmetry.
-    apply (nat_trans_ax (u )).
-    rewrite assoc.
-    cbn.
-    reflexivity.
+    apply (nat_trans_ax u).
+  }
+  rewrite assoc.
+  cbn.
+  reflexivity.
+Qed.
+
+Lemma u_monad_mor_law2 : ∏ a : SET, (η R'_monad) a · u a = (η S) a.
+Proof.
+  intro X.
+  etrans; [ apply (!assoc _ _ _ ) |].
+  rewrite <- u_def.
+  apply (Monad_Mor_η m).
 Qed.
 
 Local Lemma u_monad_laws : Monad_Mor_laws (T:= R'_monad) (T':= S) u.
 Proof.
-  red.
   split.
   - exact u_monad_mor_law1.
-  - intro X.
-    etrans.
-    cpost _.
-    apply R'_η_def.
-    rewrite <- assoc.
-    rewrite <- u_def.
-    apply (Monad_Mor_η (m)).
+  - exact u_monad_mor_law2.
 Qed.
-Local Definition u_monad : Monad_Mor ( R'_monad) S :=
+
+Local Definition u_monad : Monad_Mor (R'_monad) S :=
       (_ ,, u_monad_laws).
 End QuotientMonad.
   
