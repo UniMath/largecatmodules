@@ -49,17 +49,6 @@ Require Import UniMath.CategoryTheory.HorizontalComposition.
 
 Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
-Require Import UniMath.CategoryTheory.limits.graphs.pullbacks.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
-Require Import UniMath.CategoryTheory.limits.graphs.limits.
-Require Import UniMath.CategoryTheory.limits.graphs.pushouts.
-Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
-Require Import UniMath.CategoryTheory.limits.pushouts.
-Require Import UniMath.CategoryTheory.limits.terminal.
-Require Import UniMath.CategoryTheory.limits.kernels.
-Require Import UniMath.CategoryTheory.limits.pullbacks.
-Require Import UniMath.CategoryTheory.limits.coequalizers.
-
 Require Import UniMath.CategoryTheory.CocontFunctors.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
@@ -69,7 +58,6 @@ Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientrep.
 
-    
 Set Automatic Introduction.
   
   
@@ -231,14 +219,11 @@ Qed.
 Let R'_monad  := R'_monad congr_equivc compat_μ_projR.
 Let projR_monad  := projR_monad congr_equivc compat_μ_projR.
 
-Section morphInitialU.
 
-Context {S:REP b} (m:R -->[ F] S).
+Definition u_monad {S} (m : R -->[ F] S) 
+  : Monad_Mor (quotientmonad.R'_monad congr_equivc compat_μ_projR) (pr1 S)
+  := quotientmonad.u_monad compat_μ_projR (S:=pr1 S) (pr1 m) (compat_m m).
 
-Definition u_monad {S} (m:R -->[ F] S) :=
-  quotientmonad.u_monad compat_μ_projR (S:=pr1 S) (pr1 m) (compat_m m).
-
-End morphInitialU.
 
 (** * FIN DE LA TROISIEME ETAPE *)
 
@@ -309,9 +294,9 @@ Proof.
   use (invmap (Monad_Mor_equiv _ _ _)).
   apply (homset_property SET).
   apply nat_trans_eq.
-  apply (homset_property SET).
-  intro X'.
-  apply (u_def m).
+  - apply (homset_property SET).
+  - intro X'.
+    apply (u_def m).
 Qed.
 
 Lemma eq_mr X : rep_τ _ R X ;; ## m X =
@@ -336,7 +321,7 @@ Proof.
     rewrite <- assoc.
     cpre _.
     etrans.
-    { assert (hF :=disp_nat_trans_ax  (f:=u_monad m) (xx:=tt) (xx':=tt) F (tt)).
+    { assert (hF :=disp_nat_trans_ax  (f:=u_monad m) (xx:=tt) (xx':=tt) F tt).
       apply LModule_Mor_equiv in hF.
       eapply nat_trans_eq_pointwise in hF.
       - apply hF.
@@ -374,18 +359,18 @@ Definition hab : mor_disp
                    (D:=bmod_disp_ob_mor _ _ )(a` (pr1 R)) (b`  R'_monad)
                    ((projR_monad:category_Monad _⟦_,_⟧) ;; identity _).
 Proof.
-  set (aπ :=(# a projR_monad )%ar).
-  eapply (comp_disp 
-                    (D:=bmod_disp _ _ )
+  set (aπ :=(# a projR_monad)%ar).
+  eapply (comp_disp (D:=bmod_disp _ _ )
                     (yy:=a`R'_monad)
          ).
-  apply (#a projR_monad)%ar.
-  apply (F`` R'_monad).
+  - apply (#a projR_monad)%ar.
+  - apply (F`` R'_monad).
 Defined.
 
 (** This is the compatibility relation that is needed to construct
 R'_rep_τ : b R -> R
 *)
+
 Lemma compat_rep_τ_projR :
       ∏ (X : SET) x y,
        (pr1 hab) X x
@@ -395,26 +380,18 @@ Lemma compat_rep_τ_projR :
       (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) x *)
       (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) y *)
       ->
-            ((rep_τ _ R X ;; projR X) ) x = (rep_τ _ R X;; projR X)  y.
+            (rep_τ _ R X ;; projR X) x = (rep_τ _ R X;; projR X) y.
 Proof.
   intros X x y comp.
-  
   apply rel_eq_projR.
   intros S m.
-  assert (h:= eq_mr m X).
-  apply toforallpaths in h.
-  etrans.
-  apply h.
+  assert (h := eq_mr m X); apply toforallpaths in h.
+  etrans; [ apply h |].  
   apply pathsinv0.
-  etrans.
-  apply h.
-  apply pathsinv0.
-  cbn. 
-  (* cbn in comp. *)
-  apply maponpaths.
-  apply maponpaths.
-  (* apply maponpaths *)
-  apply comp.
+  etrans; [ apply h |].
+  cbn.
+  do 2 apply maponpaths.
+  apply (!comp).
 Qed.
 
 
@@ -428,25 +405,23 @@ Definition a_preserves_epi := ∏ M N (f:category_Monad _⟦M,N⟧),
 
 Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
 
-
 Lemma isEpi_def_R'_rep_τ : isEpi (C:= [SET,SET]) (pr1 hab).
                           (* (compose (C:=functor_category _ _) *)
                           (*          (pr1 ((# a)%ar projR_monad)) *)
                           (*          (pr1 (F `` R'_monad)%ar)). *)
 Proof.
   apply (isEpi_comp (functor_category _ _)).
-  apply aepi;    apply isEpi_projR_monad.
-  apply (isEpi_comp (functor_category _ _)).
-  apply Fepi.
-  (* TODO : améliorer cette preuve pourrie *)
-  intros u v w e.
-  cbn in e.
-  apply nat_trans_eq.
-  apply homset_property.
-  intro X.
-  eapply nat_trans_eq_pointwise in e.
-  cbn in e.
-  apply e.
+  - apply aepi; apply isEpi_projR_monad.
+  - apply (isEpi_comp (functor_category _ _)).
+    + apply Fepi.
+      (* TODO : améliorer cette preuve pourrie *)
+    + intros u v w e.
+      cbn in e.
+      apply nat_trans_eq.
+      * apply homset_property.
+      * intro X.
+        eapply nat_trans_eq_pointwise in e.
+        apply e.
 Qed.
 
 
@@ -461,33 +436,34 @@ Defined.
 
 
 
-Definition R'_rep_τ_module :LModule_Mor _ (b` R'_monad)
-                                     ( tautological_LModule R'_monad) :=
-  (quotientrep.R'_rep_τ_module congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
+Definition R'_rep_τ_module 
+  : LModule_Mor _ (b` R'_monad) (tautological_LModule R'_monad) 
+  :=
+  quotientrep.R'_rep_τ_module congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ.
 
 Definition R'_rep_τ_def :
   ∏ (X:SET),
-  ( (# a (projR_monad))%ar) X ;; (F`` R'_monad) X;;R'_rep_τ_module X  
-  =  rep_τ _ R X ;; projR X .
+  ((# a (projR_monad))%ar) X ;; (F`` R'_monad) X ;; R'_rep_τ_module X  
+  = 
+  rep_τ _ R X ;; projR X .
 Proof.
   intro X.
   apply (quotientrep.R'_rep_τ_def congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
 Qed.
 
-Definition R'_rep : (rep_disp SET b).
+Definition R'_rep : rep_disp SET b.
   use tpair.
   - exact R'_monad.
   - exact R'_rep_τ_module.
 Defined.
 
-  (* FIN DE LA PARTIE 5 *)
+(* FIN DE LA PARTIE 5 *)
 
-  (* projR est un morphisme de representation *)
+(* projR est un morphisme de representation *)
 
 Lemma projR_rep_laws : rep_ar_mor_law SET R R'_rep F projR_monad.
 Proof.
   intro X.
-  (* etrans. *)
   symmetry.
   apply (R'_rep_τ_def X).
 Qed.
@@ -502,8 +478,8 @@ End R'Representation.
   (* u morphisme de représentation *)
 Section uRepresentation.
 
-Context {S:REP b} (m:R -->[ F] S).
-Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
+Context {S : REP b} (m : R -->[ F] S).
+Context (Fepi : isEpi_FR') (aepi : a_preserves_epi).
 
 Open Scope arity_scope.
   
@@ -511,8 +487,7 @@ Open Scope arity_scope.
 (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
 
 (* TODO  : foutre ça dans quotientrep *)
-Let u_rep_laws : rep_ar_mor_law SET (R'_rep Fepi aepi) S (disp_nat_trans_id (pr1 b))
-                                  (u_monad m).
+Lemma u_rep_laws : rep_ar_mor_law SET (R'_rep Fepi aepi) S (identity b) (u_monad m).
 Proof.
   intro X.
   apply pathsinv0.
@@ -549,8 +524,8 @@ Proof.
   apply cancel_precomposition.
   assert (hF :=disp_nat_trans_ax  (f:= (u_monad m)) (xx:=tt) (xx':=tt) F (tt)).
   apply LModule_Mor_equiv in hF.
-  assert (hF':= (nat_trans_eq_pointwise hF X') ).
-  etrans;[apply hF'|].
+  assert (hF' := nat_trans_eq_pointwise hF X').
+  etrans; [ apply hF' |].
   clear.
   set (e:=nat_trans_ax _ _ _ _ ).
   unfold transportb.
@@ -560,47 +535,48 @@ Proof.
 Qed.
 
 
-Definition u_rep : (R'_rep Fepi aepi) -->[(disp_nat_trans_id (pr1 b))] S := (_ ,, u_rep_laws).
+Definition u_rep : (R'_rep Fepi aepi) -->[identity b] S 
+  := _ ,, u_rep_laws.
       
 End uRepresentation.
   (* FIN DE LA PARTIE 6 *)
 
- Section uUnique.
- Context {S:REP b} (hm: iscontr (R -->[ F] S)).
- Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
+Section uUnique.
 
- Variable u'_rep : (R'_rep Fepi aepi) -->[(disp_nat_trans_id (pr1 b))] S.
+Context {S : REP b} (hm : iscontr (R -->[ F] S)).
+Context (Fepi : isEpi_FR') (aepi : a_preserves_epi).
+
+Variable u'_rep : (R'_rep Fepi aepi) -->[identity b] S.
+
+Let m : R -->[ F;; identity b] S
+  := (projR_rep Fepi aepi ;; u'_rep)%mor_disp.
+
+Let m' : R -->[ F;; identity b] S
+  := (pr1 hm ;; id_disp S)%mor_disp.
+
+Lemma proj_u'_equal_mor : m = m'.
+Proof.
+  unfold m, m'.
+  rewrite id_right_disp .
+  apply transportf_transpose .
+  apply (pr2 hm).
+Defined.
  
- Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm) Fepi aepi).
- Proof.
-   set (m' := (projR_rep Fepi aepi ;; u'_rep)%mor_disp).
-   apply rep_ar_mor_mor_equiv.
-   intro X.
-   
-   cbn.
-   unfold u.
-   
-   revert X.
-   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
-   set (m := (pr1 hm ;; id_disp S)%mor_disp).
-   assert (eqm':m' = m).
-   {
-     subst m.
-     rewrite id_right_disp .
-     apply transportf_transpose .
-     apply (pr2 hm).
-   }
-   assert(eqm'2: pr1 m' = pr1 m).
-   now rewrite eqm'.
-   apply Monad_Mor_equiv in eqm'2.
-   apply nat_trans_eq.
-   apply has_homsets_HSET.
-   intro X.
-   eapply nat_trans_eq_pointwise in eqm'2.
-   apply eqm'2.
-   apply has_homsets_HSET.
+Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm) Fepi aepi).
+Proof.
+  apply rep_ar_mor_mor_equiv.
+  apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
+  assert (eqm'2 : pr1 m = pr1 m').
+  { exact (maponpaths pr1 proj_u'_equal_mor). }
+  apply Monad_Mor_equiv in eqm'2.
+  - apply nat_trans_eq.
+    + apply has_homsets_HSET.
+    + intro X.
+      eapply nat_trans_eq_pointwise in eqm'2.
+      apply eqm'2.
+  - apply has_homsets_HSET.
 Qed.      
-    
+
 End uUnique.
 
 End leftadjoint.
