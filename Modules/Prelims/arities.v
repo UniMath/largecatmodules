@@ -13,6 +13,7 @@ Require Import TypeTheory.Auxiliary.UnicodeNotations.
 Require Import TypeTheory.Displayed_Cats.Auxiliary.
 Require Import TypeTheory.Displayed_Cats.Core.
 Require Import TypeTheory.Displayed_Cats.Constructions.
+Require Import TypeTheory.Displayed_Cats.Fibrations.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
@@ -528,6 +529,92 @@ Qed.
 
 Definition rep_disp : disp_cat arity_category := rep_data ,, rep_axioms.
 
+
+Definition pb_rep {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') : rep_ar a :=
+  ((R : MONAD) ,, ((f `` R : category_LModule _ _ ⟦_, _⟧);; id_pbm;; rep_τ R)%mor).
+
+Definition id_disp_exp 
+  : ∏ (C : precategory_data) (D : disp_cat_data C) (x : C) (xx : D x), xx -->[ identity x] xx :=
+  @id_disp.
+
+Definition disp_functor_on_mor_exp :
+∏ (C' C : precategory_data) (F : functor_data C' C) (D' : disp_cat_data C') 
+(D : disp_cat_data C) (FF : disp_functor_data F D' D) (x y : C') (xx : D' x) 
+(yy : pr1 D' y) (f : C' ⟦ x, y ⟧), xx -->[ f] yy → FF x xx -->[ (# F)%Cat f] FF y yy :=
+  @disp_functor_on_morphisms.
+
+Lemma pb_rep_to_law {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
+  rep_ar_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).
+Proof.
+  intros.
+  intro c.
+  cbn.
+  rewrite id_right, id_right.
+  apply cancel_postcomposition.
+  apply pathsinv0.
+  etrans; [| apply id_left].
+  apply cancel_postcomposition.
+  assert (h:= (disp_functor_id a (x:=(R:MONAD)) tt)).
+  unfold ar_mor.
+  cbn in h.
+  cbn.
+  now rewrite h.
+Qed.
+
+Definition pb_rep_to {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
+  (pb_rep f R : rep_disp a) -->[f] R :=
+  (identity (C:=PRE_MONAD) (R:MONAD),, pb_rep_to_law f R).
+
+Definition paths_exp : ∏ A : Type, A → A → Type := @paths.
+Lemma rep_mor_law_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)
+      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[ g;; f] R) :
+  rep_ar_mor_law S (pb_rep f R) g (hh : rep_ar_mor_mor _ _ _ _ _ ).
+Proof.
+  intros.
+  destruct hh as [hh h].
+  intro c.
+  etrans; [apply h|].
+  etrans; [|apply assoc].
+  etrans; [eapply pathsinv0; apply assoc|].
+  apply cancel_precomposition.
+  cbn.
+  rewrite <- assoc.
+  cbn.
+  set (e := id_right _ ).
+  clearbody e.
+  rewrite id_left.
+  repeat rewrite assoc.
+  apply cancel_postcomposition.
+  clear.
+  (* fuck this 'e' *)
+Admitted.
+
+Definition pb_rep_to_cartesian {a a'} (f : arity_category ⟦ a, a' ⟧)
+           (R : rep_ar a') : is_cartesian ((pb_rep_to f R) :
+                                             (pb_rep f R : rep_disp a) -->[_] R).
+Proof.
+  intros.
+  intro b.
+  intros g S hh.
+  mkpair.
+  unshelve eapply unique_exists.
+  - cbn.
+    mkpair.
+    + apply hh.
+    + apply rep_mor_law_pb.
+  - 
+Admitted.
+           (* (pb_rep f R) R f *)
+Lemma rep_cleaving : cleaving rep_disp.
+Proof.
+  intros a a' f R.
+  red.
+  mkpair;[ |mkpair].
+  - apply (pb_rep f R).
+  - apply pb_rep_to.
+  - apply pb_rep_to_cartesian.
+Defined.
+     
 End LargeCatRep.
 
 Arguments ar_obj [_] _ _.
