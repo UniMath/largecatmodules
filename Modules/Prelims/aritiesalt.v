@@ -56,7 +56,12 @@ Definition is_arity  (F : arity_data) :=
 
 Lemma isaprop_is_arity (F : arity_data) : isaprop (is_arity F).
 Proof.
-Admitted.
+  apply isofhleveldirprod.
+  repeat (apply impred; intro).
+  apply homset_property.
+  repeat (apply impred; intro).
+  apply (homset_property (category_LModule _ _)).
+Qed.
 
 Definition arity : UU :=
   total2 ( fun F : arity_data => is_arity F ).
@@ -88,12 +93,23 @@ Definition is_arity_Mor
 
 Lemma isaprop_is_arity_Mor (F F' : arity_data) t :
   isaprop (is_arity_Mor F F' t).
-Admitted.
+Proof.
+  repeat (apply impred; intro).
+  apply homset_property.
+Qed.
 
 Definition arity_Mor  (F F' : arity_data) : UU :=
   total2 (is_arity_Mor F F').
                             
 Notation "F ⟹ G" := (arity_Mor F G) (at level 39) : arity_scope.
+
+Lemma isaset_arity_Mor (F F' : arity) : isaset (arity_Mor F F').
+Proof.
+  apply (isofhleveltotal2 2).
+  + apply impred ; intro t; apply (homset_property (category_LModule _ _)).
+  + intro x; apply isasetaprop, isaprop_is_arity_Mor.
+Qed.
+
 
 Definition arity_Mor_data
  {F F' : arity_data}(a : arity_Mor F F') := pr1 a.
@@ -105,10 +121,33 @@ Definition arity_Mor_ax
                                                                     (a S : nat_trans _ _) =
   ((a R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%ar f : nat_trans _ _)
   := pr2 a.
-Lemma is_arity_Mor_comp {F G H : arity_data} (a : arity_Mor F G) (b : arity_Mor G H): is_arity_Mor F H
+
+(** Equality between two arity morphisms *)
+
+Lemma arity_Mor_eq (F F' : arity)(a a' : arity_Mor F F'):
+  (∏ x, a x = a' x) -> a = a'.
+Proof.
+  intro H.
+  assert (H' : pr1 a = pr1 a').
+  { now apply funextsec. }
+  apply (total2_paths_f H'), proofirrelevance, isaprop_is_arity_Mor.
+Qed.
+
+Lemma is_arity_Mor_comp {F G H : arity} (a : arity_Mor F G) (b : arity_Mor G H): is_arity_Mor F H
      (fun R  => ((a R : category_LModule _ _ ⟦_,_⟧ ) · b R)).
 Proof.
-Admitted.
+  intros ? ? ?.
+  etrans.
+  apply (assoc (C:= [_,_])).
+  etrans.
+  apply ( cancel_postcomposition (C:= [_,_])).
+  apply (arity_Mor_ax (F:=F) (F':=G) a f).
+  rewrite <- (assoc (C:=[_,_])).
+  etrans.
+  apply (cancel_precomposition ([_,_])).
+  apply arity_Mor_ax.
+  now rewrite assoc.
+Qed.
 
 Definition arity_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
    arity (fun F F' => arity_Mor F F').
@@ -138,7 +177,21 @@ Defined.
 Lemma is_precategory_arity_precategory_data :
    is_precategory arity_precategory_data.
 Proof.
-Admitted.
+  repeat split; simpl; intros.
+  unfold identity.
+  simpl.
+  apply arity_Mor_eq. 
+  intro x; simpl.
+  apply (id_left (C:=category_LModule _ _)).
+
+  apply arity_Mor_eq.
+  intro x; simpl.
+  apply (id_right (C:=category_LModule _ _)).
+
+  apply arity_Mor_eq.
+  intro x; simpl.
+  apply (assoc (C:=category_LModule _ _)).
+Qed.
 
 Definition arity_precategory : precategory :=
   tpair (fun C => is_precategory C)
@@ -147,7 +200,9 @@ Definition arity_precategory : precategory :=
 
 Lemma arity_category_has_homsets : has_homsets arity_precategory.
 Proof.
-Admitted.
+  intros F G.
+  apply isaset_arity_Mor.
+Qed.
 
 
 Definition arity_category : category.
@@ -521,18 +576,6 @@ Definition rep_disp : disp_cat arity_category := rep_data ,, rep_axioms.
 Definition pb_rep {a a' : arity} (f : arity_Mor a a') (R : rep_ar a') : rep_ar a :=
   ((R : MONAD) ,, ((f R : category_LModule _ _ ⟦_, _⟧);;  rep_τ R)%mor).
 
-(*
-Definition id_disp_exp 
-  : ∏ (C : precategory_data) (D : disp_cat_data C) (x : C) (xx : D x), xx -->[ identity x] xx :=
-  @id_disp.
-
-Definition disp_functor_on_mor_exp :
-∏ (C' C : precategory_data) (F : functor_data C' C) (D' : disp_cat_data C') 
-(D : disp_cat_data C) (FF : disp_functor_data F D' D) (x y : C') (xx : D' x) 
-(yy : pr1 D' y) (f : C' ⟦ x, y ⟧), xx -->[ f] yy → FF x xx -->[ (# F)%Cat f] FF y yy :=
-  @disp_functor_on_morphisms.
-
-*)
 Lemma pb_rep_to_law {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
   rep_ar_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).
 Proof.
@@ -560,13 +603,19 @@ Proof.
   destruct hh as [hh h].
   intro c.
   etrans; [apply h|].
-  etrans; [|apply assoc].
-  etrans; [eapply pathsinv0; apply assoc|].
-  apply cancel_precomposition.
   cbn.
-  now rewrite assoc.
+  now repeat rewrite assoc.
 Qed.
 
+Lemma rep_mor_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)
+      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[ g;; f] R) :
+   (S : rep_disp _) -->[ g] pb_rep f R.
+Proof.
+    mkpair.
+    + apply hh.
+    + apply rep_mor_law_pb.
+Defined.
+    
 Definition pb_rep_to_cartesian {a a'} (f : arity_category ⟦ a, a' ⟧)
            (R : rep_ar a') : is_cartesian ((pb_rep_to f R) :
                                              (pb_rep f R : rep_disp a) -->[_] R).
@@ -574,15 +623,22 @@ Proof.
   intros.
   intro b.
   intros g S hh.
-  mkpair.
   unshelve eapply unique_exists.
-  - cbn.
-    mkpair.
-    + apply hh.
-    + apply rep_mor_law_pb.
-      
-  - 
-Admitted.
+  - apply rep_mor_pb.
+    exact hh.
+  - abstract (apply rep_ar_mor_mor_equiv;
+    intro c;
+    apply id_right).
+  - intro u.
+    apply isaset_rep_ar_mor_mor.
+  - abstract (intros u h;
+    apply rep_ar_mor_mor_equiv;
+    intro c;
+    cbn;
+    rewrite <- h;
+    apply pathsinv0;
+    apply id_right).
+Qed.
            (* (pb_rep f R) R f *)
 Lemma rep_cleaving : cleaving rep_disp.
 Proof.
@@ -596,9 +652,4 @@ Defined.
      
 End LargeCatRep.
 
-Arguments ar_obj [_] _ _.
-Infix "`" := ar_obj (at level 25) : arity_scope .
-
-Arguments ar_mor_pw [_ _ _] _ _.
-Infix "``" := ar_mor_pw (at level 25) : arity_scope .
 
