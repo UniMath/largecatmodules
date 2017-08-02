@@ -16,8 +16,6 @@ to the previously mentionned for surjections.
 - Proof that if a natural transformation is pointwise epi, then
  any pre-whiskering of it is also an epi.
 
-
-
 Section leftadjoint : 
 Preuve d'André à traduire.
 
@@ -30,7 +28,7 @@ Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.whiskering.
-
+Require Import UniMath.CategoryTheory.Adjunctions.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
@@ -42,7 +40,7 @@ Require Import TypeTheory.Auxiliary.UnicodeNotations.
 Require Import TypeTheory.Displayed_Cats.Auxiliary.
 Require Import TypeTheory.Displayed_Cats.Core.
 Require Import TypeTheory.Displayed_Cats.Constructions.
-
+Require Import TypeTheory.Displayed_Cats.Fibrations.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
 Require Import UniMath.CategoryTheory.categories.category_hset.
@@ -72,9 +70,13 @@ Local Notation "'SET'" := hset_category.
 Local Notation CAT_ARITY := (@arity_category SET).
 Local Notation REP := (rep_disp SET).
 
-Context {a b : arity SET} 
-        (R : REP a)
+Context {a b : arity SET}
         (F : arity_Mor a b).
+
+Section fix_rep_of_a.
+
+Context (R : REP a).
+
 
 Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 
@@ -92,7 +94,7 @@ define the quotient of a monad, and of a module over a monad.
 
 Definition equivc {X : SET} (x y : pr1 ( ## R X)) 
   := ∏ (S:REP b) ( f : R -->[F] S),
-     pr1 (pr1 f) X x = ## f X y.
+     ## f X x = ## f X y.
 
 Lemma isaprop_equivc_xy (c : SET) x y : isaprop (equivc (X:=c) x y).
 Proof.
@@ -557,7 +559,7 @@ Proof.
   apply (iscontr_uniqueness hm).
 Defined.
  
-Lemma u_rep_unique : u'_rep = (u_rep (pr1 hm) Fepi aepi).
+Lemma u_rep_unique : u'_rep = u_rep (pr1 hm) Fepi aepi.
 Proof.
   apply rep_ar_mor_mor_equiv.
   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
@@ -573,6 +575,34 @@ Proof.
 Qed.      
 
 End uUnique.
+
+End fix_rep_of_a.
+
+
+Let Rep_a : category := fiber_category (rep_disp SET) a.
+Let Rep_b : category := fiber_category (rep_disp SET) b.
+
+Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
+
+Definition foo : is_right_adjoint FF.
+Proof.
+  use right_adjoint_left_from_partial.
+  - intro R. 
+    apply (R'_rep R).
+    * admit. (* put as hypothesis *)
+    * admit. (* put as hypothesis *)
+  - intro R. apply projR_rep.
+  - intro R.
+    unfold is_universal_arrow_to.
+    intros d f. cbn in d, f.
+    use unique_exists. 
+    + apply (u_rep _ f). 
+    + (* apply u_rep_unique. ? *) admit. 
+    + intro foo. apply homset_property.
+    + cbn. admit.
+Abort.
+  
+  
 
 End leftadjoint.
 
