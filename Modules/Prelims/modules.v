@@ -15,12 +15,14 @@ Require Import TypeTheory.Displayed_Cats.Core.
 Require Import Modules.Prelims.lib.
 
 
-(*
+(** 
 Let T be a module on M'.
 
 In this section, we construct the module morphism T -> id* T (which is
 actully an iso) where id* T is the pullback module of T along
 the identity morphism in M'.
+
+and also the morphism id* T -> T
 
 *)
 Section Pullback_Identity_Module.
@@ -35,7 +37,14 @@ Proof.
   now rewrite id_right, id_left.
 Qed.
 
+Lemma  id_pbm_is_nat_trans  :  is_nat_trans pbmid T (fun x => identity _).
+Proof.
+  intros a b f; simpl.
+  now rewrite id_right, id_left.
+Qed.
+
 Definition pbm_id_nat_trans : nat_trans T pbmid  := (_ ,, pbm_id_is_nat_trans).
+Definition id_pbm_nat_trans : nat_trans pbmid T  := (_ ,, id_pbm_is_nat_trans).
 
 Lemma pbm_id_law : LModule_Mor_laws _ (T:=T) (T':=pbmid) pbm_id_nat_trans.
 Proof.
@@ -46,12 +55,21 @@ Proof.
   apply id_left.
 Qed.
 
+Lemma id_pbm_law : LModule_Mor_laws _ (T:=pbmid) (T':=T) id_pbm_nat_trans.
+Proof.
+  intros b; simpl.
+  rewrite id_left,id_right.
+  apply pathsinv0.
+  etrans.
+    cpost _. apply functor_id.
+  apply id_left.
+Qed.
 Definition pbm_id  : LModule_Mor _ T pbmid := (_ ,, pbm_id_law) .
+Definition id_pbm  : LModule_Mor _ pbmid T := (_ ,, id_pbm_law) .
 
 End Pullback_Identity_Module.
 
-(*
-
+(**
 In this section, we construct the module morphism (which is actually an iso)
 between m*(m'*(T'')) and (m o m')*(T'')
 
