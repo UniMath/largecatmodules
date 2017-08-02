@@ -597,7 +597,13 @@ Proof.
     intros d f. cbn in d, f.
     use unique_exists. 
     + apply (u_rep _ f). 
-    + (* apply u_rep_unique. ? *) admit. 
+    + cbn. 
+      apply rep_ar_mor_mor_equiv.
+      intro X.
+      etrans. apply transport_arity_mor .
+      cbn.
+      apply funextsec. intro x.
+      (* apply u_rep_unique. ? *) admit. 
     + intro foo. apply homset_property.
     + cbn. admit.
 Abort.
