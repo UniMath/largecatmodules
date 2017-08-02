@@ -15,7 +15,7 @@ Require Import TypeTheory.Displayed_Cats.Core.
 Require Import Modules.Prelims.lib.
 
 
-(*
+(** 
 Let T be a module on M'.
 
 In this section, we construct the module morphism T -> id* T (which is
@@ -69,8 +69,7 @@ Definition id_pbm  : LModule_Mor _ pbmid T := (_ ,, id_pbm_law) .
 
 End Pullback_Identity_Module.
 
-(*
-
+(**
 In this section, we construct the module morphism (which is actually an iso)
 between m*(m'*(T'')) and (m o m')*(T'')
 

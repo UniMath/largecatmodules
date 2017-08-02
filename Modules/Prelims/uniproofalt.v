@@ -1,4 +1,4 @@
-(*
+(**
 
 In this file :
 
@@ -65,32 +65,36 @@ A morphism of arity F : a -> b induces a functor between representation Rep(b) -
 In this section we construct the left adjoint of this functor (which is defined whenever
 F is an epimorphism)
 *)
-Section leftadjoint.
 
+Section leftadjoint.
 
 Local Notation "'SET'" := hset_category.
 Local Notation CAT_ARITY := (@arity_category SET).
 Local Notation REP := (rep_disp SET).
 
-Variables (a b:@arity SET) (R:REP a)
-          (F:arity_Mor a b).
+Context {a b : arity SET} 
+        (R : REP a)
+        (F : arity_Mor a b).
 
 Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
-
 
 (**
 On any set X we define the following equivalence relation on R X : 
    x ~ y
 iff for any representation morphism f : R -> F*(S) (where S is a b-representation)
   f x = f y.
+
+
+We will show that this relation satisfies the conditions necessary to 
+define the quotient of a monad, and of a module over a monad.
+
 *)
 
+Definition equivc {X : SET} (x y : pr1 ( ## R X)) 
+  := ∏ (S:REP b) ( f : R -->[F] S),
+     pr1 (pr1 f) X x = ## f X y.
 
-Definition equivc   {X:ob SET} (x y:pr1 ( ## R X)) :=
-                                  (∏ (S:REP b) ( f : R -->[F] S),
-                                   pr1 (pr1 f) X x = ## f X y).
-
-Lemma isaprop_equivc_xy (c:ob SET) x y : isaprop (equivc (X:=c) x y).
+Lemma isaprop_equivc_xy (c : SET) x y : isaprop (equivc (X:=c) x y).
 Proof.
   intros.
   apply impred_isaprop; intro S.
@@ -114,7 +118,6 @@ Proof.
     intros h S f.
     now symmetry.
 Qed.
-
 
 Definition eqrel_equivc (X : SET) : eqrel _ := _ ,, iseqrel_equivc X.
 
@@ -149,12 +152,20 @@ C'est un pseudo objet car il reste à montrer que R' est bien dans la catégorie
 de a et que u est un morphisme de modules.
 *)
 
-Section CandidatU.
 
-Context {S:REP b} (m:R -->[ F] S).
 
-Lemma compat_m :  ∏ (X : SET) (x y : ((pr1 R) X:hSet)),
-                  projR X x = projR X y → (pr1 m) X x = (pr1 m) X y.
+Section Instantiating_Quotient_Constructions.
+
+(** We define short identifiers for the quotient constructions for 
+    functors, monads, and modules (defined in previous files),
+    for the equivalence relation induced by a morphism of representations [m]
+    over a morphism of arities [F].
+*)
+
+Context {S : REP b} (m : R -->[ F] S). 
+
+Lemma compat_m : ∏ (X : SET) (x y : ((pr1 R) X:hSet)),
+                 projR X x = projR X y → (pr1 m) X x = (pr1 m) X y.
 Proof.
   intros X x y eqpr;
   apply eq_projR_rel in eqpr;
@@ -172,9 +183,12 @@ Proof.
   apply (quotientmonad.u_def).
 Qed.
 
-End CandidatU.
+End Instantiating_Quotient_Constructions.
 
 
+(** We show that the relation induced by a morphism of representations
+    satisfies the conditions necessary to induce a quotient monad 
+*)
 
 Lemma compat_μ_projR : compat_μ_projR_def congr_equivc.
 Proof.
@@ -217,7 +231,6 @@ Qed.
 Let R'_monad  := R'_monad congr_equivc compat_μ_projR.
 Let projR_monad  := projR_monad congr_equivc compat_μ_projR.
 
-
 Definition u_monad {S} (m : R -->[ F] S) 
   : Monad_Mor (quotientmonad.R'_monad congr_equivc compat_μ_projR) (pr1 S)
   := quotientmonad.u_monad compat_μ_projR (S:=pr1 S) (pr1 m) (compat_m m).
@@ -228,6 +241,10 @@ Definition u_monad {S} (m : R -->[ F] S)
 
 
 Section R'Representation.
+
+(** Goal: define a representation of [b]
+    with underlying monad the quotient monad defined in the previous step
+*)
 
 (** R'_rep_τ is defined by the following diagram :
 <<
@@ -270,18 +287,18 @@ This is lemma [compat_rep_τ_projR]
 
 Section eq_mr.
    
-Context {S:REP b} (m:R -->[ F] S).
+Context {S : REP b} (m : R -->[ F] S).
 
 Lemma cancel_ar_on {a'}
       {R'' (* : REP a*)}                  (*  *)
       (* {F' : CAT_ARITY ⟦ a', b' ⟧ *)
       {S' (* : REP b *)}
       (m2 m' : Monad_Mor R'' S')
-      (X : SET) : m2 = m' ->  (# a')%ar m2 X = (# a')%ar m' X .
+      (X : SET) 
+  : m2 = m' ->  (# a')%ar m2 X = (# a')%ar m' X .
 Proof.
   intro e; now induction e.
 Qed.
-
 
 Lemma Rep_mor_is_composition 
   : pr1 m = compose (C:=category_Monad _) projR_monad (u_monad m) .
@@ -294,11 +311,12 @@ Proof.
     apply (u_def m).
 Qed.
 
-Lemma eq_mr X : rep_τ _ R X ;; ## m X =
-                pr1 (# a projR_monad)%ar X ;;
-                    (F (R'_monad ))%ar X ;;
-                pr1 (# b (u_monad m))%ar X ;;
-                    rep_τ _ S X.
+Lemma eq_mr X 
+  : rep_τ _ R X ;; ## m X 
+    =
+    pr1 (# a projR_monad)%ar X ;; (F (R'_monad ))%ar X 
+        ;;
+        pr1 (# b (u_monad m))%ar X ;; rep_τ _ S X.
 Proof.
   etrans. { apply rep_ar_mor_ax. }
   cpost _.
@@ -317,7 +335,7 @@ Proof.
   assert (h:= arity_Mor_ax F (u_monad m)).
   eapply nat_trans_eq_pointwise in h.
   apply pathsinv0.
-    apply h.
+  apply h.
 Qed.
 
 End eq_mr.
@@ -341,9 +359,13 @@ a_π |   / F_R'
 where π := projR
 
  *)
-Definition hab : mor_disp
-                   (D:=bmod_disp_ob_mor _ _ )(a (pr1 R)) (b  R'_monad)
-                   ((projR_monad:category_Monad _⟦_,_⟧) ).
+
+Definition hab 
+  : mor_disp
+      (D:=bmod_disp_ob_mor _ _ )
+      (a (pr1 R)) 
+      (b  R'_monad)
+      projR_monad.    (*: category_Monad _⟦_,_⟧ *)
 Proof.
   set (aπ :=(# a projR_monad)%ar).
   cbn.
@@ -357,16 +379,16 @@ Defined.
 R'_rep_τ : b R -> R
 *)
 
-Lemma compat_rep_τ_projR :
-      ∏ (X : SET) x y,
-       (pr1 hab) X x
-      (* =       ( pr1 (# a projR_monad )%ar X ;; (F `` R'_monad) X) y *)
-       =
-       pr1 hab  X y
-      (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) x *)
-      (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) y *)
-      ->
-            (rep_τ _ R X ;; projR X) x = (rep_τ _ R X;; projR X) y.
+Lemma compat_rep_τ_projR 
+  : ∏ (X : SET) x y,
+    (pr1 hab) X x
+    (* =       ( pr1 (# a projR_monad )%ar X ;; (F `` R'_monad) X) y *)
+    =
+    pr1 hab  X y
+    (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) x *)
+    (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) y *)
+    ->
+    (rep_τ _ R X ;; projR X) x = (rep_τ _ R X;; projR X) y.
 Proof.
   intros X x y comp.
   apply rel_eq_projR.
@@ -382,25 +404,26 @@ Qed.
 
 
 (* F preserve the epis *)
-Definition isEpi_FR' := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
+Definition isEpi_FR' : UU 
+  := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
                              (pr1 (F R'_monad)).
 (* a preserve les epis *)
-Definition a_preserves_epi := ∏ M N (f:category_Monad _⟦M,N⟧),
-                              isEpi f -> isEpi
-                                          (C:= functor_category _ _) (pr1 (#a f)%ar).
+Definition a_preserves_epi : UU 
+  := ∏ M N (f:category_Monad _⟦M,N⟧),
+     isEpi f -> isEpi (C:= functor_category _ _) (pr1 (#a f)%ar).
 
 Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
 
 Lemma isEpi_def_R'_rep_τ : isEpi (C:= [SET,SET]) (pr1 hab).
-                          (* (compose (C:=functor_category _ _) *)
-                          (*          (pr1 ((# a)%ar projR_monad)) *)
-                          (*          (pr1 (F `` R'_monad)%ar)). *)
 Proof.
   apply (isEpi_comp (functor_category _ _)).
   - apply aepi; apply isEpi_projR_monad.
   - cbn.
     apply Fepi.
 Qed.
+                          (* (compose (C:=functor_category _ _) *)
+                          (*          (pr1 ((# a)%ar projR_monad)) *)
+                          (*          (pr1 (F `` R'_monad)%ar)). *)
 
 
 (*
@@ -411,18 +434,16 @@ Defined.
 
 *)
 
-
-
 Definition R'_rep_τ_module 
   : LModule_Mor _ (b R'_monad) (tautological_LModule R'_monad) 
   :=
   quotientrep.R'_rep_τ_module congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ.
 
-Definition R'_rep_τ_def :
-  ∏ (X:SET),
-  (# a (projR_monad)%ar) X ;; (F R'_monad) X ;; R'_rep_τ_module X  
-  = 
-  rep_τ _ R X ;; projR X .
+Definition R'_rep_τ_def 
+  : ∏ (X : SET),
+    (# a (projR_monad)%ar) X ;; (F R'_monad) X ;; R'_rep_τ_module X  
+    = 
+    rep_τ _ R X ;; projR X .
 Proof.
   intro X.
   apply (quotientrep.R'_rep_τ_def congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
@@ -452,14 +473,13 @@ End R'Representation.
 
 
 
-  (* u morphisme de représentation *)
+(** u morphism of representations *)
 Section uRepresentation.
 
 Context {S : REP b} (m : R -->[ F] S).
 Context (Fepi : isEpi_FR') (aepi : a_preserves_epi).
 
 Open Scope arity_scope.
-  
   
 (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
 

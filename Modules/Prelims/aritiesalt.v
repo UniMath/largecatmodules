@@ -22,8 +22,11 @@ Require Import Modules.Prelims.modules.
 Set Automatic Introduction.
 Delimit Scope arity_scope with ar.
 
+
 Section Arities.
+
 Context {C : category}.
+
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
@@ -91,6 +94,7 @@ Definition is_arity_Mor (F F' : arity_data)
                                                   (t S : nat_trans _ _) 
     =
     ((t R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%ar f : nat_trans _ _).
+
   (* ((((# F)%ar f : LModule_Mor _ _ _) : nat_trans _ _) : [_,_]⟦_,_⟧) · *)
   (*                                                                   (t S : nat_trans _ _) = *)
   (* ((t R : nat_trans _ _) : [_,_]⟦_,_⟧) · (((#F')%ar f:LModule_Mor _ _ _) : nat_trans _ _). *)
@@ -216,6 +220,8 @@ Defined.
 
 End Arities.
 
+Arguments arity _ : clear implicits.
+
 Notation "# F" := (arity_on_morphisms F) (at level 3) : arity_scope.
 
 (* large category of representation defined as a display category
@@ -235,9 +241,7 @@ F*(R,m) = (R, m o (F R))
 
 That's how the large category of representations is built.
 
-
-
- *)
+*)
 
 
 Section LargeCatRep.
@@ -259,40 +263,8 @@ Goal arity = ob PRECAT_ARITY.
   reflexivity.
 Abort.
 
-  (* Question B: why do you not define the category of arities to be the fiber 
-               category over the identity functor on PRE_MONAD ? *)
-
-
-
-  (* Preuve que les arités sont right-inverse du foncteur d'oubli bmod -> mon *)
-  (*
-  Lemma right_inverse_arity  (ar:ARITY )
-    :  (pr1_category BMOD) □ (total_functor ar) = pr1_category LMONAD.
-  Proof.
-    intros.
-    apply subtypeEquality; [| reflexivity].
-    intro x ;  apply isaprop_is_functor.
-    apply homset_property.
-  Qed.
-*)
-
 Local Notation Θ := tautological_LModule.
 
-
-
-
-
-  (* Notation "# F" := (ar_mor F) (at level 3) : arity_scope. *)
-
-  (*
-  Definition ar_mor_pw {a b : ARITY} (f:arity_Mor a b) (R:MONAD) :
-    LModule_Mor _  (a ` R)
-                (pb_LModule ((nat_trans_id (functor_identity PRE_MONAD)) R)
-                            (b ` R))
-    := (f : arity_mor (a:arity) (b:arity)) R.
-*)
-
-  (* Infix "``" := ar_mor_pw (at level 25) : arity_scope . *)
 
   (* We define the displayed category of representations of an arity
 We could also define it as a displayed category over the monads
@@ -368,21 +340,6 @@ Proof.
   apply rep_id_law.
 Defined.
 
-  (*
-  Lemma transport_disp_mor {C} {d:disp_cat C} {x y : C} {f g : C ⟦ x, y ⟧}
-        (e : f = g)
-        {xx : d x}     {yy : d y}
-        (ff : xx -->[ f] yy)
-        (Q : UU)
-        (P : ∏ (z:C ⟦ x, y ⟧) ,xx -->[ z] yy -> Q)
-    :
-      (P _ (transportf (mor_disp xx yy) e ff))  = P _ ff.
-  Proof.
-    destruct e.
-    intros.
-    apply idpath.
-  Qed.
-*)
 
 
 Lemma transport_arity_mor (x y : ARITY) (f g : arity_Mor x y)
@@ -396,49 +353,10 @@ Proof.
   now induction e.
 Qed.
 
-  (*
-  Lemma rep_transport (x y : ARITY)
-        (R S:MONAD)
-        (f g : Monad_Mor R S )
-        (e : f = g)
-        (ff : pr1 x R (tt) -->[ f] pr1 y S (tt))
-        (c : C) :
-    pr1 (transportf _ e ff) c  = pr1 ff c .
-  Proof.
-    intros.
-    simpl.
-    now induction e.
-  Qed.
-*)
 
 
-  (*
- Lemma transport_arity_mor' (x y : ARITY) f g 
-        (e : f = g)
-        (ff : disp_nat_trans f x y)
-        (R:MONAD)
-        (c : C) :
-    pr1 (pr1 (transportf (mor_disp (D:=GEN_ARITY) x y) e ff) R tt) c
-    = pr1 (pr1 ff R tt) c.
-  Proof.
-    now induction e.
-  Qed.
-*)
 
-  (*
-  Lemma eq_ar_pointwise  (a b c : ARITY)  (f:PRECAT_ARITY⟦ a,b⟧)
-        (g:PRECAT_ARITY⟦ b,c⟧) (R:MONAD) x :
-    ( (f ;; g) `` R) x = ( f`` R) x ;; ( g`` R) x .
-  Proof.
-    intros.
-    etrans.
-    use (transport_arity_mor' a c _ ).
-    cbn.
-    now rewrite  id_right.
-  Qed.
-*)
-
-  (* type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
+(** type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
 Lemma rep_ar_mor_mor_equiv (a b : ARITY) (R:rep_disp_ob_mor a)
       (S:rep_disp_ob_mor b) (f:arity_Mor a b)
       (u v: R -->[ f] S) :
@@ -455,16 +373,6 @@ Proof.
         assumption.
 Qed.
 
-  (*
-Lemma rep_ar_mor_mor_equiv_inv {a b : ARITY} {R:rep_disp_ob_mor a}
-      {S:rep_disp_ob_mor b} {f:arity_Mor  a b}
-      (u v: R -->[ f] S) 
-  : u = v -> (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c).
-Proof.
-  intros.
-  now induction X.
-Qed.
-   *)
 
 (** Defining the composition in rep *)
 
@@ -645,3 +553,86 @@ Defined.
 End LargeCatRep.
 
 
+
+
+
+
+(*
+Lemma transport_disp_mor {C} {d:disp_cat C} {x y : C} {f g : C ⟦ x, y ⟧}
+        (e : f = g)
+        {xx : d x}     {yy : d y}
+        (ff : xx -->[ f] yy)
+        (Q : UU)
+        (P : ∏ (z:C ⟦ x, y ⟧) ,xx -->[ z] yy -> Q)
+    :
+      (P _ (transportf (mor_disp xx yy) e ff))  = P _ ff.
+  Proof.
+    destruct e.
+    intros.
+    apply idpath.
+  Qed.
+*)
+
+  (*
+Lemma rep_ar_mor_mor_equiv_inv {a b : ARITY} {R:rep_disp_ob_mor a}
+      {S:rep_disp_ob_mor b} {f:arity_Mor  a b}
+      (u v: R -->[ f] S) 
+  : u = v -> (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c).
+Proof.
+  intros.
+  now induction X.
+Qed.
+   *)
+
+  (*
+ Lemma transport_arity_mor' (x y : ARITY) f g 
+        (e : f = g)
+        (ff : disp_nat_trans f x y)
+        (R:MONAD)
+        (c : C) :
+    pr1 (pr1 (transportf (mor_disp (D:=GEN_ARITY) x y) e ff) R tt) c
+    = pr1 (pr1 ff R tt) c.
+  Proof.
+    now induction e.
+  Qed.
+*)
+
+  (*
+  Lemma eq_ar_pointwise  (a b c : ARITY)  (f:PRECAT_ARITY⟦ a,b⟧)
+        (g:PRECAT_ARITY⟦ b,c⟧) (R:MONAD) x :
+    ( (f ;; g) `` R) x = ( f`` R) x ;; ( g`` R) x .
+  Proof.
+    intros.
+    etrans.
+    use (transport_arity_mor' a c _ ).
+    cbn.
+    now rewrite  id_right.
+  Qed.
+*)
+
+  (*
+  Lemma rep_transport (x y : ARITY)
+        (R S:MONAD)
+        (f g : Monad_Mor R S )
+        (e : f = g)
+        (ff : pr1 x R (tt) -->[ f] pr1 y S (tt))
+        (c : C) :
+    pr1 (transportf _ e ff) c  = pr1 ff c .
+  Proof.
+    intros.
+    simpl.
+    now induction e.
+  Qed.
+*)
+
+  (* Notation "# F" := (ar_mor F) (at level 3) : arity_scope. *)
+
+  (*
+  Definition ar_mor_pw {a b : ARITY} (f:arity_Mor a b) (R:MONAD) :
+    LModule_Mor _  (a ` R)
+                (pb_LModule ((nat_trans_id (functor_identity PRE_MONAD)) R)
+                            (b ` R))
+    := (f : arity_mor (a:arity) (b:arity)) R.
+*)
+
+  (* Infix "``" := ar_mor_pw (at level 25) : arity_scope . *)

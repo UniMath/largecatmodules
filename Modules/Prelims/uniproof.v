@@ -85,10 +85,9 @@ iff for any representation morphism f : R -> F*(S) (where S is a b-representatio
   f x = f y.
 *)
 
-
-Definition equivc   {X:ob SET} (x y:pr1 ( ## R X)) :=
-                                  (∏ (S:REP b) ( f : R -->[F] S),
-                                   pr1 (pr1 f) X x = ## f X y).
+Definition equivc {X:ob SET} (x y:pr1 ( ## R X)) 
+  := ∏ (S:REP b) ( f : R -->[F] S),
+     pr1 (pr1 f) X x = ## f X y.
 
 Lemma isaprop_equivc_xy (c:ob SET) x y : isaprop (equivc (X:=c) x y).
 Proof.
