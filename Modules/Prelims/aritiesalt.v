@@ -494,7 +494,6 @@ Definition pb_rep_to {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
   (pb_rep f R : rep_disp a) -->[f] R :=
   (identity (C:=PRE_MONAD) (R:MONAD),, pb_rep_to_law f R).
 
-Definition paths_exp : ∏ A : Type, A → A → Type := @paths.
 Lemma rep_mor_law_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)
       (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[ g;; f] R) :
   rep_ar_mor_law S (pb_rep f R) g (hh : rep_ar_mor_mor _ _ _ _ _ ).
@@ -538,7 +537,7 @@ Proof.
     rewrite <- h;
     apply pathsinv0;
     apply id_right).
-Qed.
+Defined.
            (* (pb_rep f R) R f *)
 Lemma rep_cleaving : cleaving rep_disp.
 Proof.

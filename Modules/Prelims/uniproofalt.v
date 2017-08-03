@@ -538,19 +538,27 @@ End uRepresentation.
 
 Section uUnique.
 
-Context {S : REP b} (hm : iscontr (R -->[ F] S)).
+Context {S : REP b} (hm : iscontr (R -->[ F] S))
+  (m :  (R -->[ F] S)).
 Context (Fepi : isEpi_FR') (aepi : a_preserves_epi).
 
 Variable u'_rep : (R'_rep Fepi aepi) -->[identity (b:CAT_ARITY)] S.
+Variable (hu' : ∏ x,
+                ((projR_rep Fepi aepi:rep_ar_mor_mor _ _ _ _ _ _) x
+                 ;; (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)%mor
+                     = (m : rep_ar_mor_mor _ _ _ _ _ _ ) x).
 
 (* Let foo : R -->[ (F : CAT_ARITY ⟦_,_⟧)(* ;; identity (b:CAT_ARITY)] *)] S *)
+(* useless *)
 Let foo : R -->[ (F : CAT_ARITY ⟦_,_⟧);; identity (b:CAT_ARITY)] S
   := (projR_rep Fepi aepi ;; u'_rep)%mor_disp.
 
+(* useless *)
 Let foo' : R -->[ (F : CAT_ARITY⟦_,_⟧);; identity (b : CAT_ARITY)] S
 (* Let foo' : R -->[ (F : CAT_ARITY⟦_,_⟧)(* ;; identity (b : CAT_ARITY) *)] S *)
   := (iscontrpr1 hm ;; id_disp S)%mor_disp.
 
+(* useless *)
 Lemma proj_u'_equal_mor : foo = foo'.
 Proof.
   unfold foo, foo'.
@@ -561,7 +569,18 @@ Proof.
   apply (iscontr_uniqueness hm).
 Defined.
  
-Lemma u_rep_unique : u'_rep = u_rep (pr1 hm) Fepi aepi.
+Lemma u_rep_unique : u'_rep = u_rep m Fepi aepi.
+Proof.
+  apply rep_ar_mor_mor_equiv.
+  apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
+  - apply nat_trans_eq.
+    + apply has_homsets_HSET.
+    + intro X.
+      apply hu'.
+Qed.      
+
+(* useless *)
+Lemma u_rep_unique' : u'_rep = u_rep (pr1 hm) Fepi aepi.
 Proof.
   apply rep_ar_mor_mor_equiv.
   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
@@ -585,30 +604,60 @@ Let Rep_a : category := fiber_category (rep_disp SET) a.
 Let Rep_b : category := fiber_category (rep_disp SET) b.
 
 Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
+(* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
+Context (Fepi : forall R, isEpi_FR' R) (aepi : a_preserves_epi).
+
+Definition paths_exp := @paths.
+Definition compose_exp := @compose.
+Definition transport_arity_mor_exp := @transport_arity_mor.
 
 Definition foo : is_right_adjoint FF.
 Proof.
   use right_adjoint_left_from_partial.
   - intro R. 
-    apply (R'_rep R).
-    * admit. (* put as hypothesis *)
-    * admit. (* put as hypothesis *)
+    apply (R'_rep R (Fepi R) aepi).
   - intro R. apply projR_rep.
   - intro R.
     unfold is_universal_arrow_to.
-    intros d f. cbn in d, f.
-    use unique_exists. 
-    + apply (u_rep _ f). 
-    + cbn. 
-      apply rep_ar_mor_mor_equiv.
-      intro X.
-      etrans. apply transport_arity_mor .
+    intros S m. cbn in S, m.
+    (* assert (hjk : Rep_a ⟦R,G⟧). *)
+  (* u' : Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧ *)
+    assert (h :  ∏ (u' :Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧) x,
+                 ((projR (congr_equivc R)) x;; (u' : rep_ar_mor_mor _ _ _ _ _ _) x)%mor =
+                 (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R (Fepi R) aepi))
+                                     (projR_rep R (Fepi R) aepi: rep_ar_mor_mor _ _ _ _ _ _)
+                                     (# FF (u')))%mor)) x).
+    { 
+      intros u' x.
+      apply pathsinv0.
+      etrans.
+      apply (transport_arity_mor_exp SET a a (identity (a:CAT_ARITY);; identity (a:CAT_ARITY))%mor 
+                 (identity (a:CAT_ARITY)) (id_right (identity (a:CAT_ARITY))) R (FF S)
+                 _).
+      eapply (cancel_precomposition HSET _ _ _ _ _ ((projR (congr_equivc R) x))).
       cbn.
-      apply funextsec. intro x.
-      (* apply u_rep_unique. ? *) admit. 
-    + intro foo. apply homset_property.
-    + cbn. admit.
-Abort.
+      set (e := _ @ _).
+      now induction e.
+    }
+
+    use unique_exists. 
+    + apply (u_rep _ m). 
+    + (* Ici ca devrait être apply quotientmonad.u_def *)
+      apply pathsinv0.
+      apply rep_ar_mor_mor_equiv.
+      intro x.
+      etrans. 
+      {apply u_def. }
+      apply (h (u_rep R m (Fepi R) aepi)).
+    + intro y.
+      apply homset_property.
+    + intros u' hu'.
+      hnf in hu'.
+      apply u_rep_unique.
+      rewrite <- hu'.
+      intro x.
+      apply h.
+Qed.
   
   
 
