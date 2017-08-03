@@ -425,18 +425,7 @@ Proof.
   - cbn.
     apply Fepi.
 Qed.
-                          (* (compose (C:=functor_category _ _) *)
-                          (*          (pr1 ((# a)%ar projR_monad)) *)
-                          (*          (pr1 (F `` R'_monad)%ar)). *)
 
-
-(*
-Definition R'_rep_τ  : nat_trans (pr1 ( b` R'_monad)) R'.
-Proof.
-eapply (quotientrep.R'_rep_τ congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
-Defined.
-
-*)
 
 Definition R'_rep_τ_module 
   : LModule_Mor _ (b R'_monad) (tautological_LModule R'_monad) 
@@ -488,7 +477,8 @@ Open Scope arity_scope.
 (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
 
 (* TODO  : foutre ça dans quotientrep *)
-Lemma u_rep_laws : rep_ar_mor_law SET (R'_rep Fepi aepi) S (identity (b : CAT_ARITY)) (u_monad m).
+Lemma u_rep_laws 
+  : rep_ar_mor_law SET (R'_rep Fepi aepi) S (identity (b : CAT_ARITY)) (u_monad m).
 Proof.
   intro X.
   apply pathsinv0.
@@ -538,37 +528,18 @@ End uRepresentation.
 
 Section uUnique.
 
-Context {S : REP b} (hm : iscontr (R -->[ F] S))
-  (m :  (R -->[ F] S)).
-Context (Fepi : isEpi_FR') (aepi : a_preserves_epi).
+Context {S : REP b} 
+        (m : R -->[ F] S).
+Context (Fepi : isEpi_FR') 
+        (aepi : a_preserves_epi).
 
-Variable u'_rep : (R'_rep Fepi aepi) -->[identity (b:CAT_ARITY)] S.
+Variable u'_rep : R'_rep Fepi aepi -->[identity (b:CAT_ARITY)] S.
 Variable (hu' : ∏ x,
-                ((projR_rep Fepi aepi:rep_ar_mor_mor _ _ _ _ _ _) x
+                ((projR_rep Fepi aepi : rep_ar_mor_mor _ _ _ _ _ _) x
                  ;; (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)%mor
-                     = (m : rep_ar_mor_mor _ _ _ _ _ _ ) x).
+                = (m : rep_ar_mor_mor _ _ _ _ _ _ ) x
+         ).
 
-(* Let foo : R -->[ (F : CAT_ARITY ⟦_,_⟧)(* ;; identity (b:CAT_ARITY)] *)] S *)
-(* useless *)
-Let foo : R -->[ (F : CAT_ARITY ⟦_,_⟧);; identity (b:CAT_ARITY)] S
-  := (projR_rep Fepi aepi ;; u'_rep)%mor_disp.
-
-(* useless *)
-Let foo' : R -->[ (F : CAT_ARITY⟦_,_⟧);; identity (b : CAT_ARITY)] S
-(* Let foo' : R -->[ (F : CAT_ARITY⟦_,_⟧)(* ;; identity (b : CAT_ARITY) *)] S *)
-  := (iscontrpr1 hm ;; id_disp S)%mor_disp.
-
-(* useless *)
-Lemma proj_u'_equal_mor : foo = foo'.
-Proof.
-  unfold foo, foo'.
-  rewrite id_right_disp .
-  cbn.
-  (* induction (id_right (F:CAT_ARITY⟦_,_⟧)). *)
-  apply transportf_transpose .
-  apply (iscontr_uniqueness hm).
-Defined.
- 
 Lemma u_rep_unique : u'_rep = u_rep m Fepi aepi.
 Proof.
   apply rep_ar_mor_mor_equiv.
@@ -577,22 +548,6 @@ Proof.
     + apply has_homsets_HSET.
     + intro X.
       apply hu'.
-Qed.      
-
-(* useless *)
-Lemma u_rep_unique' : u'_rep = u_rep (pr1 hm) Fepi aepi.
-Proof.
-  apply rep_ar_mor_mor_equiv.
-  apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
-  assert (eqm'2 : pr1 foo = pr1 foo').
-  { exact (maponpaths pr1 proj_u'_equal_mor). }
-  apply Monad_Mor_equiv in eqm'2.
-  - apply nat_trans_eq.
-    + apply has_homsets_HSET.
-    + intro X.
-      eapply nat_trans_eq_pointwise in eqm'2.
-      apply eqm'2.
-  - apply has_homsets_HSET.
 Qed.      
 
 End uUnique.
@@ -607,11 +562,32 @@ Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
 Context (Fepi : forall R, isEpi_FR' R) (aepi : a_preserves_epi).
 
-Definition paths_exp := @paths.
-Definition compose_exp := @compose.
-Definition transport_arity_mor_exp := @transport_arity_mor.
 
-Definition foo : is_right_adjoint FF.
+Lemma helper (R : Rep_a) (S : rep_ar SET b)
+  : ∏ (u' : Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧) x,
+                 (projR (congr_equivc R) x;; (u' : rep_ar_mor_mor _ _ _ _ _ _) x)%mor =
+                 (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R (Fepi R) aepi))
+                                     (projR_rep R (Fepi R) aepi: rep_ar_mor_mor _ _ _ _ _ _)
+                                     (# FF (u')))%mor)) x.
+Proof.
+  intros u' x.
+  apply pathsinv0.
+  etrans ; [
+      apply (@transport_arity_mor SET a a 
+                                  (identity (a:CAT_ARITY);; identity (a:CAT_ARITY))%mor 
+                                  (identity (a:CAT_ARITY)) (id_right (identity (a:CAT_ARITY))) 
+                                  R 
+                                  (FF S)
+                                  _ 
+            ) |].
+  apply (cancel_precomposition HSET _ _ _ _ _ ((projR (congr_equivc R) x))).
+  cbn.
+  set (e := _ @ _).
+  induction e; apply idpath.
+Qed.
+
+
+Definition is_right_adjoint_functor_of_reps : is_right_adjoint FF.
 Proof.
   use right_adjoint_left_from_partial.
   - intro R. 
@@ -620,46 +596,22 @@ Proof.
   - intro R.
     unfold is_universal_arrow_to.
     intros S m. cbn in S, m.
-    (* assert (hjk : Rep_a ⟦R,G⟧). *)
-  (* u' : Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧ *)
-    assert (h :  ∏ (u' :Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧) x,
-                 ((projR (congr_equivc R)) x;; (u' : rep_ar_mor_mor _ _ _ _ _ _) x)%mor =
-                 (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R (Fepi R) aepi))
-                                     (projR_rep R (Fepi R) aepi: rep_ar_mor_mor _ _ _ _ _ _)
-                                     (# FF (u')))%mor)) x).
-    { 
-      intros u' x.
-      apply pathsinv0.
-      etrans.
-      apply (transport_arity_mor_exp SET a a (identity (a:CAT_ARITY);; identity (a:CAT_ARITY))%mor 
-                 (identity (a:CAT_ARITY)) (id_right (identity (a:CAT_ARITY))) R (FF S)
-                 _).
-      eapply (cancel_precomposition HSET _ _ _ _ _ ((projR (congr_equivc R) x))).
-      cbn.
-      set (e := _ @ _).
-      now induction e.
-    }
-
     use unique_exists. 
     + apply (u_rep _ m). 
     + (* Ici ca devrait être apply quotientmonad.u_def *)
-      apply pathsinv0.
+      apply pathsinv0. 
       apply rep_ar_mor_mor_equiv.
       intro x.
-      etrans. 
-      {apply u_def. }
-      apply (h (u_rep R m (Fepi R) aepi)).
-    + intro y.
-      apply homset_property.
+      etrans. { apply u_def. }
+      apply (helper _ _ (u_rep R m (Fepi R) aepi)).
+    + intro y; apply homset_property.
     + intros u' hu'.
       hnf in hu'.
       apply u_rep_unique.
       rewrite <- hu'.
       intro x.
-      apply h.
+      apply helper.
 Qed.
   
-  
-
 End leftadjoint.
 
