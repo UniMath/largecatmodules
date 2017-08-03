@@ -32,6 +32,7 @@ Set Automatic Introduction.
 
 Section QuotientMonad.
 
+Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
 Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (( R c):hSet)}
         (congr_equivc : ∏ (x y:SET) (f:SET⟦x,y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f))
@@ -54,8 +55,8 @@ is so slow when R' is definitely equal to quot_functor !
 
 Let R' := R' congr_equivc.
 Let projR := projR congr_equivc.
-Let R'_monad  := R'_monad congr_equivc compat_μ_projR.
-Let projR_monad  := projR_monad congr_equivc compat_μ_projR.
+Let R'_monad  := R'_monad choice congr_equivc compat_μ_projR.
+Let projR_monad  := projR_monad choice congr_equivc compat_μ_projR.
 
 Local Notation π := projR_monad.
 Local Notation Θ := tautological_LModule.
@@ -213,14 +214,13 @@ Proof.
                   ((h ∙∙ projR) X)
          ).
   {
-    apply Pushouts_pw_epi.
-    - apply PushoutsHSET_from_Colims.
-    - apply isEpi_horcomp.
-      + apply isEpi_projR.
-      + intro Y.
-        apply Pushouts_pw_epi.
-        * apply PushoutsHSET_from_Colims.
-        * apply isEpih.
+    apply isEpi_horcomp_pw_HSET.
+    - exact choice.
+    - apply isEpi_projR_pw.
+    - intro Y.
+      apply Pushouts_pw_epi.
+      * apply PushoutsHSET_from_Colims.
+      * apply isEpih.
   }
   apply epi.
   etrans; [ apply τ'_law_eq1 |].
@@ -254,7 +254,7 @@ Context {S:Monad SET}
         (compatm: ∏ (X:SET) 
                     (x y : (R X:hSet)), projR X x = projR X y → m X x = m X y).
 
-Let u_monad := quotientmonad.u_monad compat_μ_projR _ compatm.
+Let u_monad := quotientmonad.u_monad choice compat_μ_projR _ compatm.
 
 (**
 Let c be a S-Module

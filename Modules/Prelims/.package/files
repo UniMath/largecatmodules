@@ -3,6 +3,6 @@ modules.v
 arities.v
 quotientmonad.v
 quotientrep.v
-uniproof.v
 aritiesalt.v
 uniproofalt.v
+uniproof.v

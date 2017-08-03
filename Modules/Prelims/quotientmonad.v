@@ -26,9 +26,15 @@ Set Automatic Introduction.
 
 Section QuotientMonad.
 
+  (** the axiom of choice is needed to prove the the
+horizontal composition of the canonical projection with itself is epimorphic *)
+Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
+
 Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
         (congr_equivc : ∏ (x y : SET) (f : SET⟦x,y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f)).
+
+
 
 Let equivc {c:hSet} x y := eqrel_equivc c x y.
   
@@ -61,13 +67,18 @@ Proof.
   apply isEpi_pr_quot_functor.
 Qed.
 
-Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR).
+(* Lemma isEpi_projR_projR_pw x : isEpi (C:=functor_category _ _) (projR ∙∙ projR x). *)
+Lemma isEpi_projR_projR_pw x : isEpi  ((projR ∙∙ projR) x).
 Proof.
-  apply isEpi_horcomp. 
-  - apply isEpi_projR.
-  - apply isEpi_projR_pw.
+  apply isEpi_horcomp_pw_HSET; apply choice || apply isEpi_projR_pw. 
 Qed.
 
+
+Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR ).
+Proof.
+  apply is_nat_trans_epi_from_pointwise_epis.
+  apply isEpi_projR_projR_pw.
+Qed.
 
 Lemma eq_projR_rel X x y : projR X x = projR X y -> equivc x y.
 Proof.
@@ -109,7 +120,8 @@ Proof.
                       ( projR ∙∙ projR)
                       (μ  ( R) ;;; projR)).
   -  apply compat_μ_projR.
-  - apply isEpi_projR_projR.
+  -
+    apply isEpi_projR_projR.
 Defined.
 
 Lemma R'_μ_def : ∏ (x:SET),
@@ -184,13 +196,9 @@ Proof.
   apply (horcomp_assoc projR projR projR c).
 Qed.
 
-Lemma isEpi_horcomp_pointwise c : isEpi ((projR ∙∙ (projR ∙∙ projR)) c).
+Lemma isEpi_projR_projR_projR_pw c : isEpi ((projR ∙∙ (projR ∙∙ projR)) c).
 Proof.
-  apply Pushouts_pw_epi.
-  apply PushoutsHSET_from_Colims.
-  apply isEpi_horcomp.
-  apply isEpi_projR_projR.
-  apply isEpi_projR_pw.
+  apply isEpi_horcomp_pw_HSET; [apply choice | apply isEpi_projR_projR_pw| apply isEpi_projR_pw].
 Defined.
 
 Lemma R'_Monad_law_μ : ∏ c : SET,
@@ -214,7 +222,7 @@ quotients in basics/Sets.v
 
        *)
 
-  apply isEpi_horcomp_pointwise.
+  apply isEpi_projR_projR_projR_pw.
 
   (* To understand the proof, see the string diagram muproof sent to Benedikt.
 
@@ -419,4 +427,4 @@ End QuotientMonad.
   
 Arguments projR : simpl never.
 Arguments R' : simpl never.
-Arguments u_monad [R _ _] _ [_] _ .
+Arguments u_monad _ [R _ _] _ [_] _ .

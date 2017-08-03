@@ -70,6 +70,8 @@ Local Notation "'SET'" := hset_category.
 Local Notation CAT_ARITY := (@arity_category SET).
 Local Notation REP := (rep_disp SET).
 
+Variable (ax_choice : AxiomOfChoice.AxiomOfChoice_surj).
+
 Context {a b : arity SET}
         (F : arity_Mor a b).
 
@@ -230,12 +232,12 @@ Proof.
     apply hxy.
 Qed.
   
-Let R'_monad  := R'_monad congr_equivc compat_μ_projR.
-Let projR_monad  := projR_monad congr_equivc compat_μ_projR.
+Let R'_monad  := R'_monad ax_choice congr_equivc compat_μ_projR.
+Let projR_monad  := projR_monad ax_choice congr_equivc compat_μ_projR.
 
 Definition u_monad {S} (m : R -->[ F] S) 
-  : Monad_Mor (quotientmonad.R'_monad congr_equivc compat_μ_projR) (pr1 S)
-  := quotientmonad.u_monad compat_μ_projR (S:=pr1 S) (pr1 m) (compat_m m).
+  : Monad_Mor (quotientmonad.R'_monad ax_choice congr_equivc compat_μ_projR) (pr1 S)
+  := quotientmonad.u_monad ax_choice compat_μ_projR (S:=pr1 S) (pr1 m) (compat_m m).
 
 
 (** * FIN DE LA TROISIEME ETAPE *)
@@ -439,7 +441,7 @@ Defined.
 Definition R'_rep_τ_module 
   : LModule_Mor _ (b R'_monad) (tautological_LModule R'_monad) 
   :=
-  quotientrep.R'_rep_τ_module congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ.
+  quotientrep.R'_rep_τ_module ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ.
 
 Definition R'_rep_τ_def 
   : ∏ (X : SET),
@@ -448,7 +450,7 @@ Definition R'_rep_τ_def
     rep_τ _ R X ;; projR X .
 Proof.
   intro X.
-  apply (quotientrep.R'_rep_τ_def congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
+  apply (quotientrep.R'_rep_τ_def ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
 Qed.
 
 Definition R'_rep : rep_disp SET b.
@@ -491,7 +493,7 @@ Proof.
   intro X.
   apply pathsinv0.
   apply (
-               (quotientrep.u_rep_laws congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR
+               (quotientrep.u_rep_laws ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR
                                        (isEpi_def_R'_rep_τ Fepi aepi) (S:=pr1 S) (m:=pr1 m) _
                                        (s:=rep_τ _ S) (F:=( (# b ( u_monad m))%ar))
          )).
