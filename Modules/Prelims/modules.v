@@ -11,6 +11,7 @@ Require Import TypeTheory.Auxiliary.Auxiliary.
 Require Import TypeTheory.Auxiliary.UnicodeNotations.
 Require Import TypeTheory.Displayed_Cats.Auxiliary.
 Require Import TypeTheory.Displayed_Cats.Core.
+Require Import TypeTheory.Displayed_Cats.Fibrations.
 
 Require Import Modules.Prelims.lib.
 
@@ -101,6 +102,18 @@ Proof.
 Qed.
 
 Definition pbm_mor_comp : LModule_Mor _ comp_pbm pbm_comp := (_ ,, pbm_mor_comp_law).
+
+Definition pbm_comp_mor : LModule_Mor _ pbm_comp comp_pbm.
+Proof.
+  mkpair. 
+  - exists (fun x => identity _ ).
+    abstract (intros x y f; cbn;  
+              rewrite id_right; rewrite id_left;
+              reflexivity).
+  - abstract (intros b; simpl;
+              now rewrite id_left,id_right, (functor_comp T''), assoc).
+Defined.
+      
 End Pullback_Composition.
 
 (**
@@ -189,5 +202,37 @@ Qed.
 
 Definition bmod_disp : disp_cat MONAD := (bmod_data ,, bmod_axioms).
 
-
+Definition cleaving_bmod : cleaving bmod_disp.
+Proof.
+  intros R R' f M.
+  mkpair.
+  - cbn in *.  
+    exact (pb_LModule f M).
+  - mkpair.
+    + exact (LModule_identity _ _ ).
+    + intros R'' f' M'' a.
+      cbn in *.
+      use unique_exists.
+      * use (LModule_composition R'' a). 
+        apply (pbm_comp_mor _ _ _ ).
+      * hnf.
+        apply (invmap ((@LModule_Mor_equiv _ _  _ (homset_property D) _ _ _ _  ))).
+        cbn.
+        apply nat_trans_eq. { apply homset_property. }
+        intro c. cbn. 
+        repeat rewrite id_right. apply idpath.
+      * intro s. simpl.
+        apply (has_homsets_LModule).
+      * intros s Hs.
+        hnf in Hs.
+        apply (invmap ((@LModule_Mor_equiv _ _  _ (homset_property D) _ _ _ _  ))).
+        apply nat_trans_eq. { apply homset_property. }
+        intro c. cbn.
+        apply (((@LModule_Mor_equiv _ _  _ (homset_property D) _ _ _ _  ))) in Hs.
+        set (XR := nat_trans_eq_pointwise Hs c). cbn in XR.
+        repeat rewrite id_right in XR.
+        repeat rewrite id_right.
+        apply XR.
+Defined.
+        
 End LargeCatMod.
