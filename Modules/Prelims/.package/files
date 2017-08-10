@@ -1,8 +1,6 @@
 lib.v
 modules.v
-arities.v
 quotientmonad.v
 quotientrep.v
 aritiesalt.v
 uniproofalt.v
-uniproof.v
