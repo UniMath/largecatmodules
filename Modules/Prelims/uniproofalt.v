@@ -414,14 +414,14 @@ Definition isEpi_FR' : UU
 (* a preserve les epis *)
 Definition a_preserves_epi : UU 
   := ∏ M N (f:category_Monad _⟦M,N⟧),
-     isEpi f -> isEpi (C:= functor_category _ _) (pr1 (#a f)%ar).
+     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _) (pr1 (#a f)%ar).
 
 Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
 
 Lemma isEpi_def_R'_rep_τ : isEpi (C:= [SET,SET]) (pr1 hab).
 Proof.
   apply (isEpi_comp (functor_category _ _)).
-  - apply aepi; apply isEpi_projR_monad.
+  - apply aepi.  apply isEpi_projR.
   - cbn.
     apply Fepi.
 Qed.
