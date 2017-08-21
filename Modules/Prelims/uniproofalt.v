@@ -560,10 +560,12 @@ Let Rep_b : category := fiber_category (rep_disp SET) b.
 
 Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
-Context (Fepi : forall R, isEpi_FR' R) (aepi : a_preserves_epi).
+
+Context (aepi : a_preserves_epi).
 
 
-Lemma helper (R : Rep_a) (S : rep_ar SET b)
+Lemma helper (Fepi : forall R, isEpi_FR' R)  (R : Rep_a)
+  (S : rep_ar SET b)
   : ∏ (u' : Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧) x,
                  (projR (congr_equivc R) x;; (u' : rep_ar_mor_mor _ _ _ _ _ _) x)%mor =
                  (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R (Fepi R) aepi))
@@ -587,7 +589,8 @@ Proof.
 Qed.
 
 
-Definition is_right_adjoint_functor_of_reps : is_right_adjoint FF.
+Definition is_right_adjoint_functor_of_reps (Fepi : forall R, isEpi_FR' R) : 
+                                              is_right_adjoint FF.
 Proof.
   use right_adjoint_left_from_partial.
   - intro R. 
@@ -603,7 +606,7 @@ Proof.
       apply rep_ar_mor_mor_equiv.
       intro x.
       etrans. { apply u_def. }
-      apply (helper _ _ (u_rep R m (Fepi R) aepi)).
+      apply (helper Fepi _ _ (u_rep R m (Fepi R) aepi)).
     + intro y; apply homset_property.
     + intros u' hu'.
       hnf in hu'.
@@ -613,5 +616,12 @@ Proof.
       apply helper.
 Qed.
   
+Corollary is_right_adjoint_functor_of_reps_from_pw_epi 
+  (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
+                             (pr1 (F R))) : is_right_adjoint FF.
+Proof.
+  apply is_right_adjoint_functor_of_reps.
+  intro R; apply Fepi.
+Qed.
 End leftadjoint.
 
