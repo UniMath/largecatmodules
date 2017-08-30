@@ -67,10 +67,13 @@ Proof.
   apply isEpi_pr_quot_functor.
 Qed.
 
+
 (* Lemma isEpi_projR_projR_pw x : isEpi (C:=functor_category _ _) (projR ∙∙ projR x). *)
 Lemma isEpi_projR_projR_pw x : isEpi  ((projR ∙∙ projR) x).
 Proof.
-  apply isEpi_horcomp_pw_HSET; apply choice || apply isEpi_projR_pw. 
+  apply isEpi_comp.
+  - apply isEpi_projR_pw.
+  - apply preserves_to_HSET_isEpi; apply choice || apply isEpi_projR_pw. 
 Qed.
 
 
@@ -198,7 +201,11 @@ Qed.
 
 Lemma isEpi_projR_projR_projR_pw c : isEpi ((projR ∙∙ (projR ∙∙ projR)) c).
 Proof.
-  apply isEpi_horcomp_pw_HSET; [apply choice | apply isEpi_projR_projR_pw| apply isEpi_projR_pw].
+  apply isEpi_comp.
+  - apply isEpi_projR_pw.
+  - apply preserves_to_HSET_isEpi.
+    + apply choice.
+    + apply isEpi_projR_projR_pw. 
 Defined.
 
 Lemma R'_Monad_law_μ : ∏ c : SET,

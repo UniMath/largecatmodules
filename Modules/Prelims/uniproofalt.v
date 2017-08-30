@@ -379,6 +379,27 @@ Proof.
     apply (F R'_monad).
 Defined.
 
+(**
+By naturality of F,
+
+<<<<
+
+       hab
+   a_R --> b_R'
+    |     ^
+    |    /
+F_R |   / b_π
+    |  /
+    V /
+    b_R 
+
+>>>>
+where π := projR
+
+ *)
+(* Lemma hab_alt : hab =  *)
+(*    ( pb_LModule_Mor projR_monad (F R'_monad) ;; # a projR_monad)%mor *)
+
 (** This is the compatibility relation that is needed to construct
 R'_rep_τ : b R -> R
 *)
@@ -411,10 +432,39 @@ Qed.
 Definition isEpi_FR' : UU 
   := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
                              (pr1 (F R'_monad)).
+
+Definition EpiArity (c : arity SET) :=
+  ∏ M N (f:category_Monad _⟦M,N⟧),
+     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
+                                                       (pr1 (#c f)%ar).
+
+(** For the explicit subsitution arity example *)
+Example EpiArityThetaTheta (choice : AxiomOfChoice.AxiomOfChoice_surj)
+        {M N} (f:category_Monad SET ⟦M,N⟧) :
+     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
+                                                       (horcomp (pr1 f )(pr1 f )).
+Proof.
+  intro hepi.
+  apply is_nat_trans_epi_from_pointwise_epis.
+  assert (hf : ∏ x, isEpi (pr1 f x)).
+  {
+    apply Pushouts_pw_epi.
+    - apply PushoutsHSET_from_Colims.
+    - exact hepi.
+  }
+  intro x.
+  apply isEpi_comp.
+  - apply hf.
+  - apply preserves_to_HSET_isEpi.
+    + apply choice.
+    + apply hf.
+Qed.
+   
+
+
 (* a preserve les epis *)
 Definition a_preserves_epi : UU 
-  := ∏ M N (f:category_Monad _⟦M,N⟧),
-     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _) (pr1 (#a f)%ar).
+  := EpiArity a.
 
 Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
 

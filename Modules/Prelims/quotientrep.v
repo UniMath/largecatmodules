@@ -214,13 +214,14 @@ Proof.
                   ((h ∙∙ projR) X)
          ).
   {
-    apply isEpi_horcomp_pw_HSET.
-    - exact choice.
-    - apply isEpi_projR_pw.
+    apply isEpi_comp.
     - intro Y.
       apply Pushouts_pw_epi.
       * apply PushoutsHSET_from_Colims.
       * apply isEpih.
+    - apply preserves_to_HSET_isEpi.
+      + exact choice.
+      + apply isEpi_projR_pw.
   }
   apply epi.
   etrans; [ apply τ'_law_eq1 |].
