@@ -432,13 +432,6 @@ Proof.
 Qed.
 
 
-(* F preserve the epis *)
-Definition isEpi_FR' : UU 
-  := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
-                             (pr1 (F R'_monad)).
-(* Definition isEpi_FR  : UU  *)
-(*   := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET) *)
-(*                              (pr1 (F (pr1 R))). *)
 
 Definition EpiArity (c : arity SET) :=
   ∏ M N (f:category_Monad _⟦M,N⟧),
@@ -475,7 +468,7 @@ either [a] is an epi arity and [F R'] is an epi, either [b] is an epi-arity
 and [F R] is an epi
 *)
 Definition cond_isEpi_hab :=
-  (isEpi_FR' × EpiArity a) ⨿
+  (isEpi (C := [_, _]) (pr1 (F R'_monad)) × EpiArity a) ⨿
                            (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × EpiArity b).
 
 
@@ -698,7 +691,9 @@ Qed.
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
 Context (aepi : EpiArity a).
 
-Lemma helper (Fepi : forall R, isEpi_FR' R)  (R : Rep_a)
+Let R'_monad R  := R'_monad ax_choice (congr_equivc R) (compat_μ_projR R).
+
+Lemma helper (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))))  (R : Rep_a)
       (cond_F := inl (dirprodpair (Fepi R) aepi ) : cond_isEpi_hab R)
   (S : rep_ar SET b)
   : ∏ (u' : Rep_b ⟦ R'_rep R cond_F, S ⟧) x,
@@ -724,7 +719,7 @@ Proof.
 Qed.
 
 
-Definition is_right_adjoint_functor_of_reps (Fepi : forall R, isEpi_FR' R) : 
+Definition is_right_adjoint_functor_of_reps (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))) ) : 
                                               is_right_adjoint FF.
 Proof.
   set (cond_F := fun R => inl ((Fepi R),, aepi) : cond_isEpi_hab R).
