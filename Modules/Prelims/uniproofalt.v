@@ -436,9 +436,9 @@ Qed.
 Definition isEpi_FR' : UU 
   := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
                              (pr1 (F R'_monad)).
-Definition isEpi_FR  : UU 
-  := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
-                             (pr1 (F (pr1 R))).
+(* Definition isEpi_FR  : UU  *)
+(*   := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET) *)
+(*                              (pr1 (F (pr1 R))). *)
 
 Definition EpiArity (c : arity SET) :=
   ∏ M N (f:category_Monad _⟦M,N⟧),
@@ -474,7 +474,9 @@ Conditions that we require to prove that [hab] is epimorphic :
 either [a] is an epi arity and [F R'] is an epi, either [b] is an epi-arity
 and [F R] is an epi
 *)
-Definition cond_isEpi_hab := (isEpi_FR' × EpiArity a) ⨿ (isEpi_FR × EpiArity b).
+Definition cond_isEpi_hab :=
+  (isEpi_FR' × EpiArity a) ⨿
+                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × EpiArity b).
 
 
 Context (cond_hab : cond_isEpi_hab).
@@ -673,8 +675,8 @@ Definition build_module (R : Rep_a) (cond_R :   cond_isEpi_hab R)
     )
       := (_ ,, build_module_law R cond_R S m).
   
-
-Theorem push_initiality (R : Rep_a) (epi_F : isEpi_FR R) (epib : EpiArity b) :
+Theorem push_initiality (R : Rep_a) (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R))))
+        (epib : EpiArity b) :
     isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
