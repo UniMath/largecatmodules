@@ -35,12 +35,10 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 
-Require Import TypeTheory.Auxiliary.Auxiliary.
-Require Import TypeTheory.Auxiliary.UnicodeNotations.
-Require Import TypeTheory.Displayed_Cats.Auxiliary.
-Require Import TypeTheory.Displayed_Cats.Core.
-Require Import TypeTheory.Displayed_Cats.Constructions.
-Require Import TypeTheory.Displayed_Cats.Fibrations.
+Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
+Require Import UniMath.CategoryTheory.DisplayedCats.Core.
+Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
+Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
 Require Import UniMath.CategoryTheory.categories.category_hset.
@@ -182,7 +180,7 @@ Proof.
   apply compat_m.
 Defined.
 
-Lemma u_def : ∏ x, ## m x = projR x ;; u x.
+Lemma u_def : ∏ x, ## m x = projR x · u x.
 Proof.
   apply (quotientmonad.u_def).
 Qed.
@@ -316,11 +314,11 @@ Proof.
 Qed.
 
 Lemma eq_mr X 
-  : rep_τ _ R X ;; ## m X 
+  : rep_τ _ R X · ## m X 
     =
-    pr1 (# a projR_monad)%ar X ;; (F (R'_monad ))%ar X 
-        ;;
-        pr1 (# b (u_monad m))%ar X ;; rep_τ _ S X.
+    pr1 (# a projR_monad)%ar X · (F (R'_monad ))%ar X 
+        ·
+        pr1 (# b (u_monad m))%ar X · rep_τ _ S X.
 Proof.
   etrans. { apply rep_ar_mor_ax. }
   cpost _.
@@ -392,7 +390,7 @@ Lemma compat_rep_τ_projR
     (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) x *)
     (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) y *)
     ->
-    (rep_τ _ R X ;; projR X) x = (rep_τ _ R X;; projR X) y.
+    (rep_τ _ R X · projR X) x = (rep_τ _ R X · projR X) y.
 Proof.
   intros X x y comp.
   apply rel_eq_projR.
@@ -434,9 +432,9 @@ Definition R'_rep_τ_module
 
 Definition R'_rep_τ_def 
   : ∏ (X : SET),
-    (# a (projR_monad)%ar) X ;; (F R'_monad) X ;; R'_rep_τ_module X  
+    (# a (projR_monad)%ar) X · (F R'_monad) X · R'_rep_τ_module X  
     = 
-    rep_τ _ R X ;; projR X .
+    rep_τ _ R X · projR X .
 Proof.
   intro X.
   apply (quotientrep.R'_rep_τ_def ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
@@ -536,7 +534,7 @@ Context (Fepi : isEpi_FR')
 Variable u'_rep : R'_rep Fepi aepi -->[identity (b:CAT_ARITY)] S.
 Variable (hu' : ∏ x,
                 ((projR_rep Fepi aepi : rep_ar_mor_mor _ _ _ _ _ _) x
-                 ;; (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)%mor
+                 · (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)
                 = (m : rep_ar_mor_mor _ _ _ _ _ _ ) x
          ).
 
@@ -567,16 +565,16 @@ Context (aepi : a_preserves_epi).
 Lemma helper (Fepi : forall R, isEpi_FR' R)  (R : Rep_a)
   (S : rep_ar SET b)
   : ∏ (u' : Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧) x,
-                 (projR (congr_equivc R) x;; (u' : rep_ar_mor_mor _ _ _ _ _ _) x)%mor =
+                 (projR (congr_equivc R) x · (u' : rep_ar_mor_mor _ _ _ _ _ _) x) =
                  (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R (Fepi R) aepi))
                                      (projR_rep R (Fepi R) aepi: rep_ar_mor_mor _ _ _ _ _ _)
-                                     (# FF (u')))%mor)) x.
+                                     (# FF (u'))))) x.
 Proof.
   intros u' x.
   apply pathsinv0.
   etrans ; [
       apply (@transport_arity_mor SET a a 
-                                  (identity (a:CAT_ARITY);; identity (a:CAT_ARITY))%mor 
+                                  (identity (a:CAT_ARITY) · identity (a:CAT_ARITY)) 
                                   (identity (a:CAT_ARITY)) (id_right (identity (a:CAT_ARITY))) 
                                   R 
                                   (FF S)

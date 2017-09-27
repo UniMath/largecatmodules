@@ -8,12 +8,10 @@ Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
-Require Import TypeTheory.Auxiliary.Auxiliary.
-Require Import TypeTheory.Auxiliary.UnicodeNotations.
-Require Import TypeTheory.Displayed_Cats.Auxiliary.
-Require Import TypeTheory.Displayed_Cats.Core.
-Require Import TypeTheory.Displayed_Cats.Constructions.
-Require Import TypeTheory.Displayed_Cats.Fibrations.
+Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
+Require Import UniMath.CategoryTheory.DisplayedCats.Core.
+Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
+Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
@@ -53,7 +51,7 @@ Definition arity_idax  (F : arity_data) :=
 
 Definition arity_compax  (F : arity_data) :=
   ∏ (R S T : MONAD) (f : PRE_MONAD ⟦R, S⟧) (g : PRE_MONAD ⟦S, T⟧),
-  (#F  (f ;; g)%mor)%ar 
+  (#F  (f · g))%ar 
   = 
   (((# F f)%ar :(F R : bmod_disp C C R) -->[f] F S) ;; (#F g)%ar)%mor_disp.
 
@@ -81,7 +79,7 @@ Definition arity_id (F : arity) :
 
 Definition arity_comp (F : arity) {R S T : MONAD} 
            (f : PRE_MONAD ⟦R,S⟧) (g : PRE_MONAD⟦S,T⟧) 
-  : (#F  (f ;; g)%mor)%ar 
+  : (#F  (f · g))%ar 
     = 
     ((# F f : (F R : bmod_disp C C R) -->[f] F S) %ar ;; (#F g)%ar)%mor_disp 
   := pr2 (pr2 F) _ _ _ _ _ .
@@ -281,7 +279,7 @@ Definition rep_τ {ar : arity} (X : rep_ar ar) := pr2 X.
 
 Definition rep_ar_mor_law {a b : arity} (M : rep_ar a) (N : rep_ar b)
            (f : arity_Mor a b) (g : Monad_Mor M N) 
-  := ∏ c : C, rep_τ M c ;; g c = ((#a g)%ar:nat_trans _ _) c ;; f N c ;; rep_τ N c .
+  := ∏ c : C, rep_τ M c · g c = ((#a g)%ar:nat_trans _ _) c · f N c · rep_τ N c .
 
 Lemma isaprop_rep_ar_mor_law {a b : ARITY} (M : rep_ar a) (N : rep_ar b)
       (f : arity_Mor a b) (g : Monad_Mor M N) 
@@ -312,7 +310,7 @@ Coercion monad_morphism_from_rep_ar_mor_mor {a b : ARITY} {M : rep_ar a} {N : re
 
 Definition rep_ar_mor_ax {a b : ARITY} {M : rep_ar a} {N : rep_ar b}
            {f} (h:rep_ar_mor_mor a b M N f) :
-  ∏ c, rep_τ M c ;; h c = (#a h)%ar c ;; f N c ;; rep_τ N c 
+  ∏ c, rep_τ M c · h c = (#a h)%ar c · f N c · rep_τ N c 
   := pr2 h.
 
 Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_ARITY :=
@@ -425,7 +423,7 @@ Definition rep_comp (a b c : ARITY) f g
            (RMc : rep_disp_ob_mor c)
            (mab : RMa -->[ f ] RMb) 
            (mbc:RMb -->[g]  RMc) 
-  : RMa -->[f;;g] RMc.
+  : RMa -->[f·g] RMc.
 Proof.
   intros.
   exists (compose (C:=PRE_MONAD) (pr1 mab) (pr1 mbc)).
@@ -471,7 +469,7 @@ Qed.
 Definition rep_disp : disp_cat arity_category := rep_data ,, rep_axioms.
 
 Definition pb_rep {a a' : arity} (f : arity_Mor a a') (R : rep_ar a') : rep_ar a :=
-  ((R : MONAD) ,, ((f R : category_LModule _ _ ⟦_, _⟧);;  rep_τ R)%mor).
+  ((R : MONAD) ,, (f R : category_LModule _ _ ⟦_, _⟧) ·  rep_τ R).
 
 Lemma pb_rep_to_law {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
   rep_ar_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).
@@ -495,7 +493,7 @@ Definition pb_rep_to {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
   (identity (C:=PRE_MONAD) (R:MONAD),, pb_rep_to_law f R).
 
 Lemma rep_mor_law_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)
-      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[ g;; f] R) :
+      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g· f] R) :
   rep_ar_mor_law S (pb_rep f R) g (hh : rep_ar_mor_mor _ _ _ _ _ ).
 Proof.
   intros.
@@ -507,7 +505,7 @@ Proof.
 Qed.
 
 Lemma rep_mor_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)
-      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[ g;; f] R) :
+      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
    (S : rep_disp _) -->[ g] pb_rep f R.
 Proof.
     mkpair.
