@@ -379,6 +379,31 @@ Proof.
     apply (F R'_monad).
 Defined.
 
+(**
+By naturality of F,
+
+<<<<
+
+       hab
+   a_R --> b_R'
+    |     ^
+    |    /
+F_R |   / b_π
+    |  /
+    V /
+    b_R 
+
+>>>>
+where π := projR
+
+ *)
+Lemma hab_alt : pr1 hab =
+                ( ((F (pr1 R) : nat_trans _ _) : functor_category _ _⟦_, _⟧) ;;
+                         ((# b projR_monad) : nat_trans _ _))%mor.
+Proof.
+  now apply arity_Mor_ax.
+Qed.
+
 (** This is the compatibility relation that is needed to construct
 R'_rep_τ : b R -> R
 *)
@@ -407,23 +432,62 @@ Proof.
 Qed.
 
 
-(* F preserve the epis *)
-Definition isEpi_FR' : UU 
-  := isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
-                             (pr1 (F R'_monad)).
-(* a preserve les epis *)
-Definition a_preserves_epi : UU 
-  := ∏ M N (f:category_Monad _⟦M,N⟧),
-     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _) (pr1 (#a f)%ar).
 
-Context (Fepi:isEpi_FR') (aepi:a_preserves_epi).
+Definition EpiArity (c : arity SET) :=
+  ∏ M N (f:category_Monad _⟦M,N⟧),
+     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
+                                                       (pr1 (#c f)%ar).
+
+
+(** For the explicit subsitution arity example *)
+Example EpiArityThetaTheta (choice : AxiomOfChoice.AxiomOfChoice_surj)
+        {M N} (f:category_Monad SET ⟦M,N⟧) :
+     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
+                                                       (horcomp (pr1 f )(pr1 f )).
+Proof.
+  intro hepi.
+  apply is_nat_trans_epi_from_pointwise_epis.
+  assert (hf : ∏ x, isEpi (pr1 f x)).
+  {
+    apply Pushouts_pw_epi.
+    - apply PushoutsHSET_from_Colims.
+    - exact hepi.
+  }
+  intro x.
+  apply isEpi_comp.
+  - apply hf.
+  - apply preserves_to_HSET_isEpi.
+    + apply choice.
+    + apply hf.
+Qed.
+   
+
+(**
+Conditions that we require to prove that [hab] is epimorphic :
+either [a] is an epi arity and [F R'] is an epi, either [b] is an epi-arity
+and [F R] is an epi
+*)
+Definition cond_isEpi_hab :=
+  (isEpi (C := [_, _]) (pr1 (F R'_monad)) × EpiArity a) ⨿
+                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × EpiArity b).
+
+
+Context (cond_hab : cond_isEpi_hab).
 
 Lemma isEpi_def_R'_rep_τ : isEpi (C:= [SET,SET]) (pr1 hab).
 Proof.
-  apply (isEpi_comp (functor_category _ _)).
-  - apply aepi.  apply isEpi_projR.
-  - cbn.
-    apply Fepi.
+  case cond_hab.
+  - intros [epiFR' epia].
+    apply (isEpi_comp (functor_category _ _)).
+    + apply epia.  apply isEpi_projR.
+    + cbn.
+      apply epiFR'.
+  - intros [epiFR epib].
+    rewrite hab_alt.
+    apply (isEpi_comp (functor_category _ _)).
+    + cbn.
+      apply epiFR.
+    + apply epib.  apply isEpi_projR.
 Qed.
 
 
@@ -470,7 +534,7 @@ End R'Representation.
 Section uRepresentation.
 
 Context {S : REP b} (m : R -->[ F] S).
-Context (Fepi : isEpi_FR') (aepi : a_preserves_epi).
+Context (cond_F : cond_isEpi_hab).
 
 Open Scope arity_scope.
   
@@ -478,13 +542,13 @@ Open Scope arity_scope.
 
 (* TODO  : foutre ça dans quotientrep *)
 Lemma u_rep_laws 
-  : rep_ar_mor_law SET (R'_rep Fepi aepi) S (identity (b : CAT_ARITY)) (u_monad m).
+  : rep_ar_mor_law SET (R'_rep cond_F) S (identity (b : CAT_ARITY)) (u_monad m).
 Proof.
   intro X.
   apply pathsinv0.
   apply (
                (quotientrep.u_rep_laws ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR
-                                       (isEpi_def_R'_rep_τ Fepi aepi) (S:=pr1 S) (m:=pr1 m) _
+                                       (isEpi_def_R'_rep_τ cond_F) (S:=pr1 S) (m:=pr1 m) _
                                        (s:=rep_τ _ S) (F:=( (# b ( u_monad m))%ar))
          )).
   intro X'.
@@ -519,7 +583,7 @@ Proof.
 Qed.
 
 
-Definition u_rep : (R'_rep Fepi aepi) -->[identity (b: CAT_ARITY)] S 
+Definition u_rep : (R'_rep cond_F) -->[identity (b: CAT_ARITY)] S 
   := _ ,, u_rep_laws.
 
 
@@ -530,17 +594,16 @@ Section uUnique.
 
 Context {S : REP b} 
         (m : R -->[ F] S).
-Context (Fepi : isEpi_FR') 
-        (aepi : a_preserves_epi).
+Context (cond_F : cond_isEpi_hab).
 
-Variable u'_rep : R'_rep Fepi aepi -->[identity (b:CAT_ARITY)] S.
+Variable u'_rep : R'_rep cond_F -->[identity (b:CAT_ARITY)] S.
 Variable (hu' : ∏ x,
-                ((projR_rep Fepi aepi : rep_ar_mor_mor _ _ _ _ _ _) x
+                ((projR_rep cond_F : rep_ar_mor_mor _ _ _ _ _ _) x
                  ;; (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)%mor
                 = (m : rep_ar_mor_mor _ _ _ _ _ _ ) x
          ).
 
-Lemma u_rep_unique : u'_rep = u_rep m Fepi aepi.
+Lemma u_rep_unique : u'_rep = u_rep m cond_F.
 Proof.
   apply rep_ar_mor_mor_equiv.
   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
@@ -559,17 +622,84 @@ Let Rep_a : category := fiber_category (rep_disp SET) a.
 Let Rep_b : category := fiber_category (rep_disp SET) b.
 
 Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
+
+Require Import UniMath.CategoryTheory.limits.initial.
+
+Lemma build_module_law (R : Rep_a) (cond_R :   cond_isEpi_hab R)
+  (S : Rep_b) (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
+  : (rep_ar_mor_law _ R (pb_rep SET F S) (arity_Mor_id (pr1 a))
+      ((pr1 (projR_rep R cond_R) : category_Monad _ ⟦_,_⟧) ;; (pr1 m))
+
+    ).
+Proof.
+  intro x.
+  etrans.
+  {
+    etrans; [apply assoc |].
+    apply cancel_postcomposition.
+    apply (rep_ar_mor_ax _ (projR_rep R cond_R)).
+  }
+  rewrite arity_comp.
+  repeat rewrite <- assoc.
+  etrans; [|apply assoc].
+  apply cancel_precomposition.
+  etrans; revgoals.
+  {
+    repeat rewrite assoc.
+    eapply pathsinv0.
+    etrans; [apply assoc|].
+    apply cancel_postcomposition.
+    assert (h:= (arity_Mor_ax F (pr1 m))).
+    eapply nat_trans_eq_pointwise in h.
+    apply h.
+  }
+  etrans.
+  {
+    apply cancel_precomposition.
+    apply (rep_ar_mor_ax _ m).
+  }
+  reflexivity.
+Qed.
+
+Definition build_module (R : Rep_a) (cond_R :   cond_isEpi_hab R)
+  (S : Rep_b) (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
+  : (rep_ar_mor_mor _ a a R (pb_rep SET F S) (arity_Mor_id (pr1 a))
+
+    )
+      := (_ ,, build_module_law R cond_R S m).
+  
+Theorem push_initiality (R : Rep_a) (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R))))
+        (epib : EpiArity b) :
+    isInitial _ R -> Initial Rep_b.
+Proof.
+  intro iniR.
+  set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R).
+  mkpair.
+  - apply (R'_rep R cond_R).
+
+  - intro S.
+    unshelve eapply iscontrpair.
+    +  use u_rep.
+       use (iscontrpr1 (iniR (FF S))).
+    + intro m.
+      apply u_rep_unique.
+      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R cond_R S m)).
+      now rewrite <- h.
+Qed.
+
+
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
+Context (aepi : EpiArity a).
 
-Context (aepi : a_preserves_epi).
+Let R'_monad R  := R'_monad ax_choice (congr_equivc R) (compat_μ_projR R).
 
-
-Lemma helper (Fepi : forall R, isEpi_FR' R)  (R : Rep_a)
+Lemma helper (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))))  (R : Rep_a)
+      (cond_F := inl (dirprodpair (Fepi R) aepi ) : cond_isEpi_hab R)
   (S : rep_ar SET b)
-  : ∏ (u' : Rep_b ⟦ R'_rep R (Fepi R) aepi, S ⟧) x,
+  : ∏ (u' : Rep_b ⟦ R'_rep R cond_F, S ⟧) x,
                  (projR (congr_equivc R) x;; (u' : rep_ar_mor_mor _ _ _ _ _ _) x)%mor =
-                 (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R (Fepi R) aepi))
-                                     (projR_rep R (Fepi R) aepi: rep_ar_mor_mor _ _ _ _ _ _)
+                 (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R cond_F))
+                                     (projR_rep R cond_F : rep_ar_mor_mor _ _ _ _ _ _)
                                      (# FF (u')))%mor)) x.
 Proof.
   intros u' x.
@@ -589,12 +719,13 @@ Proof.
 Qed.
 
 
-Definition is_right_adjoint_functor_of_reps (Fepi : forall R, isEpi_FR' R) : 
+Definition is_right_adjoint_functor_of_reps (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))) ) : 
                                               is_right_adjoint FF.
 Proof.
+  set (cond_F := fun R => inl ((Fepi R),, aepi) : cond_isEpi_hab R).
   use right_adjoint_left_from_partial.
   - intro R. 
-    apply (R'_rep R (Fepi R) aepi).
+    apply (R'_rep R (cond_F R)).
   - intro R. apply projR_rep.
   - intro R.
     unfold is_universal_arrow_to.
@@ -606,7 +737,7 @@ Proof.
       apply rep_ar_mor_mor_equiv.
       intro x.
       etrans. { apply u_def. }
-      apply (helper Fepi _ _ (u_rep R m (Fepi R) aepi)).
+      apply (helper Fepi _ _ (u_rep R m (cond_F R))).
     + intro y; apply homset_property.
     + intros u' hu'.
       hnf in hu'.

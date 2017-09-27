@@ -37,6 +37,20 @@ Proof.
   reflexivity.
 Qed.
 
+Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
+      (B := hset_category)  {C : category}
+      (G : functor B C)
+      { a b : B}
+      (f : (B ⟦ a, b⟧)%Cat)
+  : isEpi f
+    -> isEpi (#G f)%Cat.
+Proof.
+  intros epif.
+  apply isSplitEpi_isEpi; [ apply homset_property|].
+  apply preserves_isSplitEpi.
+  apply SplitEpis_HSET; [|apply epif].
+  apply ax_choice.
+Qed.
 (*
 Lemma isEpi_pre_whisker (B C :precategory)(D : category)
       (G H : functor C D) (K : functor B C) (f : nat_trans G H)
@@ -123,6 +137,8 @@ Qed.
 *)
 
 
+(* inutile, c'est juste la composition de deux morphismes *)
+(*
 Lemma isEpi_horcomp_pw (B : precategory)(C D : category)
       (G H : functor B C) (G' H' : functor C D)
       (f : nat_trans G H) (f':nat_trans G' H')
@@ -153,6 +169,7 @@ Proof.
   apply SplitEpis_HSET; [|apply epig].
   apply choice.
 Qed.
+*)
 (*
 Lemma isEpi_horcomp (B : precategory)(C D : category)
       (G H : functor B C) (G' H' : functor C D)
