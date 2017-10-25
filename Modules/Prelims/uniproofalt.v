@@ -687,6 +687,25 @@ Proof.
       now rewrite <- h.
 Qed.
 
+Theorem push_initiality_weaker (R : Rep_a) (epi_F : ∏ (R : Monad _),
+                                                     isEpi (C := [_, _]) (pr1 (F (R))))
+        (epia : EpiArity a) :
+    isInitial _ R -> Initial Rep_b.
+Proof.
+  intro iniR.
+  set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R).
+  mkpair.
+  - apply (R'_rep R cond_R).
+
+  - intro S.
+    unshelve eapply iscontrpair.
+    +  use u_rep.
+       use (iscontrpr1 (iniR (FF S))).
+    + intro m.
+      apply u_rep_unique.
+      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R cond_R S m)).
+      now rewrite <- h.
+Qed.
 
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
 Context (aepi : EpiArity a).
