@@ -5,6 +5,7 @@ and that they are presentable
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
+Require Import UniMath.CategoryTheory.limits.bincoproducts.
 (* Require Import UniMath.SubstitutionSystems.FromBindingSigsToMonads_Summary. *)
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import UniMath.SubstitutionSystems.Signatures.
@@ -93,8 +94,37 @@ Section EpiAritySig.
                                         (toSig sig)
                                         (is_omega_cocont_BindingSigToSignatureHSET sig)).
 
-  Lemma myadmit (A : Type) : A.
-  Admitted.
+
+
+
+
+  Lemma rep_mor_to_alg_is_alg_mor {sig : BindingSig}
+             (b : rep_ar SET (hss_to_ar (C := SET)(toSig sig)))
+             (t : (rep_disp SET)[{hss_to_ar (C := SET) (toSig sig)}] ⟦ alg_initialR sig, b ⟧) :
+    is_algebra_mor (Id_H HSET hom_SET BinCoproductsHSET (toSig sig))
+                   (pr1 (pr1 (iniHSS sig)))
+                   (M_alg (toSig sig) b (rep_τ SET b))
+                   (pr1 (pr1 t)).
+  Proof.
+    red.
+    apply nat_trans_eq; [apply (homset_property SET)|].
+    intro X.
+    apply funextfun.
+    intro x.
+    (* x is in a coproduct. We check both cases *)
+    destruct x as [x|x].
+    - assert (ht := Monad_Mor_η (pr1 ( t)) X).
+      apply toforallpaths in ht.
+      specialize (ht x).
+      apply ht.
+    - assert (ht := rep_ar_mor_ax _  t X).
+      apply toforallpaths in ht.
+      specialize (ht x).
+      apply ht.
+  Qed.
+
+    
+    
   
   Definition rep_mor_to_alg_mor {sig : BindingSig}
              (b : rep_ar SET (hss_to_ar (C := SET)(toSig sig)))
@@ -103,9 +133,7 @@ Section EpiAritySig.
   Proof.
     mkpair.
     - apply t.
-    - apply myadmit.
-      (* apply nat_trans_eq;[apply (homset_property SET)|]. *)
-      (* intro X. *)
+    - apply (rep_mor_to_alg_is_alg_mor b t).
   Defined.
 
 
