@@ -285,7 +285,7 @@ Legend of the diagram :
     etrans.
     { cbn -[projR compose].
       rewrite (assoc (C:=SET)).
-      apply (cancel_postcomposition SET).
+      apply (cancel_postcomposition (C:=SET)).
       symmetry.
       apply R'_μ_def.
     }
