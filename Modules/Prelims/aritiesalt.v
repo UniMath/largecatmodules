@@ -508,7 +508,7 @@ Lemma rep_mor_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category
       (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
    (S : rep_disp _) -->[ g] pb_rep f R.
 Proof.
-    mkpair.
+    use tpair.
     + apply hh.
     + apply rep_mor_law_pb.
 Defined.
@@ -541,7 +541,7 @@ Lemma rep_cleaving : cleaving rep_disp.
 Proof.
   intros a a' f R.
   red.
-  mkpair;[ |mkpair].
+  use tpair;[ |use tpair].
   - apply (pb_rep f R).
   - apply pb_rep_to.
   - apply pb_rep_to_cartesian.

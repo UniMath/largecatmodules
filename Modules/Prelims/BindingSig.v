@@ -54,7 +54,7 @@ Section EpiAritySig.
   (** The initial representation of the algebraic signature *)
   Lemma alg_initialR (sig : BindingSig) : (rep_disp SET)[{hss_to_ar (C := SET) (toSig sig)}].
   Proof.
-    mkpair.
+    use tpair.
     - apply (BindingSigToMonadHSET sig).
     - apply τ_lmodule_mor.
   Defined.
@@ -131,7 +131,7 @@ Section EpiAritySig.
              (t : (rep_disp SET)[{hss_to_ar (C := SET) (toSig sig)}] ⟦ alg_initialR sig, b ⟧) :
     EndAlg sig ⟦ (pr1 (pr1 (iniHSS sig))) , M_alg (toSig sig) b (rep_τ SET b) ⟧.
   Proof.
-    mkpair.
+    use tpair.
     - apply t.
     - apply (rep_mor_to_alg_is_alg_mor b t).
   Defined.

@@ -104,7 +104,7 @@ Definition pbm_mor_comp : LModule_Mor _ comp_pbm pbm_comp := (_ ,, pbm_mor_comp_
 
 Definition pbm_comp_mor : LModule_Mor _ pbm_comp comp_pbm.
 Proof.
-  mkpair. 
+  use tpair. 
   - exists (fun x => identity _ ).
     abstract (intros x y f; cbn;  
               rewrite id_right; rewrite id_left;
@@ -204,10 +204,10 @@ Definition bmod_disp : disp_cat MONAD := (bmod_data ,, bmod_axioms).
 Definition cleaving_bmod : cleaving bmod_disp.
 Proof.
   intros R R' f M.
-  mkpair.
+  use tpair.
   - cbn in *.  
     exact (pb_LModule f M).
-  - mkpair.
+  - use tpair.
     + exact (LModule_identity _ _ ).
     + intros R'' f' M'' a.
       cbn in *.

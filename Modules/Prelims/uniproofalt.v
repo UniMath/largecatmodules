@@ -672,7 +672,7 @@ Theorem push_initiality (R : Rep_a) (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R)
 Proof.
   intro iniR.
   set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R).
-  mkpair.
+  use tpair.
   - apply (R'_rep R cond_R).
 
   - intro S.
@@ -692,7 +692,7 @@ Theorem push_initiality_weaker (R : Rep_a) (epi_F : ∏ (R : Monad _),
 Proof.
   intro iniR.
   set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R).
-  mkpair.
+  use tpair.
   - apply (R'_rep R cond_R).
 
   - intro S.

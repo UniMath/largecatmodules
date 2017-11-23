@@ -59,7 +59,7 @@ Local Notation "'p' T" := (ptd_from_mon (homset_property C) T) (at level 3).
 (* Has this been already defined somewhere ?? *)
 Definition ptd_mor_from_Monad_mor {M N : Monad C} (f : Monad_Mor M N)
     : ptd_mor _ (p M) (p N).
-  mkpair.
+  use tpair.
   - apply f.
   - intro c.
     apply (Monad_Mor_η f).
@@ -204,7 +204,7 @@ Definition lift_pb_LModule
 
 Definition hss_to_ar_data : @arity_data C.
 Proof.
-  mkpair.
+  use tpair.
   + intro R.
     eapply (ModulesFromSignatures.lift_lmodule H).
     apply tautological_LModule.
