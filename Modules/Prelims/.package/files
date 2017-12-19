@@ -7,3 +7,6 @@ uniproofalt.v
 HssToArity.v
 BindingSig.v
 PresentableArity.v
+LModuleBinProduct.v
+DerivationIsFunctorial.v
+deriveadj.v
