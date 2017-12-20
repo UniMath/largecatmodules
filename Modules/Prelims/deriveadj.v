@@ -427,7 +427,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
     exact (η R).
   - eapply compose; [|apply EndofunctorsMonoidal.ρ_functor_inv].
     eapply compose; [|apply coproduct_nat_trans_in1].
-    eapply compose;[apply ( (TerminalArrow (T := Terminal_functor_precat C _ T hsC)))|].
+    eapply compose;[apply ( (TerminalArrow (Terminal_functor_precat C _ T hsC)))|].
     apply Terminal_EndC_constant_terminal.
   Defined.
 
