@@ -10,3 +10,4 @@ PresentableArity.v
 LModuleBinProduct.v
 DerivationIsFunctorial.v
 deriveadj.v
+FullArities.v
