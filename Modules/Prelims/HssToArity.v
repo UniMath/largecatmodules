@@ -58,7 +58,8 @@ Local Notation "'p' T" := (ptd_from_mon (homset_property C) T) (at level 3).
 
 (* Has this been already defined somewhere ?? *)
 Definition ptd_mor_from_Monad_mor {M N : Monad C} (f : Monad_Mor M N)
-    : ptd_mor _ (p M) (p N).
+  : ptd_mor _ (p M) (p N).
+Proof.
   use tpair.
   - apply f.
   - intro c.
@@ -93,8 +94,8 @@ By naturality of θ, the top arrow rewrites
 >>>
 And the remaining diagram comes from the fact that f is a module morphism
 
-
 *)
+
 Lemma lift_lmodule_mor_law {M N : LModule T C} (f : LModule_Mor T M N) :
   LModule_Mor_laws T (T := liftlmodule M) (T' := liftlmodule N) (# H (f : _ ⟹ _)).
 Proof.
@@ -120,7 +121,7 @@ Qed.
 
 Definition lift_lmodule_mor {M N : LModule T C} (f : LModule_Mor T M N) :
   LModule_Mor T (liftlmodule M) (liftlmodule N)
- := # H (f : M ⟹ N),, lift_lmodule_mor_law f.
+  := # H (f : M ⟹ N),, lift_lmodule_mor_law f.
 
 End LiftLModuleMor.
 
@@ -166,6 +167,7 @@ By naturality of θ, the top arrow rewrites
   (H M) (T X) ---------> (H (M T)) X ----------> H (N T) X
 >>>
 *)
+
 Lemma lift_pb_LModule_laws {R S : Monad C} (f : Monad_Mor R S) :
   LModule_Mor_laws R
                    (T := (liftlmodule R (pb_LModule f (tautological_LModule S))))
@@ -206,8 +208,7 @@ Definition hss_to_ar_data : @arity_data C.
 Proof.
   use tpair.
   + intro R.
-    eapply (ModulesFromSignatures.lift_lmodule H).
-    apply tautological_LModule.
+    apply (ModulesFromSignatures.lift_lmodule H _ (tautological_LModule _ )).
   + cbn.
     intros R S f.
     cbn.
@@ -216,7 +217,7 @@ Proof.
      *)
     eapply (compose (C := category_LModule R C)).
            (* LModule_composition. *)
-    * unshelve eapply lift_lmodule_mor.
+    * use lift_lmodule_mor.
       -- apply (pb_LModule f).
          apply (tautological_LModule S).
       -- apply monad_mor_to_lmodule.

@@ -56,18 +56,17 @@ Lemma PresentableisRepresentable (choice : AxiomOfChoice.AxiomOfChoice_surj)
       {a : arity SET} (p : isPresentable a) :
    Initial (rep_disp SET)[{a}].
 Proof.
-  unshelve eapply (push_initiality_weaker choice (p_mor p)).
+  use (push_initiality_weaker choice (p_mor p)).
   - apply alg_initialR.
   - apply epi_p_mor.
   - (* TODO : faire un lemme séparé *)
     intros M N f.
     intro epif.
-   assert (epip := (BindingSigAreEpiSig (p_sig p) _ _ (pr1 f)  epif )).
-   unfold p_alg_ar.
-   (* je ne sais pas pourquoi apply epip ne marche pas directement *)
-   apply is_nat_trans_epi_from_pointwise_epis.
-   intro X.
-   eapply epi_nt_SET_pw in epip.
-   apply epip.
+    assert (epip := (BindingSigAreEpiSig (p_sig p) _ _ (pr1 f)  epif )).
+    unfold p_alg_ar.
+    (* je ne sais pas pourquoi apply epip ne marche pas directement *)
+    apply is_nat_trans_epi_from_pointwise_epis.
+    intro X.
+    apply (epi_nt_SET_pw _ epip X).
   - apply algbraic_sig_representable.
 Qed.

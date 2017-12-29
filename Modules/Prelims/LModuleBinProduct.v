@@ -41,6 +41,7 @@ Section ProductModule.
   (* Is there a lemma that state the existence of a natural transformation
   (A x B) o R --> A o R x B o R  ? *)
   Definition LModule_binproduct_mult_data (x : B) : C ⟦ (R ∙ F) x, F x ⟧.
+  Proof.
     cbn.
     apply( fun a a' b b' =>
                  (@functor_on_morphisms _ _ BP (a ,, a') (b ,, b'))).
@@ -147,7 +148,7 @@ Local Notation σ := (lm_mult _).
   Proof.
     red.
     intros S f g.
-    unshelve eapply unique_exists.
+    use unique_exists.
     - exact (LModule_BinProductArrow S f g).
     - split.
       + apply LModule_BinProductPr1Commutes.
