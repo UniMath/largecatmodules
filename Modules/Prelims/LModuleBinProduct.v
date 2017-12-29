@@ -142,7 +142,7 @@ Local Notation σ := (lm_mult _).
   Qed.
 
   Lemma LModule_isBinProductCone :
-    isBinProductCone LMOD _ _ _
+    isBinProduct LMOD _ _ _
                      LModule_binproductPr1 LModule_binproductPr2.
   Proof.
     red.
@@ -160,8 +160,8 @@ Local Notation σ := (lm_mult _).
       +  exact ((LModule_Mor_equiv _ hsC _ _ ) h1).
       +  exact ((LModule_Mor_equiv _ hsC _ _ ) h2).
   Defined.
-  Definition LModule_ProductCone : BinProductCone LMOD M N  :=
-    mk_BinProductCone LMOD M N LModule_binproduct
+  Definition LModule_ProductCone : BinProduct LMOD M N  :=
+    mk_BinProduct LMOD M N LModule_binproduct
                       LModule_binproductPr1 LModule_binproductPr2
                       LModule_isBinProductCone.
 
