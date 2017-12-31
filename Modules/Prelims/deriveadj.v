@@ -348,7 +348,7 @@ et on utilise les 2 lois de monades
     revert x.
     apply toforallpaths.
     apply pathsinv0.
-    apply  (nat_trans_ax m). 
+    apply (nat_trans_ax m). 
   Qed.
 
   Definition substitution_nat_trans : nat_trans (∂ ∙ ×ℜ) (functor_identity _)
@@ -410,25 +410,27 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
   Definition Terminal_EndC_constant_terminal :
     (TerminalObject (Terminal_functor_precat C C T hsC) : functor _ _)
       ⟹ constant_functor C C T  .
-  unshelve econstructor.
-  exact (fun x => identity T).
-  abstract(
-  intros x y f;
-  rewrite id_left, id_right;
-  apply pathsinv0, TerminalArrowUnique).
+  Proof.
+    use mk_nat_trans.
+    exact (fun x => identity T).
+    abstract(
+        intros x y f;
+        rewrite id_left, id_right;
+        apply pathsinv0, TerminalArrowUnique).
   Defined.
 
   (* I have a transfo nat 1 -> 1 + X -> R (1 + X) *)
   (* This morphism is independant from M *)
   Local Definition toR' (M : functor _ _)  : nat_trans M (∂ (Θ R) : LModule _ _).
-  set (F := (BinCoproduct_of_functors C C bcpC (constant_functor C C T) (functor_identity C))).
-  eapply (compose (C := [C,C]) (b := functor_composite F (functor_identity C))); revgoals.
-  - apply pre_whisker.
-    exact (η R).
-  - eapply compose; [|apply EndofunctorsMonoidal.ρ_functor_inv].
-    eapply compose; [|apply coproduct_nat_trans_in1].
-    eapply compose;[apply ( (TerminalArrow (T := Terminal_functor_precat C _ T hsC)))|].
-    apply Terminal_EndC_constant_terminal.
+  Proof.
+    set (F := (BinCoproduct_of_functors C C bcpC (constant_functor C C T) (functor_identity C))).
+    eapply (compose (C := [C,C]) (b := functor_composite F (functor_identity C))); revgoals.
+    - apply pre_whisker.
+      exact (η R).
+    - eapply compose; [|apply EndofunctorsMonoidal.ρ_functor_inv].
+      eapply compose; [|apply coproduct_nat_trans_in1].
+      eapply compose;[apply (TerminalArrow  (Terminal_functor_precat C _ T hsC)) |].
+      apply Terminal_EndC_constant_terminal.
   Defined.
 
   (* Probably there is a smarter way to prove this by reusing
@@ -494,12 +496,13 @@ R(T+RX) -------> RR(T+X)
   (* ((∂ (Θ R): LModule _ _) : functor _ _))). *)
 
   Local Definition M_to_M' (M : LModule R C ) : M ⟹ (∂ M : LModule R C).
+  Proof.
   (*
 M ---> M Id ---> M ∂
 *)
-  eapply (compose (C := [C,C]) ); [apply EndofunctorsMonoidal.λ_functor_inv|].
-  apply post_whisker.
-  apply coproduct_nat_trans_in2.
+    eapply (compose (C := [C,C]) ); [apply EndofunctorsMonoidal.λ_functor_inv|].
+    apply post_whisker.
+    apply coproduct_nat_trans_in2.
   Defined.
 
   Local Lemma M_to_M'_laws (M : LModule R C) : LModule_Mor_laws _ (M_to_M' M).
@@ -541,10 +544,11 @@ f := η ∘ in₁
     _ ,, (M_to_M'_laws _).
 
   Definition deriv_counit_data (M : LModule R C) : LModule_Mor _ M  ((×ℜ ∙ ∂) M).
+  Proof.
     eapply (compose (C := LMOD)); [ | apply commutes_binproduct_derivation].
     apply (( @BinProductArrow LMOD _ _ (LMOD_bp ((∂ M: LModule _ _) )
                                              ((∂ (Θ R): LModule _ _)))) M).
-    -  apply M_to_M'_MOD.
+    - apply M_to_M'_MOD.
     - apply toR'_MOD.
   Defined.
 
@@ -606,7 +610,9 @@ m  |                  |
   Qed.
   Definition deriv_counit : nat_trans (functor_identity LMOD) (×ℜ ∙ ∂) :=
     deriv_counit_data ,, deriv_counit_is_nat_trans.
+
 End DerivCounit.
+
 Section derivadj.
   Context {R : Monad SET}.
   Local Notation T := TerminalHSET.
@@ -706,10 +712,13 @@ Section derivadj.
       + now induction p.
       + apply idpath.
   Qed.
+
   Lemma deriv_adj : are_adjoints  ×ℜ ∂.
-  unshelve eapply mk_are_adjoints.
+  Proof.
+    use mk_are_adjoints.
   - use deriv_counit.
   - apply substitution_nat_trans.
   - exact counit_subst_adjunction.
   Defined.
+  
 End derivadj.
