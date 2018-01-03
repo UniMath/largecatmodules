@@ -41,6 +41,7 @@ Section ProductModule.
   (* Is there a lemma that state the existence of a natural transformation
   (A x B) o R --> A o R x B o R  ? *)
   Definition LModule_binproduct_mult_data (x : B) : C ⟦ (R ∙ F) x, F x ⟧.
+  Proof.
     cbn.
     apply( fun a a' b b' =>
                  (@functor_on_morphisms _ _ BP (a ,, a') (b ,, b'))).
@@ -142,12 +143,12 @@ Local Notation σ := (lm_mult _).
   Qed.
 
   Lemma LModule_isBinProductCone :
-    isBinProductCone LMOD _ _ _
+    isBinProduct LMOD _ _ _
                      LModule_binproductPr1 LModule_binproductPr2.
   Proof.
     red.
     intros S f g.
-    unshelve eapply unique_exists.
+    use unique_exists.
     - exact (LModule_BinProductArrow S f g).
     - split.
       + apply LModule_BinProductPr1Commutes.
@@ -160,8 +161,8 @@ Local Notation σ := (lm_mult _).
       +  exact ((LModule_Mor_equiv _ hsC _ _ ) h1).
       +  exact ((LModule_Mor_equiv _ hsC _ _ ) h2).
   Defined.
-  Definition LModule_ProductCone : BinProductCone LMOD M N  :=
-    mk_BinProductCone LMOD M N LModule_binproduct
+  Definition LModule_ProductCone : BinProduct LMOD M N  :=
+    mk_BinProduct LMOD M N LModule_binproduct
                       LModule_binproductPr1 LModule_binproductPr2
                       LModule_isBinProductCone.
 
