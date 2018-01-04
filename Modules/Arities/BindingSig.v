@@ -23,8 +23,8 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
-Require Import Modules.Prelims.HssToArity.
-Require Import Modules.Prelims.aritiesalt.
+Require Import Modules.Arities.HssToArity.
+Require Import Modules.Arities.aritiesalt.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.FunctorAlgebras.

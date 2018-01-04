@@ -20,7 +20,7 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.aritiesalt.
+Require Import Modules.Arities.aritiesalt.
 Open Scope cat.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.

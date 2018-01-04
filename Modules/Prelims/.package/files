@@ -1,13 +1,6 @@
 lib.v
 modules.v
 quotientmonad.v
-quotientrep.v
-aritiesalt.v
-uniproofalt.v
-HssToArity.v
-BindingSig.v
-PresentableArity.v
 LModuleBinProduct.v
 DerivationIsFunctorial.v
 deriveadj.v
-FullArities.v
