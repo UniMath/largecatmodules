@@ -1,3 +1,4 @@
+(* half-arities and representation of a half arity*)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.

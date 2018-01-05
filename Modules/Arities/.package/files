@@ -5,3 +5,4 @@ HssToArity.v
 BindingSig.v
 PresentableArity.v
 FullArities.v
+Signatures.v

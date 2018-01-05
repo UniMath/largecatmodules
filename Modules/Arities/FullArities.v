@@ -1,4 +1,5 @@
 (* Full arities : pairs of old arities *)
+(* With the definition of represetnation as displayed category *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
