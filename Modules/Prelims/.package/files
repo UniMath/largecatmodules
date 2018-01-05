@@ -11,3 +11,4 @@ LModuleBinProduct.v
 DerivationIsFunctorial.v
 deriveadj.v
 FullArities.v
+Signatures.v
