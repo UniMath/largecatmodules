@@ -19,7 +19,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 
-Require Import Modules.Prelims.aritiesalt.
+Require Import Modules.Arities.aritiesalt.
 
 
 Module HAr := aritiesalt.

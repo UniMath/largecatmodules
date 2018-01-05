@@ -46,11 +46,11 @@ Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.CocontFunctors.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
-Require Import Modules.Prelims.aritiesalt.
+Require Import Modules.Arities.aritiesalt.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.quotientmonad.
-Require Import Modules.Prelims.quotientrep.
+Require Import Modules.Arities.quotientrep.
 
 Set Automatic Introduction.
   
