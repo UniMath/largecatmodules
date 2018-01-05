@@ -1,4 +1,7 @@
 (* The binary product of two modules is a module *)
+(*
+Direct definition of binary product.
+It could also be deduced from LModuleColims.v *)
 (* TODO montrer que n'importe quel limite se calcule pointwise *)
 
 (**
