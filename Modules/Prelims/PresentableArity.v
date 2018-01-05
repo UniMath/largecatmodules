@@ -1,4 +1,4 @@
-(* We show that presentable arities are representable *)
+(* We show that presentable (half-)arities are representable *)
 
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
