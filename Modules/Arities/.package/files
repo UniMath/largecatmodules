@@ -6,3 +6,7 @@ BindingSig.v
 PresentableArity.v
 FullArities.v
 Signatures.v
+LModuleColims.v
+LModuleCoproducts.v
+HArityCoproduct.v
+RawSigToHAr.v

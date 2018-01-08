@@ -334,10 +334,8 @@ Proof.
   apply pathsinv0.
   etrans;[|apply (assoc (C:=SET))].
   cpre SET.
-  assert (h:= arity_Mor_ax F (u_monad m)).
-  eapply nat_trans_eq_pointwise in h.
   apply pathsinv0.
-  apply h.
+  apply (arity_Mor_ax_pw F (u_monad m)).
 Qed.
 
 End eq_mr.
@@ -574,9 +572,7 @@ Proof.
   etrans;revgoals.
   etrans;[|apply assoc].
   apply cancel_precomposition.
-  assert (hF := arity_Mor_ax F (u_monad m)).
-  eapply nat_trans_eq_pointwise in hF.
-  apply hF.
+  apply arity_Mor_ax_pw.
   reflexivity.
 Qed.
 
@@ -647,9 +643,7 @@ Proof.
     eapply pathsinv0.
     etrans; [apply assoc|].
     apply cancel_postcomposition.
-    assert (h:= (arity_Mor_ax F (pr1 m))).
-    eapply nat_trans_eq_pointwise in h.
-    apply h.
+    apply arity_Mor_ax_pw.
   }
   etrans.
   {

@@ -85,6 +85,7 @@ Definition arity_comp (F : arity) {R S T : MONAD}
     ((# F f : (F R : bmod_disp C C R) -->[f] F S) %ar ;; (#F g)%ar)%mor_disp 
   := pr2 (pr2 F) _ _ _ _ _ .
 
+(* Demander la version pointwise plutôt ? *)
 Definition is_arity_Mor (F F' : arity_data)
            (t : ∏ R : MONAD, LModule_Mor R (F R)  (F' R)) 
   :=
@@ -128,6 +129,19 @@ Definition arity_Mor_ax {F F' : arity} (a : arity_Mor F F')
     =
     ((a R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%ar f : nat_trans _ _)
   := pr2 a.
+
+Lemma arity_Mor_ax_pw {F F' : arity} (a : arity_Mor F F') 
+  : ∏ {R S : Monad C}(f : Monad_Mor R S) x,
+    (((# F)%ar f :   nat_trans _ _) x) ·
+                                       ((a S : nat_trans _ _) x) 
+    =
+    ((a R : nat_trans _ _)  x) · (((#F')%ar f : nat_trans _ _) x).
+Proof.
+  intros.
+  assert (h := arity_Mor_ax a f).
+  eapply nat_trans_eq_pointwise in h.
+  apply h.
+Qed.
 
 (** Equality between two arity morphisms *)
 
