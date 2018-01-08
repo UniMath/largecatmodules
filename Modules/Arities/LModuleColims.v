@@ -3,6 +3,10 @@ limits/colimits of modules are computes pointwise
 forget ful functors from modules to functors
 
 Proofs for limits are very similar to proof from colimits
+
+TODO: refaire en supposant les colimites/limites dans la catégories des foncteurs
+plutôt que dans la catégorie cible. Mais est-ce possible ? Comment définir la multiplication
+dans ce cas (ltmult) ?
  *)
 
 (**
@@ -18,7 +22,6 @@ Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.whiskering.
-Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.graphs.limits.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
@@ -531,7 +534,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       apply (colimArrowUnique (coFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).
-  Qed.
+  Defined.
 
   Lemma LModule_isLimCone : isLimCone _ _ LModule_lim_cone.
     intros M cc.
@@ -551,7 +554,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       apply (limArrowUnique (limFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).
-  Qed.
+  Defined.
 
   Definition LModule_ColimCocone : ColimCocone d :=
     mk_ColimCocone  _ _ _  LModule_isColimCocone.

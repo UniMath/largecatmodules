@@ -219,9 +219,7 @@ Proof.
     {
       apply cancel_precomposition.
       eapply pathsinv0.
-      assert (h := (arity_Mor_ax (codom_mor f) (pr1 β  ))).
-      eapply nat_trans_eq_pointwise in h.
-      use h.
+      apply arity_Mor_ax_pw.
     }
     etrans;[apply assoc|].
     apply cancel_postcomposition.
@@ -229,10 +227,8 @@ Proof.
   }
   repeat rewrite assoc.
   do 4 apply cancel_postcomposition.
-  assert (h := (arity_Mor_ax (dom_mor f) (pr1 β  ))).
-  eapply nat_trans_eq_pointwise in h.
   apply pathsinv0.
-  use h.
+  apply arity_Mor_ax_pw.
 Qed.
 
 Definition rep_comp (a b c : FArity ) f g

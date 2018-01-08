@@ -4,4 +4,3 @@ quotientmonad.v
 LModuleBinProduct.v
 DerivationIsFunctorial.v
 deriveadj.v
-LModuleColims.v
