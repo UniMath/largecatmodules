@@ -1,4 +1,7 @@
-
+(**
+HSS Signature to Arity functor
+H
+*)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
@@ -18,6 +21,7 @@ Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
+Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Arities.aritiesalt.
@@ -232,3 +236,121 @@ Qed.
 Definition hss_to_ar : arity C := hss_to_ar_data ,, hss_to_ar_is_arity.
 
 End HssToArity.
+
+Section HssToArityMor.
+  Context {C  : category}.
+
+  Let Sig := Signature_precategory C C.
+  Local Notation F := hss_to_ar.
+
+  Context {A B : Sig}.
+  Variable (f : Sig ⟦ A, B⟧).
+
+  (* Let θ_nat_2_pw (H : Signature C (homset_property C) C (homset_property C)) := *)
+  (*   (θ_nat_2_pointwise _ _ _ _ H (theta H)). *)
+  (* Let θ_nat_1_pw (H : Signature C (homset_property C) C (homset_property C)) := *)
+  (*   (θ_nat_1_pointwise _ _ _ _ H (theta H)). *)
+  Local Notation "'p' T" := (ptd_from_mon (homset_property C) T) (at level 3).
+
+  Lemma hss_to_ar_mod_mor_laws (R : Monad C) :
+  @LModule_Mor_laws C R C (F A R) (F B R)
+    ( (# (SignatureForgetfulFunctor C C) f : nat_trans _ _) ( R : functor _ _ )).
+  Proof.
+    (*
+<<<
+              f_R R
+    A(R) R -----------> B(R) R
+       |                   |
+       |                   |
+ θ A   |                   | θ B
+       |                   |
+       |                   |
+       V                   V
+    A(R R)              B (R R)
+       |                   |
+       |                   |
+ A(μ)  |                   | B(μ)
+       |                   |
+       |                   |
+       V                   V
+      A(R) ----------->  B(R)
+             f_R
+>>>
+And as f is a signature morphism, we have
+
+
+<<<
+              f_X R
+    A(X) R ---------->  B(X) R
+       |                   |
+       |                   |
+ θ A   |                   | θ B
+       |                   |
+       |                   |
+       V                   V
+    A(X R) ----------->  B(X R)
+             f_XR
+>>>
+*)
+    intro c.
+    assert (hf := nat_trans_eq_pointwise (pr2 f (R : functor _ _) (p R)) c).
+    cbn in hf.
+    rewrite functor_id,id_right in hf.
+    cbn.
+    etrans.
+    {
+      etrans;[apply assoc|].
+      apply cancel_postcomposition.
+      exact ( !hf).
+    }
+    do 2 rewrite <- assoc.
+    apply cancel_precomposition.
+    apply pathsinv0.
+    assert (hf' := (nat_trans_ax (pr1 f) _ _ (μ R) )).
+    eapply nat_trans_eq_pointwise in hf'.
+    apply hf'.
+  Qed.
+
+  Definition hss_to_ar_mod_mor (R : Monad C) :
+    LModule_Mor  R  (F A R) (F B R) :=
+    _ ,, hss_to_ar_mod_mor_laws R.
+
+  Lemma hss_to_ar_is_arity_Mor : is_arity_Mor (F A) (F B) hss_to_ar_mod_mor.
+  Proof.
+    intros R S g.
+    change ((#(A : Signature _ _ _ _) (g : nat_trans _ _))· identity _ · (pr1 f (S : functor _ _)) =
+            (pr1 f (R : functor _ _)) · (# (B : Signature _ _ _ _) (g : nat_trans _ _) · identity _)).
+    do 2 rewrite id_right.
+    apply nat_trans_ax.
+  Qed.
+  Definition hss_to_ar_mor   : arity_Mor (F A) (F B) :=
+    _ ,, hss_to_ar_is_arity_Mor.
+End HssToArityMor.
+
+Section HssToArityFunctor.
+  Context {C  : category}.
+
+  Let Sig := Signature_precategory C C.
+  Local Notation F := hss_to_ar.
+
+  Definition hss_to_ar_functor_data : functor_data Sig (arity_precategory (C := C)) :=
+    mk_functor_data (C' := arity_precategory) _ (@hss_to_ar_mor C).
+
+  Lemma hss_to_ar_is_functor : is_functor hss_to_ar_functor_data.
+  Proof.
+    split.
+    - intro S.
+      apply arity_Mor_eq.
+      intro X.
+      apply LModule_Mor_equiv;[apply homset_property|].
+      apply idpath.
+    - intros R S T f g.
+      apply arity_Mor_eq.
+      intro X.
+      apply LModule_Mor_equiv;[apply homset_property|].
+      apply idpath.
+  Defined.
+
+  Definition hss_to_ar_functor : functor Sig (arity_precategory (C := C)) :=
+    mk_functor _ hss_to_ar_is_functor.
+End HssToArityFunctor.

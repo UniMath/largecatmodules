@@ -25,6 +25,25 @@ Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition).
 
 Set Automatic Introduction.
 
+(* TODO vérifier si ça n'existe pas déjà  dans UniMath *)
+Lemma nat_trans_is_iso_to_pw 
+   (C : precategory) (D : category)
+  (A B : functor C D) (a : nat_trans A B) : is_iso (C := [C,D])%Cat a -> ∏ x : C, is_iso (a x).
+Proof.
+  intros ha x.
+  apply is_iso_from_is_z_iso.
+  apply is_z_iso_from_is_iso in ha.
+  use mk_is_z_isomorphism.
+  - apply ((is_z_isomorphism_mor ha : nat_trans _ _) x).
+  - apply mk_is_inverse_in_precat.
+    + assert (h := is_inverse_in_precat1 ha).
+      eapply nat_trans_eq_pointwise in h.
+      exact h.
+    + assert (h := is_inverse_in_precat2 ha).
+      eapply nat_trans_eq_pointwise in h.
+      exact h.
+Qed.
+
 Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
   f = g -> f t1 = f t2 ->g t1 = g t2.
 Proof.

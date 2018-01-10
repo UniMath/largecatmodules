@@ -10,3 +10,4 @@ LModuleColims.v
 LModuleCoproducts.v
 HArityCoproduct.v
 RawSigToHAr.v
+PresentableHArityCoproducts.v
