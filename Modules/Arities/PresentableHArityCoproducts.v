@@ -279,7 +279,7 @@ Section CoprodPresentable.
       (* use Pushouts_pw_epi. *)
       apply is_iso_isEpi.
       apply is_z_iso_from_is_iso.
-      apply nat_trans_is_iso_to_pw.
+      apply is_functor_iso_pointwise_if_iso.
       set (F := SignatureForgetfulFunctor _ _).
       set (f := binding_Sig_iso _ _ _ _ _).
       apply is_iso_from_is_z_iso.
