@@ -12,3 +12,4 @@ HArityCoproduct.v
 RawSigToHAr.v
 PresentableHArityCoproducts.v
 SigEquivRep.v
+HArityBinproducts.v
