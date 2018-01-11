@@ -11,3 +11,4 @@ LModuleCoproducts.v
 HArityCoproduct.v
 RawSigToHAr.v
 PresentableHArityCoproducts.v
+SigEquivRep.v
