@@ -27,7 +27,7 @@ of its half arities : `Arities/RawSigToHAr`
 - pointwise limits and colimits of arities : `Arities/HAritiesColims`
 - quotient monad : `Prelims/quotientmonad`
           
-The proof that algebraic signatures are representable is already proved in
+The fact that algebraic signatures are representable is already proved in
 a different setting in the Heterogeneous Substitution System package of UniMaths.
 The adaptation to our setting is carried out in the files : `Arities/HssToArity` and
 `Arities/BindingSig`
