@@ -13,7 +13,6 @@ PresentableHArityCoproducts.v
 SigEquivRep.v
 HArityBinproducts.v
 HArityDerivation.v
-CheckCorrespondanceAdjonction.v
 HAritiesColims.v
 FullArToRaw.v
 PresentableHArityBinProdR.v
