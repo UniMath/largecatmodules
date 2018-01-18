@@ -3,6 +3,9 @@
 - unicity at isomorphism près de coproducts
 - (∐ (o : O) ∐ (i : A o), B i) ≅ (∐ (oi : ∑ (o : O), A o) , B (pr2 oi))
 - Coproducts of epis are epis
+- ∐ (i : A) , (B i× C) ---> ( ∐ (i : A), B i)× C
+          and definition of distributivity in this context (this map is an iso)
+- if B i ≅ C i for any i, then ∐ B ≅ ∐ C
 *)
 
 Require Import UniMath.Foundations.PartD.
@@ -16,11 +19,35 @@ Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.ProductCategory.
 Require Import UniMath.CategoryTheory.limits.coproducts.
+Require Import UniMath.CategoryTheory.limits.binproducts.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Open Scope cat.
+
+Definition Coproducts_Unit {D : category}  : Coproducts unit D .
+  intro f.
+  use mk_Coproduct.
+  - exact (f tt).
+  - induction i.
+    exact (identity _).
+  - intros c g.
+    use unique_exists.
+    + exact (g tt).
+    + cbn.
+      induction i.
+      apply id_left.
+    + intro.
+      apply impred_isaprop.
+      intro.
+      apply homset_property.
+    + cbn.
+      intros u hu.
+      etrans;[|apply hu].
+      apply pathsinv0.
+      apply id_left.
+Defined.
 
 Section WEQ.
 
@@ -204,6 +231,95 @@ Section CoprodEpis.
 
 
 End CoprodEpis.
+
+
+Section CoprodBinprod.
+
+  Local Notation BPO := (BinProductObject  _).
+  Local Notation CPO := (CoproductObject _ _).
+
+  Context {C : precategory} {O : UU} .
+  Context {B : ∏ (o : O) , C} (cpB : Coproduct O _ B).
+  Context {X : C} (bpBX : ∏ o, BinProduct _ (B o) X)
+          (bpCX : BinProduct  _ (CPO cpB) X)
+          (cpBX : Coproduct O _ (fun o => BPO (bpBX o))).
+
+  (* We show that bppc is a coproduct *)
+  Definition bp_coprod_In o  : C ⟦ BPO (bpBX o) , BPO bpCX ⟧ :=
+    BinProductOfArrows C bpCX (bpBX o) (CoproductIn O C cpB o) (identity X).
+
+  Definition bp_coprod_mor  : C ⟦ CPO (cpBX) , BPO bpCX ⟧ :=
+    CoproductArrow _ _ _ bp_coprod_In.
+
+    
+
+
+End CoprodBinprod.
+
+Definition bp_coprod_isDistributive {C : precategory} {I : UU}
+           (bp : BinProducts C) (cp : Coproducts I C) 
+  : UU :=
+  ∏ B X, is_iso (bp_coprod_mor (cp B) (fun o => bp _ X) (bp _ _) (cp _) ).
+
+Definition iso_from_isDistributive  {C : precategory} {I : UU}
+           (bp : BinProducts C) (cp : Coproducts I C) 
+           (h :  bp_coprod_isDistributive bp cp) B X :
+  iso _ _ :=
+  isopair (bp_coprod_mor (cp B) (fun o => bp _ X) (bp _ _) (cp _) )
+      (h  B X).
+
+Section CoprodPwIso.
+
+  Local Notation CPO := (CoproductObject _ _).
+
+  Context {C : category} {O : UU} .
+  Context {B B' : ∏ (o : O) , C} (cpB : Coproduct O _ B)(cpB' : Coproduct O _ B')
+          (pwiso : ∏ o, iso (B o) (B' o)).
+
+  Definition coprod_pw_iso_isCoproduct : isCoproduct O _ B (CPO cpB')
+                                                     (fun i =>
+                                                         (pwiso i)· (CoproductIn _ _  cpB' i)) .
+  Proof.
+    intros c f.
+    use unique_exists.
+    -  apply CoproductArrow.
+       intro o.
+       eapply compose.
+       + exact (inv_from_iso (pwiso o)).
+       + exact (f o).
+    - cbn.
+      intro i.
+      etrans.
+      etrans;[eapply pathsinv0;apply assoc|].
+      apply cancel_precomposition.
+      apply CoproductInCommutes.
+      etrans;[apply assoc|].
+      rewrite iso_inv_after_iso.
+      apply id_left.
+    - intro y.
+      apply impred_isaprop.
+      intro t.
+      apply (homset_property C).
+    - cbn.
+      intros y h.
+      apply CoproductArrowUnique.
+      intro i.
+      rewrite <- h.
+      do 2 rewrite assoc.
+      rewrite iso_after_iso_inv. 
+      apply cancel_postcomposition.
+      apply pathsinv0.
+      apply id_left.
+  Defined.
+
+  Let cpB'2 := mk_Coproduct _ _ _ _ _ coprod_pw_iso_isCoproduct.
+
+  Definition coprod_pw_iso : iso (CPO cpB) (CPO cpB') :=
+    (iso_from_Coproduct_to_Coproduct _ cpB cpB'2).
+  End CoprodPwIso.
+    
+
+
 
 
 

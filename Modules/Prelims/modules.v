@@ -1,11 +1,15 @@
 (**
 
+forgetful functor
+pullback functor
+
+- pull back functor (base change). This is mathematically redundant with the
+proof that it is a fibration
+but more convenient to use
 
 let f : R -> S be a morphism of monads
 
 - f' : R -> f* S morphism of R-modules
-- morphism of T module : id*T -> T
-- morphism between m*(m'*(T'')) and (m o m')*(T'')
 - displayed categories of modules over a monad 
 - proof that it is a fibration
 
@@ -24,9 +28,44 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.LModPbCommute.
 
 Open Scope cat.
 
+Section ForgetLModFunctor.
+  Context {B : precategory} (R : Monad B) (C : category).
+  Local Notation MOD := (precategory_LModule R C).
+
+  Definition forget_LMod_data : functor_data MOD [B,C] :=
+    mk_functor_data (C := MOD) (C' := [B,C])
+                    (fun X => ((X : LModule _ _): functor _ _))
+                    (fun a b f => ((f : LModule_Mor _ _ _) : nat_trans _ _)).
+
+  Definition forget_LMod_is_functor : is_functor forget_LMod_data :=
+    (( fun x => idpath _) : functor_idax forget_LMod_data)
+      ,, ((fun a b c f g => idpath _) : functor_compax forget_LMod_data).
+
+  Definition forget_LMod: functor MOD [B,C] :=
+    mk_functor forget_LMod_data forget_LMod_is_functor.
+End ForgetLModFunctor.
+Section PbmFunctor.
+  Context {B : precategory} {C : category} {R S : Monad B} (f : Monad_Mor R S).
+  Let MOD (R : Monad B) := (precategory_LModule R C).
+  Definition pbm_functor_data : functor_data (MOD S) (MOD R) :=
+    mk_functor_data (C := MOD S) (C' := MOD R) (pb_LModule f )
+                    (@pb_LModule_Mor _ _ _ f _).
+  Lemma pbm_is_functor : is_functor pbm_functor_data.
+  Proof.
+    split.
+    - intro M.
+      now apply LModule_Mor_equiv;[apply homset_property|].
+    - intros X Y Z u v.
+      now apply LModule_Mor_equiv;[apply homset_property|].
+  Qed.
+
+  Definition pb_LModule_functor : functor (MOD S) (MOD R) :=
+                              mk_functor _ pbm_is_functor.
+End PbmFunctor.
 (** strangely enough, I didn't find the following lemma :
  *)
 Lemma monad_mor_to_lmodule_law {C : precategory} {R S : Monad C}
@@ -45,105 +84,7 @@ Definition monad_mor_to_lmodule {C : precategory} {R S : Monad C}
   (f : Monad_Mor R S) : LModule_Mor R (tautological_LModule R) (pb_LModule f (tautological_LModule S))
   := (f : nat_trans _ _) ,, monad_mor_to_lmodule_law f.
 
-(** 
-Let T be a module on M'.
 
-In this section, we construct the module morphism T -> id* T (which is
-actully an iso) where id* T is the pullback module of T along
-the identity morphism in M'.
-
-and also the morphism id* T -> T
-
-*)
-Section Pullback_Identity_Module.
-
-Context {B} {M':Monad B}  {C:precategory} {T : LModule M' C}.
-
-Local Notation pbmid := (pb_LModule (Monad_identity M') T).
-
-Lemma  pbm_id_is_nat_trans  :  is_nat_trans T pbmid (fun x => identity _).
-Proof.
-  intros a b f; simpl.
-  now rewrite id_right, id_left.
-Qed.
-
-Lemma  id_pbm_is_nat_trans  :  is_nat_trans pbmid T (fun x => identity _).
-Proof.
-  intros a b f; simpl.
-  now rewrite id_right, id_left.
-Qed.
-
-Definition pbm_id_nat_trans : nat_trans T pbmid  := (_ ,, pbm_id_is_nat_trans).
-Definition id_pbm_nat_trans : nat_trans pbmid T  := (_ ,, id_pbm_is_nat_trans).
-
-Lemma pbm_id_law : LModule_Mor_laws _ (T:=T) (T':=pbmid) pbm_id_nat_trans.
-Proof.
-  intros b; simpl.
-  rewrite id_left,id_right.
-  etrans.
-    cpost _. apply functor_id.
-  apply id_left.
-Qed.
-
-Lemma id_pbm_law : LModule_Mor_laws _ (T:=pbmid) (T':=T) id_pbm_nat_trans.
-Proof.
-  intros b; simpl.
-  rewrite id_left,id_right.
-  apply pathsinv0.
-  etrans.
-    cpost _. apply functor_id.
-  apply id_left.
-Qed.
-Definition pbm_id  : LModule_Mor _ T pbmid := (_ ,, pbm_id_law) .
-Definition id_pbm  : LModule_Mor _ pbmid T := (_ ,, id_pbm_law) .
-
-End Pullback_Identity_Module.
-
-(**
-In this section, we construct the module morphism (which is actually an iso)
-between m*(m'*(T'')) and (m o m')*(T'')
-
-*)
-
-Section Pullback_Composition.
-
-Context {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory}
-        {M'': Monad B} (m' : Monad_Mor M' M'') (T'' : LModule M'' C).
-
-Local Notation comp_pbm := (pb_LModule m (pb_LModule m' T'')).
-Local Notation pbm_comp := (pb_LModule (Monad_composition m  m') T'').
-
-Lemma pbm_mor_comp_is_nat_trans
-  : is_nat_trans comp_pbm pbm_comp (fun x => identity _).
-Proof.
-  red; intros; simpl.
-  rewrite id_right.
-  rewrite id_left.
-  reflexivity.
-Qed.
-
-Definition pbm_mor_comp_nat_trans := (_ ,, pbm_mor_comp_is_nat_trans ).
-
-Lemma pbm_mor_comp_law : LModule_Mor_laws (T:=comp_pbm) (T':=pbm_comp) _ pbm_mor_comp_nat_trans.
-Proof.
-  intros b; simpl.
-  now rewrite id_left,id_right, (functor_comp T''), assoc.
-Qed.
-
-Definition pbm_mor_comp : LModule_Mor _ comp_pbm pbm_comp := (_ ,, pbm_mor_comp_law).
-
-Definition pbm_comp_mor : LModule_Mor _ pbm_comp comp_pbm.
-Proof.
-  use tpair. 
-  - exists (fun x => identity _ ).
-    abstract (intros x y f; cbn;  
-              rewrite id_right; rewrite id_left;
-              reflexivity).
-  - abstract (intros b; simpl;
-              now rewrite id_left,id_right, (functor_comp T''), assoc).
-Defined.
-      
-End Pullback_Composition.
 
 (**
 The pullback module/morphism construction allow to construct a large category of modules over monads

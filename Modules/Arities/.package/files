@@ -6,9 +6,14 @@ BindingSig.v
 PresentableArity.v
 FullArities.v
 Signatures.v
-LModuleColims.v
-LModuleCoproducts.v
 HArityCoproduct.v
 RawSigToHAr.v
+HssArityCommutation.v
 PresentableHArityCoproducts.v
 SigEquivRep.v
+HArityBinproducts.v
+HArityDerivation.v
+CheckCorrespondanceAdjonction.v
+HAritiesColims.v
+FullArToRaw.v
+PresentableHArityBinProdR.v

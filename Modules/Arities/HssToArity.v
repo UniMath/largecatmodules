@@ -24,6 +24,7 @@ Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
+Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Arities.aritiesalt.
 Open Scope cat.
 
@@ -155,17 +156,12 @@ By naturality of θ, the top arrow rewrites
   (H M) (T X) ---------> (H (M T)) X ----------> H (N T) X
 >>>
 *)
-
-Lemma lift_pb_LModule_laws {R S : Monad C} (f : Monad_Mor R S) :
-  LModule_Mor_laws R
-                   (T := (liftlmodule R (pb_LModule f (tautological_LModule S))))
-                   (T' := (pb_LModule f (liftlmodule S (tautological_LModule S))))
-                     (nat_trans_id _).
+Lemma lift_pb_LModule_eq_mult {R S : Monad C} ( f : Monad_Mor R S) c :
+  (ModulesFromSignatures.lift_lm_mult H R (pb_LModule f (tautological_LModule S)) : nat_trans _ _) c =
+  (pb_LModule_σ f (liftlmodule S (tautological_LModule S))) c.
 Proof.
-  intro X.
-  cbn.
-  rewrite id_left,id_right.
-  etrans;[ apply assoc|].
+  apply pathsinv0.
+    etrans;[ apply assoc|].
   etrans.
   {
     apply cancel_postcomposition.
@@ -185,12 +181,24 @@ Proof.
     now rewrite id_left.
 Qed.
 
+Lemma lift_pb_LModule_iso 
+  {R S : Monad C}
+  (f : Monad_Mor R S) :
+    iso (C := precategory_LModule _ _)
+    (liftlmodule R (pb_LModule f (tautological_LModule S)))
+    (pb_LModule f (liftlmodule S (tautological_LModule S))).
+Proof.
+  apply LModule_M1_M2_iso.
+  apply lift_pb_LModule_eq_mult.
+Defined.
+
 Definition lift_pb_LModule 
   {R S : Monad C}
   (f : Monad_Mor R S) :
   LModule_Mor R (liftlmodule R (pb_LModule f (tautological_LModule S)))
-    (pb_LModule f (liftlmodule S (tautological_LModule S)))
-  := _ ,, lift_pb_LModule_laws f.
+              (pb_LModule f (liftlmodule S (tautological_LModule S))) :=
+  morphism_from_iso _ _ _ (lift_pb_LModule_iso f).
+
 
 Definition hss_to_ar_data : @arity_data C.
 Proof.

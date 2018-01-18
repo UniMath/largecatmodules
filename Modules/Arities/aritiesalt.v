@@ -1,4 +1,6 @@
-(* half-arities and representation of a half arity*)
+(* half-arities and representation of a half arity
+forgetful functor to the category of modules over a given monad R
+ *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
@@ -71,6 +73,34 @@ Definition arity : UU := ∑ F : arity_data, is_arity F.
 
 Definition arity_data_from_arity (F : arity) : arity_data := pr1 F.
 Coercion arity_data_from_arity : arity >-> arity_data.
+
+Notation Θ := tautological_LModule.
+
+Definition tautological_harity_on_objects : ∏ (R : Monad C), LModule R C := Θ.
+Definition tautological_harity_on_morphisms : 
+  ∏ (R S : Monad C) (f : Monad_Mor R S), LModule_Mor _ (Θ R) (pb_LModule f (Θ S)) :=
+  @monad_mor_to_lmodule C.
+
+
+Definition tautological_harity_data : arity_data  :=
+  tautological_harity_on_objects ,, tautological_harity_on_morphisms.
+
+Lemma tautological_harity_is_arity :  is_arity tautological_harity_data.
+Proof.
+  split.
+  - intros R x.
+    apply idpath.
+  - intros R S T f g.
+    apply LModule_Mor_equiv.
+    now apply homset_property.
+    apply nat_trans_eq.
+    now apply homset_property.
+    intro x.
+    cbn.
+    now rewrite id_right.
+Qed.
+
+Definition tautological_harity : arity := _ ,, tautological_harity_is_arity.
 
 Definition arity_id (F : arity) :
   ∏ (R : MONAD), ∏ x ,
@@ -236,6 +266,24 @@ End Arities.
 Arguments arity _ : clear implicits.
 
 Notation "# F" := (arity_on_morphisms F) (at level 3) : arity_scope.
+
+Section ForgetHArFunctor.
+  Context {C : category} (R : Monad C) .
+  Local Notation MOD := (precategory_LModule R C).
+  Local Notation HAR := (arity_precategory (C:=C)).
+
+  Definition forget_HAr_data : functor_data HAR MOD :=
+    mk_functor_data (C := HAR) (C' := MOD)
+                    (fun X => ((X : arity C) R))
+                    (fun a b f => ((f : arity_Mor _ _ ) R)).
+
+  Definition forget_HAr_is_functor : is_functor forget_HAr_data :=
+    (( fun x => idpath _) : functor_idax forget_HAr_data)
+      ,, ((fun a b c f g => idpath _) : functor_compax forget_HAr_data).
+
+  Definition forget_HAr: functor HAR MOD  :=
+    mk_functor forget_HAr_data forget_HAr_is_functor.
+End ForgetHArFunctor.
 
 (* large category of representation defined as a display category
 

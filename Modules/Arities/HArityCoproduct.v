@@ -22,45 +22,10 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
-Require Import Modules.Arities.LModuleCoproducts.
+Require Import Modules.Prelims.LModPbCommute.
+Require Import Modules.Prelims.LModuleCoproducts.
 Require Import Modules.Arities.aritiesalt.
 
-Section pullback_coprod.
-  Context {C : category} {B : precategory}.
-  Context {R : Monad B}{S : Monad B} (f : Monad_Mor R S).
-
-  Context {O : UU}.
-  Context {cpC : Coproducts O C}.
-
-  Let cpLM (X : Monad B) := LModule_Coproducts C  X cpC.
-  Let cpFunc := Coproducts_functor_precat _ B _ cpC (homset_property C).
-
-  Context (α : O -> LModule S C ).
-
-  Let αF : O -> functor B C := fun o => α o.
-  Let pbm_α : O -> LModule R C := fun o => pb_LModule f (α o).
-
-  Definition pbm_coprod := pb_LModule f (CoproductObject _ _ (cpLM _ α)).
-  Definition coprod_pbm : LModule _ _ := CoproductObject _ _ (cpLM _ pbm_α).
-
-  Definition coprod_pbm_to_pbm_coprod_nat_trans : nat_trans coprod_pbm pbm_coprod :=
-    nat_trans_id _ .
-
-  Lemma coprod_pbm_to_pbm_coprod_laws : LModule_Mor_laws _ (T := coprod_pbm) (T' := pbm_coprod)
-                                                         coprod_pbm_to_pbm_coprod_nat_trans.
-  Proof.
-    intro c.
-    etrans;[apply id_left|].
-    apply pathsinv0.
-    etrans;[apply id_right|].
-    cbn.
-    apply pathsinv0.
-    apply CoproductOfArrows_comp.
-  Qed.
-  
-  Definition coprod_pbm_to_pbm_coprod : LModule_Mor  _ coprod_pbm pbm_coprod :=
-    _ ,, coprod_pbm_to_pbm_coprod_laws.
-End pullback_coprod.
 
 Section Coprod.
   Context {C : category} .
