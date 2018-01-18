@@ -1,7 +1,11 @@
 lib.v
-modules.v
-quotientmonad.v
+LModuleCoproducts.v
 LModuleBinProduct.v
+LModPbCommute.v
+modules.v
+LModuleColims.v
+quotientmonad.v
 DerivationIsFunctorial.v
 deriveadj.v
 CoproductsComplements.v
+BinProductComplements.v

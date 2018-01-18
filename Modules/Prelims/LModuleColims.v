@@ -1,8 +1,11 @@
 (* colimits are computed pointwise
+Actually this is not needed for our formalization
 limits/colimits of modules are computes pointwise
 forget ful functors from modules to functors
 
 Proofs for limits are very similar to proof from colimits
+
+Proof that the pullbacks preserve lims/colims
 
 TODO: refaire en supposant les colimites/limites dans la catégories des foncteurs
 plutôt que dans la catégorie cible. Mais est-ce possible ? Comment définir la multiplication
@@ -26,6 +29,9 @@ Require Import UniMath.CategoryTheory.limits.graphs.limits.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
+
+Require Import Modules.Prelims.modules. (* for the definition of the forgetful functor *)
+Require Import Modules.Prelims.LModPbCommute. (* for the definition of the iso *)
 
 Local Open Scope cat.
 
@@ -81,22 +87,6 @@ Lemma compColimOfArrows
 *)
 (* forget ful functor from Modules to functors *)
 (* TODO déplacer ça dans LModule.v *)
-Section ForgetLModFunctor.
-  Context {B : precategory} (R : Monad B) (C : category).
-  Local Notation MOD := (precategory_LModule R C).
-
-  Definition forget_LMod_data : functor_data MOD [B,C] :=
-    mk_functor_data (C := MOD) (C' := [B,C])
-                    (fun X => ((X : LModule _ _): functor _ _))
-                    (fun a b f => ((f : LModule_Mor _ _ _) : nat_trans _ _)).
-
-  Definition forget_LMod_is_functor : is_functor forget_LMod_data :=
-    (( fun x => idpath _) : functor_idax forget_LMod_data)
-      ,, ((fun a b c f g => idpath _) : functor_compax forget_LMod_data).
-
-  Definition forget_LMod: functor MOD [B,C] :=
-    mk_functor forget_LMod_data forget_LMod_is_functor.
-End ForgetLModFunctor.
 
 Section ColimsModule.
   Context 
@@ -579,3 +569,60 @@ Definition LModule_Lims_of_shape (C : category) {B : precategory}
    LModule_LimCone  lims_g (homset_property C).
                                          
 
+
+
+Section pullback_lims.
+  Context 
+          {D : category}
+          {g : graph} (colims_g : Colims_of_shape g D)
+          (lims_g : Lims_of_shape g D)
+          {C:category}.
+          (* (hsB : has_homsets B) *)
+
+  Let MOD (R : Monad C) := (precategory_LModule R D).
+  Let cMod (R : Monad C) := LModule_Colims_of_shape D R g colims_g.
+  Let lMod (R : Monad C) := LModule_Lims_of_shape D R g lims_g.
+
+  Context {R S : Monad C} (f : Monad_Mor R S) (M : LModule S D).
+  Variable (dS : diagram g (MOD S)).
+  Let dR := mapdiagram (pb_LModule_functor f) dS .
+
+
+
+  Let cS := colim (cMod S dS).
+  Let lS :=   lim (lMod S dS).
+  Let cR := colim (cMod R dR).
+  Let lR :=   lim (lMod R dR).
+
+  Lemma pb_colims_eq_mult (c : C) :
+    (LModule_colim_mult colims_g (homset_property D) dR) c = (pb_LModule_σ f cS) c.
+  Proof.
+    simpl.
+    unfold ColimFunctor_mor, LModule_colim_mult_data.
+    etrans;[|eapply pathsinv0;apply precompWithColimOfArrows].
+    apply colimArrowUnique.
+    intro v.
+    etrans;[apply colimOfArrowsIn|].
+    cbn.
+    apply pathsinv0.
+    apply assoc.
+  Qed.
+  Lemma pb_lims_eq_mult (c : C) :
+    (LModule_lim_mult lims_g (homset_property D) dR) c = (pb_LModule_σ f lS) c.
+  Proof.
+    simpl.
+    unfold LimFunctor_mor, LModule_lim_mult_data.
+    etrans;[|eapply pathsinv0;apply postCompWithLimOfArrows].
+    apply limArrowUnique.
+    intro v.
+    etrans;[apply limOfArrowsOut|].
+    cbn.
+    apply assoc.
+  Qed.
+
+  Definition pb_LModule_colim_iso : iso (C := MOD R) cR (pb_LModule f cS) :=
+    LModule_M1_M2_iso _ _ pb_colims_eq_mult (homset_property _).
+
+  Definition pb_LModule_lim_iso : iso (C := MOD R) lR (pb_LModule f lS) :=
+    LModule_M1_M2_iso _ _ pb_lims_eq_mult (homset_property _).
+End pullback_lims.

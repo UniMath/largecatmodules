@@ -36,7 +36,7 @@ Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.CoproductsComplements.
-Require Import Modules.Arities.LModuleCoproducts.
+Require Import Modules.Prelims.LModuleCoproducts.
 Require Import Modules.Arities.HArityCoproduct.
 Require Import Modules.Arities.Signatures.
 Require Import Modules.Arities.aritiesalt.
@@ -58,34 +58,40 @@ Local Notation MOD R := (category_LModule R C).
 
 Local Notation Θ := tautological_LModule.
 
-Definition tautological_harity_on_objects : ∏ (R : Monad C), LModule R C := Θ.
-Definition tautological_harity_on_morphisms : 
-  ∏ (R S : Monad C) (f : Monad_Mor R S), LModule_Mor _ (Θ R) (pb_LModule f (Θ S)) :=
-  @monad_mor_to_lmodule C.
-
-
-Definition tautological_harity_data : @arity_data C :=
-  tautological_harity_on_objects ,, tautological_harity_on_morphisms.
-
-Lemma tautological_harity_is_arity :  is_arity tautological_harity_data.
-Proof.
-  split.
-  - intros R x.
-    apply idpath.
-  - intros R S T f g.
-    apply LModule_Mor_equiv.
-    now apply homset_property.
-    apply nat_trans_eq.
-    now apply homset_property.
-    intro x.
-    cbn.
-    now rewrite id_right.
-Qed.
-
-Definition tautological_harity : HalfArity := _ ,, tautological_harity_is_arity.
 
 Definition half_arity_to_arity (a : HalfArity) : FullArity :=
   a ,, tautological_harity.
+
+Local Notation toAr := half_arity_to_arity.
+
+(** The representations are strictly the same *)
+Check ((fun a => idpath _):  ∏ a, (rep_ar C a) = (FAr.rep_ar C (toAr a))).
+
+(* TODO vérifier que c'es tutile *)
+(* Let a_sig_rep := precategory_rep_sig a_sig. *)
+(* Let a_har_rep := (rep_disp C)[{a_har}]. *)
+
+
+
+(* useless *)
+Lemma half_arity_to_arity_is_rep_weq (a : HalfArity) (M N : rep_ar C a) f : 
+  FAr.rep_ar_mor_law C (a := toAr a) (b:=toAr a) M N (identity _) f
+                     ≃
+  rep_ar_mor_law C (a :=  a) (b:= a) M N (identity (C := arity_category) _) f.
+Proof.
+  apply weqiff.
+  split.
+  - intros  h x.
+    etrans; [apply h|].
+    apply id_right.
+  - intros h x.
+    etrans; [apply h|].
+    cbn.
+    apply pathsinv0.
+    apply id_right.
+  - apply FAr.isaprop_rep_ar_mor_law.
+  - apply isaprop_rep_ar_mor_law.
+Defined.
 
 Definition rawSig := ∑ (O : UU), O -> HalfArity.
 
@@ -129,7 +135,6 @@ Defined.
 Local Notation Fob := sig_to_har_rep_weq.
 
 Definition sig_to_har_rep_on_mor_weq (R S : a_sig_rep) : a_sig_rep ⟦ R , S ⟧ ≃ a_har_rep ⟦ Fob R , Fob S ⟧.
-  (* apply weqfibtototal. *)
   apply weq_subtypes_iff.
   - intro x.
     apply impred_isaprop.
@@ -152,6 +157,10 @@ Definition sig_to_har_rep_on_mor_weq (R S : a_sig_rep) : a_sig_rep ⟦ R , S ⟧
       apply funextsec.
       intro i.
       cbn.
+
+
+
+
       unfold coproduct_nat_trans_in_data.
       specialize (h i x).
       cbn in h.

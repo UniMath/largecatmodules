@@ -722,3 +722,110 @@ Section derivadj.
   Defined.
   
 End derivadj.
+(* Require Import Modules.Arities.FullArToRaw. *)
+Local Definition adj1 := (fun R M N  => invweq (adjunction_hom_weq
+                                                                    (@deriv_adj R) M N
+                                                      )).
+(* Local Definition test := iso_FAr_full_HAr_rep _ _  _ test1. *)
+
+(* Let us check that conditions to redu full arity to a raw arity are met *)
+Local Lemma adj_law1 : (∏ (R S : Monad SET) (f : Monad_Mor R S) (M N : LModule R SET) (A : LModule S SET)
+ (u : LModule_Mor R M (Derivative.LModule_deriv TerminalHSET BinCoproductsHSET N))
+ (v : LModule_Mor R N (pb_LModule f A)),
+ (adj1 R M (pb_LModule f A))
+   ((u
+     :
+     (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M,
+     Derivative.LModule_deriv TerminalHSET BinCoproductsHSET N ⟧) · # (LModule_deriv_functor
+                                                                         TerminalHSET BinCoproductsHSET
+                                                                         (homset_property SET) R) v) =
+ ((adj1 R M N) u
+  :
+  (λ R0 : Monad SET, precategory_LModule R0 SET) R
+  ⟦ (λ R0 : Monad SET, LModule_binproduct BinProductsHSET (homset_property SET)) R M
+      (tautological_LModule R), N ⟧) · v).
+Proof.
+  intros R S f M N A u v.
+  apply LModule_Mor_equiv;[apply (homset_property SET)|].
+  apply nat_trans_eq;[apply (homset_property SET)|].
+  intros X.
+  apply funextfun.
+  intros [x y].
+  cbn.
+  unfold prodtofuntoprod.
+  cbn.
+  unfold pre_subst_nt_data.
+  cbn.
+  assert (h := LModule_Mor_σ R v X).
+  eapply toforallpaths  in h.
+  etrans;[| apply h].
+  cbn.
+  apply maponpaths.
+  apply maponpaths.
+  set (ff := fun x => _).
+  set (bp := BinCoproductsHSET).
+  apply pathsinv0.
+  assert (h' := nat_trans_ax v (bp unitHSET X) _ ff).
+  apply toforallpaths in h'.
+  set (ux := u X x).
+  cbn in ux.
+  red in h'.
+  cbn in h'.
+  eapply h'.
+Qed.
+Local Lemma adj_law2 :
+(∏ (R S : Monad SET) (f : Monad_Mor R S) (M : LModule R SET) (A B : LModule S SET)
+   (u : LModule_Mor R M (pb_LModule f A))
+   (v : LModule_Mor S A (Derivative.LModule_deriv TerminalHSET BinCoproductsHSET B)),
+   (adj1 R M (pb_LModule f B))
+     ((u : (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M, pb_LModule f A ⟧) · 
+      pb_LModule_Mor f v · (λ (R0 S0 : Monad SET) (f0 : Monad_Mor R0 S0),
+                            LModPbCommute.pb_deriv_to_deriv_pb_iso TerminalHSET BinCoproductsHSET f0) R
+                             S f B) =
+   BinProductOfArrows (precategory_LModule R (category_pair SET (homset_property SET)))
+     ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET (homset_property SET)) R
+        (pb_LModule f A) (pb_LModule f (tautological_LModule S)))
+     ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET (homset_property SET)) R M
+        (tautological_LModule R))
+     (u : (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M, pb_LModule f A ⟧)
+     (monad_mor_to_lmodule f
+      :
+      (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ tautological_LModule R,
+      pb_LModule f (tautological_LModule S) ⟧) · (λ (R0 S0 : Monad SET) (f0 : Monad_Mor R0 S0),
+                                                  LModPbCommute.binprod_pbm_to_pbm_iso f0) R S f A
+                                                   (tautological_LModule S) · 
+   pb_LModule_Mor f ((adj1 S A B) v)).
+Proof.
+  intros.
+  apply LModule_Mor_equiv;[apply (homset_property SET)|].
+  apply nat_trans_eq;[apply (homset_property SET)|].
+  intro X.
+  cbn.
+  apply funextfun.
+  intros[x y].
+  apply maponpaths.
+  unfold pre_subst_nt_data,prodtofuntoprod; cbn.
+  set (ff :=  (fun z => _)).
+  set (bp := BinCoproductsHSET).
+  assert (h :=  functor_comp B  (a := bp unitHSET _) ff (f X)).
+  set (vv := (v X (u X x))).
+  cbn in vv.
+  apply toforallpaths in h.
+  (* match goal with *)
+  (*   |- context [# B _ ?zz] => set (uu := zz) end. *)
+  specialize (h vv).
+  cbn in h.
+  unfold vv in h.
+  apply pathsinv0.
+  etrans;[|apply h].
+  apply map_on_two_paths.
+  - apply funextfun.
+    intros[|z]; cbn.
+    +apply idpath.
+    + clear h.
+      assert (h := Monad_Mor_η f X).
+      apply toforallpaths in h.
+      apply pathsinv0.
+      apply h.
+  - apply idpath.
+Qed.

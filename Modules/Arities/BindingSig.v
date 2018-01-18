@@ -1,5 +1,12 @@
 (* We show that binding signatures (or algebraic arities) are epi arities
 and that they are presentable
+
+COmmutation coproducts of binding sigs and signature
+hSet out of a binding signature
+
+-coprod of binding sig
+- iso between signature of coproducts of binding sig and coproduct of signautes of binding
+sigs
  *)
 
 Require Import UniMath.Foundations.PartD.
@@ -21,15 +28,20 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.CoproductsComplements.
 Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import Modules.Arities.HssToArity.
 Require Import Modules.Arities.aritiesalt.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.Monads.Monads.
+Require Import UniMath.CategoryTheory.limits.binproducts.
+Require Import UniMath.CategoryTheory.limits.coproducts.
+Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.FunctorAlgebras.
 Require Import UniMath.SubstitutionSystems.LiftingInitial_alt.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
+Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
 (* TODO : déplacer ce lemme dans lib, et l'utiliser dans uniproofalt *)
@@ -392,3 +404,48 @@ Section EpiAritySig.
   Qed.
 
 End EpiAritySig.
+
+Definition BindingSigIndexhSet : BindingSig -> hSet :=
+  fun S => hSetpair _ (BindingSigIsaset S).
+
+Section CoprodBindingSig.
+
+  Definition BindingSigIndexhSet_coprod  {O : hSet} (sigs : O -> BindingSig)
+                                                     : hSet :=
+    (∑ (o : O), BindingSigIndexhSet (sigs o))%set.
+
+  Definition coprod_BindingSig {O : hSet} (sigs : O -> BindingSig) : BindingSig.
+  Proof.
+    apply (mkBindingSig (I := BindingSigIndexhSet_coprod sigs)).
+    - apply setproperty.
+    - intro x.
+      exact (BindingSigMap (sigs (pr1 x)) (pr2 x)).
+  Defined.
+
+  Context {C : category} (bpC : BinProducts C) (bcpC : BinCoproducts C) (TC : Terminal C)
+          (cpC : ∏ (X : UU) (setX : isaset X), Coproducts X C).
+
+  Let toSig sig :=
+    (BindingSigToSignature (homset_property C) bpC
+                           bcpC TC sig (cpC _ (BindingSigIsaset sig))).
+  Local Notation SIG := (Signature_precategory C C).
+  Let hsSig := has_homsets_Signature_precategory C C.
+  Let cpSig (I : hSet) : Coproducts (pr1 I) SIG
+    := Coproducts_Signature_precategory _ C _ (cpC _ (setproperty I)).
+  Let ArToSig := Arity_to_Signature (homset_property C) bpC bcpC TC.
+  Let CP_from_BindingSig (S : BindingSig) := (cpSig  _ (fun (o : BindingSigIndexhSet S)
+                                                        => ArToSig (BindingSigMap _ o))).
+
+  Definition binding_Sig_iso {O : hSet} (sigs : O -> BindingSig) : iso (C := SIG)
+                               (toSig (coprod_BindingSig sigs))
+                               (CoproductObject _ _ (cpSig O (fun o => toSig (sigs o)))).
+  Proof.
+    set (binds := fun o => (sigs o)).
+    set (cpSigs := coprod_BindingSig sigs).
+    set (CC' := CP_from_BindingSig cpSigs).
+    set (cp1 := fun o =>
+                  CP_from_BindingSig (binds o)).
+    apply (sigma_coprod_iso (C := SIG ,, hsSig)
+                            (B := fun o a => ArToSig (BindingSigMap (binds o) a)) CC' cp1).
+  Defined.
+End CoprodBindingSig.

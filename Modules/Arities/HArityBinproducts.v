@@ -23,45 +23,9 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModuleBinProduct.
+Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Arities.aritiesalt.
 
-Section pullback_binprod.
-  Context {C : category} {B : precategory}.
-  Context {R : Monad B}{S : Monad B} (f : Monad_Mor R S).
-
-  Context {cpC : BinProducts C}.
-
-  Let cpLM (X : Monad B) := LModule_BinProducts   X cpC (homset_property C).
-  Let cpFunc := BinProducts_functor_precat  C _ cpC (homset_property C) .
-
-  Context (a b : LModule S C ).
-
-  (* Let αF : O -> functor B C := fun o => α o. *)
-  (* Let pbm_α : O -> LModule R C := fun o => pb_LModule f (α o). *)
-
-  Local Notation BPO := (BinProductObject _ ).
-
-  Definition pbm_binprod := pb_LModule f (BPO (cpLM _ a b)).
-  Definition binprod_pbm : LModule _ _ := BPO (cpLM _ (pb_LModule f a)(pb_LModule f b)).
-
-  Definition binprod_pbm_to_pbm_binprod_nat_trans : nat_trans binprod_pbm pbm_binprod :=
-    nat_trans_id _ .
-
-  Lemma binprod_pbm_to_pbm_binprod_laws : LModule_Mor_laws _ (T := binprod_pbm) (T' := pbm_binprod)
-                                                         binprod_pbm_to_pbm_binprod_nat_trans.
-  Proof.
-    intro c.
-    etrans;[apply id_left|].
-    apply pathsinv0.
-    etrans;[apply id_right|].
-    cbn.
-    apply pathsinv0.
-    apply BinProductOfArrows_comp.
-  Qed.
-  
-  Definition binprod_pbm_to_pbm_binprod : LModule_Mor  _ binprod_pbm pbm_binprod :=
-    _ ,, binprod_pbm_to_pbm_binprod_laws.
-End pullback_binprod.
 
 Section Binprod.
   Context {C : category} .
