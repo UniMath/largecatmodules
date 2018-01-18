@@ -31,7 +31,8 @@ Require Import Modules.Arities.aritiesalt.
 Require Import Modules.Arities.FullArities.
 Require Import Modules.Arities.HssToArity.
 Require Import Modules.Arities.HArityBinproducts.
-Require Import Modules.Arities.CheckCorrespondanceAdjonction.
+Require Import Modules.Arities.HArityDerivation.
+(* Require Import Modules.Arities.CheckCorrespondanceAdjonction. *)
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 
 Require Import UniMath.CategoryTheory.categories.category_hset.
@@ -62,18 +63,20 @@ Definition catiso_comp {A B C : precategory_data} (F : catiso A B)
       * apply (weqproperty (catiso_ob_weq G)).
 Defined.
 
-(* tODO : déplacer ceci dans un novueau fichier *)
+(* TODO : déplacer ceci dans un novueau fichier *)
 Section CoBindingArity.
-  (* Definition CoBindingFullArity (C : category) : UU := HAr.arity C × nat. *)
-  (* Definition HArity_of_cobinding {C : category} (a : CoBindingFullArity C) : HAr.arity C *)
-  (*   := pr1 a. *)
-  (* Definition nat_of_cobinding {C : category} (a : CoBindingFullArity C) : nat *)
-  (*   := pr2 a. *)
-  (* Definition CoBinding_to_FullArity {C : category} bcp T ( a : HAr.arity C) *)
-  (*            (n : nat) *)
-  (* : *)
-  (*   FullArity C :=  HArity_of_cobinding a ,,  *)
-  (*                                       nat_deriv_HAr bcp T (nat_of_cobinding a). *)
+Fixpoint nat_deriv_HAr {C : category} bcp T (n :nat) : arity C :=
+  match n with
+    0 => tautological_harity
+  | S m => harity_deriv bcp T (nat_deriv_HAr bcp T m)
+  end.
+
+  Let prodHAr {C : category} (bpC : BinProducts C)  :=
+    (functor_fix_snd_arg _ _ _  (binproduct_functor  (harity_BinProducts bpC ))
+                         (tautological_harity)).
+
+  Definition nat_prod_HAr {C : category} (bp : BinProducts C) (n :nat) : arity C :=
+    iter_functor (prodHAr bp) n tautological_harity.
 
   Definition CoBinding_to_FullArity {C : category} bcp T ( a : HAr.arity C)
              (n : nat) :
@@ -84,9 +87,9 @@ Section CoBindingArity.
   Let bpHAr := harity_BinProducts (C := C) bp.
   Local Notation BPO := (BinProductObject _).
   
-  Let prodHAr  :=
-    (functor_fix_snd_arg _ _ _  (binproduct_functor  (harity_BinProducts bp ))
-                         (tautological_harity)).
+  (* Let prodHAr  := *)
+  (*   (functor_fix_snd_arg _ _ _  (binproduct_functor  (harity_BinProducts bp )) *)
+  (*                        (tautological_harity)). *)
 
   (* Definition DeBind_HArity  (a : HAr.arity C) (n : nat) := *)
   (*   iter_functor prodHAr n a. *)
