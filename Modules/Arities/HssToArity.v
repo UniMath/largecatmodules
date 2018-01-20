@@ -178,7 +178,8 @@ Proof.
   - apply homset_property.
   - intro x.
     cbn.
-    now rewrite id_left.
+    rewrite id_left.
+    apply idpath.
 Qed.
 
 Lemma lift_pb_LModule_iso 
@@ -230,7 +231,8 @@ Proof.
     eapply nat_trans_eq_pointwise in h.
     etrans; [|apply h].
     apply functor_cancel_pw.
-    now apply (nat_trans_eq (homset_property _)).
+    apply (nat_trans_eq (homset_property _)).
+    intro; apply idpath.
   - intros R S T f g.
     apply LModule_Mor_equiv;[apply homset_property|].
     apply nat_trans_eq;[apply homset_property|].

@@ -188,7 +188,7 @@ Proof.
   }
   rewrite assoc, id_right.
   rewrite (Monad_law2 (T:=R)).
-  now rewrite id_left.
+  rewrite id_left. apply idpath.
 Qed.
 
 Lemma assoc_ppprojR c 

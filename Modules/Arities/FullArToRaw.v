@@ -326,7 +326,8 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
   Proof.
     split.
     - intro R.
-      now apply rep_ar_mor_mor_equiv.
+      apply rep_ar_mor_mor_equiv.
+      intro; apply idpath.
     - intros R S T f g.
       apply rep_ar_mor_mor_equiv.
       intro c.

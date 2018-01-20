@@ -115,10 +115,12 @@ Proof.
   repeat split.
   - intros x y z. cbn.
     intros h1 h2 S f.
-    now rewrite h1,h2.
+    rewrite h1,h2.
+    apply idpath.
   - intros x y; cbn.
     intros h S f.
-    now symmetry.
+    symmetry.
+    apply h.
 Qed.
 
 Definition eqrel_equivc (X : SET) : eqrel _ := _ ,, iseqrel_equivc X.
@@ -136,7 +138,8 @@ Proof.
   etrans;[apply hg|].
   unfold equivc in eqz.
   cbn.
-  now rewrite eqz.
+  rewrite eqz.
+  apply idpath.
 Qed.
 
 Arguments R' : simpl never.
@@ -299,7 +302,8 @@ Lemma cancel_ar_on {a'}
       (X : SET) 
   : m2 = m' ->  (# a')%ar m2 X = (# a')%ar m' X .
 Proof.
-  intro e; now induction e.
+  intro e; induction e.
+  apply idpath.
 Qed.
 
 Lemma Rep_mor_is_composition 
@@ -397,7 +401,7 @@ Lemma hab_alt : pr1 hab =
                 ((F (pr1 R) : nat_trans _ _) : functor_category _ _⟦_, _⟧) ·
                          ((# b projR_monad) : nat_trans _ _).
 Proof.
-  now apply arity_Mor_ax.
+  apply arity_Mor_ax.
 Qed.
 
 (** This is the compatibility relation that is needed to construct
@@ -676,7 +680,9 @@ Proof.
     + intro m.
       apply u_rep_unique.
       assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R cond_R S m)).
-      now rewrite <- h.
+      rewrite <- h.
+      intros.
+      apply idpath.
 Qed.
 
 Theorem push_initiality_weaker (R : Rep_a) (epi_F : ∏ (R : Monad _),
@@ -696,7 +702,9 @@ Proof.
     + intro m.
       apply u_rep_unique.
       assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R cond_R S m)).
-      now rewrite <- h.
+      rewrite <- h.
+      intros;
+      apply idpath.
 Qed.
 
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)

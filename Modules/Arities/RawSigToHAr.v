@@ -207,7 +207,8 @@ Lemma sig_to_har_rep_is_functor : is_functor sig_to_har_rep_functor_data.
 Proof.
   split.
   - intro R.
-    now apply rep_ar_mor_mor_equiv.
+    apply rep_ar_mor_mor_equiv.
+    intro; apply idpath.
   - intros R S T f g.
     apply rep_ar_mor_mor_equiv.
     intro c.

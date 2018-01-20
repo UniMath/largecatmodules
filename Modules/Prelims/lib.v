@@ -28,7 +28,7 @@ Set Automatic Introduction.
 Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
   f = g -> f t1 = f t2 ->g t1 = g t2.
 Proof.
-  now induction 1.
+  induction 1; auto.
 Qed.
 
 Lemma comp_cat_comp {A B C:hSet} (f : A -> B) (g:B -> C) x :
@@ -216,7 +216,7 @@ Proof.
   intros.
   cbn.
   symmetry.
-  now rewrite functor_comp,assoc.
+  rewrite functor_comp,assoc. apply idpath.
 Qed.
 
 (*

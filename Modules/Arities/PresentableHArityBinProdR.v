@@ -147,8 +147,8 @@ Proof.
                                           ((X : LModule _ _) : functor _ _)
                  )).
     split; apply LModule_Mor_equiv; try apply homset_property.
-    + cbn;now apply (iso_inv_after_iso h).
-    + cbn;now apply (iso_after_iso_inv h).
+    + cbn; apply (iso_inv_after_iso h).
+    + cbn; apply (iso_after_iso_inv h).
 Qed.
 
 Lemma LMod_isDistributive (Z : hSet) (R : Monad C) :
@@ -209,8 +209,8 @@ Proof.
                  )).
     split; apply arity_Mor_eq;   intro R; apply LModule_Mor_equiv;
     try apply homset_property.
-    + cbn;now apply (iso_inv_after_iso (h' R)).
-    + cbn;now apply (iso_after_iso_inv (h' R)).
+    + cbn; apply (iso_inv_after_iso (h' R)).
+    + cbn; apply (iso_after_iso_inv (h' R)).
 Qed.
 
 Lemma HAr_isDistributive (Z : hSet)  :
