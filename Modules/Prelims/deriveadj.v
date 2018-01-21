@@ -219,7 +219,7 @@ and then we eliminate the application of M
     apply (maponpaths (σ M X)).
     cbn.
     etrans; rewrite comp_cat_comp; [|rewrite comp_cat_comp].
-    now apply idpath.
+    apply idpath.
     revert x.
     use toforallpaths.
     do 3 rewrite <- (functor_comp M).
@@ -709,7 +709,8 @@ Section derivadj.
       apply funextfun.
       intro x.
       induction x as [p|x]; cbn.
-      + now induction p.
+      + induction p.
+        apply idpath.
       + apply idpath.
   Qed.
 

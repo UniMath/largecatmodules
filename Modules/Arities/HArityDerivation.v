@@ -79,7 +79,8 @@ Variable (a : arity C).
       apply nat_trans_eq;[apply homset_property|].
       intro x.
       cbn.
-      now repeat rewrite id_right.
+      repeat rewrite id_right.
+      apply idpath.
   Qed.
 
   Definition harity_deriv : HalfArity := _ ,, harity_deriv_is_arity.

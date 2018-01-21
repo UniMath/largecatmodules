@@ -127,9 +127,11 @@ Defined.
   Proof.
     split.
     - intro R.
-      now apply rep_sig_mor_mor_equiv.
+      apply rep_sig_mor_mor_equiv.
+      intro; apply idpath.
     - intros R S T f g.
-      now apply rep_sig_mor_mor_equiv.
+      apply rep_sig_mor_mor_equiv.
+      intro; apply idpath.
   Defined.
 
   Definition sig_to_sig_rep_functor : functor (sig_rep Σ) (sig_rep Σ') :=

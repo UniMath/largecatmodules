@@ -92,12 +92,13 @@ Proof.
     apply idpath.
   - intros R S T f g.
     apply LModule_Mor_equiv.
-    now apply homset_property.
-    apply nat_trans_eq.
-    now apply homset_property.
-    intro x.
-    cbn.
-    now rewrite id_right.
+    + apply homset_property.
+    + apply nat_trans_eq.
+      * apply homset_property.
+      * intro x.
+        cbn.
+        rewrite id_right.
+        apply idpath.
 Qed.
 
 Definition tautological_harity : arity := _ ,, tautological_harity_is_arity.
@@ -180,7 +181,7 @@ Lemma arity_Mor_eq (F F' : arity)(a a' : arity_Mor F F'):
 Proof.
   intro H.
   assert (H' : pr1 a = pr1 a').
-  { now apply funextsec. }
+  { apply funextsec. intro; apply H. }
   apply (total2_paths_f H'), proofirrelevance, isaprop_is_arity_Mor.
 Qed.
 
@@ -197,7 +198,8 @@ Proof.
   etrans.
   apply (cancel_precomposition ([_,_])).
   apply arity_Mor_ax.
-  now rewrite assoc.
+  rewrite assoc.
+  apply idpath.
 Qed.
 
 Definition arity_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
@@ -207,7 +209,8 @@ Lemma is_arity_Mor_id (F : arity_data) : is_arity_Mor F F
      (fun R => identity (C:=category_LModule _ _) _).
 Proof.
   intros ? ? ? .
-  now rewrite id_left, id_right.
+  rewrite id_left, id_right.
+  apply idpath.
 Qed.
 
 Definition arity_Mor_id (F : arity_data) : arity_Mor F F :=
@@ -411,7 +414,8 @@ Lemma transport_arity_mor (x y : ARITY) (f g : arity_Mor x y)
       (c : C) :
   pr1 (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 (pr1 ff) c.
 Proof.
-  now induction e.
+  induction e.
+  apply idpath.
 Qed.
 
 
@@ -525,7 +529,8 @@ Proof.
       symmetry.
       apply transport_arity_mor.
       cbn.
-      now rewrite assoc.
+      rewrite assoc.
+      apply idpath.
   - apply isaset_rep_ar_mor_mor.
 Qed.
 
@@ -564,7 +569,8 @@ Proof.
   intro c.
   etrans; [apply h|].
   cbn.
-  now repeat rewrite assoc.
+  repeat rewrite assoc.
+  apply idpath.
 Qed.
 
 Lemma rep_mor_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)

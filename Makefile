@@ -46,7 +46,7 @@ include build/CoqMakefile.make
 endif
 everything: all html install #TAGS
 OTHERFLAGS += $(MOREFLAGS)
-OTHERFLAGS += -indices-matter -type-in-type -w none
+OTHERFLAGS += -noinit -indices-matter -type-in-type -w none
 ifeq ($(VERBOSE),yes)
 OTHERFLAGS += -verbose
 endif
@@ -118,6 +118,7 @@ Make: $(PACKAGE_FILES) $(UMAKEFILES)
 	echo '# It is made by automatically (by code in Makefile)' ;\
 	echo ;\
 	echo '-Q Modules Modules' ;\
+	echo '-arg "$(OTHERFLAGS)"' ;\
 	echo ;\
 	for i in $(PACKAGES) ;\
 	do <Modules/$$i/.package/files $(FILES_FILTER) |sed "s=^=Modules/$$i/="  ;\
@@ -143,6 +144,7 @@ latex-clean clean::; cd $(LATEXDIR) ; rm -f *.pdf *.tex *.log *.aux *.out *.blg 
 distclean:: clean
 distclean::          ; - $(MAKE) -C sub/coq distclean
 distclean::          ; rm -f build/Makefile-configuration
+
 
 # building coq:
 export PATH:=$(shell pwd)/sub/coq/bin:$(PATH)

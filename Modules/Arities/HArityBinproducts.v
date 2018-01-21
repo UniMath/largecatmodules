@@ -86,9 +86,9 @@ Section Binprod.
         apply arity_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
-      now apply homset_property.
+      { apply homset_property. }
       apply nat_trans_eq.
-      now apply homset_property.
+      apply homset_property.
       intro x.
       cbn  -[BinProductOfArrows ].
       repeat  rewrite id_right.
@@ -101,14 +101,16 @@ Section Binprod.
         apply pathsinv0.
         etrans;[eapply h|].
         cbn.
-        now rewrite id_right.
+        rewrite id_right.
+        apply idpath.
       + assert (h := arity_comp b f g).
         apply LModule_Mor_equiv in h;[|apply homset_property].
         eapply nat_trans_eq_pointwise in h.
         apply pathsinv0.
         etrans;[eapply h|].
         cbn.
-        now rewrite id_right.
+        rewrite id_right.
+        apply idpath.
   Qed.
       
   Definition harity_binProd : HalfArity := _ ,, harity_binProd_is_arity.
@@ -211,8 +213,8 @@ Section Binprod.
       apply arity_Mor_eq.
       intro R.
       apply (BinProductArrowUnique   (MOD R) _ _ (cpLM R (a R) (b R))).
-      + now rewrite <- h1.
-      + now rewrite <- h2.
+      + rewrite <- h1. apply idpath.
+      + rewrite <- h2. apply idpath.
   Defined.
 
   Definition harity_BinProduct : BinProduct arity_precategory a b :=

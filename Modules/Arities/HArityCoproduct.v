@@ -81,24 +81,25 @@ Section Coprod.
       apply arity_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
-      now apply homset_property.
-      apply nat_trans_eq.
-      now apply homset_property.
-      intro x.
-      cbn  -[CoproductOfArrows ].
-      repeat  rewrite id_right.
-      apply pathsinv0.
-      etrans; [apply CoproductOfArrows_comp|].
-      apply CoproductOfArrows_eq.
-      apply funextsec.
-      intro i.
-      assert (h := arity_comp (α i) f g).
-      apply LModule_Mor_equiv in h;[|apply homset_property].
-      eapply nat_trans_eq_pointwise in h.
-      apply pathsinv0.
-      etrans;[eapply h|].
-      cbn.
-      now rewrite id_right.
+      + apply homset_property.
+      + apply nat_trans_eq.
+        apply homset_property.
+        intro x.
+        cbn  -[CoproductOfArrows ].
+        repeat  rewrite id_right.
+        apply pathsinv0.
+        etrans; [apply CoproductOfArrows_comp|].
+        apply CoproductOfArrows_eq.
+        apply funextsec.
+        intro i.
+        assert (h := arity_comp (α i) f g).
+        apply LModule_Mor_equiv in h;[|apply homset_property].
+        eapply nat_trans_eq_pointwise in h.
+        apply pathsinv0.
+        etrans;[eapply h|].
+        cbn.
+        rewrite id_right.
+        apply idpath.
   Qed.
       
   Definition harity_coprod : HalfArity := _ ,, harity_coprod_is_arity.
@@ -175,7 +176,8 @@ Section Coprod.
       cbn in h.
       intro i.
       specialize (h i).
-      now rewrite <- h.
+      rewrite <- h.
+      apply idpath.
   Defined.
 
   Definition harity_Coproduct : Coproduct _ arity_precategory α :=

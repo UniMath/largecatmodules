@@ -168,7 +168,8 @@ Lemma transport_arity_mor (x y : FArity) (f g : FArity ⟦ x, y⟧)
       (c : C) :
   pr1 (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 (pr1 ff) c.
 Proof.
-  now induction e.
+  induction e.
+  apply idpath.
 Qed.
 
 
@@ -277,7 +278,8 @@ Proof.
       symmetry.
       apply transport_arity_mor.
       cbn.
-      now rewrite assoc.
+      rewrite assoc.
+      apply idpath.
   - apply isaset_rep_ar_mor_mor.
 Qed.
 
@@ -314,7 +316,8 @@ Proof.
   intro c.
   etrans; [apply h|].
   cbn.
-  now repeat rewrite assoc.
+  repeat rewrite assoc.
+  apply idpath.
 Qed.
 
 Lemma rep_mor_pb {a a' b} (f : FArity ⟦ a, a' ⟧) (g : FArity ⟦ b, a ⟧)

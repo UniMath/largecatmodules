@@ -75,7 +75,8 @@ Section commuteBinProdSig.
     unfold binproduct_nat_trans_data.
     etrans;[apply postcompWithBinProductArrow|].
     unfold BinProductOfArrows.
-    now repeat rewrite assoc.
+    repeat rewrite assoc.
+    apply idpath.
   Defined.
 
   Lemma  binprod_sigs_har_mod_iso R :
@@ -105,7 +106,8 @@ Section commuteBinProdSig.
     unfold binproduct_nat_trans_data.
     cbn.
     repeat rewrite id_right.
-    now rewrite id_left.
+    rewrite id_left.
+    apply idpath.
   Qed.
   Lemma binprod_har_sigs_arity_laws : is_arity_Mor  
                                                   ( (BPO (bpHAr ar_a ar_b) : arity _ ) )
@@ -119,7 +121,8 @@ Section commuteBinProdSig.
     unfold binproduct_nat_trans_data.
     cbn.
     repeat rewrite id_right.
-    now rewrite id_left.
+    rewrite id_left.
+    apply idpath.
   Qed.
 
   (* Definition coprod_sigs_har_mor :  arity_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))), *)
@@ -222,7 +225,8 @@ Section CoprodAr.
     apply maponpaths.
     apply funextsec.
     intro i.
-    now rewrite id_right.
+    rewrite id_right.
+    apply idpath.
   Qed.
   Lemma coprod_har_sigs_arity_laws : is_arity_Mor  
                                        (CPO (cpHAr ars) : arity _)
@@ -240,7 +244,8 @@ Section CoprodAr.
     apply maponpaths.
     apply funextsec.
     intro i.
-    now rewrite id_right.
+    rewrite id_right.
+    apply idpath.
   Qed.
 
   Definition coprod_sigs_har_mor :  arity_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))),

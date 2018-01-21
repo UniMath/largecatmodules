@@ -58,9 +58,9 @@ Section PbmFunctor.
   Proof.
     split.
     - intro M.
-      now apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv;[apply homset_property|]; apply idpath.
     - intros X Y Z u v.
-      now apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv;[apply homset_property|]; apply idpath.
   Qed.
 
   Definition pb_LModule_functor : functor (MOD S) (MOD R) :=
@@ -148,7 +148,7 @@ Proof.
     rewrite assoc; simpl.
     apply pathsinv0.
     etrans; [apply bmod_transport |].
-    now rewrite id_right,id_left.
+    rewrite id_right,id_left; apply idpath.
   - set (heqf := id_right f).
     apply (invmap ((@LModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
     apply nat_trans_eq; try apply homset_property.
