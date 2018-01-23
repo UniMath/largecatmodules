@@ -273,7 +273,7 @@ et on utilise les 2 lois de monades
         etrans.
         {
           rewrite <- assoc.
-          eapply (cancel_precomposition (SET) ).
+          eapply maponpaths.
           etrans;[eapply pathsinv0; apply functor_comp|].
           unfold coprod_rect.
           unfold compose at 1.
@@ -292,11 +292,11 @@ et on utilise les 2 lois de monades
       {
         do 2 rewrite <- assoc.
         match goal with
-          |-  ?a · ?c = _ => eapply (cancel_precomposition (SET) _ _ _ c _ a)
+          |-  ?a · ?c = _ => eapply maponpaths
         end.
         etrans.
         + match goal with
-          |-  ?a · ?c = _ => eapply (cancel_precomposition (SET) _ _ _ c _ a)
+          |-  ?a · ?c = _ => eapply maponpaths
           end.
           apply Monad_law3.
         + rewrite  assoc.
@@ -449,7 +449,7 @@ stuff proved in Derivative of a Module, or by considering coproducts of Modules 
       apply TerminalArrowUnique.
     }
     repeat rewrite <- assoc.
-    apply cancel_precomposition.
+    apply maponpaths.
     (*
 Maybe there is a smarter way to prove that the following (outer) diagram commutes.
 f := η ∘ in₁_X
@@ -474,7 +474,7 @@ R(T+RX) -------> RR(T+X)
 *)
     etrans.
     {
-      apply cancel_precomposition.
+      apply maponpaths.
       etrans;[apply assoc|].
       (* η natural & monad law *) 
       etrans.
@@ -484,7 +484,7 @@ R(T+RX) -------> RR(T+X)
         apply (nat_trans_ax (η R)).
       - (* Monad law *)
         rewrite <- assoc.
-        apply cancel_precomposition.
+        apply maponpaths.
         apply Monad_law1.
       }
     rewrite id_right.
@@ -574,7 +574,7 @@ f := η ∘ in₁
     etrans;[apply id_right|].
     etrans;[|apply assoc].
     apply pathsinv0.
-    etrans;[apply cancel_precomposition;apply id_left|].
+    etrans;[apply maponpaths;apply id_left|].
     (*
 <<<
         toR',toM'

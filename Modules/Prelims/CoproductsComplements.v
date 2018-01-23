@@ -76,7 +76,7 @@ Section WEQ.
         intro h.
         apply funextsec.
         intro i.
-        etrans;[|apply cancel_precomposition;exact h].
+        etrans;[|apply maponpaths;exact h].
         apply pathsinv0.
         apply CoproductInCommutes.
   Defined.
@@ -173,7 +173,7 @@ Section CoprodSigma.
         etrans;
         [
           rewrite <- assoc;
-          apply cancel_precomposition;
+          apply maponpaths;
           apply (CoproductInCommutes _ _ _ cp2)
         |];
         etrans;
@@ -222,7 +222,7 @@ Section CoprodEpis.
     apply maponpaths.
     apply funextsec.
     intro i.
-    apply (cancel_precomposition _ _ _ _ _ _ (CoproductIn I C cpa i)) in hfg.
+    apply (maponpaths (compose (CoproductIn I C cpa i) )) in hfg.
     do 2 rewrite assoc in hfg.
     rewrite CoproductOfArrowsIn in hfg.
     do 2 rewrite <- assoc in hfg.
@@ -291,7 +291,7 @@ Section CoprodPwIso.
       intro i.
       etrans.
       etrans;[eapply pathsinv0;apply assoc|].
-      apply cancel_precomposition.
+      apply maponpaths.
       apply CoproductInCommutes.
       etrans;[apply assoc|].
       rewrite iso_inv_after_iso.

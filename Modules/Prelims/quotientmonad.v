@@ -155,7 +155,8 @@ Proof.
   rewrite <- assoc.
   rewrite <- assoc.
   etrans.
-  { apply (cancel_precomposition _ _ _ (R' c)).
+  { 
+    eapply maponpaths.
     cbn.
     apply R'_μ_def.
   }
@@ -183,7 +184,7 @@ Proof.
   rewrite <- assoc.
   rewrite <- assoc.
   etrans.
-  { apply cancel_precomposition.
+  { apply maponpaths.
     apply R'_μ_def.
   }
   rewrite assoc, id_right.
@@ -248,7 +249,7 @@ Legend of the diagram :
     { 
       apply cancel_postcomposition.       
       etrans. use (! assoc _ _ _ ).
-      apply (cancel_precomposition SET).
+      apply maponpaths.
       etrans; [ apply (!functor_comp R' _ _ ) | ].
       apply maponpaths.      
       apply R'_μ_def.
@@ -264,7 +265,7 @@ Legend of the diagram :
   { 
     rewrite <- assoc.
     rewrite <- assoc.
-    apply (cancel_precomposition (SET)).     
+    apply maponpaths.     
     apply (R'_μ_def c).
   }
   (* third equality *)
@@ -276,7 +277,7 @@ Legend of the diagram :
     rewrite <- assoc.
   
     etrans.
-    { apply cancel_precomposition. symmetry. apply R'_μ_def. }
+    { apply maponpaths. symmetry. apply R'_μ_def. }
   
     rewrite assoc.      
     apply cancel_postcomposition.
@@ -293,7 +294,7 @@ Legend of the diagram :
   (* Close to the end *)
     etrans.
     { rewrite <- assoc.
-      apply (cancel_precomposition SET).
+      apply maponpaths.
       symmetry.
       apply (nat_trans_ax (R'_μ) ( R c)). 
     }
@@ -385,7 +386,7 @@ Proof.
   }
     
   (* definition of u *)
-  etrans. { rewrite <- assoc. cpre _. symmetry. apply u_def. }
+  etrans. { rewrite <- assoc. apply maponpaths. symmetry. apply u_def. }
     
   (* m is a morphism of monad *)
   etrans; [ apply (Monad_Mor_μ m) |].
@@ -395,7 +396,7 @@ Proof.
   { cpost _.
     etrans.
     { etrans. { cpost _.  apply u_def. }
-      cpre _ .
+      apply maponpaths. 
       etrans.
       { apply maponpaths. apply u_def. }
       apply functor_comp.
@@ -404,7 +405,7 @@ Proof.
     rewrite assoc.
     cpost _.
     rewrite <- assoc.
-    cpre _.
+    apply maponpaths.
     symmetry.
     apply (nat_trans_ax u).
   }

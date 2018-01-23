@@ -77,12 +77,12 @@ Section Binprod.
       + etrans;[apply id_left|].
         apply pathsinv0.
         etrans;[|apply id_right].
-        apply cancel_precomposition.
+        apply (maponpaths (compose _ )).
         apply arity_id.
       + etrans;[apply id_left|].
         apply pathsinv0.
         etrans;[|apply id_right].
-        apply cancel_precomposition.
+        apply (maponpaths (compose _ )).
         apply arity_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
@@ -173,7 +173,7 @@ Section Binprod.
       etrans.
       {
         rewrite <- assoc.
-        apply cancel_precomposition.
+        apply maponpaths.
         set (CC := cpC _ _).
         apply (BinProductPr1Commutes _ _ _ CC).
       }
@@ -182,7 +182,7 @@ Section Binprod.
       etrans.
       {
         rewrite <- assoc.
-        apply cancel_precomposition.
+        apply maponpaths.
         set (CC := cpC _ _).
         apply (BinProductPr2Commutes _ _ _ CC).
       }

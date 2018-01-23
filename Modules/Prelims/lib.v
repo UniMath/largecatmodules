@@ -20,7 +20,7 @@ Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 
-Tactic Notation "cpre" uconstr(x) := apply (cancel_precomposition x).
+Tactic Notation "cpre" uconstr(x) := apply (maponpaths x).
 Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition).
 
 Set Automatic Introduction.

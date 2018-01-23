@@ -159,7 +159,7 @@ Proof.
   { apply cancel_postcomposition.
     etrans.
     { etrans;[eapply pathsinv0; apply assoc|].
-      apply cancel_precomposition.
+      apply maponpaths.
       apply (nat_trans_ax τ').
     }
     etrans; [apply assoc|].
@@ -169,7 +169,7 @@ Proof.
   }
   repeat rewrite <- assoc.
   etrans.
-  { apply cancel_precomposition.
+  { apply maponpaths.
     (* π est un morphisme de moande (par définition) *)
     apply R'_μ_def.
   }
@@ -197,7 +197,7 @@ Proof.
     apply (LModule_Mor_σ R h). 
   }
   repeat rewrite <- assoc.
-  apply cancel_precomposition.
+  apply (maponpaths (compose _ )).
   apply R'_rep_τ_def.
 Qed.
 
@@ -328,7 +328,7 @@ Proof.
   } 
   etrans.
   { rewrite <- assoc.
-    apply cancel_precomposition.
+    apply maponpaths.
     eapply pathsinv0.
     apply quotientmonad.u_def.
   }

@@ -141,7 +141,7 @@ Proof.
   cbn.
   repeat rewrite id_right.
   etrans.
-  - apply cancel_precomposition.
+  - apply maponpaths.
     apply arity_id.
   - rewrite id_right.
     apply pathsinv0.
@@ -213,12 +213,12 @@ Proof.
   { apply cancel_postcomposition.
     use rep_ar_mor_ax. }
   repeat rewrite <- assoc.
-  apply cancel_precomposition.
+  apply maponpaths.
   etrans.
-  { apply cancel_precomposition.
+  { apply maponpaths.
     etrans.
     {
-      apply cancel_precomposition.
+      apply maponpaths.
       eapply pathsinv0.
       apply arity_Mor_ax_pw.
     }

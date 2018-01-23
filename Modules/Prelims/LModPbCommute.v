@@ -282,7 +282,7 @@ Section pullback_deriv.
     rewrite postcompWithBinCoproductArrow.
     apply map_on_two_paths.
     - rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       apply pathsinv0.
       apply Monad_Mor_η.
     - apply pathsinv0.

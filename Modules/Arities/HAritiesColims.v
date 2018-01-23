@@ -42,7 +42,7 @@ Lemma compfNat
   etrans;[apply assoc|].
   etrans;[apply cancel_postcomposition; apply fNat|].
   etrans;[|apply assoc].
-  etrans;[|apply cancel_precomposition; apply fNat2].
+  etrans;[|apply maponpaths; apply fNat2].
   apply pathsinv0.
   apply assoc.
 Qed.
@@ -180,7 +180,7 @@ Section ColimsHAr.
       {
         cbn.
         rewrite <- assoc.
-        apply cancel_precomposition.
+        apply maponpaths.
         set (cc := colims_g _).
         apply (colimArrowCommutes cc).
         }
@@ -211,7 +211,7 @@ Section ColimsHAr.
       etrans;[apply (limArrowCommutes  cc)|].
       cbn.
       etrans;[|apply id_right].
-      apply cancel_precomposition.
+      apply maponpaths.
       apply arity_id.
     - intros U V W m n.
       apply LModule_Mor_equiv;[apply homset_property|].
@@ -227,7 +227,7 @@ Section ColimsHAr.
       {
         rewrite <- assoc.
         (* etrans;[apply assoc|]. *)
-        apply cancel_precomposition.
+        apply maponpaths.
         set (cc := lims_g _).
         apply (limArrowCommutes cc).
       }
@@ -242,7 +242,7 @@ Section ColimsHAr.
         }
       cbn.
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       apply pathsinv0.
       etrans.
       {
@@ -352,7 +352,7 @@ Section ColimsHAr.
     etrans.
     {
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       set (cc1 := colims_g _).
       apply (colimArrowCommutes cc1).
     }
@@ -378,7 +378,7 @@ Section ColimsHAr.
     etrans.
     {
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       set (cc1 := lims_g _).
       apply (limArrowCommutes cc1).
     }

@@ -50,7 +50,7 @@ Lemma compfNat
   etrans;[apply assoc|].
   etrans;[apply cancel_postcomposition; apply fNat|].
   etrans;[|apply assoc].
-  etrans;[|apply cancel_precomposition; apply fNat2].
+  etrans;[|apply maponpaths; apply fNat2].
   apply pathsinv0.
   apply assoc.
 Qed.
@@ -173,7 +173,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
         now apply  LModule_Mor_σ
                |] ;
       rewrite <- assoc;
-      apply cancel_precomposition;
+      apply maponpaths;
       cbn;
       set (dpw := diagram_pointwise _ _ _);
       apply ( colimInCommutes (d := dpw))).
@@ -214,7 +214,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     }
     simpl.
     repeat rewrite <- assoc.
-    apply cancel_precomposition.
+    apply maponpaths.
     unfold ColimFunctor_mor.
     set (CC1 := colims_g _ ).
     set (CC2 := colims_g _ ).
@@ -238,7 +238,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     etrans;[|apply assoc].
     etrans; revgoals.
     {
-      apply cancel_precomposition.
+      apply maponpaths.
       apply pathsinv0.
       apply (nat_trans_ax (lm_mult R (dob d v : LModule _ _))).
     }
@@ -247,7 +247,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     etrans;[|apply assoc].
     etrans; revgoals.
     {
-      apply cancel_precomposition.
+      apply maponpaths.
       unfold LimFunctor_mor.
       cbn.
       set (CC1 := lims_g _ ).
@@ -317,7 +317,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       rewrite <- assoc.
       etrans.
       {
-        apply cancel_precomposition.
+        apply maponpaths.
         unfold LModule_colim_mult_data.
         cbn.
         set (CC1 := colims_g _ ).
@@ -355,7 +355,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       }
       rewrite <-assoc.
       etrans;[|apply id_right].
-      apply cancel_precomposition.
+      apply maponpaths.
       apply LModule_law1.
     - intro x.
       cbn.
@@ -367,7 +367,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       etrans.
       {
         rewrite <- assoc.
-        apply cancel_precomposition.
+        apply maponpaths.
 
         unfold LModule_lim_mult_data.
         cbn.
@@ -388,7 +388,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       }
       cbn.
       repeat rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       apply pathsinv0.
       apply LModule_law2.
   Qed.
@@ -492,7 +492,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     etrans.
     {
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       set (CC1 := lims_g _ ).
       apply (limArrowCommutes CC1).
     }

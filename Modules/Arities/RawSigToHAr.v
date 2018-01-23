@@ -167,7 +167,7 @@ Definition sig_to_har_rep_on_mor_weq (R S : a_sig_rep) : a_sig_rep ⟦ R , S ⟧
       etrans.
       {
         rewrite <- assoc.
-        apply cancel_precomposition.
+        apply maponpaths.
         set (CC := cpC _).
         apply (CoproductInCommutes _ _ _ CC).
       }
@@ -183,7 +183,7 @@ Definition sig_to_har_rep_on_mor_weq (R S : a_sig_rep) : a_sig_rep ⟦ R , S ⟧
       repeat rewrite id_right.
       cbn in o.
       set (CC := cpC _) in h.
-      assert (h' := cancel_precomposition _ _ _ _ _ _ (CoproductIn _ _ CC o ) h).
+      assert (h' := maponpaths (compose (CoproductIn _ _ CC o )) h).
       rewrite assoc in h'.
       rewrite (CoproductInCommutes _ _ _ CC) in h'.
       cbn in h'.
@@ -192,7 +192,7 @@ Definition sig_to_har_rep_on_mor_weq (R S : a_sig_rep) : a_sig_rep ⟦ R , S ⟧
       rewrite assoc.
       rewrite (CoproductInCommutes _ _ _ CC).
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       set (CC' := cpC _).
       apply (CoproductInCommutes _ _ _ CC').
 Defined.

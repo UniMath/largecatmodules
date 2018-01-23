@@ -196,7 +196,7 @@ Proof.
   apply (arity_Mor_ax (F:=F) (F':=G) a f).
   rewrite <- (assoc (C:=[_,_])).
   etrans.
-  apply (cancel_precomposition ([_,_])).
+  apply maponpaths.
   apply arity_Mor_ax.
   rewrite assoc.
   apply idpath.
@@ -457,7 +457,7 @@ Proof.
     
   etrans.
   { rewrite <- assoc.
-    apply cancel_precomposition.
+    apply maponpaths.
     use rep_ar_mor_ax. }
   
   (* Cf diagramme à ce point *)
@@ -478,7 +478,7 @@ Proof.
   cbn.
   rewrite id_right.
   repeat rewrite <- assoc.
-  apply cancel_precomposition.
+  apply maponpaths.
   assert (h:=arity_Mor_ax f (pr1 β)).
   eapply nat_trans_eq_pointwise in h.
   apply h.

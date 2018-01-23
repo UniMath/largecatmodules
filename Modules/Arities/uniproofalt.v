@@ -211,7 +211,7 @@ Proof.
       etrans.
       { apply cancel_postcomposition.
         apply u_def. }
-      apply cancel_precomposition.
+      apply maponpaths.
       apply maponpaths.
       apply u_def.  
     }
@@ -219,7 +219,7 @@ Proof.
     { apply (cancel_postcomposition (C:=SET)).
       etrans.
       { symmetry; apply  (assoc (C:=SET) (projR (## R X)) (u f (## R X))).  } 
-      apply cancel_precomposition.
+      apply maponpaths.
       etrans.
       { symmetry. apply nat_trans_ax. }
       apply cancel_postcomposition.
@@ -337,7 +337,7 @@ Proof.
   etrans;[|apply (assoc (C:=SET))].
   apply pathsinv0.
   etrans;[|apply (assoc (C:=SET))].
-  cpre SET.
+  apply maponpaths.
   apply pathsinv0.
   apply (arity_Mor_ax_pw F (u_monad m)).
 Qed.
@@ -575,7 +575,7 @@ Proof.
   apply homset_property.
   etrans;revgoals.
   etrans;[|apply assoc].
-  apply cancel_precomposition.
+  apply maponpaths.
   apply arity_Mor_ax_pw.
   reflexivity.
 Qed.
@@ -640,7 +640,7 @@ Proof.
   rewrite arity_comp.
   repeat rewrite <- assoc.
   etrans; [|apply assoc].
-  apply cancel_precomposition.
+  apply maponpaths.
   etrans; revgoals.
   {
     repeat rewrite assoc.
@@ -651,7 +651,7 @@ Proof.
   }
   etrans.
   {
-    apply cancel_precomposition.
+    apply maponpaths.
     apply (rep_ar_mor_ax _ m).
   }
   reflexivity.
@@ -731,7 +731,7 @@ Proof.
                                   (FF S)
                                   _ 
             ) |].
-  apply (cancel_precomposition HSET _ _ _ _ _ ((projR (congr_equivc R) x))).
+  apply (maponpaths (compose _ )). 
   cbn.
   set (e := _ @ _).
   induction e; apply idpath.
