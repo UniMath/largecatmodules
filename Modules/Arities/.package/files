@@ -10,6 +10,7 @@ HArityCoproduct.v
 RawSigToHAr.v
 HssArityCommutation.v
 PresentableHArityCoproducts.v
+PresentableRawSig.v
 SigEquivRep.v
 HArityBinproducts.v
 HArityDerivation.v
