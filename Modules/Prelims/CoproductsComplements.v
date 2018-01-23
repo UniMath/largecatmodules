@@ -24,6 +24,8 @@ Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
+Require Import Modules.Prelims.lib.
+
 Open Scope cat.
 
 Definition Coproducts_Unit {D : category}  : Coproducts unit D .
@@ -307,7 +309,7 @@ Section CoprodPwIso.
       rewrite <- h.
       do 2 rewrite assoc.
       rewrite iso_after_iso_inv. 
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       apply pathsinv0.
       apply id_left.
   Defined.

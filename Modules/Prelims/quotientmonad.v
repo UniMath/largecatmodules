@@ -146,10 +146,10 @@ Proof.
   apply isEpi_projR.
   repeat rewrite assoc.
   etrans.
-  { apply cancel_postcomposition. 
+  { apply maponpaths_2. 
     unfold R'_η.
     etrans;[apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply (nat_trans_ax (η  R)).
   }  
   rewrite <- assoc.
@@ -162,7 +162,7 @@ Proof.
   }
   rewrite assoc, id_right.
   etrans.
-  { apply cancel_postcomposition.
+  { apply maponpaths_2.
     apply (Monad_law1 (T:=R)). }
   apply id_left.
 Qed.
@@ -171,13 +171,13 @@ Lemma R'_Monad_law_η2 : ∏ c : SET, # R' (R'_η c) · R'_μ c = identity (R' c
 Proof.
   intro c.
   etrans.
-  { apply cancel_postcomposition.    
+  { apply maponpaths_2.    
     apply functor_comp. }
   use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR isEpi_projR).
   repeat rewrite assoc.
   etrans.
-  { apply cancel_postcomposition.
-    apply cancel_postcomposition.
+  { apply maponpaths_2.
+    apply maponpaths_2.
     symmetry.
     apply (nat_trans_ax (projR)).
   }
@@ -247,7 +247,7 @@ Legend of the diagram :
     rewrite horcomp_pre_post.    
     etrans.
     { 
-      apply cancel_postcomposition.       
+      apply maponpaths_2.       
       etrans. use (! assoc _ _ _ ).
       apply maponpaths.
       etrans; [ apply (!functor_comp R' _ _ ) | ].
@@ -255,9 +255,9 @@ Legend of the diagram :
       apply R'_μ_def.
     }
     rewrite functor_comp,assoc.
-    apply (cancel_postcomposition).
+    apply (maponpaths_2).
     symmetry.
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply (nat_trans_ax (projR)).
   }  
   (* second equality *)
@@ -271,7 +271,7 @@ Legend of the diagram :
   (* third equality *)
   etrans.
   { rewrite assoc.
-    etrans. { apply cancel_postcomposition, (Monad_law3 (T:=R) c). }
+    etrans. { apply maponpaths_2, (Monad_law3 (T:=R) c). }
     
     (* Fourth equality *)
     rewrite <- assoc.
@@ -280,13 +280,13 @@ Legend of the diagram :
     { apply maponpaths. symmetry. apply R'_μ_def. }
   
     rewrite assoc.      
-    apply cancel_postcomposition.
+    apply maponpaths_2.
   
     (* Fifth equality *)
     etrans.
     { cbn -[projR compose].
       rewrite (assoc (C:=SET)).
-      apply (cancel_postcomposition (C:=SET)).
+      apply maponpaths_2. 
       symmetry.
       apply R'_μ_def.
     }
@@ -302,7 +302,7 @@ Legend of the diagram :
     reflexivity.
   }
   etrans; [apply (!assoc _ _ _ ) |].
-  apply cancel_postcomposition.  
+  apply maponpaths_2.  
   (* association of horcomposition *)
   apply assoc_ppprojR.
 Qed.
@@ -375,12 +375,12 @@ Proof.
     
   (* Now the real work begins *)
   etrans.
-  {  apply cancel_postcomposition.
+  {  apply maponpaths_2.
     apply (nat_trans_ax (projR)).
   }
   etrans. (* use the monadicity of μ *)
   { rewrite assoc.        
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     symmetry.
     apply (Monad_Mor_μ (projR_monad)).
   }

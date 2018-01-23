@@ -146,7 +146,7 @@ Proof.
   - rewrite id_right.
     apply pathsinv0.
     etrans; [|apply id_left].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply arity_id.
 Qed.
 
@@ -210,7 +210,7 @@ Proof.
   rewrite assoc.
 
   etrans.
-  { apply cancel_postcomposition.
+  { apply maponpaths_2.
     use rep_ar_mor_ax. }
   repeat rewrite <- assoc.
   apply maponpaths.
@@ -223,11 +223,11 @@ Proof.
       apply arity_Mor_ax_pw.
     }
     etrans;[apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     use rep_ar_mor_ax.
   }
   repeat rewrite assoc.
-  do 4 apply cancel_postcomposition.
+  do 4 apply maponpaths_2.
   apply pathsinv0.
   apply arity_Mor_ax_pw.
 Qed.

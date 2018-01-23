@@ -66,7 +66,7 @@ MR(X+o)) --------->  NR(X+o)
     }
     rewrite assoc.
     etrans;[apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply pathsinv0.
     apply (nat_trans_ax f).
   Qed.

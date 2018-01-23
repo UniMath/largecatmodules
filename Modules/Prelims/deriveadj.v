@@ -258,9 +258,9 @@ et on utilise les 2 lois de monades
         eapply pathsinv0.
       etrans.
       {
-         (* eapply (cancel_postcomposition (C := SET)) *)
+         (* eapply (maponpaths_2 (C := SET)) *)
         match goal with
-          |-  ?a · ?c = _ => eapply (cancel_postcomposition (C := SET) a _ c)
+          |-  ?a · ?c = _ => eapply (maponpaths_2 ) (*(C := SET) a _ c)*)
         end.
         apply (nat_trans_ax (η R)).
       }
@@ -268,7 +268,7 @@ et on utilise les 2 lois de monades
       etrans.
       {
         match goal with
-          |-  ?a · ?c = _ => eapply (cancel_postcomposition (C := SET) a _ c)
+          |-  ?a · ?c = _ => eapply (maponpaths_2 ) (* (C := SET) a _ c) *)
         end.
         etrans.
         {
@@ -283,7 +283,7 @@ et on utilise les 2 lois de monades
         rewrite assoc.
         match goal with
           |-  ?a · ?c = _ =>
-          eapply (cancel_postcomposition (C := SET) a _ c)
+          eapply (maponpaths_2 ) (*(C := SET) a _ c) *)
         end.
         eapply pathsinv0.
         apply (nat_trans_ax (η R)).
@@ -300,7 +300,7 @@ et on utilise les 2 lois de monades
           end.
           apply Monad_law3.
         + rewrite  assoc.
-          eapply (cancel_postcomposition (C := SET)).
+          eapply (maponpaths_2 ). 
           apply Monad_law1.
       }
       apply idpath.
@@ -314,7 +314,7 @@ et on utilise les 2 lois de monades
       apply pathsinv0.
       etrans;[|apply (Monad_law2 (T:=R))].
       rewrite assoc.
-      apply (cancel_postcomposition (C:=SET)).
+      apply (maponpaths_2 ).
       apply pathsinv0.
       etrans;[| apply functor_comp].
       apply idpath.
@@ -443,8 +443,8 @@ stuff proved in Derivative of a Module, or by considering coproducts of Modules 
     etrans; revgoals.
     {
       repeat rewrite assoc.
-      apply cancel_postcomposition.
-      apply cancel_postcomposition.
+      apply maponpaths_2.
+      apply maponpaths_2.
       eapply pathsinv0.
       apply TerminalArrowUnique.
     }
@@ -479,7 +479,7 @@ R(T+RX) -------> RR(T+X)
       (* η natural & monad law *) 
       etrans.
       - (* η natural *)
-        apply cancel_postcomposition.
+        apply maponpaths_2.
         eapply pathsinv0.
         apply (nat_trans_ax (η R)).
       - (* Monad law *)
@@ -533,7 +533,7 @@ f := η ∘ in₁
 *)
     etrans;[|apply (nat_trans_ax (lm_mult R M))].
     repeat rewrite assoc.
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     rewrite <- functor_comp.
     apply (maponpaths (fun x => # M x)).
     apply BinCoproductIn2Commutes.
@@ -604,8 +604,8 @@ m  |                  |
     - cbn.
       repeat rewrite id_right.
       repeat rewrite assoc.
-      apply cancel_postcomposition.
-      apply cancel_postcomposition.
+      apply maponpaths_2.
+      apply maponpaths_2.
       apply TerminalArrowUnique.
   Qed.
   Definition deriv_counit : nat_trans (functor_identity LMOD) (×ℜ ∙ ∂) :=
@@ -654,7 +654,7 @@ Section derivadj.
         rewrite assoc.
         etrans.
         {
-          apply (cancel_postcomposition (C := SET)).
+          apply (maponpaths_2 ).
           eapply pathsinv0.
           apply (functor_comp M).
         }

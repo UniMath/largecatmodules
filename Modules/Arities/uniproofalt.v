@@ -207,22 +207,22 @@ Proof.
   - symmetry.
     etrans; [ apply (Monad_Mor_μ (pr1 f)) |].
     etrans.
-    { apply (cancel_postcomposition (C:=SET)).
+    { apply (maponpaths_2).
       etrans.
-      { apply cancel_postcomposition.
+      { apply maponpaths_2.
         apply u_def. }
       apply maponpaths.
       apply maponpaths.
       apply u_def.  
     }
     etrans.
-    { apply (cancel_postcomposition (C:=SET)).
+    { apply (maponpaths_2).
       etrans.
       { symmetry; apply  (assoc (C:=SET) (projR (## R X)) (u f (## R X))).  } 
       apply maponpaths.
       etrans.
       { symmetry. apply nat_trans_ax. }
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       apply (functor_comp _ (projR X) (u f X)). 
     }
     repeat rewrite assoc.
@@ -553,13 +553,13 @@ Proof.
          )).
   intro X'.
   etrans; [apply (rep_ar_mor_ax _ m )|].
-  apply cancel_postcomposition.
+  apply maponpaths_2.
   etrans.
   (* # a m ;; F_S = #a π ;; F_R' ;; # b u *)
   (* je dois utilier la naturalité de F à droite
      pour avoir #a π ;; #a u ;; F_S et ensuite par définition de m = π ;; u
    *)
-  apply cancel_postcomposition.
+  apply maponpaths_2.
   etrans.
   apply (cancel_ar_on _ (compose (C:=category_Monad _) projR_monad (u_monad m))).
   use (invmap (Monad_Mor_equiv _ _ _)).
@@ -634,7 +634,7 @@ Proof.
   etrans.
   {
     etrans; [apply assoc |].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply (rep_ar_mor_ax _ (projR_rep R cond_R)).
   }
   rewrite arity_comp.
@@ -646,7 +646,7 @@ Proof.
     repeat rewrite assoc.
     eapply pathsinv0.
     etrans; [apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply arity_Mor_ax_pw.
   }
   etrans.

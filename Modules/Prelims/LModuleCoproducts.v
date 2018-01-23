@@ -15,6 +15,8 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
+Require Import Modules.Prelims.lib.
+
 Local Open Scope cat.
 
 Section ColimsModule.
@@ -87,7 +89,7 @@ Section ColimsModule.
       rewrite id_right.
       apply pathsinv0.
       etrans;[|apply id_left].
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       apply LModule_law1.
     - intro x.
       etrans; [use CoproductOfArrows_comp|].
