@@ -15,6 +15,7 @@ To compile (coq 8.7): make.
 - Definition of arities and their representations  : `Arities/FullArities`
 - Definition of signatures and their representations  : `Arities/Signature`
 - Representability of presentable half-arities : `Arities/PresentableArity`
+- Representability of presentable raw signatures : `Arities/PresentableRawSig`
 - Representability of the codomain epimorphic morphism of half-arity : `Arities/uniproofalt`
 - Adjunction in the category of modules over a specific monad R  on Set
           Hom(M x R', N) ~ Hom(M , N') : `Prelims/derivadj.v`
@@ -61,6 +62,7 @@ By folder
 - `FullArities` : definition of arities and their representations
 - `Signatures` : definition of signatures and their representations
 - `PresentableArity` : presentable half arities are representable.
+- `Arities/PresentableRawSig` : Representability of presentable raw signatures
 - `quotientrep` : quotient representation construction
 - `PresentableHArityCoproducts` : a coproduct of presentable half arities is presentable.
 - `PresentableHArityBinProdR` : if `a` is presentable, then so is the product of `a` with
