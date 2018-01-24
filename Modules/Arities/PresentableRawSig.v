@@ -44,13 +44,13 @@ Local Notation EndSet := [hset_category, hset_category].
   Local Notation bp := BinProductsHSET.
   Local Notation bcp := BinCoproductsHSET.
   Local Notation T := TerminalHSET.
-  Context {O : hSet}.
-  Context (a : O -> arity SET).
+  Context (rawsig  : @rawSig SET).
+  Let O : hSet := base_of_rawSig rawsig.
+  Let a : O -> arity SET := ar_of_rawSig rawsig.
   (** (O, a) is a presentable raw signature *)
   Context (pres_a : ∏ o, isPresentable (C:=SET) bp bcp T (fun i => cp _ (setproperty i))
                                        (a o)).
 
-  Let rawsig : rawSig := ((O : UU) ,, a).
 
     (** This uses univalence to transform an isomorphism of category into an equality
        Another proof could be used without univalence though
