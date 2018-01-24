@@ -93,9 +93,9 @@ Proof.
   - apply isaprop_rep_ar_mor_law.
 Defined.
 
-Definition rawSig := ∑ (O : UU), O -> HalfArity.
+Definition rawSig := ∑ (O : hSet), O -> HalfArity.
 
-Definition base_of_rawSig (a : rawSig) : UU := pr1 a.
+Definition base_of_rawSig (a : rawSig) : hSet := pr1 a.
 Definition ar_of_rawSig (a : rawSig) : base_of_rawSig a -> HalfArity := pr2 a.
 
 (* Local Notation O := base_of_rawSig. *)
@@ -107,19 +107,23 @@ Definition rawSigToSig (a : rawSig) : signature C :=
 
 Local Notation TOSIG := rawSigToSig.
 
-Context {O : UU}.
-Context (cpC : Coproducts O C).
-Let cpHA  := harity_Coproducts cpC.
-Let cpLM (R : Monad C) := LModule_Coproducts C R cpC.
+Context (arawsig : rawSig).
+(* Context {O : UU}. *)
+Context (cpC : Coproducts (base_of_rawSig arawsig) C).
+Let cpHA    := harity_Coproducts cpC.
+Let cpLM   (R : Monad C) := LModule_Coproducts C R cpC.
 
-Definition rawSigToHAr (a : O -> HalfArity) : HalfArity :=
-  CoproductObject _ _ (cpHA a).
+(* Definition rawSigToHAr (a : O -> HalfArity) : HalfArity := *)
+(*   CoproductObject _ _ (cpHA a). *)
 
-Variable (a : O -> HalfArity).
-Let aS : rawSig := _ ,, a.
+Definition rawSigToHAr  : HalfArity :=
+  CoproductObject _ _ (cpHA (ar_of_rawSig arawsig)).
 
-Let a_sig := rawSigToSig aS.
-Let a_har := rawSigToHAr a.
+(* Variable (a : O -> HalfArity). *)
+
+
+Let a_sig := rawSigToSig arawsig.
+Let a_har := rawSigToHAr .
 
 Let a_sig_rep := precategory_rep_sig a_sig.
 Let a_har_rep := (rep_disp C)[{a_har}].

@@ -45,7 +45,7 @@ Section SigEquivRawSig.
 
 
   Context {C : category}.
-  Context {O : UU} (α : O -> FullArity C) (α' : O -> arity C).
+  Context {O : hSet} (α : O -> FullArity C) (α' : O -> arity C).
   Context (Fmod : ∏ (o : O) R,
                  LModule_Mor R (dom (α o) R)(codom (α o) R) ≃
                              LModule_Mor R (α' o R)(tautological_LModule R)).
