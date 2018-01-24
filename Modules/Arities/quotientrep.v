@@ -156,24 +156,24 @@ Lemma τ'_law_eq1 X : ((h∙∙projR_monad :[SET,SET]⟦_,_⟧)
                      ((σ a:[SET,SET]⟦_,_⟧) · (τ:nat_trans _ _) · projR : nat_trans _ _) X.
 Proof.
   etrans.
-  { apply cancel_postcomposition.
+  { eapply (maponpaths_2 compose).
     etrans.
     { etrans;[eapply pathsinv0; apply assoc|].
-      apply cancel_precomposition.
+      apply maponpaths.
       apply (nat_trans_ax τ').
     }
     etrans; [apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     (* definition of τ' *)
     apply R'_rep_τ_def.
   }
   repeat rewrite <- assoc.
   etrans.
-  { apply cancel_precomposition.
+  { apply maponpaths.
     (* π est un morphisme de moande (par définition) *)
     apply R'_μ_def.
   }
-  do 2 rewrite assoc. apply cancel_postcomposition.
+  do 2 rewrite assoc. apply (maponpaths_2 compose).
   apply (LModule_Mor_σ R τ).
 Qed.
 
@@ -193,11 +193,11 @@ Lemma τ'_law_eq2 X : ((h∙∙projR_monad :[SET,SET]⟦_,_⟧)
                      ((σ a:[SET,SET]⟦_,_⟧) · (τ:nat_trans _ _) · projR :nat_trans _ _) X.
 Proof.
   etrans.
-  { apply cancel_postcomposition.
+  { eapply (maponpaths_2 compose).
     apply (LModule_Mor_σ R h). 
   }
   repeat rewrite <- assoc.
-  apply cancel_precomposition.
+  apply (maponpaths (compose _ )).
   apply R'_rep_τ_def.
 Qed.
 
@@ -323,12 +323,12 @@ Proof.
   apply pathsinv0.
   etrans.
   { rewrite assoc.
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply R'_rep_τ_def.
   } 
   etrans.
   { rewrite <- assoc.
-    apply cancel_precomposition.
+    apply maponpaths.
     eapply pathsinv0.
     apply quotientmonad.u_def.
   }

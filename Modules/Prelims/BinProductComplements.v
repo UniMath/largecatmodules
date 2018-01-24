@@ -86,7 +86,7 @@ Section BinProdComplements.
       + 
         etrans.
         {
-        apply cancel_precomposition.
+        apply maponpaths.
         apply map_on_two_paths; eapply pathsinv0; apply iso_inv_iso_inv.
         }
         apply BinProduct_pw_eq_id.

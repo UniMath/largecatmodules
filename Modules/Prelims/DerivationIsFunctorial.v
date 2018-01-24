@@ -61,12 +61,12 @@ MR(X+o)) --------->  NR(X+o)
     {
       (* law of f *)
       etrans; [|apply assoc].
-      apply cancel_precomposition.
+      apply maponpaths.
       apply (LModule_Mor_σ _ f).
     }
     rewrite assoc.
     etrans;[apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply pathsinv0.
     apply (nat_trans_ax f).
   Qed.

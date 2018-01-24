@@ -129,7 +129,7 @@ Proof.
   cbn.
   apply pathsinv0.
   etrans;[|apply id_left].
-  apply cancel_postcomposition.
+  apply maponpaths_2.
   apply functor_id.
 Qed.
 
@@ -164,7 +164,7 @@ Local Notation pbm_comp := (pb_LModule (Monad_composition m  m') T'').
   Proof.
     cbn.
     etrans; [apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply pathsinv0.
     apply functor_comp.
   Qed.
@@ -274,7 +274,7 @@ Section pullback_deriv.
                                                                           (lm_mult S M) (bcpC o c)).
   Proof.
     repeat rewrite assoc.
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     do 2 rewrite <- functor_comp.
     apply maponpaths.
     etrans;[ apply precompWithBinCoproductArrow|].
@@ -282,7 +282,7 @@ Section pullback_deriv.
     rewrite postcompWithBinCoproductArrow.
     apply map_on_two_paths.
     - rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       apply pathsinv0.
       apply Monad_Mor_η.
     - apply pathsinv0.

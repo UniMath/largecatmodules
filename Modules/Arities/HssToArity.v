@@ -92,12 +92,12 @@ Proof.
   etrans; [apply assoc|].
   etrans.
   {
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply (θ_nat_1_pw _ _ (f : nat_trans _ _) (p T) X).
   }
   etrans;[|apply assoc].
   etrans;[eapply pathsinv0; apply assoc |].
-  apply cancel_precomposition.
+  apply maponpaths.
   etrans; [apply functor_comp_pw|].
   etrans; [| eapply pathsinv0; apply functor_comp_pw].
   apply functor_cancel_pw.
@@ -164,13 +164,13 @@ Proof.
     etrans;[ apply assoc|].
   etrans.
   {
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply (θ_nat_2_pw (S : functor _ _) _ _ (ptd_mor_from_Monad_mor f)).
   }
   apply pathsinv0.
   cbn.
   etrans;[|apply assoc].
-  apply cancel_precomposition.
+  apply maponpaths.
   apply pathsinv0.
   etrans;[apply functor_comp_pw|].
   apply functor_cancel_pw.
@@ -310,11 +310,11 @@ And as f is a signature morphism, we have
     etrans.
     {
       etrans;[apply assoc|].
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       exact ( !hf).
     }
     do 2 rewrite <- assoc.
-    apply cancel_precomposition.
+    apply maponpaths.
     apply pathsinv0.
     assert (hf' := (nat_trans_ax (pr1 f) _ _ (μ R) )).
     eapply nat_trans_eq_pointwise in hf'.

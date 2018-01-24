@@ -71,9 +71,9 @@ Variable (a : arity C).
     - intros R S T f g.
       etrans.
       {
-      apply (cancel_postcomposition (C := MOD R)).
-      rewrite arity_comp.
-      apply functor_comp.
+        eapply (maponpaths_2 (compose (C := MOD R))).
+        rewrite arity_comp.
+        apply functor_comp.
       }
       apply LModule_Mor_equiv;[apply homset_property|].
       apply nat_trans_eq;[apply homset_property|].

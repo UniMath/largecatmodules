@@ -77,7 +77,7 @@ Section Coprod.
       etrans;[apply id_right|].
       apply pathsinv0.
       etrans;[|apply id_left].
-      apply cancel_postcomposition.
+      apply (maponpaths_2 compose).
       apply arity_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
@@ -144,7 +144,7 @@ Section Coprod.
     etrans.
     {
       etrans;[apply assoc|].
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       set (CC := cpC _).
       apply (CoproductInCommutes _ _ _ CC).
     }

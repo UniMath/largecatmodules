@@ -10,6 +10,7 @@ Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.MoreFoundations.Tactics.
+Require Import UniMath.MoreFoundations.PartA.
 
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
@@ -20,6 +21,7 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
 Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModuleColims.
 Require Import Modules.Prelims.LModPbCommute.
@@ -40,9 +42,9 @@ Lemma compfNat
    ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f3 v = f3 u · dmor d3 e .
   intros u v e.
   etrans;[apply assoc|].
-  etrans;[apply cancel_postcomposition; apply fNat|].
+  etrans;[apply maponpaths_2; apply fNat|].
   etrans;[|apply assoc].
-  etrans;[|apply cancel_precomposition; apply fNat2].
+  etrans;[|apply maponpaths; apply fNat2].
   apply pathsinv0.
   apply assoc.
 Qed.
@@ -156,7 +158,7 @@ Section ColimsHAr.
       etrans;[apply (colimArrowCommutes  cc)|].
       cbn.
       etrans;[|apply id_left].
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       apply arity_id.
     - intros U V W m n.
       apply LModule_Mor_equiv;[apply homset_property|].
@@ -171,7 +173,7 @@ Section ColimsHAr.
       etrans.
       {
         etrans;[apply assoc|].
-        apply cancel_postcomposition.
+        apply maponpaths_2.
         set (cc := colims_g _).
         apply (colimArrowCommutes cc).
       }
@@ -180,13 +182,13 @@ Section ColimsHAr.
       {
         cbn.
         rewrite <- assoc.
-        apply cancel_precomposition.
+        apply maponpaths.
         set (cc := colims_g _).
         apply (colimArrowCommutes cc).
         }
       cbn.
       rewrite assoc.
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       apply pathsinv0.
       etrans.
       {
@@ -211,7 +213,7 @@ Section ColimsHAr.
       etrans;[apply (limArrowCommutes  cc)|].
       cbn.
       etrans;[|apply id_right].
-      apply cancel_precomposition.
+      apply maponpaths.
       apply arity_id.
     - intros U V W m n.
       apply LModule_Mor_equiv;[apply homset_property|].
@@ -227,7 +229,7 @@ Section ColimsHAr.
       {
         rewrite <- assoc.
         (* etrans;[apply assoc|]. *)
-        apply cancel_precomposition.
+        apply maponpaths.
         set (cc := lims_g _).
         apply (limArrowCommutes cc).
       }
@@ -236,13 +238,13 @@ Section ColimsHAr.
       {
         cbn.
         rewrite assoc.
-        apply cancel_postcomposition.
+        apply maponpaths_2.
         set (cc := lims_g _).
         apply (limArrowCommutes cc).
         }
       cbn.
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       apply pathsinv0.
       etrans.
       {
@@ -344,7 +346,7 @@ Section ColimsHAr.
     etrans.
     {
       rewrite assoc.
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       set (cc1 := colims_g _).
       apply (colimArrowCommutes cc1).
     }
@@ -352,7 +354,7 @@ Section ColimsHAr.
     etrans.
     {
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       set (cc1 := colims_g _).
       apply (colimArrowCommutes cc1).
     }
@@ -378,7 +380,7 @@ Section ColimsHAr.
     etrans.
     {
       rewrite <- assoc.
-      apply cancel_precomposition.
+      apply maponpaths.
       set (cc1 := lims_g _).
       apply (limArrowCommutes cc1).
     }
@@ -387,7 +389,7 @@ Section ColimsHAr.
     etrans.
     {
       rewrite assoc.
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       set (cc1 := lims_g _).
       apply (limArrowCommutes cc1).
     }

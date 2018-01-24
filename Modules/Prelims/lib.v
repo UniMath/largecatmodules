@@ -1,6 +1,8 @@
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
+Require Export UniMath.MoreFoundations.PartA.
+Require Export UniMath.MoreFoundations.All.
 
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
@@ -20,8 +22,8 @@ Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 
-Tactic Notation "cpre" uconstr(x) := apply (cancel_precomposition x).
-Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition).
+Tactic Notation "cpre" uconstr(x) := apply (maponpaths x).
+Tactic Notation "cpost" uconstr(x) := apply (maponpaths_2).
 
 Set Automatic Introduction.
 

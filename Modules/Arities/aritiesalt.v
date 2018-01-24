@@ -192,11 +192,11 @@ Proof.
   etrans.
   apply (assoc (C:= [_,_])).
   etrans.
-  apply ( cancel_postcomposition (C:= [_,_])).
+  apply maponpaths_2.
   apply (arity_Mor_ax (F:=F) (F':=G) a f).
   rewrite <- (assoc (C:=[_,_])).
   etrans.
-  apply (cancel_precomposition ([_,_])).
+  apply maponpaths.
   apply arity_Mor_ax.
   rewrite assoc.
   apply idpath.
@@ -388,9 +388,9 @@ Proof.
   intro c.
   apply pathsinv0.
   etrans.
-    { apply cancel_postcomposition, id_right. }
+    { apply maponpaths_2, id_right. }
   etrans.
-    { apply cancel_postcomposition, (arity_id a (pr1 RM) c). } 
+    { apply maponpaths_2, (arity_id a (pr1 RM) c). } 
   etrans; [  apply id_left |].
   apply pathsinv0.
   apply id_right.
@@ -452,23 +452,23 @@ Proof.
   cbn.    
   rewrite assoc.
   etrans.
-  { apply cancel_postcomposition.
+  { apply maponpaths_2.
     use rep_ar_mor_ax. }
     
   etrans.
   { rewrite <- assoc.
-    apply cancel_precomposition.
+    apply maponpaths.
     use rep_ar_mor_ax. }
   
   (* Cf diagramme à ce point *)
   
   symmetry.
   repeat rewrite assoc.
-  apply cancel_postcomposition.
-  apply cancel_postcomposition.
+  apply maponpaths_2.
+  apply maponpaths_2.
   etrans.
   {
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     assert (h:= (arity_comp a (pr1 α) (pr1 β))).
     apply LModule_Mor_equiv in h.
     eapply nat_trans_eq_pointwise in h.
@@ -478,7 +478,7 @@ Proof.
   cbn.
   rewrite id_right.
   repeat rewrite <- assoc.
-  apply cancel_precomposition.
+  apply maponpaths.
   assert (h:=arity_Mor_ax f (pr1 β)).
   eapply nat_trans_eq_pointwise in h.
   apply h.
@@ -546,10 +546,10 @@ Proof.
   intro c.
   cbn.
   rewrite id_right.
-  apply cancel_postcomposition.
+  apply maponpaths_2.
   apply pathsinv0.
   etrans; [| apply id_left].
-  apply cancel_postcomposition.
+  apply maponpaths_2.
   apply arity_id.
 Qed.
 

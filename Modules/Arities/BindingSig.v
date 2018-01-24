@@ -177,7 +177,7 @@ Section EpiAritySig.
      (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET (toSig sig) b (rep_τ SET b)))).
     specialize (h (rep_mor_to_alg_mor b t)).
     apply rep_ar_mor_mor_equiv.
-    apply algebra_mor_eq in h; [|apply (homset_property EndSet)].
+    apply algebra_mor_eq in h; [|apply (homset_property EndSet)]. 
     intro c.
     eapply nat_trans_eq_pointwise in h.
     apply h.
@@ -190,7 +190,7 @@ Section EpiAritySig.
   Proof.
     intro b.
     cbn in b.
-    unshelve eapply iscontrpair.
+    use iscontrpair.
     - apply alg_initial_arrow.
     - apply alg_initial_arrow_unique.
   Qed.
@@ -247,8 +247,7 @@ Section EpiAritySig.
     (precomp_option_iter_Signature has_homsets_HSET BinCoproductsHSET  TerminalHSET n ).
 
   (* TODO: Si F préserve les épis, alors precomp_functor F aussi *)
-  Local Notation precomp_functor  F :=
-
+  Local Notation precomp_functor F :=
         (pre_composition_functor SET SET SET hom_SET hom_SET F).
   (* BinProductsHSET BinCoproductsHSET TerminalHSET ar. *)
   Local Notation binProdSig :=
@@ -373,10 +372,9 @@ Section EpiAritySig.
 
 
 
-  Lemma ArAreEpiSig (ar : list nat) : isEpiSig (ArToSig ar).
+  Lemma ArAreEpiSig : forall (ar : list nat), isEpiSig (ArToSig ar).
   Proof.
-    pattern ar.
-    apply list_ind; clear ar.
+    apply list_ind.
     - exact IdSigIsEpiSig.
     - intros n ar.
       revert n.

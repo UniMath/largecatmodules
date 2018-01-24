@@ -95,14 +95,14 @@ Section pullback_coprod.
     etrans.
     {
       etrans;[apply assoc|].
-      apply cancel_postcomposition.
+      apply maponpaths_2.
       set (CC := Co _).
       use (colimArrowCommutes CC).
     }
     cbn.
     etrans.
     {
-      etrans;[apply cancel_postcomposition; apply id_left|].
+      etrans;[apply maponpaths_2; apply id_left|].
   Abort.
       }
     cbn.

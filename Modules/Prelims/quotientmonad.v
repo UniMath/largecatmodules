@@ -146,22 +146,23 @@ Proof.
   apply isEpi_projR.
   repeat rewrite assoc.
   etrans.
-  { apply cancel_postcomposition. 
+  { apply maponpaths_2. 
     unfold R'_η.
     etrans;[apply assoc|].
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply (nat_trans_ax (η  R)).
   }  
   rewrite <- assoc.
   rewrite <- assoc.
   etrans.
-  { apply (cancel_precomposition _ _ _ (R' c)).
+  { 
+    eapply maponpaths.
     cbn.
     apply R'_μ_def.
   }
   rewrite assoc, id_right.
   etrans.
-  { apply cancel_postcomposition.
+  { apply maponpaths_2.
     apply (Monad_law1 (T:=R)). }
   apply id_left.
 Qed.
@@ -170,20 +171,20 @@ Lemma R'_Monad_law_η2 : ∏ c : SET, # R' (R'_η c) · R'_μ c = identity (R' c
 Proof.
   intro c.
   etrans.
-  { apply cancel_postcomposition.    
+  { apply maponpaths_2.    
     apply functor_comp. }
   use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR isEpi_projR).
   repeat rewrite assoc.
   etrans.
-  { apply cancel_postcomposition.
-    apply cancel_postcomposition.
+  { apply maponpaths_2.
+    apply maponpaths_2.
     symmetry.
     apply (nat_trans_ax (projR)).
   }
   rewrite <- assoc.
   rewrite <- assoc.
   etrans.
-  { apply cancel_precomposition.
+  { apply maponpaths.
     apply R'_μ_def.
   }
   rewrite assoc, id_right.
@@ -246,17 +247,17 @@ Legend of the diagram :
     rewrite horcomp_pre_post.    
     etrans.
     { 
-      apply cancel_postcomposition.       
+      apply maponpaths_2.       
       etrans. use (! assoc _ _ _ ).
-      apply (cancel_precomposition SET).
+      apply maponpaths.
       etrans; [ apply (!functor_comp R' _ _ ) | ].
       apply maponpaths.      
       apply R'_μ_def.
     }
     rewrite functor_comp,assoc.
-    apply (cancel_postcomposition).
+    apply (maponpaths_2).
     symmetry.
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     apply (nat_trans_ax (projR)).
   }  
   (* second equality *)
@@ -264,28 +265,28 @@ Legend of the diagram :
   { 
     rewrite <- assoc.
     rewrite <- assoc.
-    apply (cancel_precomposition (SET)).     
+    apply maponpaths.     
     apply (R'_μ_def c).
   }
   (* third equality *)
   etrans.
   { rewrite assoc.
-    etrans. { apply cancel_postcomposition, (Monad_law3 (T:=R) c). }
+    etrans. { apply maponpaths_2, (Monad_law3 (T:=R) c). }
     
     (* Fourth equality *)
     rewrite <- assoc.
   
     etrans.
-    { apply cancel_precomposition. symmetry. apply R'_μ_def. }
+    { apply maponpaths. symmetry. apply R'_μ_def. }
   
     rewrite assoc.      
-    apply cancel_postcomposition.
+    apply maponpaths_2.
   
     (* Fifth equality *)
     etrans.
     { cbn -[projR compose].
       rewrite (assoc (C:=SET)).
-      apply (cancel_postcomposition (C:=SET)).
+      apply maponpaths_2. 
       symmetry.
       apply R'_μ_def.
     }
@@ -293,7 +294,7 @@ Legend of the diagram :
   (* Close to the end *)
     etrans.
     { rewrite <- assoc.
-      apply (cancel_precomposition SET).
+      apply maponpaths.
       symmetry.
       apply (nat_trans_ax (R'_μ) ( R c)). 
     }
@@ -301,7 +302,7 @@ Legend of the diagram :
     reflexivity.
   }
   etrans; [apply (!assoc _ _ _ ) |].
-  apply cancel_postcomposition.  
+  apply maponpaths_2.  
   (* association of horcomposition *)
   apply assoc_ppprojR.
 Qed.
@@ -374,18 +375,18 @@ Proof.
     
   (* Now the real work begins *)
   etrans.
-  {  apply cancel_postcomposition.
+  {  apply maponpaths_2.
     apply (nat_trans_ax (projR)).
   }
   etrans. (* use the monadicity of μ *)
   { rewrite assoc.        
-    apply cancel_postcomposition.
+    apply maponpaths_2.
     symmetry.
     apply (Monad_Mor_μ (projR_monad)).
   }
     
   (* definition of u *)
-  etrans. { rewrite <- assoc. cpre _. symmetry. apply u_def. }
+  etrans. { rewrite <- assoc. apply maponpaths. symmetry. apply u_def. }
     
   (* m is a morphism of monad *)
   etrans; [ apply (Monad_Mor_μ m) |].
@@ -395,7 +396,7 @@ Proof.
   { cpost _.
     etrans.
     { etrans. { cpost _.  apply u_def. }
-      cpre _ .
+      apply maponpaths. 
       etrans.
       { apply maponpaths. apply u_def. }
       apply functor_comp.
@@ -404,7 +405,7 @@ Proof.
     rewrite assoc.
     cpost _.
     rewrite <- assoc.
-    cpre _.
+    apply maponpaths.
     symmetry.
     apply (nat_trans_ax u).
   }
