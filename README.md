@@ -11,9 +11,9 @@ To compile (coq 8.7): make.
 
 # List of formalized propositions and definitions
 
-- Definition of half-arities and their representations : `Arities/aritiesalt`
-- Definition of arities and their representations  : `Arities/FullArities`
-- Definition of signatures and their representations  : `Arities/Signature`
+- Definition of half-arities and their actions : `Arities/aritiesalt`
+- Definition of arities and their actions  : `Arities/FullArities`
+- Definition of signatures and their actions  : `Arities/Signature`
 - Representability of presentable half-arities : `Arities/PresentableArity`
 - Representability of presentable raw signatures : `Arities/PresentableRawSig`
 - Representability of the codomain epimorphic morphism of half-arity : `Arities/uniproofalt`
@@ -22,7 +22,7 @@ To compile (coq 8.7): make.
           
 
 - A coproduct of presentable half arities is presentable : `Arities/PresentableHArityCoproducts` 
-- Equivalence of representations between a raw signature and the coproduct
+- Equivalence of actions between a raw signature and the coproduct
 of its half arities : `Arities/RawSigToHAr` 
 - pointwise limits and colimits of modules : `Prelims/LModuleColims`
 - pointwise limits and colimits of arities : `Arities/HAritiesColims`
@@ -56,21 +56,21 @@ By folder
 - `CoproductsComplements`, `BinProductComplements`,`lib` : self-explanatory
 
 ## Arities
-- `aritiesalt` : definition of half arities and their representations
+- `aritiesalt` : definition of half arities and their actions
 - `uniproofalt` : proof of the technical lemma : epimorphisms of half-arities preserves
         representability
-- `FullArities` : definition of arities and their representations
-- `Signatures` : definition of signatures and their representations
+- `FullArities` : definition of arities and their actions
+- `Signatures` : definition of signatures and their actions
 - `PresentableArity` : presentable half arities are representable.
 - `Arities/PresentableRawSig` : Representability of presentable raw signatures
-- `quotientrep` : quotient representation construction
+- `quotientrep` : quotient action construction
 - `PresentableHArityCoproducts` : a coproduct of presentable half arities is presentable.
 - `PresentableHArityBinProdR` : if `a` is presentable, then so is the product of `a` with
   the tautological half-arity 
 - `FullArToRaw`: convert an arity to a raw arity using the adjunction Hom(M x R, N) ~ Hom(M, N')
-- `SigEquivRep` : Equivalence of representations between two signatures whose arities 
-     have equivalent representations
-- `RawSigToHAr` : equivalence of representation between a raw signature and the coproduct of its half
+- `SigEquivRep` : Equivalence of actions between two signatures whose arities 
+     have equivalent actions
+- `RawSigToHAr` : equivalence of action between a raw signature and the coproduct of its half
       arities
 - `HssToArity` : Functor between signatures in the sense of heterogeneous substitution systems
        and our half arities.
