@@ -17,3 +17,4 @@ HArityDerivation.v
 HAritiesColims.v
 FullArToRaw.v
 PresentableHArityBinProdR.v
+PresentableSig.v

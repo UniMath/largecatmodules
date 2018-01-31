@@ -40,6 +40,7 @@ Require Import Modules.Arities.BindingSig.
 Require Import Modules.Arities.PresentableArity.
 Require Import Modules.Arities.HArityBinproducts.
 Require Import Modules.Arities.HArityCoproduct.
+Require Import Modules.Arities.HAritiesColims.
 Require Import Modules.Arities.PresentableHArityCoproducts.
 Require Import Modules.Arities.HssArityCommutation.
 
@@ -51,6 +52,7 @@ Require Import Modules.Prelims.BinProductComplements.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
+Require Import Modules.Arities.FullArToRaw.
 Open Scope cat.
 
 
@@ -61,8 +63,7 @@ Section CoprodAr.
   Context {C : category} (bp : BinProducts C) (bcp : BinCoproducts C)
           (T : Terminal C) (cp : ∏ (I:hSet), Coproducts I C).
 
-  Local Notation PO := (BinProductObject _).
-  Local Notation CPO := (CoproductObject _ _).
+  Local Notation PO := (BinProductObject _). Local Notation CPO := (CoproductObject _ _).
   Let MOD R  := precategory_LModule (B:= C) R C.
   Let HAr_bp := harity_BinProducts  bp.
   Let HAr_cp I := harity_Coproducts  (cp I).
@@ -228,31 +229,27 @@ Defined.
 It requires that the base category is distributive and that bin products
 of epimorphisms are epimorphisms in the functor category.
 
-Let us redefine a hss bidning signature to be a list of pairs of a nat and a list (ie
-a list of non empty lists !!
-
-because otherwise [[] ]~ [[0]] which is ugly and not convenient
-
 *)
-Hypothesis
-  (epiBinProd : ∏ (X X' Y Y' : functor C C) (f : nat_trans X X') (g : nat_trans Y Y')
+Definition isEpiBinProd :=
+   ∏ (X X' Y Y' : functor C C) (f : nat_trans X X') (g : nat_trans Y Y')
                         (epif : isEpi (C :=  [C,C]) f)(epig : isEpi (C :=  [C,C]) g),
                       isEpi (C:=[C,C]) (BinProductOfArrows _ (bpFunct _ _)
-                                                           (bpFunct _ _) f g)).
+                                                           (bpFunct _ _) f g).
+
+Hypothesis
+  (epiBinProd : isEpiBinProd).
 
 
-  Context {a : arity C} 
-          {I : hSet}
-          (Sa : I -> (nat × list nat)).
-  Let Sa' := fun i => cons (pr1 (Sa i)) (pr2 (Sa i)).
-  Let Ba : BindingSig := mkBindingSig (setproperty I) Sa'.
+  Context {a : arity C} .
+  Context (pres_a : isPresentable bp bcp T cp a).
+  Let Ba : BindingSig := p_sig pres_a.
+  Let I : hSet := BindingSigIndexhSet Ba.
+  Let Sa' : I -> list nat := BindingSigMap Ba.
 
-  
+  Let Fa :  arity_Mor (hss_to_ar (C:= C) (toSig Ba)) a := p_mor pres_a.
+  Let epiFa : ∏ (R : Monad C), (isEpi (C := [_, _]) (pr1 (Fa R))) :=
+    epi_p_mor pres_a.
 
-  Context (Fa :  arity_Mor (hss_to_ar (C:= C) (toSig Ba)) a)
-          (epiFa : ∏ (R : Monad C), (isEpi (C := [_, _]) (pr1 (Fa R)))).
-
-  Let pres_a : isPresentable bp bcp T cp a := Ba ,, Fa ,, epiFa.
 
   Local Notation SIG := (Signature_precategory C C).
 
@@ -281,36 +278,69 @@ becomes
                                (homset_property _).
 
 
-Definition Arity_to_Signature_cons_cons_value x y l :=
-  PO (BinProducts_Signature_precategory C C
-                           bp
-                           (precomp_option_iter_Signature (homset_property C) bcp T x)
-                           (Arity_to_Signature (homset_property C) bp bcp T (cons y l))).
-
-Definition Arity_to_Signature_cons_cons x y l :
-  Arity_to_Signature (homset_property C) bp bcp T (cons x (cons y l)) =
-  BinProduct_of_Signatures _ (homset_property C) C (homset_property C)
-                           bp
-                           (precomp_option_iter_Signature (homset_property C) bcp T x)
-                           (Arity_to_Signature (homset_property C) bp bcp T (cons y l)) := idpath _.
-
-Definition Arity_to_signature_cons_cons_value' o :=
-  Arity_to_Signature_cons_cons_value 0 (pr1 (Sa o)) (pr2 (Sa o)).
-
-
-Let ar1: arity _ := (CPO 
-       (HAr_cp _
-          (λ i : BindingSigIndex har_binprodR_p_sig,
-           hss_to_ar
-             (Arity_to_Signature_cons_cons_value 0 (pr1 (Sa i)) (pr2 (Sa i)))
-        ))).
-Let ar2 := (PO (HAr_bp (hss_to_ar (C := C) (toSig Ba)) tautological_harity) : arity C).
-
-Let ar1i i :=
-     (hss_to_ar (Arity_to_Signature_cons_cons_value 0 (pr1 (Sa i)) (pr2 (Sa i)))).
 
   Let cpSig  : Coproducts I SIG
     := Coproducts_Signature_precategory _ C _ (cp I).
+  Let bpSig  : BinProducts  SIG
+    := BinProducts_Signature_precategory _ C  bp.
+
+  (* TODO : move this somewhere else *)
+  Lemma Const1Sig_isTerminal : isTerminal SIG (SignatureExamples.ConstConstSignature C C T).
+  Proof.
+    intro S.
+    use iscontrpair.
+    - use tpair.
+      {
+      use mk_nat_trans.
+      + intro x.
+        use mk_nat_trans.
+        * intro c.
+          apply TerminalArrow.
+        * intros z z' f.
+          etrans;[apply TerminalArrowUnique|]; apply pathsinv0; apply TerminalArrowUnique.
+      + intros c c' f.
+        apply nat_trans_eq; [  apply homset_property|]. 
+        intro z.
+          etrans;[apply TerminalArrowUnique|]; apply pathsinv0; apply TerminalArrowUnique.
+      }
+      cbn.
+      intros X Y .
+      apply nat_trans_eq; [  apply homset_property|]. 
+      intro z.
+      etrans;[apply TerminalArrowUnique|]; apply pathsinv0; apply TerminalArrowUnique. 
+    - intros f.
+      apply SignatureMor_eq.
+      apply nat_trans_eq; [  apply (homset_property [C,C])|]. 
+      intro z.
+      apply nat_trans_eq; [  apply homset_property|]. 
+      intro z'.
+      apply TerminalArrowUnique.
+  Defined.
+
+  Definition TerminalSignature : Terminal SIG := mk_Terminal _ Const1Sig_isTerminal.
+
+
+
+
+  Lemma Arity_to_signature_cons_iso n ar :
+    iso (C := SIG) ( (Arity_to_Signature (homset_property C) bp bcp T (cons n ar)))
+        (BinProductObject _ (bpSig 
+                               (precomp_option_iter_Signature (homset_property C) bcp T n)
+                               (Arity_to_Signature (homset_property C) bp bcp T ar)
+        )).
+  Proof.
+    apply iso_inv_from_iso.
+    revert  n.
+    pattern ar.
+    apply list_ind; clear ar.
+    - intro n.
+      cbn -[bpSig].
+      apply (BinProductWith1_iso  (TerminalSignature) (bpSig _ _)).
+    - intros n ar .
+      (* revert n. *)
+      intros HI n2.
+      apply identity_iso.
+  Defined.
 
   
 
@@ -328,13 +358,21 @@ Proof.
     eapply iso_comp;[ apply coprod_sigs_har_iso|].
     eapply iso_comp.
     {
-      eapply (coprod_pw_iso (C:=arity_category) _ (HAr_cp  _ _)).
+      eapply (coprod_pw_iso (C:=arity_category) _ (HAr_cp  I _)).
       intro o.
-      set (aa := Arity_to_Signature _ _ _ _ _ ).
-      change aa with (Arity_to_signature_cons_cons_value' o).
       eapply iso_comp.
+      {
+        eapply (functor_on_iso (hss_to_ar_functor)).
+        apply Arity_to_signature_cons_iso.
+      }
+      eapply (iso_comp (C := arity_category)).
       - apply binprod_sigs_har_iso.
       - apply BinProduct_commutative_iso.
+      (* - apply binprod_sigs_har_iso. *)
+      (* - apply binprod_sigs_har_iso. *)
+      (* (* eapply iso_comp. *) *)
+      (* - apply binprod_sigs_har_iso. *)
+      (* - apply BinProduct_commutative_iso. *)
     }
 
     apply (iso_from_isDistributive (C:=arity_category)).
@@ -342,6 +380,9 @@ Proof.
   }
   apply BinProduct_pw_iso.
   - apply iso_inv_from_iso.
+    (* eapply iso_comp. *)
+    (* + eapply (functor_on_iso hss_to_ar_functor). *)
+    (*   apply Arity_to_signature_fold_iso. *)
     apply coprod_sigs_har_iso.
   - apply tauto_sigs_har_iso.
 Defined.
@@ -373,4 +414,3 @@ Defined.
     _ ,, _ ,, har_binprodR_epi_p_mor.
 
 End CoprodAr.
-

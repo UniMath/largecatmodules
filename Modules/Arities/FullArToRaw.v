@@ -1,4 +1,4 @@
-(* Let (a, Θ^(n)) be an arity
+(** Let (a, Θ^(n)) be an arity
 Then the category of representation is isomorphic to
 (a × Θ^n, 1) in the sense required by SigEquivRep
  *)
@@ -308,6 +308,8 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
     apply idweq.
   Qed.
 
+
+  (*
   Definition FAr_to_HAr_mor {n} (R T : rep_ar _ (a_n (S n))) :
              ( rep_ar_mor_mor _ R T (identity _)) ≃
     rep_ar_mor_mor _   (Fob_one R) (Fob_one T) (identity  _ ) :=
@@ -350,6 +352,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
   Definition iso_FAr_HAr_rep n : catiso ((rep_disp C)[{a_n (S n)}])
                                         ((rep_disp C)[{b_n n}]) :=
      FS n,, (λ x y  , weqproperty (Fmor (n := n) x y)),, weqproperty Fob_one.
+*)
 
 End NoSetGenNat.
 
@@ -450,17 +453,44 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
                 (BinProductOfArrows _ (LMOD_bp R _ _) (LMOD_bp R _ _) (u : MOD R ⟦_,_⟧) (monad_mor_to_lmodule f : MOD R ⟦_,_⟧))
                                     · bp_pb_iso f _ _
                                                       · pb_LModule_Mor f (adj1 _ _ _ v)).
-  Definition iso_FAr_full_HAr_rep n a :
+
+  Let Fmod a n (R  : rep_ar C (CoBinding_to_FullArity bcp Tset a n)) :=
+    equiv_is_rep_ar_to_raw bp bcp Tset adj1 a n R (rep_τ C R).
+  Lemma equiv_raw_ar_mor_law {n} {a : HalfArity}
+        (R T : rep_ar C (CoBinding_to_FullArity bcp Tset a n))
+  (f : Monad_Mor R T) :
+  rep_ar_mor_law C R T (identity (CoBinding_to_FullArity bcp Tset a n)) f
+                 ≃ rep_ar_mor_law C
+                 (a := (DeBind_HArity bp a n,, tautological_harity))
+                 (b := (DeBind_HArity bp a n,, tautological_harity))
+                 ((R : Monad _),, Fmod a n R)
+                 ((T : Monad _),, Fmod a n  T)
+      (identity _) f.
+  Proof.
+    revert a R T f.
+    induction n as [|n]; intros a R T f.
+    - apply idweq.
+    - eapply weqcomp.
+      {
+        apply equiv_raw_ar_one_mor_law.
+        - apply adj_law1.
+        - apply adj_law2.
+      }
+      apply IHn.
+  Qed.
+
+  (*)
+  Fixpoint iso_FAr_full_HAr_rep n a :
     catiso ((rep_disp C)[{CoBinding_to_FullArity bcp Tset a n}])
            ((rep_disp C)[{DeBind_HArity bp a n ,, tautological_harity}]).
   Proof.
-    revert a.
-    induction n; intro a.
+    destruct n as [|n].
     - apply identity_catiso.
     - eapply catiso_comp.
       + apply (@iso_FAr_HAr_rep C bp bcp Tset adj1 adj_law1 adj_law2).
-      + apply IHn.
+      + apply (iso_FAr_full_HAr_rep n).
   Defined.
+*)
 End FAR_ToHAR_Rep.
 
 (*

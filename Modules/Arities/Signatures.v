@@ -38,9 +38,9 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import Modules.Arities.aritiesalt.
 Require Import Modules.Arities.FullArities.
 
-Definition signature C := ∑ (O : Type), O -> FullArity C.
+Definition signature C := ∑ (O : hSet), O -> FullArity C.
 
-Definition base_of_sig {C} (S : signature C) : Type := pr1 S.
+Definition base_of_sig {C} (S : signature C) : hSet := pr1 S.
 Local Notation O := base_of_sig.
 
 Definition ar_of_sig {C} {S : signature C} : O S -> FullArity C := pr2 S.
