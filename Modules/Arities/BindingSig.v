@@ -44,13 +44,6 @@ Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
-(* TODO : déplacer ce lemme dans lib, et l'utiliser dans uniproofalt *)
-Lemma epi_nt_SET_pw {C : precategory} {A B : C ⟶ SET} (a : A ⟹ B) :
-    isEpi (C := [C , SET]) a → ∏ x : C, isEpi (a x).
-Proof.
-  apply Pushouts_pw_epi.
-  apply PushoutsHSET_from_Colims.
-Qed.
 
 Section EpiAritySig.
 
