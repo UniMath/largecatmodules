@@ -15,6 +15,7 @@ To compile (coq 8.7): make.
 - Definition of arities and their actions  : `Arities/FullArities`
 - Definition of signatures and their actions  : `Arities/Signature`
 - Representability of presentable half-arities : `Arities/PresentableArity`
+- Representability of presentable signatures : `Arities/PresentableSig`
 - Representability of presentable raw signatures : `Arities/PresentableRawSig`
 - Representability of the codomain epimorphic morphism of half-arity : `Arities/uniproofalt`
 - Adjunction in the category of modules over a specific monad R  on Set
@@ -22,6 +23,8 @@ To compile (coq 8.7): make.
           
 
 - A coproduct of presentable half arities is presentable : `Arities/PresentableHArityCoproducts` 
+- The binproduct of a presentable half arity with the tautological half-arity is
+     presentable : `Arities/PresentableHArityBinProdR` 
 - Equivalence of actions between a raw signature and the coproduct
 of its half arities : `Arities/RawSigToHAr` 
 - pointwise limits and colimits of modules : `Prelims/LModuleColims`
@@ -53,7 +56,7 @@ By folder
 - `LModuleCoproducts` : direct definition of coproduct of modules
     There are also direct definitions for specific 
 
-- `CoproductsComplements`, `BinProductComplements`,`lib` : self-explanatory
+- `CoproductsComplements`, `BinProductComplements`,`lib`, `SetCatComplements` : self-explanatory
 
 ## Arities
 - `aritiesalt` : definition of half arities and their actions
@@ -61,8 +64,9 @@ By folder
         representability
 - `FullArities` : definition of arities and their actions
 - `Signatures` : definition of signatures and their actions
+- `PresentableSig` : definition and representability of presentable signatures
 - `PresentableArity` : presentable half arities are representable.
-- `Arities/PresentableRawSig` : Representability of presentable raw signatures
+- `PresentableRawSig` : representability of presentable raw signatures
 - `quotientrep` : quotient action construction
 - `PresentableHArityCoproducts` : a coproduct of presentable half arities is presentable.
 - `PresentableHArityBinProdR` : if `a` is presentable, then so is the product of `a` with
