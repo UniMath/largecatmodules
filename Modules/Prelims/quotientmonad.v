@@ -366,8 +366,7 @@ Proof.
   intro X.
   assert (epi : isEpi (horcomp projR projR X)).
   {
-    apply Pushouts_pw_epi.
-    apply PushoutsHSET_from_Colims.
+    apply epi_nt_SET_pw.
     apply isEpi_projR_projR.
   }
   apply epi.

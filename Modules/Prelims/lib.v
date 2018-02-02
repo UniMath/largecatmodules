@@ -15,7 +15,7 @@ Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 
-Local Notation "'SET'" := hset_precategory.
+Local Notation "'SET'" := hset_category.
 Local Notation "G □ F" := (functor_composite F G) (at level 35).
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
@@ -25,6 +25,12 @@ Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition).
 
 Set Automatic Introduction.
 
+Lemma epi_nt_SET_pw {C : precategory} {A B : functor C SET} (a : nat_trans A B) :
+    isEpi (C := functor_category C  SET) a → ∏ x : C, isEpi (a x).
+Proof.
+  apply Pushouts_pw_epi.
+  apply PushoutsHSET_from_Colims.
+Qed.
 Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
   f = g -> f t1 = f t2 ->g t1 = g t2.
 Proof.

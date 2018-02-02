@@ -216,9 +216,8 @@ Proof.
   {
     apply isEpi_comp.
     - intro Y.
-      apply Pushouts_pw_epi.
-      * apply PushoutsHSET_from_Colims.
-      * apply isEpih.
+      apply epi_nt_SET_pw.
+      apply isEpih.
     - apply preserves_to_HSET_isEpi.
       + exact choice.
       + apply isEpi_projR_pw.
@@ -315,8 +314,7 @@ Lemma u_rep_laws X : F X · s X = τ' X · u_monad X.
 Proof.
   assert (epih_pw : forall X, isEpi (h X)).
   {
-    apply Pushouts_pw_epi.
-    apply PushoutsHSET_from_Colims.
+    apply epi_nt_SET_pw.
     apply isEpih.
   }
   apply epih_pw.

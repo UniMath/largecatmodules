@@ -449,9 +449,8 @@ Proof.
   apply is_nat_trans_epi_from_pointwise_epis.
   assert (hf : ∏ x, isEpi (pr1 f x)).
   {
-    apply Pushouts_pw_epi.
-    - apply PushoutsHSET_from_Colims.
-    - exact hepi.
+    apply epi_nt_SET_pw.
+    exact hepi.
   }
   intro x.
   apply isEpi_comp.

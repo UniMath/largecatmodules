@@ -44,13 +44,6 @@ Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
-(* TODO : déplacer ce lemme dans lib, et l'utiliser dans uniproofalt *)
-Lemma epi_nt_SET_pw {C : precategory} {A B : C ⟶ SET} (a : A ⟹ B) :
-    isEpi (C := [C , SET]) a → ∏ x : C, isEpi (a x).
-Proof.
-  apply Pushouts_pw_epi.
-  apply PushoutsHSET_from_Colims.
-Qed.
 
 Section EpiAritySig.
 
@@ -270,7 +263,13 @@ Section EpiAritySig.
   Proof.
     intros M N f epif.
     exact epif.
-  Qed.
+  Defined.
+  Lemma ConstSigIsEpiSig (x : hSet) :
+    isEpiSig (SignatureExamples.ConstConstSignature SET SET x).
+  Proof.
+    intros M N f epif.
+    apply identity_isEpi.
+  Defined.
 
   (* TODO : réfléchir à une généralisation de ce résultat *)
   Lemma preserveEpi_binProdFunc F F' : preserveEpi F -> preserveEpi F' ->
@@ -377,7 +376,7 @@ Section EpiAritySig.
   Proof.
     pattern ar.
     apply list_ind; clear ar.
-    - exact IdSigIsEpiSig.
+    - apply ConstSigIsEpiSig.
     - intros n ar.
       revert n.
       pattern ar.

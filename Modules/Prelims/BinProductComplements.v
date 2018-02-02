@@ -1,5 +1,6 @@
 (*
 - commutativity
+- X x 1 ~ X
 - iso pointwise -> iso
  *)
 
@@ -100,7 +101,29 @@ Section BinProdComplements.
     eapply mk_is_z_isomorphism.
     unshelve apply BinProduct_pw_iso_is_inverse; assumption.
   Defined.
-    
 
+  Lemma BinProductWith1_is_inverse (T : Terminal C) {a} (bp : BinProduct _ a (TerminalObject T)) :
+    is_inverse_in_precat (BinProductPr1 _ bp) (BinProductArrow _ bp (identity _) (TerminalArrow _ _)).
+  Proof.
+    use mk_is_inverse_in_precat.
+    + apply pathsinv0.
+      apply BinProduct_endo_is_identity.
+      * rewrite <- assoc.
+        rewrite BinProductPr1Commutes.
+        apply id_right.
+      * etrans; [apply TerminalArrowUnique|].
+        apply pathsinv0.
+        apply  TerminalArrowUnique.
+    + apply BinProductPr1Commutes.
+  Qed.
+
+  Definition BinProductWith1_iso (T : Terminal C) {a} (bp : BinProduct _ a (TerminalObject T))  :
+    iso (BPO bp) a.
+  Proof.
+    eapply isopair.
+    eapply is_iso_from_is_z_iso.
+    eapply mk_is_z_isomorphism.
+    apply BinProductWith1_is_inverse.
+  Defined.
 
 End BinProdComplements.

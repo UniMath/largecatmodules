@@ -102,7 +102,7 @@ Definition ar_of_rawSig (a : rawSig) : base_of_rawSig a -> HalfArity := pr2 a.
 (* Local Notation α := ar_of_rawSig. *)
 
 Definition rawSigToSig (a : rawSig) : signature C :=
-  tpair  (fun z => z -> FullArity)
+  tpair (T := hSet)  (fun z => z -> FullArity)
   (base_of_rawSig a)  (fun (o : base_of_rawSig a) => half_arity_to_arity (ar_of_rawSig a o)).
 
 Local Notation TOSIG := rawSigToSig.
