@@ -123,22 +123,23 @@ Proof.
     + intros  F F' G G' f g epif epig.
       apply is_nat_trans_epi_from_pointwise_epis.
       intro a.
-      apply isEpiBinProdHSET; apply epi_nt_SET_pw;assumption.
+      apply isEpiBinProdHSET; apply epi_nt_SET_pw; assumption.
     + exact pres_a.
 Qed.
 
-Definition sig_sig (sig : PresentableSignature (C:=hset_category) bpSET bcp T (λ I : hSet, cp (pr1 I) (setproperty I)))
+Definition PresentableSignature_to_signature_2 (sig : PresentableSignature (C:=hset_category) bpSET bcp T (λ I : hSet, cp (pr1 I) (setproperty I)))
  : signature hset_category.
 Proof.
   exists (O sig).
-  intro o. exact  (DeBind_HArity (C:=hset_category) bpSET (α sig o) (nat_of_pres_sig sig o),, tautological_harity).
+  intro o.
+  exact (DeBind_HArity (C:=hset_category) bpSET (α sig o) (nat_of_pres_sig sig o),, tautological_harity).
 Defined.
 
-Definition foo sig :
+Definition catiso_Presentable_Raw (sig : PresentableSignature (C:=hset_category) bpSET bcp T (λ I : hSet, cp (pr1 I) (setproperty I))):
   let sig' := PresentableSignature_to_signature _ _  _ _ sig
   in
   catiso (precategory_rep_sig sig')
-         (precategory_rep_sig (sig_sig sig)).
+         (precategory_rep_sig (PresentableSignature_to_signature_2 sig)).
 Proof.
   unshelve eapply iso_sig_sig_rep.
   + intros o R.
@@ -154,46 +155,28 @@ Proof.
     * apply deriveadj.adj_law2.
 Defined.
 
-  Lemma initial_presentable_raw_sig sig (ax:  AxiomOfChoice.AxiomOfChoice_surj) :
+Lemma initial_presentable_raw_sig sig (ax:  AxiomOfChoice.AxiomOfChoice_surj) :
   Initial (precategory_rep_sig
              (PresentableSignature_to_signature (C:=SET) bp bcp T
                                                 (fun I => cp _ (setproperty I))  sig)).
-  Proof.
-    set (sig' := PresentableSignature_to_signature _ _  _ _ sig). 
-    eapply (transportb (fun X => Initial X)).
-    apply catiso_to_precategory_path.
-    - intros ? ? .
-      apply isaset_rep_a_sig_mor. 
-    - exact (foo sig).
-(*
-      (* rawification of arities *)
-      {
-        unshelve eapply iso_sig_sig_rep.
-        + exact (fun o =>
-                   DeBind_HArity (C:=SET) bpSET (α _ o) (nat_of_pres_sig _ o) ,, tautological_harity).
-        + intros o R.
-          cbn.
-          apply adj1n.
-        + unfold adj1n.
-          cbn -[equiv_is_rep_ar_to_raw].
-          intro o.
-          set (n' := nat_of_pres_sig _ o).
-          intros R S f.
-          eapply (@equiv_raw_ar_mor_law SET _ _ _ deriveadj.adj1).
-          * apply deriveadj.adj_law1.
-          * apply deriveadj.adj_law2.
-      }
-*)
-    - (* This is a presentable raw signature, so it is representable *)
-      set (rawS := 
-             tpair (T := hSet) (fun z => z -> arity _)
-             (O sig)
-                (λ o : O sig, DeBind_HArity (C := SET) bpSET (α _ o) (nat_of_pres_sig _ o)) : rawSig).
-      apply (initial_presentable_raw_sig rawS);[|apply ax].
-      intro o.
-      apply isPresentable_debind.
-      apply ar_of_pres_sig_isPresentable.
-  Qed.
+Proof.
+  set (sig' := PresentableSignature_to_signature _ _  _ _ sig). 
+  eapply (transportb (fun X => Initial X)).
+  apply catiso_to_precategory_path.
+  - intros ? ? .
+    apply isaset_rep_a_sig_mor. 
+  - exact (catiso_Presentable_Raw sig).
+  - (* This is a presentable raw signature, so it is representable *)
+    set (rawS := 
+           tpair (T := hSet) (fun z => z -> arity _)
+                 (O sig)
+                 (λ o : O sig, DeBind_HArity (C := SET) bpSET (α _ o) (nat_of_pres_sig _ o)) : rawSig).
+    apply (initial_presentable_raw_sig rawS);[|apply ax].
+    intro o.
+    apply isPresentable_debind.
+    apply ar_of_pres_sig_isPresentable.
+Qed.
+
 End RawSigRep.
 
 
