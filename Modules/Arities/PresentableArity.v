@@ -34,7 +34,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Open Scope cat.
 
 Section PresentableDefinition.
-  Context {C : category} (bp : BinProducts C) (bcp : BinCoproducts C) (T : Terminal C)
+Context {C : category} (bp : BinProducts C) (bcp : BinCoproducts C) (T : Terminal C)
           (cp : ∏ (I : hSet), Coproducts I C).
 Let toSig sig  :=
   (BindingSigToSignature (homset_property C) bp bcp T  sig (cp (BindingSigIndexhSet sig))).
