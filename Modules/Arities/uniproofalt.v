@@ -433,7 +433,7 @@ Qed.
 
 
 
-Definition EpiArity (c : arity SET) :=
+Definition preservesEpi_arity (c : arity SET) :=
   ∏ M N (f:category_Monad _⟦M,N⟧),
      isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
                                                        (pr1 (#c f)%ar).
@@ -467,8 +467,8 @@ either [a] is an epi arity and [F R'] is an epi, either [b] is an epi-arity
 and [F R] is an epi
 *)
 Definition cond_isEpi_hab :=
-  (isEpi (C := [_, _]) (pr1 (F R'_monad)) × EpiArity a) ⨿
-                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × EpiArity b).
+  (isEpi (C := [_, _]) (pr1 (F R'_monad)) × preservesEpi_arity a) ⨿
+                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × preservesEpi_arity b).
 
 
 Context (cond_hab : cond_isEpi_hab).
@@ -664,7 +664,7 @@ Definition build_module (R : Rep_a) (cond_R :   cond_isEpi_hab R)
       := (_ ,, build_module_law R cond_R S m).
   
 Theorem push_initiality (R : Rep_a) (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R))))
-        (epib : EpiArity b) :
+        (epib : preservesEpi_arity b) :
     isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
@@ -686,7 +686,7 @@ Qed.
 
 Theorem push_initiality_weaker (R : Rep_a) (epi_F : ∏ (R : Monad _),
                                                      isEpi (C := [_, _]) (pr1 (F (R))))
-        (epia : EpiArity a) :
+        (epia : preservesEpi_arity a) :
     isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
@@ -707,7 +707,7 @@ Proof.
 Qed.
 
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
-Context (aepi : EpiArity a).
+Context (aepi : preservesEpi_arity a).
 
 Let R'_monad R  := R'_monad ax_choice (congr_equivc R) (compat_μ_projR R).
 
