@@ -97,7 +97,7 @@ top right is left hand side
      dom a N ---> dom b N --->  codom b N
    *)
 
-Lemma isaprop_rep_ar_mor_law {a b } (M : rep_ar a) (N : rep_ar b)
+Lemma isaprop_rep_ar_mor_law {a b : FArity} (M : rep_ar a) (N : rep_ar b)
       (f : FArity ⟦a, b⟧) (g : Monad_Mor M N) 
   : isaprop (rep_ar_mor_law M N f g).
 Proof.
@@ -106,8 +106,8 @@ Proof.
   apply homset_property.
 Qed.
 
-Definition rep_ar_mor_mor {a b } (M : rep_ar a) (N : rep_ar b) f :=
-  ∑ g:Monad_Mor M N, rep_ar_mor_law  M N f g.
+Definition rep_ar_mor_mor {a b : FArity} (M : rep_ar a) (N : rep_ar b) f :=
+  ∑ g : Monad_Mor M N, rep_ar_mor_law  M N f g.
 
 Lemma isaset_rep_ar_mor_mor {a b} (M : rep_ar a) (N : rep_ar b) f :
   isaset (rep_ar_mor_mor  M N f).
@@ -124,7 +124,7 @@ Coercion monad_morphism_from_rep_ar_mor_mor {a b } {M : rep_ar a} {N : rep_ar b}
          {f} (h : rep_ar_mor_mor  M N f) : Monad_Mor M N
   := pr1 h.
 
-Definition rep_ar_mor_ax {a b } {M : rep_ar a} {N : rep_ar b}
+Definition rep_ar_mor_ax {a b : FArity} {M : rep_ar a} {N : rep_ar b}
            {f} (h:rep_ar_mor_mor  M N f) :
   ∏ c : C, rep_τ M c · ((#(codom a) h)%ar:nat_trans _ _) c =
             ((#(dom a) h)%ar:nat_trans _ _) c · dom_mor f N c ·
@@ -150,7 +150,7 @@ Proof.
     apply arity_id.
 Qed.
 
-Definition rep_id  a  (RM : rep_disp_ob_mor a) :
+Definition rep_id  (a : FArity)  (RM : rep_disp_ob_mor a) :
   RM -->[ identity (C:=FArity) a] RM.
 Proof.
   intros.

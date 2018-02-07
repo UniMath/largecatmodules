@@ -49,8 +49,10 @@ Require Import Modules.Prelims.deriveadj.
 Module HAr := aritiesalt.
 
 (* TODO chercher cette def dans UniMath *)
+
 Definition catiso_comp {A B C : precategory_data} (F : catiso A B)
            (G : catiso B C) : catiso A C.
+Proof.
   use tpair.
   - exact (F ∙ G).
   - split.
@@ -65,51 +67,63 @@ Defined.
 
 (* TODO : déplacer ceci dans un novueau fichier *)
 Section CoBindingArity.
+
+(** Content of this section:
+    - translate a natural number into a half-arity
+*)
+  
 Fixpoint nat_deriv_HAr {C : category} bcp T (n :nat) : arity C :=
   match n with
     0 => tautological_harity
   | S m => harity_deriv bcp T (nat_deriv_HAr bcp T m)
   end.
 
-  Let prodHAr {C : category} (bpC : BinProducts C)  :=
-    (functor_fix_snd_arg _ _ _  (binproduct_functor  (harity_BinProducts bpC ))
-                         (tautological_harity)).
+Let prodHAr {C : category} (bpC : BinProducts C)
+    : arity_precategory ⟶ arity_precategory
+  :=
+  (functor_fix_snd_arg _ _ _  (binproduct_functor  (harity_BinProducts bpC ))
+                       (tautological_harity)).
 
-  Definition nat_prod_HAr {C : category} (bp : BinProducts C) (n :nat) : arity C :=
-    iter_functor (prodHAr bp) n tautological_harity.
+Definition nat_prod_HAr {C : category} (bp : BinProducts C) (n : nat) : arity C :=
+  iter_functor (prodHAr bp) n tautological_harity.
 
-  Definition CoBinding_to_FullArity {C : category} bcp T ( a : HAr.arity C)
-             (n : nat) :
-    FullArity C :=  a ,, nat_deriv_HAr bcp T n.
+Definition CoBinding_to_FullArity {C : category} bcp T ( a : HAr.arity C)
+           (n : nat) 
+  : FullArity C
+  :=  a ,, nat_deriv_HAr bcp T n.
 
-  Context {C : category} .
-  Hypothesis ( bp : BinProducts C).
-  Let bpHAr := harity_BinProducts (C := C) bp.
-  Local Notation BPO := (BinProductObject _).
+Context {C : category} .
+Hypothesis ( bp : BinProducts C).
+Let bpHAr := harity_BinProducts (C := C) bp.
+Local Notation BPO := (BinProductObject _).
   
   (* Let prodHAr  := *)
   (*   (functor_fix_snd_arg _ _ _  (binproduct_functor  (harity_BinProducts bp )) *)
   (*                        (tautological_harity)). *)
 
   (* Definition DeBind_HArity  (a : HAr.arity C) (n : nat) := *)
-  (*   iter_functor prodHAr n a. *)
-  Fixpoint DeBind_HArity  (a : HAr.arity C) (n : nat) :=
-    match n with
-      0 => a
-    | S m => DeBind_HArity (BPO (bpHAr a tautological_harity)) m
-    end.
-    (* iter_functor prodHAr n a. *)
+(*   iter_functor prodHAr n a. *)
 
-  End CoBindingArity.
+(** Input: an arity [a] and a natural number
+    Output: [a × θ × θ × ... × θ] 
+*)
+Fixpoint DeBind_HArity  (a : HAr.arity C) (n : nat) : HAr.arity C :=
+  match n with
+    0 => a
+  | S m => DeBind_HArity (BPO (bpHAr a tautological_harity)) m
+  end.
+(* iter_functor prodHAr n a. *)
 
-
-
+End CoBindingArity.
 
 
 
 
 
 (* Tentative de généralisation sans SET *)
+(** Generalization of what?
+
+ *)
 Section NoSetGenNat.
 
   Context {C : category}.
@@ -404,17 +418,15 @@ Section FAR_ToHAR_Rep.
 
   (* décomposition de l'hypothès *)
   Hypothesis
-    (adj1 : ∏ R M N,
-     LModule_Mor R M (N ')
-                 ≃
-         LModule_Mor R
-         (bpM R M (Θ R))
+    adj1 : ∏ R M N,
+            LModule_Mor R M (N ')
+                        ≃
+                        LModule_Mor R (bpM R M (Θ R)) N
     (* (LModuleBinProduct.LModule_binproduct bp (homset_property C) (a R) (tautological_LModule R)) *)
-    N
-    ).
+  .
 
 
-  (*
+(*
 f : R -> S
 u : M -> N' et v : N -> f* A
 
@@ -425,15 +437,15 @@ Par l'adjonction ça doit devenir
        !u        v
 M x R ----> N --------> f*A
 
-
 *)
-  Hypothesis (adj_law1 :
+  
+  Hypothesis adj_law1 :
                 ∏ R S (f : Monad_Mor (C := C) R S)
                   (M N : LModule R _) (A : LModule S _)
                   (u : LModule_Mor _ M (N '))
                   (v : LModule_Mor _ N (pb_LModule f A)),
                 adj1 R  _ _  ((u : MOD R ⟦_,_⟧) · ((# ∂ v))) =
-                (adj1 R _ _ u : MOD R ⟦_,_⟧) · v).
+                (adj1 R _ _ u : MOD R ⟦_,_⟧) · v.
   (*
 Et maintenant,
 On dit que l'action de l'adjonction  sur
@@ -443,7 +455,7 @@ donne
       u x f                 i2                f* !v
 M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
 *)
-  Hypothesis (adj_law2 :
+  Hypothesis adj_law2 :
                 ∏ R S (f : Monad_Mor (C := C) R S)
                   (M : LModule R _) (A B : LModule S _)
                   (u : LModule_Mor _ M (pb_LModule f A))
@@ -452,7 +464,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
                   =
                 (BinProductOfArrows _ (LMOD_bp R _ _) (LMOD_bp R _ _) (u : MOD R ⟦_,_⟧) (monad_mor_to_lmodule f : MOD R ⟦_,_⟧))
                                     · bp_pb_iso f _ _
-                                                      · pb_LModule_Mor f (adj1 _ _ _ v)).
+                                                      · pb_LModule_Mor f (adj1 _ _ _ v).
 
   Let Fmod a n (R  : rep_ar C (CoBinding_to_FullArity bcp Tset a n)) :=
     equiv_is_rep_ar_to_raw bp bcp Tset adj1 a n R (rep_τ C R).
