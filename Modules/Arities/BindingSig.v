@@ -38,6 +38,9 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Chains.Chains.
+Require Import UniMath.CategoryTheory.Chains.Adamek.
+Require Import UniMath.CategoryTheory.Chains.OmegaCocontFunctors.
 Require Import UniMath.CategoryTheory.FunctorAlgebras.
 Require Import UniMath.SubstitutionSystems.LiftingInitial_alt.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
@@ -95,7 +98,7 @@ Section EpiAritySig.
   (* Local Lemma omega_cont_to_sig CocontFunctors.is_omega_cocont (toSig sig) *)
 
   Local Notation iniHSS sig   := (InitialHSS SET (homset_property SET) BinCoproductsHSET InitialHSET
-                                        (ColimsHSET_of_shape CocontFunctors.nat_graph)
+                                        (ColimsHSET_of_shape nat_graph)
                                         (toSig sig)
                                         (is_omega_cocont_BindingSigToSignatureHSET sig)).
 
@@ -153,19 +156,19 @@ Section EpiAritySig.
     (* TODO : mettre ce lemme d'unicité qui vient de la définition de j avec sa définition
  dans ModulesFromSignatures *)
     assert (h := (InitialArrowUnique
-     (CocontFunctors.colimAlgInitial (functor_category_has_homsets HSET HSET hom_SET)
+     (colimAlgInitial (functor_category_has_homsets HSET HSET hom_SET)
         (Initial_functor_precat HSET HSET InitialHSET hom_SET)
         (is_omega_cocont_Id_H HSET hom_SET BinCoproductsHSET (toSig sig)
            (is_omega_cocont_BindingSigToSignature hom_SET BinProductsHSET BinCoproductsHSET
-              TerminalHSET (ColimsHSET_of_shape CocontFunctors.nat_graph)
+              TerminalHSET (ColimsHSET_of_shape nat_graph)
               (λ F : hset_precategory_data ⟶ hset_precategory_data,
-               CocontFunctors.is_omega_cocont_constprod_functor1
+               is_omega_cocont_constprod_functor1
                  (binproducts.BinProducts_functor_precat HSET HSET BinProductsHSET hom_SET)
-                 BindingSigToMonad.has_homsets_HSET2 (has_exponentials_functor_HSET HSET hom_SET) F)
+                 BindingSigToMonad.has_homsets_HSET2 (Exponentials_functor_HSET  HSET hom_SET) F)
               sig (CoproductsHSET (BindingSigIndex sig) (BindingSigIsaset sig))))
-        (colimits.ColimsFunctorCategory_of_shape CocontFunctors.nat_graph 
-           HSET HSET hom_SET (ColimsHSET_of_shape CocontFunctors.nat_graph)
-           (CocontFunctors.initChain (Initial_functor_precat HSET HSET InitialHSET hom_SET)
+        (colimits.ColimsFunctorCategory_of_shape nat_graph 
+           HSET HSET hom_SET (ColimsHSET_of_shape nat_graph)
+           (initChain (Initial_functor_precat HSET HSET InitialHSET hom_SET)
               (Id_H HSET hom_SET BinCoproductsHSET (toSig sig)))))
      (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET (toSig sig) b (rep_τ SET b)))).
     specialize (h (rep_mor_to_alg_mor b t)).

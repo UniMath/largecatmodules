@@ -43,7 +43,6 @@ Require Import UniMath.CategoryTheory.HorizontalComposition.
 
 Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
-Require Import UniMath.CategoryTheory.CocontFunctors.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
 Require Import Modules.Arities.aritiesalt.
