@@ -128,7 +128,7 @@ and now we show the same diagram without the application of M
     apply funextfun.
     intros x.
     induction x as [x t].
-    cbn; unfold pre_subst_nt_data; cbn.
+    cbn -[isasetcoprod]; unfold pre_subst_nt_data ; cbn -[isasetcoprod].
     etrans;rewrite comp_cat_comp.
     apply idpath.
     
@@ -174,7 +174,7 @@ and now we show the same diagram without the application of M
     intros x.
     induction x as [x t].
     cbn in x,t.
-    cbn; unfold pre_subst_nt_data; cbn.
+    cbn -[isasetcoprod]; unfold pre_subst_nt_data; cbn-[isasetcoprod].
      (*
 t : 1 --> RRX
 top right is right hand side
@@ -217,7 +217,7 @@ and then we eliminate the application of M
     }
     use (fun c t1 t2  => changef_path _ _ t1 t2 (LModule_law2 _ (T :=M) c) ).
     apply (maponpaths (σ M X)).
-    cbn.
+    cbn -[isasetcoprod].
     etrans; rewrite comp_cat_comp; [|rewrite comp_cat_comp].
     apply idpath.
     revert x.
@@ -227,7 +227,7 @@ and then we eliminate the application of M
     apply maponpaths.
     apply funextfun.
     intros x.
-    induction x as [p|x]; cbn.
+    induction x as [p|x]; cbn -[isasetcoprod].
     -  pose (t' := (fun _ => t) : SET ⟦unitset , R (R X)⟧).
       (* 
        i1       
@@ -334,14 +334,14 @@ et on utilise les 2 lois de monades
     intro x.
     cbn in x.
     induction x as [x t].
-    cbn; unfold pre_subst_nt_data; cbn.
+    cbn -[isasetcoprod]; unfold pre_subst_nt_data ; cbn -[isasetcoprod].
     etrans;revgoals.
     {
       assert (h := LModule_Mor_σ _ m X).
       apply toforallpaths in h.
       use h.
     }
-    cbn.
+    cbn -[isasetcoprod].
     apply maponpaths.
     etrans; rewrite comp_cat_comp.
     apply idpath.
@@ -639,15 +639,15 @@ Section derivadj.
       apply LModule_Mor_equiv;[exact hsS|].
       apply nat_trans_eq;[exact hsS|].
       intro X.
-      cbn.
+      cbn -[isasetcoprod].
       apply funextfun.
       intro x.
       cbn in x.
       induction x as [x t].
-      cbn.
-      unfold prodtofuntoprod; cbn.
-      unfold dirprodpair; cbn.
-      apply dirprod_paths; cbn.
+      cbn -[isasetcoprod].
+      unfold prodtofuntoprod; cbn -[isasetcoprod].
+      unfold dirprodpair; cbn -[isasetcoprod].
+      apply dirprod_paths; cbn -[isasetcoprod].
       + do 2 rewrite comp_cat_comp.
         revert x.
         apply toforallpaths.
@@ -676,12 +676,11 @@ Section derivadj.
       apply LModule_Mor_equiv;[exact hsS|].
       apply nat_trans_eq;[exact hsS|].
       intro X.
-      cbn.
+      cbn -[isasetcoprod].
       (* maybe funext is not needed but who cares *)
       apply funextfun.
       intro x.
-      cbn; unfold pre_subst_nt_data; cbn.
-      cbn.
+      cbn -[isasetcoprod]; unfold pre_subst_nt_data; cbn -[isasetcoprod].
       do 2 rewrite comp_cat_comp.
       etrans.
       {
@@ -752,15 +751,15 @@ Proof.
   intros X.
   apply funextfun.
   intros [x y].
-  cbn.
+  cbn -[isasetcoprod].
   unfold prodtofuntoprod.
-  cbn.
+  cbn -[isasetcoprod].
   unfold pre_subst_nt_data.
-  cbn.
+  cbn -[isasetcoprod].
   assert (h := LModule_Mor_σ R v X).
   eapply toforallpaths  in h.
   etrans;[| apply h].
-  cbn.
+  cbn -[isasetcoprod].
   apply maponpaths.
   apply maponpaths.
   set (ff := fun x => _).
@@ -801,11 +800,11 @@ Proof.
   apply LModule_Mor_equiv;[apply (homset_property SET)|].
   apply nat_trans_eq;[apply (homset_property SET)|].
   intro X.
-  cbn.
+  cbn -[isasetcoprod].
   apply funextfun.
   intros[x y].
   apply maponpaths.
-  unfold pre_subst_nt_data,prodtofuntoprod; cbn.
+  unfold pre_subst_nt_data,prodtofuntoprod; cbn -[isasetcoprod].
   set (ff :=  (fun z => _)).
   set (bp := BinCoproductsHSET).
   assert (h :=  functor_comp B  (a := bp unitHSET _) ff (f X)).
