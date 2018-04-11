@@ -91,9 +91,8 @@ define the quotient of a monad, and of a module over a monad.
 
 *)
 
-Definition equivc {X : SET} (x y : pr1 ( ## R X)) 
-  := ∏ (S:REP b) ( f : R -->[F] S),
-     ## f X x = ## f X y.
+Definition equivc {X : SET} (x y : pr1 ( ## R X)) : UU
+  := ∏ (S:REP b) ( f : R -->[F] S), ## f X x = ## f X y.
 
 Lemma isaprop_equivc_xy (c : SET) x y : isaprop (equivc (X:=c) x y).
 Proof.
@@ -106,7 +105,8 @@ Qed.
 Definition equivc_xy_prop (X : SET) x y : hProp :=
   equivc (X:=X) x y ,, isaprop_equivc_xy X x y.
 
-Definition hrel_equivc (X : SET) : hrel _ := fun x y => equivc_xy_prop X x y.
+Definition hrel_equivc (X : SET) : hrel (##R X : hSet)
+  := fun x y => equivc_xy_prop X x y.
 
 Lemma iseqrel_equivc (X : SET) : iseqrel (hrel_equivc X).
 Proof.
@@ -125,20 +125,19 @@ Qed.
 Definition eqrel_equivc (X : SET) : eqrel _ := _ ,, iseqrel_equivc X.
 
 (** For any f : X -> Y, #R f is compatible with previous equivalence relation *)
-Lemma congr_equivc (X Y : SET) (f:SET ⟦X , Y⟧):
-                    iscomprelrelfun (eqrel_equivc X) (eqrel_equivc Y) (# (## R) f).
+Lemma congr_equivc (X Y : SET) (f:SET ⟦X , Y⟧)
+  : iscomprelrelfun (eqrel_equivc X) (eqrel_equivc Y) (# (## R) f).
 Proof.
   intros z z' eqz S g.
   assert (hg := nat_trans_ax (pr1 (pr1 g)) X Y f).
-  cbn in eqz.
   apply toforallpaths in hg.
   etrans; [apply hg|].
   apply pathsinv0.
   etrans;[apply hg|].
-  unfold equivc in eqz.
   cbn.
-  rewrite eqz.
-  apply idpath.
+  apply maponpaths. (* remove #S f *)
+  cbn in eqz.
+  apply pathsinv0, eqz.
 Qed.
 
 Arguments R' : simpl never.
@@ -168,8 +167,9 @@ Section Instantiating_Quotient_Constructions.
 
 Context {S : REP b} (m : R -->[ F] S). 
 
-Lemma compat_m : ∏ (X : SET) (x y : ((pr1 R) X:hSet)),
-                 projR X x = projR X y → (pr1 m) X x = (pr1 m) X y.
+Lemma compat_m
+  : ∏ (X : SET) (x y : (pr1 R X:hSet)),
+    projR X x = projR X y → (pr1 m) X x = (pr1 m) X y.
 Proof.
   intros X x y eqpr;
   apply eq_projR_rel in eqpr;
@@ -200,8 +200,8 @@ Proof.
   apply rel_eq_projR.
   intros S f.
   rewrite comp_cat_comp.
-  symmetry.
   rewrite comp_cat_comp.
+  apply pathsinv0.
   eapply changef_path.
   - symmetry.
     etrans; [ apply (Monad_Mor_μ (pr1 f)) |].
