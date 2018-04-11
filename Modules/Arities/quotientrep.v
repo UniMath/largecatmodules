@@ -33,12 +33,13 @@ Set Automatic Introduction.
 Section QuotientMonad.
 
 Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
-Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (( R c):hSet)}
-        (congr_equivc : ∏ (x y:SET) (f:SET⟦x,y⟧),
+Context {R : Monad SET}
+        {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
+        (congr_equivc : ∏ (x y : SET) (f : SET⟦x, y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f))
-        (compat_μ_projR: (compat_μ_projR_def congr_equivc)).
+        (compat_μ_projR : compat_μ_projR_def congr_equivc).
 
-Let equivc {c:hSet} x y := eqrel_equivc c x y.
+Let equivc {c:hSet} x y : hProp := eqrel_equivc c x y.
   
 (* We define the quotient functor of R by these equivalence relations
 
@@ -53,16 +54,22 @@ is so slow when R' is definitely equal to quot_functor !
 *)
   (* FIN DE LA SECONDE ETAPE *)
 
-Let R' := R' congr_equivc.
-Let projR := projR congr_equivc.
-Let R'_monad  := R'_monad choice congr_equivc compat_μ_projR.
-Let projR_monad  := projR_monad choice congr_equivc compat_μ_projR.
+Let R' : SET ⟶ SET
+  := R' congr_equivc.
+Let projR : (R : SET ⟶ SET) ⟹ quotientmonad.R' congr_equivc
+  := projR congr_equivc.
+Let R'_monad : Monad SET
+  := R'_monad choice congr_equivc compat_μ_projR.
+Let projR_monad
+  : Monad_Mor R (quotientmonad.R'_monad choice congr_equivc compat_μ_projR)
+  := projR_monad choice congr_equivc compat_μ_projR.
 
 Local Notation π := projR_monad.
 Local Notation Θ := tautological_LModule.
 
 
-  (*
+(*
+
 Let a be a R -module
     b      R'-module
 
@@ -89,16 +96,19 @@ We want to define a R'-module morphism τ' : b -> R' defined by the following di
 
 so we need that h is epimorphic (uniqueness) and that
 h is compatible with π ∘ τ
-*)
-Context {a : LModule R SET} {b: LModule R'_monad SET}
+   *)
+
+Context {a : LModule R SET}
+        {b : LModule R'_monad SET}
         {τ : LModule_Mor _ a (Θ R)}
-        {h:LModule_Mor _ a (pb_LModule projR_monad b)}
+        {h : LModule_Mor _ a (pb_LModule projR_monad b)}
         (* TODO : define the general type of compatability that is used everywhere to define
             a morphism out of an epimorphism (Cf quotient monad : compat_μ_def ..) *)
-        (compath:∏ X (x y:(a X:hSet)), h X x = h X y -> 
-                                       (τ X · projR_monad X) x = (τ X · projR_monad X) y)
+        (compath : ∏ X (x y:(a X:hSet)), h X x = h X y -> 
+                                         (τ X · projR_monad X) x = (τ X · projR_monad X) y)
         (* TODO : demander que ce soit pointwise epi plutôt *)
         (isEpih : isEpi (C:=[SET,SET]) (h:nat_trans _ _)).
+
 Definition R'_rep_τ  : nat_trans b R'.
 Proof.
   (* TODO : adapter univ_surj_nt pour que ça demande epi pointwise pour h *)
@@ -108,14 +118,17 @@ Defined.
 
 Local Notation τ' := R'_rep_τ.
            
-Definition R'_rep_τ_def :
-  ∏ X, h X · τ' X = τ X · projR_monad X.
+Definition R'_rep_τ_def : ∏ X, h X · τ' X = τ X · projR_monad X.
 Proof.
-  apply ((univ_surj_nt_ax_pw _ (((τ:nat_trans _ _):[SET,SET]⟦_,_⟧) · (projR_monad:nat_trans _ _)) compath) isEpih).
+  apply (univ_surj_nt_ax_pw _
+                            (((τ : nat_trans _ _ ) : [SET,SET]⟦_,_⟧) · (projR_monad : nat_trans _ _))
+                            compath
+                            isEpih).
 Qed.
 
 
 Local Notation σ := (lm_mult _).
+
 (**
 
  τ' is a module morphism
@@ -190,7 +203,7 @@ h·π ;; σ b ;; τ' = h R ;; R' π ;; σ b ;; τ' (property of horizontal comp)
 Lemma τ'_law_eq2 X : ((h∙∙projR_monad :[SET,SET]⟦_,_⟧)
                      · (σ b)
                      · τ':nat_trans _ _) X =
-                     ((σ a:[SET,SET]⟦_,_⟧) · (τ:nat_trans _ _) · projR :nat_trans _ _) X.
+                     ((σ a : [SET,SET]⟦_,_⟧) · (τ : nat_trans _ _) · projR : nat_trans _ _) X.
 Proof.
   etrans.
   { apply cancel_postcomposition.
@@ -249,10 +262,10 @@ This induces a monad morphism u : R' -> S that makes the following diagram commu
 
 
 *)
-Context {S:Monad SET}  
-        {m: Monad_Mor R S}
-        (compatm: ∏ (X:SET) 
-                    (x y : (R X:hSet)), projR X x = projR X y → m X x = m X y).
+Context {S : Monad SET}  
+        {m : Monad_Mor R S}
+        (compatm : ∏ (X : SET) 
+                     (x y : (R X : hSet)), projR X x = projR X y → m X x = m X y).
 
 Let u_monad := quotientmonad.u_monad choice compat_μ_projR _ compatm.
 
@@ -302,9 +315,9 @@ h ;; τ' ;; u =  τ ;; π ;; u (definition of τ')
 
 *)
 
-Context {c:LModule S SET} 
-        {s: LModule_Mor _ c (Θ S)}
-        {F:LModule_Mor _ b (pb_LModule u_monad c)}.
+Context {c : LModule S SET} 
+        {s : LModule_Mor _ c (Θ S)}
+        {F : LModule_Mor _ b (pb_LModule u_monad c)}.
 
 Variable (compat_m_rep : ∏ X, τ X · m X = h X · F X · s X).
 
