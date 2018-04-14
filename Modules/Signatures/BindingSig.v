@@ -31,8 +31,8 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.Signature.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.limits.binproducts.
@@ -48,7 +48,7 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
 
-Section EpiAritySig.
+Section EpiSignatureSig.
 
   (* Local Notation H_SET := hset_category. *)
   Local Notation hom_SET := has_homsets_HSET.
@@ -59,7 +59,7 @@ Section EpiAritySig.
                           BinCoproductsHSET TerminalHSET sig
                           (CoproductsHSET (BindingSigIndex sig) (BindingSigIsaset sig))).
 
-  (** The initial representation of the algebraic signature *)
+  (** The initial model of the algebraic signature *)
   Lemma alg_initialR (sig : BindingSig) : (rep_disp SET)[{hss_to_ar (C := SET) (toSig sig)}].
   Proof.
     use tpair.
@@ -75,10 +75,10 @@ Section EpiAritySig.
     apply (rep_τ _ b).
   Defined.
 
-  (* j_mon is a morphism of representation *)
+  (* j_mon is a morphism of model *)
   Definition alg_initial_arrow_law {sig : BindingSig} 
     (b : rep_ar SET (hss_to_ar (C := SET)(toSig sig))) :
-    rep_ar_mor_law SET (alg_initialR sig) b (arity_Mor_id (hss_to_ar_data (C:=SET) (toSig sig)))
+    rep_ar_mor_law SET (alg_initialR sig) b (signature_Mor_id (hss_to_ar_data (C:=SET) (toSig sig)))
       (alg_initial_arrow_mon b).
   Proof.
     intro c.
@@ -181,7 +181,7 @@ Section EpiAritySig.
        
        
 
-  Theorem algbraic_sig_representable (sig : BindingSig)
+  Theorem algebraic_sig_representable (sig : BindingSig)
     : isInitial _ (alg_initialR sig).
   Proof.
     intro b.
@@ -405,7 +405,7 @@ Section EpiAritySig.
     apply ArAreEpiSig.
   Qed.
 
-End EpiAritySig.
+End EpiSignatureSig.
 
 Definition BindingSigIndexhSet : BindingSig -> hSet :=
   fun S => hSetpair _ (BindingSigIsaset S).

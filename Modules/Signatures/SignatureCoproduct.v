@@ -1,6 +1,6 @@
 (**
 pullback of coproducts
- Coproducts of half-arities using LModule Coproducts (more
+ Coproducts of arities using LModule Coproducts (more
 conveninent than LModule.Colims) 
  *)
 Require Import UniMath.Foundations.PartD.
@@ -24,7 +24,7 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Prelims.LModuleCoproducts.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 
 
 Section Coprod.
@@ -36,24 +36,24 @@ Section Coprod.
   Local Notation hsC := (homset_property C).
 
 
-  Local Notation HalfArity := (arity C).
+  Local Notation Signature := (signature C).
   Local Notation MOD R := (precategory_LModule R C).
 
   Let cpLM (X : Monad C) := LModule_Coproducts C  X cpC.
   Let cpFunc := Coproducts_functor_precat _ C _ cpC (homset_property C).
 
 
-  (* Local Notation HARITY := (arity C). *)
+  (* Local Notation SIGNATURE := (signature C). *)
 
-  Context (α : O -> HalfArity).
+  Context (α : O -> Signature).
   Local Notation α' R := (fun o => α o R).
 
-  Definition harity_coprod_on_objects (R : Monad C) : LModule R C :=
+  Definition signature_coprod_on_objects (R : Monad C) : LModule R C :=
     CoproductObject _ _ (cpLM R (α' R)).
 
-  Definition harity_coprod_on_morphisms (R S : Monad C)
-             (f : Monad_Mor R S) : LModule_Mor _ (harity_coprod_on_objects R)
-                                               (pb_LModule f (harity_coprod_on_objects S)).
+  Definition signature_coprod_on_morphisms (R S : Monad C)
+             (f : Monad_Mor R S) : LModule_Mor _ (signature_coprod_on_objects R)
+                                               (pb_LModule f (signature_coprod_on_objects S)).
     eapply (compose (C := (MOD _))); revgoals.
     - cbn.
       apply coprod_pbm_to_pbm_coprod.
@@ -62,10 +62,10 @@ Section Coprod.
       exact ((# (α o) f)%ar).
   Defined.
 
-  Definition harity_coprod_data : @arity_data C
-    := harity_coprod_on_objects ,, harity_coprod_on_morphisms.
+  Definition signature_coprod_data : @signature_data C
+    := signature_coprod_on_objects ,, signature_coprod_on_morphisms.
 
-  Lemma harity_coprod_is_arity : is_arity harity_coprod_data.
+  Lemma signature_coprod_is_signature : is_signature signature_coprod_data.
   Proof.
     split.
     - intros R c.
@@ -78,7 +78,7 @@ Section Coprod.
       apply pathsinv0.
       etrans;[|apply id_left].
       apply cancel_postcomposition.
-      apply arity_id.
+      apply signature_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
       + apply homset_property.
@@ -92,7 +92,7 @@ Section Coprod.
         apply CoproductOfArrows_eq.
         apply funextsec.
         intro i.
-        assert (h := arity_comp (α i) f g).
+        assert (h := signature_comp (α i) f g).
         apply LModule_Mor_equiv in h;[|apply homset_property].
         eapply nat_trans_eq_pointwise in h.
         apply pathsinv0.
@@ -102,10 +102,10 @@ Section Coprod.
         apply idpath.
   Qed.
       
-  Definition harity_coprod : HalfArity := _ ,, harity_coprod_is_arity.
+  Definition signature_coprod : Signature := _ ,, signature_coprod_is_signature.
 
-  Lemma harity_coproductIn_laws o : 
-    is_arity_Mor (α o) harity_coprod
+  Lemma signature_coproductIn_laws o : 
+    is_signature_Mor (α o) signature_coprod
                  (fun R => CoproductIn  _ _  (cpLM R (fun o => α o R)) o  ).
   Proof.
     intros R S f.
@@ -120,13 +120,13 @@ Section Coprod.
     use (CoproductOfArrowsIn _ _ CC).
   Qed.
 
-  Definition harity_coproductIn o : 
-    arity_Mor  (α o) harity_coprod := _ ,, harity_coproductIn_laws o.
+  Definition signature_coproductIn o : 
+    signature_Mor  (α o) signature_coprod := _ ,, signature_coproductIn_laws o.
 
-  (* TODO : move to aritiesalt *)
-  Definition harity_coproductArrow_laws {b : HalfArity} (cc : ∏ o, arity_Mor (α o) b ) :
-    is_arity_Mor
-      harity_coprod b
+  (* TODO : move to Signature *)
+  Definition signature_coproductArrow_laws {b : Signature} (cc : ∏ o, signature_Mor (α o) b ) :
+    is_signature_Mor
+      signature_coprod b
       (fun R => CoproductArrow  _ _  (cpLM R (fun o => α o R)) (c := b R) (fun o => cc o R)).
   Proof.
     intros R S f.
@@ -149,28 +149,28 @@ Section Coprod.
       apply (CoproductInCommutes _ _ _ CC).
     }
     apply pathsinv0.
-    apply arity_Mor_ax_pw.
+    apply signature_Mor_ax_pw.
   Qed.
 
-  Definition harity_coproductArrow {b : HalfArity} (cc : ∏ o, arity_Mor (α o) b ) :
-    arity_Mor harity_coprod b := _ ,, harity_coproductArrow_laws cc.
+  Definition signature_coproductArrow {b : Signature} (cc : ∏ o, signature_Mor (α o) b ) :
+    signature_Mor signature_coprod b := _ ,, signature_coproductArrow_laws cc.
 
-  Lemma harity_isCoproduct : isCoproduct _ arity_precategory   _ _ harity_coproductIn.
+  Lemma signature_isCoproduct : isCoproduct _ signature_precategory   _ _ signature_coproductIn.
   Proof.
     intros b cc.
     use unique_exists.
-    - exact (harity_coproductArrow cc).
+    - exact (signature_coproductArrow cc).
     - intro v.
-      apply arity_Mor_eq.
+      apply signature_Mor_eq.
       intro R.
       apply (CoproductInCommutes  _ (MOD R) _ (cpLM R (fun o => α o R))).
     - intro y.
       cbn -[isaprop].
       apply impred_isaprop.
       intro o.
-      apply arity_category_has_homsets.
+      apply signature_category_has_homsets.
     - intros y h.
-      apply arity_Mor_eq.
+      apply signature_Mor_eq.
       intro R.
       apply (CoproductArrowUnique  _ (MOD R) _ (cpLM R (fun o => α o R))).
       cbn in h.
@@ -180,14 +180,14 @@ Section Coprod.
       apply idpath.
   Defined.
 
-  Definition harity_Coproduct : Coproduct _ arity_precategory α :=
-    mk_Coproduct  _ _ _ _ _ harity_isCoproduct.
+  Definition signature_Coproduct : Coproduct _ signature_precategory α :=
+    mk_Coproduct  _ _ _ _ _ signature_isCoproduct.
 
 
 End Coprod.
 
-Definition harity_Coproducts {C : category}
+Definition signature_Coproducts {C : category}
            {O : UU}
            (cpC : Coproducts O C)
-            : Coproducts O (arity_precategory (C := C)) :=
-   harity_Coproduct (cpC := cpC).
+            : Coproducts O (signature_precategory (C := C)) :=
+   signature_Coproduct (cpC := cpC).

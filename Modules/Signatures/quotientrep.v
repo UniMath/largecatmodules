@@ -76,7 +76,7 @@ Let a be a R -module
 Let τ  : a -> R a R-module morphism
     h  : a -> π^*(b) a R-module morphism (where π := projR)
 (this could certainly be generalized to the case where the  codomain of τ is an
-arbitrary R-module but we are interested in the category of representations)
+arbitrary R-module but we are interested in the category of models)
 
 We want to define a R'-module morphism τ' : b -> R' defined by the following diagram :
 
@@ -274,7 +274,7 @@ Let c be a S-Module
     F : b -> u^*(c) a module morphism.
     s: c -> S a S-module morphism
 
-We also suppose that the following diagram commute (m should be a representation
+We also suppose that the following diagram commute (m should be a model
 morphism)
 
 <<<<<<<<<<<

@@ -1,4 +1,4 @@
-(** * Modularity for signatures
+(** * Modulsignature for signatures
 
 
 Suppose we have the following pushout diagram in the category of signatures:
@@ -16,9 +16,9 @@ Suppose we have the following pushout diagram in the category of signatures:
                  g1 
 >>>
 
-such that a0, a1, a2 and a' are representable with initial representations
+such that a0, a1, a2 and a' are representable with initial models
 R0, R1, R2 and R'. Then, above this pushout there is a pushout square in the
-large category of representations:
+large category of models:
 <<<
                 ff1
        R0 ------------>  R1 
@@ -50,7 +50,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 Require Import Modules.Prelims.FibrationInitialPushout.
 
 
@@ -59,9 +59,9 @@ Section init.
 
   Local Notation TT := (disp_mor_to_total_mor (rep_disp C)).
   Context
-          {a0 a1 a2 a' : @arity_category C}
-          {f1 : arity_category ⟦ a0, a1 ⟧}{f2 : arity_category ⟦ a0, a2 ⟧}
-          {g1 : arity_category ⟦ a1, a' ⟧}{g2 : arity_category ⟦ a2, a' ⟧}
+          {a0 a1 a2 a' : @signature_category C}
+          {f1 : signature_category ⟦ a0, a1 ⟧}{f2 : signature_category ⟦ a0, a2 ⟧}
+          {g1 : signature_category ⟦ a1, a' ⟧}{g2 : signature_category ⟦ a2, a' ⟧}
 
           {R0 : rep_disp _  a0} {R1 : rep_disp _  a1} {R2 : rep_disp _  a2} {R' : rep_disp _ a'}
           (repr_R0 : isInitial  (fiber_category _ _) R0)  

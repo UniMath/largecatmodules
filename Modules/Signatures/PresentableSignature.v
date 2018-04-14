@@ -1,4 +1,4 @@
-(* We show that presentable (half-)arities are representable *)
+(* We show that presentable ()arities are representable *)
 
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
@@ -18,10 +18,10 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.BindingSig.
-Require Import Modules.Arities.uniproofalt.
+Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.BindingSig.
+Require Import Modules.Signatures.EpiSigRepresentability.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
@@ -39,8 +39,8 @@ Context {C : category} (bp : BinProducts C) (bcp : BinCoproducts C) (T : Termina
 Let toSig sig  :=
   (BindingSigToSignature (homset_property C) bp bcp T  sig (cp (BindingSigIndexhSet sig))).
 
-Definition isPresentable (a : arity C) :=
-  ∑ (S : BindingSig) (F : arity_Mor (hss_to_ar (C := C) (toSig S)) a),
+Definition isPresentable (a : signature C) :=
+  ∑ (S : BindingSig) (F : signature_Mor (hss_to_ar (C := C) (toSig S)) a),
                             ∏ (R : Monad C), (isEpi (C := [_, _]) (pr1 (F R))).
 
 End PresentableDefinition.
@@ -49,14 +49,14 @@ End PresentableDefinition.
 Section PresentableProjections.
   Context {C : category} {bp : BinProducts C} {bcp : BinCoproducts C} {T : Terminal C}
           {cp : ∏ (I : hSet), Coproducts I C}.
-  Context {a : arity C} (p : isPresentable bp bcp T cp a).
+  Context {a : signature C} (p : isPresentable bp bcp T cp a).
 Definition p_sig   : BindingSig := pr1 p.
 Let toSig sig  :=
   (BindingSigToSignature (homset_property C) bp bcp T  sig (cp (BindingSigIndexhSet sig))).
-Definition p_alg_ar   : arity C :=
+Definition p_alg_ar   : signature C :=
   hss_to_ar (C := C) (toSig p_sig).
 
-Definition p_mor : arity_Mor (p_alg_ar ) a := pr1 (pr2 p).
+Definition p_mor : signature_Mor (p_alg_ar ) a := pr1 (pr2 p).
 Definition epi_p_mor   : 
   ∏ (R : Monad C), (isEpi (C := [_, _]) (pr1 (p_mor  R)))
   := pr2 (pr2 p).
@@ -72,7 +72,7 @@ Local Notation toSig sig :=
                          (CoproductsHSET (BindingSigIndex sig) (BindingSigIsaset sig))).
 
 Lemma PresentableisRepresentable (choice : AxiomOfChoice.AxiomOfChoice_surj)
-      {a : arity SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
+      {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
                                          (fun i => CoproductsHSET _ (setproperty i)) a) :
    Initial (rep_disp SET)[{a}].
 Proof.

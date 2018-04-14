@@ -24,24 +24,24 @@ Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.deriveadj.
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import Modules.Prelims.LModuleCoproducts.
-Require Import Modules.Arities.HArityCoproduct.
-Require Import Modules.Arities.Signatures.
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.RawSigToHAr.
-Require Import Modules.Arities.PresentableHArityBinProdR.
-Require Import Modules.Arities.PresentableHArityCoproducts.
-Require Import Modules.Arities.PresentableArity.
-Require Import Modules.Arities.PresentableRawSig.
-Require Import Modules.Arities.Signatures.
-Require  Modules.Arities.FullArities.
-Require Import Modules.Arities.FullArToRaw.
-Require Import Modules.Arities.SigEquivRep.
+Require Import Modules.Signatures.HArityCoproduct.
+Require Import Modules.Signatures.Signatures.
+Require Import Modules.Signatures.aritiesalt.
+Require Import Modules.Signatures.HssToArity.
+Require Import Modules.Signatures.RawSigToHAr.
+Require Import Modules.Signatures.PresentableHArityBinProdR.
+Require Import Modules.Signatures.PresentableHArityCoproducts.
+Require Import Modules.Signatures.PresentableArity.
+Require Import Modules.Signatures.PresentableRawSig.
+Require Import Modules.Signatures.Signatures.
+Require  Modules.Signatures.FullSignatures.
+Require Import Modules.Signatures.FullArToRaw.
+Require Import Modules.Signatures.SigEquivRep.
 Require Import Modules.Prelims.SetCatComplements.
 Require Import UniMath.CategoryTheory.categories.category_hset.
 
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
-Module FAr := FullArities.
+Module FAr := FullSignatures.
 
 Section RawSigRep.
 Local Notation hom_SET := has_homsets_HSET.
@@ -100,7 +100,7 @@ Proof.
   apply deriveadj.adj1.
 Defined.
 
-Import FullArities.
+Import FullSignatures.
 
     (** This uses univalence to transform an isomorphism of category into an equality
        Another proof could be used without univalence though

@@ -1,4 +1,4 @@
-(* We show that coproducts of presentable (half-)arities are presentable
+(* We show that coproducts of presentable ()arities are presentable
 
  *)
 
@@ -26,12 +26,12 @@ Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.BindingSig.
-Require Import Modules.Arities.PresentableArity.
-Require Import Modules.Arities.HArityCoproduct.
-Require Import Modules.Arities.HssArityCommutation.
+Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.BindingSig.
+Require Import Modules.Signatures.PresentableSignature.
+Require Import Modules.Signatures.SignatureCoproduct.
+Require Import Modules.Signatures.HssSignatureCommutation.
 
 Require Import Modules.Prelims.LModPbCommute.
 
@@ -52,16 +52,16 @@ Section CoprodPresentable.
                            sig (cp (BindingSigIndexhSet sig))).
 
 
-  Context {O : hSet} {α : O -> arity C} (pres_α : ∏ o, isPresentable bp bcp T cp (α o)).
+  Context {O : hSet} {α : O -> signature C} (pres_α : ∏ o, isPresentable bp bcp T cp (α o)).
   Local Notation CPO := (CoproductObject  _ _).
 
   Let bind_α (o : O) : BindingSig := p_sig (pres_α o).
 
-  Let cpHAr := harity_Coproducts (C := C) (cp O).
+  Let cpSig := signature_Coproducts (C := C) (cp O).
 
   Definition coprod_ρ_mor :
-    arity_precategory ⟦(hss_to_ar( C:=C) (toSig (coprod_BindingSig bind_α))),
-                       (CPO (cpHAr α) : arity _)⟧.
+    signature_precategory ⟦(hss_to_ar( C:=C) (toSig (coprod_BindingSig bind_α))),
+                       (CPO (cpSig α) : signature _)⟧.
   Proof.
     eapply compose.
     {
@@ -79,8 +79,8 @@ Section CoprodPresentable.
     use (p_mor (pres_α o)).
   Defined.
   Lemma coprod_epi_p_mor :
-    (* ∏ R : Monad SET, isEpi (C := [SET,SET])(((coprod_ρ_mor : arity_Mor _ _) R) : nat_trans _ _). *)
-    ∏ R : Monad C, isEpi (C := [C,C])(((coprod_ρ_mor : arity_Mor _ _) R) : nat_trans _ _).
+    (* ∏ R : Monad SET, isEpi (C := [SET,SET])(((coprod_ρ_mor : signature_Mor _ _) R) : nat_trans _ _). *)
+    ∏ R : Monad C, isEpi (C := [C,C])(((coprod_ρ_mor : signature_Mor _ _) R) : nat_trans _ _).
   Proof.
     intro R.
     use isEpi_comp;[| use isEpi_comp].
@@ -107,7 +107,7 @@ Section CoprodPresentable.
   Qed.
 
 
-  Definition coprod_isPresentable : isPresentable bp bcp T cp (CoproductObject _ _ (cpHAr α)).
+  Definition coprod_isPresentable : isPresentable bp bcp T cp (CoproductObject _ _ (cpSig α)).
      use tpair.
      - eapply coprod_BindingSig.
        exact bind_α.

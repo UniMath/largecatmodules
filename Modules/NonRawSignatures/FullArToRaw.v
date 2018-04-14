@@ -27,12 +27,12 @@ Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.DerivationIsFunctorial.
 Require Import Modules.Prelims.LModPbCommute.
 
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.FullArities.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.HArityBinproducts.
-Require Import Modules.Arities.HArityDerivation.
-(* Require Import Modules.Arities.CheckCorrespondanceAdjonction. *)
+Require Import Modules.Signatures.aritiesalt.
+Require Import Modules.Signatures.FullSignatures.
+Require Import Modules.Signatures.HssToArity.
+Require Import Modules.Signatures.HArityBinproducts.
+Require Import Modules.Signatures.HArityDerivation.
+(* Require Import Modules.Signatures.CheckCorrespondanceAdjonction. *)
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 
 Require Import UniMath.CategoryTheory.categories.category_hset.

@@ -37,12 +37,12 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import Modules.Prelims.LModuleCoproducts.
-Require Import Modules.Arities.HArityCoproduct.
-Require Import Modules.Arities.Signatures.
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.HssToArity.
-Require  Modules.Arities.FullArities.
-Module FAr := FullArities.
+Require Import Modules.Signatures.HArityCoproduct.
+Require Import Modules.Signatures.Signatures.
+Require Import Modules.Signatures.aritiesalt.
+Require Import Modules.Signatures.HssToArity.
+Require  Modules.Signatures.FullSignatures.
+Module FAr := FullSignatures.
 
 Section Raw.
 

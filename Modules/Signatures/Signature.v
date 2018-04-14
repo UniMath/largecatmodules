@@ -1,4 +1,4 @@
-(* half-arities and representation of a half arity
+(* arities and model of a  signature
 forgetful functor to the category of modules over a given monad R
  *)
 Require Import UniMath.Foundations.PartD.
@@ -21,10 +21,10 @@ Require Import Modules.Prelims.modules.
 
 
 Set Automatic Introduction.
-Delimit Scope arity_scope with ar.
+Delimit Scope signature_scope with ar.
 
 
-Section Arities.
+Section Signatures.
 
 Context {C : category}.
 
@@ -32,35 +32,35 @@ Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
 
-Definition arity_data :=
+Definition signature_data :=
   ∑ F : (∏ R : MONAD, LModule R C),
         ∏ (R S : MONAD) (f : Monad_Mor R S), LModule_Mor _ (F R) (pb_LModule f (F S)).
 (* :(F R : bmod_disp C C R) -->[f] F S. *)
 
-Definition arity_on_objects  (a : arity_data) : ∏ R, LModule R C :=
+Definition signature_on_objects  (a : signature_data) : ∏ R, LModule R C :=
   pr1 a.
-Coercion arity_on_objects : arity_data >-> Funclass.
+Coercion signature_on_objects : signature_data >-> Funclass.
 
-Definition arity_on_morphisms  (F : arity_data) {R S : MONAD} 
+Definition signature_on_morphisms  (F : signature_data) {R S : MONAD} 
   : ∏ (f: Monad_Mor R S), LModule_Mor _ (F R) (pb_LModule f (F S)) 
   := pr2 F R S.
 
-Notation "# F" := (arity_on_morphisms F) (at level 3) : arity_scope.
+Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
 
 
-Definition arity_idax  (F : arity_data) :=
+Definition signature_idax  (F : signature_data) :=
   ∏ (R : MONAD), ∏ x ,
   (# F (identity (C:= PRE_MONAD) R))%ar x  = identity  _.
 
-Definition arity_compax  (F : arity_data) :=
+Definition signature_compax  (F : signature_data) :=
   ∏ (R S T : MONAD) (f : PRE_MONAD ⟦R, S⟧) (g : PRE_MONAD ⟦S, T⟧),
   (#F  (f · g))%ar 
   = 
   (((# F f)%ar :(F R : bmod_disp C C R) -->[f] F S) ;; (#F g)%ar)%mor_disp.
 
-Definition is_arity  (F : arity_data) : UU := arity_idax F × arity_compax F.
+Definition is_signature  (F : signature_data) : UU := signature_idax F × signature_compax F.
 
-Lemma isaprop_is_arity (F : arity_data) : isaprop (is_arity F).
+Lemma isaprop_is_signature (F : signature_data) : isaprop (is_signature F).
 Proof.
   apply isofhleveldirprod.
   - repeat (apply impred; intro).
@@ -69,23 +69,23 @@ Proof.
     apply (homset_property (category_LModule _ _)).
 Qed.
 
-Definition arity : UU := ∑ F : arity_data, is_arity F.
+Definition signature : UU := ∑ F : signature_data, is_signature F.
 
-Definition arity_data_from_arity (F : arity) : arity_data := pr1 F.
-Coercion arity_data_from_arity : arity >-> arity_data.
+Definition signature_data_from_signature (F : signature) : signature_data := pr1 F.
+Coercion signature_data_from_signature : signature >-> signature_data.
 
 Notation Θ := tautological_LModule.
 
-Definition tautological_harity_on_objects : ∏ (R : Monad C), LModule R C := Θ.
-Definition tautological_harity_on_morphisms : 
+Definition tautological_signature_on_objects : ∏ (R : Monad C), LModule R C := Θ.
+Definition tautological_signature_on_morphisms : 
   ∏ (R S : Monad C) (f : Monad_Mor R S), LModule_Mor _ (Θ R) (pb_LModule f (Θ S)) :=
   @monad_mor_to_lmodule C.
 
 
-Definition tautological_harity_data : arity_data  :=
-  tautological_harity_on_objects ,, tautological_harity_on_morphisms.
+Definition tautological_signature_data : signature_data  :=
+  tautological_signature_on_objects ,, tautological_signature_on_morphisms.
 
-Lemma tautological_harity_is_arity :  is_arity tautological_harity_data.
+Lemma tautological_signature_is_signature :  is_signature tautological_signature_data.
 Proof.
   split.
   - intros R x.
@@ -101,15 +101,15 @@ Proof.
         apply idpath.
 Qed.
 
-Definition tautological_harity : arity := _ ,, tautological_harity_is_arity.
+Definition tautological_signature : signature := _ ,, tautological_signature_is_signature.
 
-Definition arity_id (F : arity) :
+Definition signature_id (F : signature) :
   ∏ (R : MONAD), ∏ x ,
   ((# F (identity (C:= PRE_MONAD) R)))%ar x  = identity  _
   := pr1 (pr2 F).
 (* ((# F (identity (C:= PRE_MONAD) R): LModule_Mor _ _ _ ))%ar x  = identity  _ *)
 
-Definition arity_comp (F : arity) {R S T : MONAD} 
+Definition signature_comp (F : signature) {R S T : MONAD} 
            (f : PRE_MONAD ⟦R,S⟧) (g : PRE_MONAD⟦S,T⟧) 
   : (#F  (f · g))%ar 
     = 
@@ -117,7 +117,7 @@ Definition arity_comp (F : arity) {R S T : MONAD}
   := pr2 (pr2 F) _ _ _ _ _ .
 
 (* Demander la version pointwise plutôt ? *)
-Definition is_arity_Mor (F F' : arity_data)
+Definition is_signature_Mor (F F' : signature_data)
            (t : ∏ R : MONAD, LModule_Mor R (F R)  (F' R)) 
   :=
     ∏ (R S : MONAD)(f : Monad_Mor R S),
@@ -130,30 +130,30 @@ Definition is_arity_Mor (F F' : arity_data)
   (*                                                                   (t S : nat_trans _ _) = *)
   (* ((t R : nat_trans _ _) : [_,_]⟦_,_⟧) · (((#F')%ar f:LModule_Mor _ _ _) : nat_trans _ _). *)
 
-Lemma isaprop_is_arity_Mor (F F' : arity_data) t :
-  isaprop (is_arity_Mor F F' t).
+Lemma isaprop_is_signature_Mor (F F' : signature_data) t :
+  isaprop (is_signature_Mor F F' t).
 Proof.
   repeat (apply impred; intro).
   apply homset_property.
 Qed.
 
-Definition arity_Mor  (F F' : arity_data) : UU := ∑ X, is_arity_Mor F F' X.
+Definition signature_Mor  (F F' : signature_data) : UU := ∑ X, is_signature_Mor F F' X.
                             
-Local Notation "F ⟹ G" := (arity_Mor F G) (at level 39) : arity_scope.
+Local Notation "F ⟹ G" := (signature_Mor F G) (at level 39) : signature_scope.
 
-Lemma isaset_arity_Mor (F F' : arity) : isaset (arity_Mor F F').
+Lemma isaset_signature_Mor (F F' : signature) : isaset (signature_Mor F F').
 Proof.
   apply (isofhleveltotal2 2).
   + apply impred ; intro t; apply (homset_property (category_LModule _ _)).
-  + intro x; apply isasetaprop, isaprop_is_arity_Mor.
+  + intro x; apply isasetaprop, isaprop_is_signature_Mor.
 Qed.
 
 
-Definition arity_Mor_data
- {F F' : arity_data}(a : arity_Mor F F') := pr1 a.
-Coercion arity_Mor_data : arity_Mor >-> Funclass.
+Definition signature_Mor_data
+ {F F' : signature_data}(a : signature_Mor F F') := pr1 a.
+Coercion signature_Mor_data : signature_Mor >-> Funclass.
 
-Definition arity_Mor_ax {F F' : arity} (a : arity_Mor F F') 
+Definition signature_Mor_ax {F F' : signature} (a : signature_Mor F F') 
   : ∏ {R S : MONAD}(f : Monad_Mor R S),
     (((# F)%ar f :   nat_trans _ _) : [_,_]⟦_,_⟧) ·
                                                   (a S : nat_trans _ _) 
@@ -161,7 +161,7 @@ Definition arity_Mor_ax {F F' : arity} (a : arity_Mor F F')
     ((a R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%ar f : nat_trans _ _)
   := pr2 a.
 
-Lemma arity_Mor_ax_pw {F F' : arity} (a : arity_Mor F F') 
+Lemma signature_Mor_ax_pw {F F' : signature} (a : signature_Mor F F') 
   : ∏ {R S : Monad C}(f : Monad_Mor R S) x,
     (((# F)%ar f :   nat_trans _ _) x) ·
                                        ((a S : nat_trans _ _) x) 
@@ -169,43 +169,43 @@ Lemma arity_Mor_ax_pw {F F' : arity} (a : arity_Mor F F')
     ((a R : nat_trans _ _)  x) · (((#F')%ar f : nat_trans _ _) x).
 Proof.
   intros.
-  assert (h := arity_Mor_ax a f).
+  assert (h := signature_Mor_ax a f).
   eapply nat_trans_eq_pointwise in h.
   apply h.
 Qed.
 
-(** Equality between two arity morphisms *)
+(** Equality between two signature morphisms *)
 
-Lemma arity_Mor_eq (F F' : arity)(a a' : arity_Mor F F'):
+Lemma signature_Mor_eq (F F' : signature)(a a' : signature_Mor F F'):
   (∏ x, a x = a' x) -> a = a'.
 Proof.
   intro H.
   assert (H' : pr1 a = pr1 a').
   { apply funextsec. intro; apply H. }
-  apply (total2_paths_f H'), proofirrelevance, isaprop_is_arity_Mor.
+  apply (total2_paths_f H'), proofirrelevance, isaprop_is_signature_Mor.
 Qed.
 
-Lemma is_arity_Mor_comp {F G H : arity} (a : arity_Mor F G) (b : arity_Mor G H) 
-  : is_arity_Mor F H (fun R  => (a R : category_LModule _ _ ⟦_,_⟧ ) · b R).
+Lemma is_signature_Mor_comp {F G H : signature} (a : signature_Mor F G) (b : signature_Mor G H) 
+  : is_signature_Mor F H (fun R  => (a R : category_LModule _ _ ⟦_,_⟧ ) · b R).
 Proof.
   intros ? ? ?.
   etrans.
   apply (assoc (C:= [_,_])).
   etrans.
   apply ( cancel_postcomposition (C:= [_,_])).
-  apply (arity_Mor_ax (F:=F) (F':=G) a f).
+  apply (signature_Mor_ax (F:=F) (F':=G) a f).
   rewrite <- (assoc (C:=[_,_])).
   etrans.
   apply (cancel_precomposition ([_,_])).
-  apply arity_Mor_ax.
+  apply signature_Mor_ax.
   rewrite assoc.
   apply idpath.
 Qed.
 
-Definition arity_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
-   arity (fun F F' => arity_Mor F F').
+Definition signature_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
+   signature (fun F F' => signature_Mor F F').
 
-Lemma is_arity_Mor_id (F : arity_data) : is_arity_Mor F F
+Lemma is_signature_Mor_id (F : signature_data) : is_signature_Mor F F
      (fun R => identity (C:=category_LModule _ _) _).
 Proof.
   intros ? ? ? .
@@ -213,97 +213,97 @@ Proof.
   apply idpath.
 Qed.
 
-Definition arity_Mor_id (F : arity_data) : arity_Mor F F :=
-    tpair _ _ (is_arity_Mor_id F).
+Definition signature_Mor_id (F : signature_data) : signature_Mor F F :=
+    tpair _ _ (is_signature_Mor_id F).
 
-Definition arity_Mor_comp {F G H : arity} (a : arity_Mor F G) (b : arity_Mor G H)
-  : arity_Mor F H 
-  := tpair _ _ (is_arity_Mor_comp a b).
+Definition signature_Mor_comp {F G H : signature} (a : signature_Mor F G) (b : signature_Mor G H)
+  : signature_Mor F H 
+  := tpair _ _ (is_signature_Mor_comp a b).
 
-Definition arity_precategory_data : precategory_data.
+Definition signature_precategory_data : precategory_data.
 Proof.
-  apply (precategory_data_pair (arity_precategory_ob_mor )).
+  apply (precategory_data_pair (signature_precategory_ob_mor )).
   + intro a; simpl.
-    apply (arity_Mor_id (pr1 a)).
+    apply (signature_Mor_id (pr1 a)).
   + intros a b c f g.
-    apply (arity_Mor_comp f g).
+    apply (signature_Mor_comp f g).
 Defined.
 
-Lemma is_precategory_arity_precategory_data :
-   is_precategory arity_precategory_data.
+Lemma is_precategory_signature_precategory_data :
+   is_precategory signature_precategory_data.
 Proof.
   repeat split; simpl; intros.
   - unfold identity.
     simpl.
-    apply arity_Mor_eq. 
+    apply signature_Mor_eq. 
     intro x; simpl.
     apply (id_left (C:=category_LModule _ _)).
-  - apply arity_Mor_eq.
+  - apply signature_Mor_eq.
     intro x; simpl.
     apply (id_right (C:=category_LModule _ _)).
-  - apply arity_Mor_eq.
+  - apply signature_Mor_eq.
     intro x; simpl.
     apply (assoc (C:=category_LModule _ _)).
 Qed.
 
-Definition arity_precategory : precategory :=
+Definition signature_precategory : precategory :=
   tpair (fun C => is_precategory C)
-        (arity_precategory_data)
-        (is_precategory_arity_precategory_data).
+        (signature_precategory_data)
+        (is_precategory_signature_precategory_data).
 
-Lemma arity_category_has_homsets : has_homsets arity_precategory.
+Lemma signature_category_has_homsets : has_homsets signature_precategory.
 Proof.
   intros F G.
-  apply isaset_arity_Mor.
+  apply isaset_signature_Mor.
 Qed.
 
 
-Definition arity_category : category.
+Definition signature_category : category.
 Proof.
-  exists (arity_precategory).
-  apply arity_category_has_homsets.
+  exists (signature_precategory).
+  apply signature_category_has_homsets.
 Defined.
 
-End Arities.
+End Signatures.
 
-Arguments arity _ : clear implicits.
+Arguments signature _ : clear implicits.
 
-Notation "# F" := (arity_on_morphisms F) (at level 3) : arity_scope.
+Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
 
-Section ForgetHArFunctor.
+Section ForgetSigFunctor.
   Context {C : category} (R : Monad C) .
   Local Notation MOD := (precategory_LModule R C).
-  Local Notation HAR := (arity_precategory (C:=C)).
+  Local Notation HAR := (signature_precategory (C:=C)).
 
-  Definition forget_HAr_data : functor_data HAR MOD :=
+  Definition forget_Sig_data : functor_data HAR MOD :=
     mk_functor_data (C := HAR) (C' := MOD)
-                    (fun X => ((X : arity C) R))
-                    (fun a b f => ((f : arity_Mor _ _ ) R)).
+                    (fun X => ((X : signature C) R))
+                    (fun a b f => ((f : signature_Mor _ _ ) R)).
 
-  Definition forget_HAr_is_functor : is_functor forget_HAr_data :=
-    (( fun x => idpath _) : functor_idax forget_HAr_data)
-      ,, ((fun a b c f g => idpath _) : functor_compax forget_HAr_data).
+  Definition forget_Sig_is_functor : is_functor forget_Sig_data :=
+    (( fun x => idpath _) : functor_idax forget_Sig_data)
+      ,, ((fun a b c f g => idpath _) : functor_compax forget_Sig_data).
 
-  Definition forget_HAr: functor HAR MOD  :=
-    mk_functor forget_HAr_data forget_HAr_is_functor.
-End ForgetHArFunctor.
+  Definition forget_Sig: functor HAR MOD  :=
+    mk_functor forget_Sig_data forget_Sig_is_functor.
+End ForgetSigFunctor.
 
-(* large category of representation defined as a display category
+(* large category of model defined as a display category
 
 Not that contrary to the large category of modules, we do not construct the category of
-representations of a specific arity
+models of a specific signature
 
 This is an attempt to use directly the display category construction.
-The category of represenations of a specific arity can be retrieved as a fiber category.
+The category of represenations of a specific signature can be retrieved as a fiber category.
 
 
-Let us recall what it the category of representations of an arity B.
+Let us recall what it the category of models of a signature B.
 It is a pair (R,m) where R is monad and m a module morphism (on R) m : B(R) -> R.
 
-Now, any morphism of arity F : A -> B induces a functor F* : Rep(B) -> Rep(A) defined by
+Now, any morphism of signature F : A -> B induces a functor F* : Rep(B) -> Rep(A) defined by
 F*(R,m) = (R, m o (F R))
 
-That's how the large category of representations is built.
+That's how the large category of models is built.
 
 *)
 
@@ -317,38 +317,38 @@ Local Notation PRE_MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
   
 
-(* Arities are display functors over the identity *)
-Local Notation PRECAT_ARITY  := (@arity_precategory C).
+(* Signatures are display functors over the identity *)
+Local Notation PRECAT_SIGNATURE  := (@signature_precategory C).
 
-Notation arity  := (@arity C).
-Local Notation ARITY := arity.
+Notation signature  := (@signature C).
+Local Notation SIGNATURE := signature.
 
-Goal arity = ob PRECAT_ARITY.
+Goal signature = ob PRECAT_SIGNATURE.
   reflexivity.
 Abort.
 
 Local Notation Θ := tautological_LModule.
 
 
-  (* We define the displayed category of representations of an arity
+  (* We define the displayed category of models of a signature
 We could also define it as a displayed category over the monads
 and we have no idea what that would look like *)
 
-(** A representation is a monad with a module morphisme from its image by the arity
+(** A model is a monad with a module morphisme from its image by the signature
  to itself *)
-Definition rep_ar (ar : ARITY) :=
+Definition rep_ar (ar : SIGNATURE) :=
   ∑ R : MONAD, LModule_Mor R (ar R) (Θ R).
 
-Coercion Monad_from_rep_ar (ar : ARITY) (X : rep_ar ar) : MONAD := pr1 X.
+Coercion Monad_from_rep_ar (ar : SIGNATURE) (X : rep_ar ar) : MONAD := pr1 X.
 
-Definition rep_τ {ar : arity} (X : rep_ar ar) := pr2 X.
+Definition rep_τ {ar : signature} (X : rep_ar ar) := pr2 X.
 
-Definition rep_ar_mor_law {a b : arity} (M : rep_ar a) (N : rep_ar b)
-           (f : arity_Mor a b) (g : Monad_Mor M N) 
+Definition rep_ar_mor_law {a b : signature} (M : rep_ar a) (N : rep_ar b)
+           (f : signature_Mor a b) (g : Monad_Mor M N) 
   := ∏ c : C, rep_τ M c · g c = ((#a g)%ar:nat_trans _ _) c · f N c · rep_τ N c .
 
-Lemma isaprop_rep_ar_mor_law {a b : ARITY} (M : rep_ar a) (N : rep_ar b)
-      (f : arity_Mor a b) (g : Monad_Mor M N) 
+Lemma isaprop_rep_ar_mor_law {a b : SIGNATURE} (M : rep_ar a) (N : rep_ar b)
+      (f : signature_Mor a b) (g : Monad_Mor M N) 
   : isaprop (rep_ar_mor_law M N f g).
 Proof.
   intros.
@@ -356,10 +356,10 @@ Proof.
   apply homset_property.
 Qed.
 
-Definition rep_ar_mor_mor (a b : ARITY) (M : rep_ar a) (N : rep_ar b) f :=
+Definition rep_ar_mor_mor (a b : SIGNATURE) (M : rep_ar a) (N : rep_ar b) f :=
   ∑ g:Monad_Mor M N, rep_ar_mor_law  M N f g.
 
-Lemma isaset_rep_ar_mor_mor (a b : ARITY) (M : rep_ar a) (N : rep_ar b) f :
+Lemma isaset_rep_ar_mor_mor (a b : SIGNATURE) (M : rep_ar a) (N : rep_ar b) f :
   isaset (rep_ar_mor_mor a b M N f).
 Proof.
   intros.
@@ -370,34 +370,34 @@ Proof.
     apply isaprop_rep_ar_mor_law.
 Qed.
 
-Coercion monad_morphism_from_rep_ar_mor_mor {a b : ARITY} {M : rep_ar a} {N : rep_ar b}
+Coercion monad_morphism_from_rep_ar_mor_mor {a b : SIGNATURE} {M : rep_ar a} {N : rep_ar b}
          {f} (h : rep_ar_mor_mor a b M N f) : Monad_Mor M N
   := pr1 h.
 
-Definition rep_ar_mor_ax {a b : ARITY} {M : rep_ar a} {N : rep_ar b}
+Definition rep_ar_mor_ax {a b : SIGNATURE} {M : rep_ar a} {N : rep_ar b}
            {f} (h:rep_ar_mor_mor a b M N f) :
   ∏ c, rep_τ M c · h c = (#a h)%ar c · f N c · rep_τ N c 
   := pr2 h.
 
-Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_ARITY :=
+Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_SIGNATURE :=
   (rep_ar,, rep_ar_mor_mor).
 
-Lemma rep_id_law (a : ARITY) (RM : rep_disp_ob_mor a) :
-  rep_ar_mor_law RM RM (identity (C:=PRECAT_ARITY) _) (Monad_identity _).
+Lemma rep_id_law (a : SIGNATURE) (RM : rep_disp_ob_mor a) :
+  rep_ar_mor_law RM RM (identity (C:=PRECAT_SIGNATURE) _) (Monad_identity _).
 Proof.
   intro c.
   apply pathsinv0.
   etrans.
     { apply cancel_postcomposition, id_right. }
   etrans.
-    { apply cancel_postcomposition, (arity_id a (pr1 RM) c). } 
+    { apply cancel_postcomposition, (signature_id a (pr1 RM) c). } 
   etrans; [  apply id_left |].
   apply pathsinv0.
   apply id_right.
 Qed.
 
-Definition rep_id  (a : ARITY) (RM : rep_disp_ob_mor a) :
-  RM -->[ identity (C:=PRECAT_ARITY) a] RM.
+Definition rep_id  (a : SIGNATURE) (RM : rep_disp_ob_mor a) :
+  RM -->[ identity (C:=PRECAT_SIGNATURE) a] RM.
 Proof.
   intros.
   exists (Monad_identity _).
@@ -406,7 +406,7 @@ Defined.
 
 
 
-Lemma transport_arity_mor (x y : ARITY) (f g : arity_Mor x y)
+Lemma transport_signature_mor (x y : SIGNATURE) (f g : signature_Mor x y)
       (e : f = g)
       (xx : rep_disp_ob_mor x)
       (yy : rep_disp_ob_mor y)
@@ -422,8 +422,8 @@ Qed.
 
 
 (** type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
-Lemma rep_ar_mor_mor_equiv (a b : ARITY) (R:rep_disp_ob_mor a)
-      (S:rep_disp_ob_mor b) (f:arity_Mor a b)
+Lemma rep_ar_mor_mor_equiv (a b : SIGNATURE) (R:rep_disp_ob_mor a)
+      (S:rep_disp_ob_mor b) (f:signature_Mor a b)
       (u v: R -->[ f] S) :
   (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
 Proof.
@@ -441,10 +441,10 @@ Qed.
 
 (** Defining the composition in rep *)
 
-Lemma rep_comp_law  (a b c : ARITY) (f : arity_Mor a b) (g : arity_Mor b c)
+Lemma rep_comp_law  (a b c : SIGNATURE) (f : signature_Mor a b) (g : signature_Mor b c)
       (R : rep_disp_ob_mor a) (S : rep_disp_ob_mor b)    (T : rep_disp_ob_mor c)
       (α:R -->[ f ] S) (β:S -->[g]  T) :
-  (rep_ar_mor_law R T (compose (C:=PRECAT_ARITY) f g)
+  (rep_ar_mor_law R T (compose (C:=PRECAT_SIGNATURE) f g)
                   (compose (C:=PRE_MONAD) (monad_morphism_from_rep_ar_mor_mor α)
                            ( monad_morphism_from_rep_ar_mor_mor  β))).
 Proof.
@@ -469,7 +469,7 @@ Proof.
   etrans.
   {
     apply cancel_postcomposition.
-    assert (h:= (arity_comp a (pr1 α) (pr1 β))).
+    assert (h:= (signature_comp a (pr1 α) (pr1 β))).
     apply LModule_Mor_equiv in h.
     eapply nat_trans_eq_pointwise in h.
     apply h.
@@ -479,12 +479,12 @@ Proof.
   rewrite id_right.
   repeat rewrite <- assoc.
   apply cancel_precomposition.
-  assert (h:=arity_Mor_ax f (pr1 β)).
+  assert (h:=signature_Mor_ax f (pr1 β)).
   eapply nat_trans_eq_pointwise in h.
   apply h.
 Qed.
 
-Definition rep_comp (a b c : ARITY) f g
+Definition rep_comp (a b c : SIGNATURE) f g
            (RMa : rep_disp_ob_mor a) 
            (RMb : rep_disp_ob_mor b)    
            (RMc : rep_disp_ob_mor c)
@@ -509,37 +509,37 @@ Defined.
 Definition rep_data : disp_cat_data _ := (rep_disp_ob_mor ,, rep_id_comp).
 
 
-Lemma rep_axioms : disp_cat_axioms arity_category rep_data.
+Lemma rep_axioms : disp_cat_axioms signature_category rep_data.
 Proof.
   repeat apply tpair; intros; try apply homset_property.
   - apply rep_ar_mor_mor_equiv.
     intros c.
     etrans. apply id_left.
     symmetry.
-    apply transport_arity_mor.
+    apply transport_signature_mor.
   - apply rep_ar_mor_mor_equiv.
     intro c.
     etrans. apply id_right.
     symmetry.
-    apply transport_arity_mor.
+    apply transport_signature_mor.
   - set (heqf:= assoc f g h).
     apply rep_ar_mor_mor_equiv.
     intros c.
     etrans. Focus 2.
       symmetry.
-      apply transport_arity_mor.
+      apply transport_signature_mor.
       cbn.
       rewrite assoc.
       apply idpath.
   - apply isaset_rep_ar_mor_mor.
 Qed.
 
-Definition rep_disp : disp_cat arity_category := rep_data ,, rep_axioms.
+Definition rep_disp : disp_cat signature_category := rep_data ,, rep_axioms.
 
-Definition pb_rep {a a' : arity} (f : arity_Mor a a') (R : rep_ar a') : rep_ar a :=
+Definition pb_rep {a a' : signature} (f : signature_Mor a a') (R : rep_ar a') : rep_ar a :=
   ((R : MONAD) ,, ((f R : category_LModule _ _ ⟦_, _⟧) · rep_τ R)).
 
-Lemma pb_rep_to_law {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
+Lemma pb_rep_to_law {a a'} (f : signature_category ⟦ a, a' ⟧) (R : rep_ar a') :
   rep_ar_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).
 Proof.
   intros.
@@ -550,17 +550,17 @@ Proof.
   apply pathsinv0.
   etrans; [| apply id_left].
   apply cancel_postcomposition.
-  apply arity_id.
+  apply signature_id.
 Qed.
 
 (** ** Now the cleaving *)
 
 
-Definition pb_rep_to {a a'} (f : arity_category ⟦ a, a' ⟧) (R : rep_ar a') :
+Definition pb_rep_to {a a'} (f : signature_category ⟦ a, a' ⟧) (R : rep_ar a') :
   (pb_rep f R : rep_disp a) -->[f] R :=
   (identity (C:=PRE_MONAD) (R:MONAD),, pb_rep_to_law f R).
 
-Lemma rep_mor_law_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)
+Lemma rep_mor_law_pb {a a' b} (f : signature_category ⟦ a, a' ⟧) (g : signature_category ⟦ b, a ⟧)
       (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
   rep_ar_mor_law S (pb_rep f R) g (hh : rep_ar_mor_mor _ _ _ _ _ ).
 Proof.
@@ -573,7 +573,7 @@ Proof.
   apply idpath.
 Qed.
 
-Lemma rep_mor_pb {a a' b} (f : arity_category ⟦ a, a' ⟧) (g : arity_category ⟦ b, a ⟧)
+Lemma rep_mor_pb {a a' b} (f : signature_category ⟦ a, a' ⟧) (g : signature_category ⟦ b, a ⟧)
       (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
    (S : rep_disp _) -->[ g] pb_rep f R.
 Proof.
@@ -582,7 +582,7 @@ Proof.
     + apply rep_mor_law_pb.
 Defined.
     
-Definition pb_rep_to_cartesian {a a'} (f : arity_category ⟦ a, a' ⟧)
+Definition pb_rep_to_cartesian {a a'} (f : signature_category ⟦ a, a' ⟧)
            (R : rep_ar a') : is_cartesian ((pb_rep_to f R) :
                                              (pb_rep f R : rep_disp a) -->[_] R).
 Proof.
@@ -640,8 +640,8 @@ Lemma transport_disp_mor {C} {d:disp_cat C} {x y : C} {f g : C ⟦ x, y ⟧}
 *)
 
   (*
-Lemma rep_ar_mor_mor_equiv_inv {a b : ARITY} {R:rep_disp_ob_mor a}
-      {S:rep_disp_ob_mor b} {f:arity_Mor  a b}
+Lemma rep_ar_mor_mor_equiv_inv {a b : SIGNATURE} {R:rep_disp_ob_mor a}
+      {S:rep_disp_ob_mor b} {f:signature_Mor  a b}
       (u v: R -->[ f] S) 
   : u = v -> (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c).
 Proof.
@@ -651,12 +651,12 @@ Qed.
    *)
 
   (*
- Lemma transport_arity_mor' (x y : ARITY) f g 
+ Lemma transport_signature_mor' (x y : SIGNATURE) f g 
         (e : f = g)
         (ff : disp_nat_trans f x y)
         (R:MONAD)
         (c : C) :
-    pr1 (pr1 (transportf (mor_disp (D:=GEN_ARITY) x y) e ff) R tt) c
+    pr1 (pr1 (transportf (mor_disp (D:=GEN_SIGNATURE) x y) e ff) R tt) c
     = pr1 (pr1 ff R tt) c.
   Proof.
     now induction e.
@@ -664,20 +664,20 @@ Qed.
 *)
 
   (*
-  Lemma eq_ar_pointwise  (a b c : ARITY)  (f:PRECAT_ARITY⟦ a,b⟧)
-        (g:PRECAT_ARITY⟦ b,c⟧) (R:MONAD) x :
+  Lemma eq_ar_pointwise  (a b c : SIGNATURE)  (f:PRECAT_SIGNATURE⟦ a,b⟧)
+        (g:PRECAT_SIGNATURE⟦ b,c⟧) (R:MONAD) x :
     ( (f ;; g) `` R) x = ( f`` R) x ;; ( g`` R) x .
   Proof.
     intros.
     etrans.
-    use (transport_arity_mor' a c _ ).
+    use (transport_signature_mor' a c _ ).
     cbn.
     now rewrite  id_right.
   Qed.
 *)
 
   (*
-  Lemma rep_transport (x y : ARITY)
+  Lemma rep_transport (x y : SIGNATURE)
         (R S:MONAD)
         (f g : Monad_Mor R S )
         (e : f = g)
@@ -691,14 +691,14 @@ Qed.
   Qed.
 *)
 
-  (* Notation "# F" := (ar_mor F) (at level 3) : arity_scope. *)
+  (* Notation "# F" := (ar_mor F) (at level 3) : signature_scope. *)
 
   (*
-  Definition ar_mor_pw {a b : ARITY} (f:arity_Mor a b) (R:MONAD) :
+  Definition ar_mor_pw {a b : SIGNATURE} (f:signature_Mor a b) (R:MONAD) :
     LModule_Mor _  (a ` R)
                 (pb_LModule ((nat_trans_id (functor_identity PRE_MONAD)) R)
                             (b ` R))
-    := (f : arity_mor (a:arity) (b:arity)) R.
+    := (f : signature_mor (a:signature) (b:signature)) R.
 *)
 
-  (* Infix "``" := ar_mor_pw (at level 25) : arity_scope . *)
+  (* Infix "``" := ar_mor_pw (at level 25) : signature_scope . *)

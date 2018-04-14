@@ -22,8 +22,8 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
-Require Import Modules.Arities.LModuleColims.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.LModuleColims.
+Require Import Modules.Signatures.Signature.
 
 Section pullback_coprod.
   Context {C : category} {B : precategory}.
@@ -125,7 +125,7 @@ Section Coprod.
   Context {Co : Colims_of_shape (I_graph O) C}.
   Check (Coproducts_from_Colims _ _ hsC Co : Coproducts O C).
 
-  Local Notation HalfArity := (arity C).
+  Local Notation HalfSignature := (arity C).
 
   Definition LModule_coproducts_from_Colims (R : Monad C) :
     Coproducts O (precategory_LModule R C) :=
@@ -136,7 +136,7 @@ Section Coprod.
 
   (* Local Notation HARITY := (arity C). *)
 
-  Context (α : O -> HalfArity).
+  Context (α : O -> HalfSignature).
   Local Notation α' R := (fun o => α o R).
 
   Definition harity_coprod_on_objects (R : Monad C) : LModule R C :=
@@ -150,4 +150,4 @@ Section Coprod.
     : arity_on_morphisms  (R : Monad C) : LModule R C :=
     CoproductObject _ _ (LModule_coproducts_from_Colims R (fun o => α o R)).
 
-  Definition harity_coprod : HalfArity.
+  Definition harity_coprod : HalfSignature.

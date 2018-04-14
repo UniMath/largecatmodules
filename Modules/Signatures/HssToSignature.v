@@ -1,5 +1,5 @@
 (**
-HSS Signature to Arity functor
+HSS Signature to Signature functor
 H
 *)
 Require Import UniMath.Foundations.PartD.
@@ -25,7 +25,7 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModPbCommute.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 Open Scope cat.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
@@ -114,7 +114,7 @@ Definition lift_lmodule_mor {M N : LModule T C} (f : LModule_Mor T M N) :
 
 End LiftLModuleMor.
 
-Section HssToArity.
+Section HssToSignature.
 
 Context {C : category}.
 
@@ -201,7 +201,7 @@ Definition lift_pb_LModule
   morphism_from_iso _ _ _ (lift_pb_LModule_iso f).
 
 
-Definition hss_to_ar_data : @arity_data C.
+Definition hss_to_ar_data : @signature_data C.
 Proof.
   use tpair.
   + intro R.
@@ -221,7 +221,7 @@ Proof.
     * apply lift_pb_LModule.
 Defined.
 
-Lemma hss_to_ar_is_arity : is_arity hss_to_ar_data.
+Lemma hss_to_ar_is_signature : is_signature hss_to_ar_data.
 Proof.
   split.
   - intros R X.
@@ -243,11 +243,11 @@ Proof.
     apply functor_comp_pw.
 Qed.
 
-Definition hss_to_ar : arity C := hss_to_ar_data ,, hss_to_ar_is_arity.
+Definition hss_to_ar : signature C := hss_to_ar_data ,, hss_to_ar_is_signature.
 
-End HssToArity.
+End HssToSignature.
 
-Section HssToArityMor.
+Section HssToSignatureMor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
@@ -325,7 +325,7 @@ And as f is a signature morphism, we have
     LModule_Mor  R  (F A R) (F B R) :=
     _ ,, hss_to_ar_mod_mor_laws R.
 
-  Lemma hss_to_ar_is_arity_Mor : is_arity_Mor (F A) (F B) hss_to_ar_mod_mor.
+  Lemma hss_to_ar_is_signature_Mor : is_signature_Mor (F A) (F B) hss_to_ar_mod_mor.
   Proof.
     intros R S g.
     change ((#(A : Signature _ _ _ _) (g : nat_trans _ _))· identity _ · (pr1 f (S : functor _ _)) =
@@ -333,34 +333,34 @@ And as f is a signature morphism, we have
     do 2 rewrite id_right.
     apply nat_trans_ax.
   Qed.
-  Definition hss_to_ar_mor   : arity_Mor (F A) (F B) :=
-    _ ,, hss_to_ar_is_arity_Mor.
-End HssToArityMor.
+  Definition hss_to_ar_mor   : signature_Mor (F A) (F B) :=
+    _ ,, hss_to_ar_is_signature_Mor.
+End HssToSignatureMor.
 
-Section HssToArityFunctor.
+Section HssToSignatureFunctor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
   Local Notation F := hss_to_ar.
 
-  Definition hss_to_ar_functor_data : functor_data Sig (arity_precategory (C := C)) :=
-    mk_functor_data (C' := arity_precategory) _ (@hss_to_ar_mor C).
+  Definition hss_to_ar_functor_data : functor_data Sig (signature_precategory (C := C)) :=
+    mk_functor_data (C' := signature_precategory) _ (@hss_to_ar_mor C).
 
   Lemma hss_to_ar_is_functor : is_functor hss_to_ar_functor_data.
   Proof.
     split.
     - intro S.
-      apply arity_Mor_eq.
+      apply signature_Mor_eq.
       intro X.
       apply LModule_Mor_equiv;[apply homset_property|].
       apply idpath.
     - intros R S T f g.
-      apply arity_Mor_eq.
+      apply signature_Mor_eq.
       intro X.
       apply LModule_Mor_equiv;[apply homset_property|].
       apply idpath.
   Defined.
 
-  Definition hss_to_ar_functor : functor Sig (arity_precategory (C := C)) :=
+  Definition hss_to_ar_functor : functor Sig (signature_precategory (C := C)) :=
     mk_functor _ hss_to_ar_is_functor.
-End HssToArityFunctor.
+End HssToSignatureFunctor.

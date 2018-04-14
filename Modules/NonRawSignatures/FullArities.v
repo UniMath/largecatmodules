@@ -20,29 +20,29 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 
 
-Module HAr := aritiesalt.
+Module HAr := Signature.
 Set Automatic Introduction.
 
-Definition FullArity (C : category) := precategory_binproduct
+Definition FullSignature (C : category) := precategory_binproduct
                                          (@arity_category C)  ((@arity_category C) ^op).
 
-Definition FullArity_has_homsets C : has_homsets (FullArity C) :=
+Definition FullSignature_has_homsets C : has_homsets (FullSignature C) :=
   has_homsets_precategory_binproduct _ _ (homset_property arity_category)
                                      (has_homsets_opp (homset_property _) ).
 
-Definition FullArity_cat (C : category) : category := category_pair _
-                                                                    (FullArity_has_homsets C).
+Definition FullSignature_cat (C : category) : category := category_pair _
+                                                                    (FullSignature_has_homsets C).
 
-Definition dom { C : category} (a : FullArity C) : arity C := ob1 a.
-Definition codom { C : category} (a : FullArity C) : arity C := ob2 a.
+Definition dom { C : category} (a : FullSignature C) : arity C := ob1 a.
+Definition codom { C : category} (a : FullSignature C) : arity C := ob2 a.
 
-Definition dom_mor {C : category} { a b : FullArity C} (f : FullArity C ⟦a , b ⟧)
+Definition dom_mor {C : category} { a b : FullSignature C} (f : FullSignature C ⟦a , b ⟧)
            : arity_Mor (dom a) (dom b) := mor1 f.
 
-Definition codom_mor {C : category} { a b : FullArity C} (f : FullArity C ⟦a , b ⟧)
+Definition codom_mor {C : category} { a b : FullSignature C} (f : FullSignature C ⟦a , b ⟧)
            : arity_Mor (codom b) (codom a) := mor2 f.
 
 
@@ -61,8 +61,8 @@ Local Notation PRE_MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
   
 
-(* Arities are display functors over the identity *)
-Local Notation FArity  := (FullArity C).
+(* Signatures are display functors over the identity *)
+Local Notation FSignature  := (FullSignature C).
 
 
 
@@ -73,17 +73,17 @@ Local Notation Θ := tautological_LModule.
 
 (** A representation is a monad with a module morphisme from its image by the arity
  to itself *)
-Definition rep_ar (ar : FArity) :=
+Definition rep_ar (ar : FSignature) :=
   ∑ R : MONAD, LModule_Mor R (dom ar R) (codom ar R).
 
-Coercion Monad_from_rep_ar (ar : FArity) (X : rep_ar ar) : MONAD := pr1 X.
+Coercion Monad_from_rep_ar (ar : FSignature) (X : rep_ar ar) : MONAD := pr1 X.
 
-Definition rep_τ {ar : FArity} (X : rep_ar ar) :
+Definition rep_τ {ar : FSignature} (X : rep_ar ar) :
   LModule_Mor X (dom ar X) (codom ar X)
   := pr2 X.
 
-Definition rep_ar_mor_law {a b : FArity} (M : rep_ar a) (N : rep_ar b)
-           (f : FArity ⟦ a,  b⟧) (g : Monad_Mor M N) : UU :=
+Definition rep_ar_mor_law {a b : FSignature} (M : rep_ar a) (N : rep_ar b)
+           (f : FSignature ⟦ a,  b⟧) (g : Monad_Mor M N) : UU :=
   ∏ c : C, rep_τ M c · ((#(codom a) g)%ar:nat_trans _ _) c =
             ((#(dom a) g)%ar:nat_trans _ _) c · dom_mor f N c ·
                                             rep_τ N c · codom_mor f N c.
@@ -97,8 +97,8 @@ top right is left hand side
      dom a N ---> dom b N --->  codom b N
    *)
 
-Lemma isaprop_rep_ar_mor_law {a b : FArity} (M : rep_ar a) (N : rep_ar b)
-      (f : FArity ⟦a, b⟧) (g : Monad_Mor M N) 
+Lemma isaprop_rep_ar_mor_law {a b : FSignature} (M : rep_ar a) (N : rep_ar b)
+      (f : FSignature ⟦a, b⟧) (g : Monad_Mor M N) 
   : isaprop (rep_ar_mor_law M N f g).
 Proof.
   intros.
@@ -106,7 +106,7 @@ Proof.
   apply homset_property.
 Qed.
 
-Definition rep_ar_mor_mor {a b : FArity} (M : rep_ar a) (N : rep_ar b) f :=
+Definition rep_ar_mor_mor {a b : FSignature} (M : rep_ar a) (N : rep_ar b) f :=
   ∑ g : Monad_Mor M N, rep_ar_mor_law  M N f g.
 
 Lemma isaset_rep_ar_mor_mor {a b} (M : rep_ar a) (N : rep_ar b) f :
@@ -124,18 +124,18 @@ Coercion monad_morphism_from_rep_ar_mor_mor {a b } {M : rep_ar a} {N : rep_ar b}
          {f} (h : rep_ar_mor_mor  M N f) : Monad_Mor M N
   := pr1 h.
 
-Definition rep_ar_mor_ax {a b : FArity} {M : rep_ar a} {N : rep_ar b}
+Definition rep_ar_mor_ax {a b : FSignature} {M : rep_ar a} {N : rep_ar b}
            {f} (h:rep_ar_mor_mor  M N f) :
   ∏ c : C, rep_τ M c · ((#(codom a) h)%ar:nat_trans _ _) c =
             ((#(dom a) h)%ar:nat_trans _ _) c · dom_mor f N c ·
                                             rep_τ N c · codom_mor f N c
   := pr2 h.
 
-Definition rep_disp_ob_mor : disp_cat_ob_mor FArity :=
+Definition rep_disp_ob_mor : disp_cat_ob_mor FSignature :=
   (rep_ar,, @rep_ar_mor_mor).
 
 Lemma rep_id_law a  (RM : rep_disp_ob_mor a) :
-  rep_ar_mor_law RM RM (identity (C:=FArity) _) (Monad_identity _).
+  rep_ar_mor_law RM RM (identity (C:=FSignature) _) (Monad_identity _).
 Proof.
   intro c.
   cbn.
@@ -150,8 +150,8 @@ Proof.
     apply arity_id.
 Qed.
 
-Definition rep_id  (a : FArity)  (RM : rep_disp_ob_mor a) :
-  RM -->[ identity (C:=FArity) a] RM.
+Definition rep_id  (a : FSignature)  (RM : rep_disp_ob_mor a) :
+  RM -->[ identity (C:=FSignature) a] RM.
 Proof.
   intros.
   exists (Monad_identity _).
@@ -160,7 +160,7 @@ Defined.
 
 
 
-Lemma transport_arity_mor (x y : FArity) (f g : FArity ⟦ x, y⟧)
+Lemma transport_arity_mor (x y : FSignature) (f g : FSignature ⟦ x, y⟧)
       (e : f = g)
       (xx : rep_disp_ob_mor x)
       (yy : rep_disp_ob_mor y)
@@ -176,8 +176,8 @@ Qed.
 
 
 (** type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
-Lemma rep_ar_mor_mor_equiv (a b : FArity) (R:rep_disp_ob_mor a)
-      (S:rep_disp_ob_mor b) (f:FArity⟦ a, b⟧)
+Lemma rep_ar_mor_mor_equiv (a b : FSignature) (R:rep_disp_ob_mor a)
+      (S:rep_disp_ob_mor b) (f:FSignature⟦ a, b⟧)
       (u v: R -->[ f] S) :
   (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
 Proof.
@@ -195,10 +195,10 @@ Qed.
 
 (** Defining the composition in rep *)
 
-Lemma rep_comp_law  (a b c : FArity) (f : FArity ⟦ a,  b⟧) (g : FArity ⟦ b,  c⟧)
+Lemma rep_comp_law  (a b c : FSignature) (f : FSignature ⟦ a,  b⟧) (g : FSignature ⟦ b,  c⟧)
       (R : rep_disp_ob_mor a) (S : rep_disp_ob_mor b)    (T : rep_disp_ob_mor c)
       (α:R -->[ f ] S) (β:S -->[g]  T) :
-  (rep_ar_mor_law R T (compose (C:=FArity) f g)
+  (rep_ar_mor_law R T (compose (C:=FSignature) f g)
                   (compose (C:=PRE_MONAD) (monad_morphism_from_rep_ar_mor_mor α)
                            ( monad_morphism_from_rep_ar_mor_mor  β))).
 Proof.
@@ -232,7 +232,7 @@ Proof.
   apply arity_Mor_ax_pw.
 Qed.
 
-Definition rep_comp (a b c : FArity ) f g
+Definition rep_comp (a b c : FSignature ) f g
            (RMa : rep_disp_ob_mor a) 
            (RMb : rep_disp_ob_mor b)    
            (RMc : rep_disp_ob_mor c)
@@ -258,7 +258,7 @@ Definition rep_data : disp_cat_data _ := (rep_disp_ob_mor ,, rep_id_comp).
 
 (* TODO *)
 
-Lemma rep_axioms : disp_cat_axioms (FullArity_cat _) rep_data.
+Lemma rep_axioms : disp_cat_axioms (FullSignature_cat _) rep_data.
 Proof.
   repeat apply tpair; intros; try apply homset_property.
   - apply rep_ar_mor_mor_equiv.
@@ -283,13 +283,13 @@ Proof.
   - apply isaset_rep_ar_mor_mor.
 Qed.
 
-Definition rep_disp : disp_cat (FullArity_cat _) := rep_data ,, rep_axioms.
+Definition rep_disp : disp_cat (FullSignature_cat _) := rep_data ,, rep_axioms.
 
-Definition pb_rep {a a' : FArity} (f : FArity ⟦ a , a'⟧) (R : rep_ar a') : rep_ar a :=
+Definition pb_rep {a a' : FSignature} (f : FSignature ⟦ a , a'⟧) (R : rep_ar a') : rep_ar a :=
   ((R : MONAD) ,, ((dom_mor f R : category_LModule _ _ ⟦_, _⟧)
                      · rep_τ R · (codom_mor f R : category_LModule _ _ ⟦_, _⟧))).
 
-Lemma pb_rep_to_law {a a'} (f : FArity ⟦ a, a' ⟧) (R : rep_ar a') :
+Lemma pb_rep_to_law {a a'} (f : FSignature ⟦ a, a' ⟧) (R : rep_ar a') :
   rep_ar_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).
 Proof.
   intro c.
@@ -303,11 +303,11 @@ Qed.
 (* make the half-arity version useless *)
 (* exactement les mêmes preuves *)
 
-Definition pb_rep_to {a a'} (f : FArity ⟦ a, a' ⟧) (R : rep_ar a') :
+Definition pb_rep_to {a a'} (f : FSignature ⟦ a, a' ⟧) (R : rep_ar a') :
   (pb_rep f R : rep_disp a) -->[f] R :=
   (identity (C:=PRE_MONAD) (R:MONAD),, pb_rep_to_law f R).
 
-Lemma rep_mor_law_pb {a a' b} (f : FArity ⟦ a, a' ⟧) (g : FArity ⟦ b, a ⟧)
+Lemma rep_mor_law_pb {a a' b} (f : FSignature ⟦ a, a' ⟧) (g : FSignature ⟦ b, a ⟧)
       (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
   rep_ar_mor_law S (pb_rep f R) g (hh : rep_ar_mor_mor  _ _ _ ).
 Proof.
@@ -320,7 +320,7 @@ Proof.
   apply idpath.
 Qed.
 
-Lemma rep_mor_pb {a a' b} (f : FArity ⟦ a, a' ⟧) (g : FArity ⟦ b, a ⟧)
+Lemma rep_mor_pb {a a' b} (f : FSignature ⟦ a, a' ⟧) (g : FSignature ⟦ b, a ⟧)
       (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
    (S : rep_disp _) -->[ g] pb_rep f R.
 Proof.
@@ -329,7 +329,7 @@ Proof.
     + apply rep_mor_law_pb.
 Defined.
     
-Definition pb_rep_to_cartesian {a a'} (f : FArity ⟦ a, a' ⟧)
+Definition pb_rep_to_cartesian {a a'} (f : FSignature ⟦ a, a' ⟧)
            (R : rep_ar a') : is_cartesian ((pb_rep_to f R) :
                                              (pb_rep f R : rep_disp a) -->[_] R).
 Proof.
