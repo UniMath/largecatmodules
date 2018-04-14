@@ -30,6 +30,8 @@ of its half arities : `Arities/RawSigToHAr`
 - pointwise limits and colimits of modules : `Prelims/LModuleColims`
 - pointwise limits and colimits of arities : `Arities/HAritiesColims`
 - quotient monad : `Prelims/quotientmonad`
+- Modularity in the context of a fibration : `Prelims/FibrationInitialPushout`
+- Modularity in the specific context of arities and their representations : `Arities/Modularity`
           
 The fact that algebraic signatures are representable is already proved in
 a different setting in the Heterogeneous Substitution System package of UniMaths.
@@ -57,6 +59,7 @@ By folder
     There are also direct definitions for specific 
 
 - `CoproductsComplements`, `BinProductComplements`,`lib`, `SetCatComplements` : self-explanatory
+- `FibrationInitialPushout` : modularity in the context of a fibration
 
 ## Arities
 - `aritiesalt` : definition of half arities and their actions
@@ -87,5 +90,6 @@ By folder
 - `HArityBinproducts` : direct definition of bin products of half arities
 - `HArityCoproduct` : direct definition of coproducts of half arities
 - `HArityDerivation` : derivation of arities
+- `Modularity` : Modularity in the specific context of arities and their representations
           
 
