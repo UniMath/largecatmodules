@@ -270,23 +270,23 @@ Arguments signature _ : clear implicits.
 
 Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
 
-Section ForgetHArFunctor.
+Section ForgetSigFunctor.
   Context {C : category} (R : Monad C) .
   Local Notation MOD := (precategory_LModule R C).
   Local Notation HAR := (signature_precategory (C:=C)).
 
-  Definition forget_HAr_data : functor_data HAR MOD :=
+  Definition forget_Sig_data : functor_data HAR MOD :=
     mk_functor_data (C := HAR) (C' := MOD)
                     (fun X => ((X : signature C) R))
                     (fun a b f => ((f : signature_Mor _ _ ) R)).
 
-  Definition forget_HAr_is_functor : is_functor forget_HAr_data :=
-    (( fun x => idpath _) : functor_idax forget_HAr_data)
-      ,, ((fun a b c f g => idpath _) : functor_compax forget_HAr_data).
+  Definition forget_Sig_is_functor : is_functor forget_Sig_data :=
+    (( fun x => idpath _) : functor_idax forget_Sig_data)
+      ,, ((fun a b c f g => idpath _) : functor_compax forget_Sig_data).
 
-  Definition forget_HAr: functor HAR MOD  :=
-    mk_functor forget_HAr_data forget_HAr_is_functor.
-End ForgetHArFunctor.
+  Definition forget_Sig: functor HAR MOD  :=
+    mk_functor forget_Sig_data forget_Sig_is_functor.
+End ForgetSigFunctor.
 
 (* large category of representation defined as a display category
 

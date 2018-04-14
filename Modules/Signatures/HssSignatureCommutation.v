@@ -55,10 +55,10 @@ Section commuteBinProdSig.
   Local Notation SIG := (Signature_precategory C C).
   Context {I : UU}
           (bpC :  BinProducts C).
-  Let bpSig  : BinProducts  SIG
+  Let hss_bpSig  : BinProducts  SIG
     := BinProducts_Signature_precategory C C bpC.
 
-  Let bpHAr := signature_BinProducts (C := C) bpC.
+  Let bpSig := signature_BinProducts (C := C) bpC.
 
   Variable (a b : SIG).
 
@@ -67,7 +67,7 @@ Section commuteBinProdSig.
   Local Notation BPO := (BinProductObject _ ).
 
   Lemma binprod_sigs_har_mod_eq_mult R c  :
-    (ModulesFromSignatures.lift_lm_mult (BPO (bpSig a b)) R (tautological_LModule R) : nat_trans _ _) c =
+    (ModulesFromSignatures.lift_lm_mult (BPO (hss_bpSig a b)) R (tautological_LModule R) : nat_trans _ _) c =
     (LModuleBinProduct.LModule_binproduct_mult bpC (homset_property C) (ar_a R) (ar_b R) c).
   Proof.
     cbn.
@@ -81,8 +81,8 @@ Section commuteBinProdSig.
 
   Lemma  binprod_sigs_har_mod_iso R :
     iso (C := precategory_LModule R _)
-        ( hss_to_ar (BPO (bpSig a b)) R)
-        ( (BPO (bpHAr ar_a ar_b) : signature _ ) R).
+        ( hss_to_ar (BPO (hss_bpSig a b)) R)
+        ( (BPO (bpSig ar_a ar_b) : signature _ ) R).
   Proof.
     apply LModule_M1_M2_iso.
     apply binprod_sigs_har_mod_eq_mult.
@@ -95,8 +95,8 @@ Section commuteBinProdSig.
     (inv_from_iso  (binprod_sigs_har_mod_iso R)).
 
 
-  Lemma binprod_sigs_har_signature_laws : is_signature_Mor ( hss_to_ar (BPO (bpSig a b)) ) 
-                                                  ( (BPO (bpHAr ar_a ar_b) : signature _ ) )
+  Lemma binprod_sigs_har_signature_laws : is_signature_Mor ( hss_to_ar (BPO (hss_bpSig a b)) ) 
+                                                  ( (BPO (bpSig ar_a ar_b) : signature _ ) )
                                         binprod_sigs_har_mod.
   Proof.
     intros R S f.
@@ -110,8 +110,8 @@ Section commuteBinProdSig.
     apply idpath.
   Qed.
   Lemma binprod_har_sigs_signature_laws : is_signature_Mor  
-                                                  ( (BPO (bpHAr ar_a ar_b) : signature _ ) )
-                                                  ( hss_to_ar (BPO (bpSig a b)) )
+                                                  ( (BPO (bpSig ar_a ar_b) : signature _ ) )
+                                                  ( hss_to_ar (BPO (hss_bpSig a b)) )
                                         binprod_har_sigs_mod.
   Proof.
     intros R S f.
@@ -126,14 +126,14 @@ Section commuteBinProdSig.
   Qed.
 
   (* Definition coprod_sigs_har_mor :  signature_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))), *)
-  (*                                                       (CPO (cpHAr ars))⟧  *)
-  Definition binprod_sigs_har_mor : signature_precategory ⟦ ( hss_to_ar (BPO (bpSig a b)) ) ,
-                                                  ( (BPO (bpHAr ar_a ar_b) : signature _ ) ) ⟧
+  (*                                                       (CPO (cpSig ars))⟧  *)
+  Definition binprod_sigs_har_mor : signature_precategory ⟦ ( hss_to_ar (BPO (hss_bpSig a b)) ) ,
+                                                  ( (BPO (bpSig ar_a ar_b) : signature _ ) ) ⟧
                                                   :=
     _ ,, binprod_sigs_har_signature_laws.
 
-  Definition binprod_har_sigs_mor : signature_precategory ⟦( (BPO (bpHAr ar_a ar_b) : signature _ ) )
-                                                       ,( hss_to_ar (BPO (bpSig a b)) )⟧
+  Definition binprod_har_sigs_mor : signature_precategory ⟦( (BPO (bpSig ar_a ar_b) : signature _ ) )
+                                                       ,( hss_to_ar (BPO (hss_bpSig a b)) )⟧
                                                   :=
     _ ,, binprod_har_sigs_signature_laws.
 
@@ -157,8 +157,8 @@ Section commuteBinProdSig.
 
 
   Definition binprod_sigs_har_iso : iso (C := signature_precategory) 
-                                        ( hss_to_ar (BPO (bpSig a b)) )
-                                        ( (BPO (bpHAr ar_a ar_b) : signature _ ) )
+                                        ( hss_to_ar (BPO (hss_bpSig a b)) )
+                                        ( (BPO (bpSig ar_a ar_b) : signature _ ) )
                                         :=
     isopair _ binprod_sigs_har_mor_is_iso.
 End commuteBinProdSig.
@@ -168,16 +168,16 @@ Section CoprodAr.
   Local Notation SIG := (Signature_precategory C C).
   Context {I : UU}
           (cpC :  Coproducts I C).
-  Let cpSig  : Coproducts I SIG
+  Let hss_cpSig  : Coproducts I SIG
     := Coproducts_Signature_precategory _ C _ cpC.
-  Let cpHAr := signature_Coproducts (C := C) cpC.
+  Let cpSig := signature_Coproducts (C := C) cpC.
 
   Variable (sigs : I -> SIG).
   Let ars : I -> signature C := fun i => hss_to_ar (sigs i).
   Local Notation CPO := (CoproductObject _ _).
 
   Lemma coprod_sigs_har_mod_eq_mult R c  :
-    (ModulesFromSignatures.lift_lm_mult (CPO (cpSig sigs)) R (tautological_LModule R) : nat_trans _ _) c =
+    (ModulesFromSignatures.lift_lm_mult (CPO (hss_cpSig sigs)) R (tautological_LModule R) : nat_trans _ _) c =
     (LModuleCoproducts.LModule_coproduct_mult cpC (homset_property C) (λ o : I, (ars o) R)) c.
   Proof.
     cbn.
@@ -194,8 +194,8 @@ Section CoprodAr.
 
   Lemma  coprod_sigs_har_mod_iso R :
     iso (C := precategory_LModule R _)
-        ( hss_to_ar (CPO (cpSig sigs)) R)
-        ( (CPO (cpHAr ars) : signature _ ) R).
+        ( hss_to_ar (CPO (hss_cpSig sigs)) R)
+        ( (CPO (cpSig ars) : signature _ ) R).
   Proof.
     apply LModule_M1_M2_iso.
     apply coprod_sigs_har_mod_eq_mult.
@@ -210,8 +210,8 @@ Section CoprodAr.
 
 
 
-  Lemma coprod_sigs_har_signature_laws : is_signature_Mor  (hss_to_ar (CPO (cpSig sigs)))
-                                       (CPO (cpHAr ars) : signature _) coprod_sigs_har_mod.
+  Lemma coprod_sigs_har_signature_laws : is_signature_Mor  (hss_to_ar (CPO (hss_cpSig sigs)))
+                                       (CPO (cpSig ars) : signature _) coprod_sigs_har_mod.
   Proof.
     intros R S f.
 
@@ -229,8 +229,8 @@ Section CoprodAr.
     apply idpath.
   Qed.
   Lemma coprod_har_sigs_signature_laws : is_signature_Mor  
-                                       (CPO (cpHAr ars) : signature _)
-                                       (hss_to_ar (CPO (cpSig sigs)))
+                                       (CPO (cpSig ars) : signature _)
+                                       (hss_to_ar (CPO (hss_cpSig sigs)))
                                        coprod_har_sigs_mod.
   Proof.
     intros R S f.
@@ -248,13 +248,13 @@ Section CoprodAr.
     apply idpath.
   Qed.
 
-  Definition coprod_sigs_har_mor :  signature_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))),
-                                                        (CPO (cpHAr ars))⟧ :=
+  Definition coprod_sigs_har_mor :  signature_precategory ⟦ (hss_to_ar (CPO (hss_cpSig sigs))),
+                                                        (CPO (cpSig ars))⟧ :=
     _ ,, coprod_sigs_har_signature_laws.
 
   Definition coprod_har_sigs_mor :  signature_precategory ⟦ 
-                                                        (CPO (cpHAr ars)),
-                                                        (hss_to_ar (CPO (cpSig sigs)))⟧ :=
+                                                        (CPO (cpSig ars)),
+                                                        (hss_to_ar (CPO (hss_cpSig sigs)))⟧ :=
     _ ,, coprod_har_sigs_signature_laws.
 
 
@@ -275,8 +275,8 @@ Section CoprodAr.
       coprod_sigs_har_mor
       (mk_is_z_isomorphism coprod_sigs_har_mor coprod_har_sigs_mor coprod_sigs_har_is_inverse).
 
-  Definition coprod_sigs_har_iso : iso (C := signature_precategory) (hss_to_ar (CPO (cpSig sigs)))
-                                       (CPO (cpHAr ars)) :=
+  Definition coprod_sigs_har_iso : iso (C := signature_precategory) (hss_to_ar (CPO (hss_cpSig sigs)))
+                                       (CPO (cpSig ars)) :=
     isopair _ coprod_sigs_har_mor_is_iso.
 
 

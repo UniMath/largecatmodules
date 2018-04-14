@@ -81,7 +81,7 @@ Lemma compColimOfArrows
 
 (* TODO déplacer ça dans Signature.v *)
 
-Section ColimsHAr.
+Section ColimsSig.
   Context 
           {C : category}
           {g : graph} (colims_g : Colims_of_shape g C)
@@ -105,7 +105,7 @@ Section ColimsHAr.
   (* TODO generalize this kind of construction : composition of a diagram and a functor
 (here the forget ful functor MOD --> [B , C])
    *)
-  Let FORGET R := (forget_HAr (C:=C) R ).
+  Let FORGET R := (forget_Sig (C:=C) R ).
   Let d' R := (  mapdiagram (FORGET R) d : diagram g (MOD R) ).
   (* The natural candidate *)
   Let  F R := (colim (coMod _ (d' R)) : LModule _ _).
@@ -115,7 +115,7 @@ Section ColimsHAr.
   (* Is there a lemma that state the existence of a natural transformation
   (A x B) o R --> A o R x B o R  ? *)
   (* TODO define it without nat_trans *)
-  Definition HAr_colim_on_mor (R S : Monad C) (f : Monad_Mor R S) :
+  Definition Sig_colim_on_mor (R S : Monad C) (f : Monad_Mor R S) :
     LModule_Mor _ (F R) (pb_LModule f (F S)).
   Proof.
   eapply (compose (C:= MOD _)); [| apply pb_LModule_colim_iso].
@@ -128,7 +128,7 @@ Section ColimsHAr.
     apply signature_Mor_ax).
   Defined.
 
-  Definition HAr_lim_on_mor (R S : Monad C) (f : Monad_Mor R S) :
+  Definition Sig_lim_on_mor (R S : Monad C) (f : Monad_Mor R S) :
     LModule_Mor _ (F' R) (pb_LModule f (F' S)).
   Proof.
   eapply (compose (C:= MOD _)); [| apply pb_LModule_lim_iso].
@@ -140,10 +140,10 @@ Section ColimsHAr.
     apply signature_Mor_ax).
   Defined.
 
-  Definition HAr_colim_signature_data : signature_data := _ ,, HAr_colim_on_mor.
-  Definition HAr_lim_signature_data : signature_data := _ ,, HAr_lim_on_mor.
+  Definition Sig_colim_signature_data : signature_data := _ ,, Sig_colim_on_mor.
+  Definition Sig_lim_signature_data : signature_data := _ ,, Sig_lim_on_mor.
 
-  Lemma HAr_colim_is_signature : is_signature HAr_colim_signature_data.
+  Lemma Sig_colim_is_signature : is_signature Sig_colim_signature_data.
   Proof.
     split.
     - intros R c.
@@ -198,7 +198,7 @@ Section ColimsHAr.
       cbn.
       now rewrite id_right.
   Qed.
-  Lemma HAr_lim_is_signature : is_signature HAr_lim_signature_data.
+  Lemma Sig_lim_is_signature : is_signature Sig_lim_signature_data.
   Proof.
     split.
     - intros R c.
@@ -255,17 +255,17 @@ Section ColimsHAr.
       now rewrite id_right.
   Qed.
 
-  Definition HAr_colim : signature _ :=
-    _ ,, HAr_colim_is_signature.
+  Definition Sig_colim : signature _ :=
+    _ ,, Sig_colim_is_signature.
 
-  Definition HAr_lim : signature _ :=
-    _ ,, HAr_lim_is_signature.
+  Definition Sig_lim : signature _ :=
+    _ ,, Sig_lim_is_signature.
 
 
 
-  Lemma HAr_coconeIn_laws v : 
+  Lemma Sig_coconeIn_laws v : 
     is_signature_Mor 
-                      (dob d v : signature  _)  HAr_colim
+                      (dob d v : signature  _)  Sig_colim
       (fun R => (coconeIn (colimCocone (coMod R (d' R))) v   )).
   Proof.
     intros X Y f.
@@ -280,9 +280,9 @@ Section ColimsHAr.
     cbn.
     apply (colimArrowCommutes cc2).
   Qed.
-  Lemma HAr_coneOut_laws v : 
+  Lemma Sig_coneOut_laws v : 
     is_signature_Mor 
-                  HAr_lim    (dob d v : signature  _)  
+                  Sig_lim    (dob d v : signature  _)  
       (fun R => (coneOut (limCone (limMod R (d' R))) v   )).
   Proof.
     intros X Y f.
@@ -297,21 +297,21 @@ Section ColimsHAr.
     apply (limArrowCommutes cc1).
   Qed.
 
-  Definition HAr_coconeIn v : signature_precategory ⟦ dob d v, HAr_colim ⟧ :=
-    _ ,, HAr_coconeIn_laws v.
+  Definition Sig_coconeIn v : signature_precategory ⟦ dob d v, Sig_colim ⟧ :=
+    _ ,, Sig_coconeIn_laws v.
 
-  Definition HAr_coneOut v : signature_precategory ⟦ HAr_lim, dob d v ⟧ :=
-    _ ,, HAr_coneOut_laws v.
+  Definition Sig_coneOut v : signature_precategory ⟦ Sig_lim, dob d v ⟧ :=
+    _ ,, Sig_coneOut_laws v.
 
-  Lemma HAr_coconeIn_commutes (u v : vertex g) (e : edge u v) :
-    dmor d e · HAr_coconeIn v = HAr_coconeIn u.
+  Lemma Sig_coconeIn_commutes (u v : vertex g) (e : edge u v) :
+    dmor d e · Sig_coconeIn v = Sig_coconeIn u.
   Proof.
     apply signature_Mor_eq.
     intro R.
     apply (coconeInCommutes (colimCocone (coMod R (d' R)))).
   Defined.
-  Lemma HAr_coneOut_commutes (u v : vertex g) (e : edge u v) :
-      HAr_coneOut u · dmor d e = HAr_coneOut v.
+  Lemma Sig_coneOut_commutes (u v : vertex g) (e : edge u v) :
+      Sig_coneOut u · dmor d e = Sig_coneOut v.
   Proof.
     apply signature_Mor_eq.
     intro R.
@@ -319,15 +319,15 @@ Section ColimsHAr.
   Defined.
 
 
-  Definition HAr_colim_cocone : cocone d HAr_colim :=
-    mk_cocone HAr_coconeIn HAr_coconeIn_commutes.
+  Definition Sig_colim_cocone : cocone d Sig_colim :=
+    mk_cocone Sig_coconeIn Sig_coconeIn_commutes.
 
-  Definition HAr_lim_cone : cone d HAr_lim :=
-    mk_cone HAr_coneOut HAr_coneOut_commutes.
+  Definition Sig_lim_cone : cone d Sig_lim :=
+    mk_cone Sig_coneOut Sig_coneOut_commutes.
 
-  Lemma HAr_colimArrow_laws {M : signature C} (cc : cocone d M) :
+  Lemma Sig_colimArrow_laws {M : signature C} (cc : cocone d M) :
     is_signature_Mor
-       (  HAr_colim) (M)
+       (  Sig_colim) (M)
       (fun R => colimArrow  (coMod R (d' R)) (M R) (mapcocone (FORGET R) d cc)  ).
   Proof.
     intros R S f.
@@ -359,9 +359,9 @@ Section ColimsHAr.
     cbn.
     apply signature_Mor_ax_pw.
   Qed.
-  Lemma HAr_limArrow_laws {M : signature C} (cc : cone d M) :
+  Lemma Sig_limArrow_laws {M : signature C} (cc : cone d M) :
     is_signature_Mor
-      M  (  HAr_lim) 
+      M  (  Sig_lim) 
       (fun R => limArrow  (limMod R (d' R)) (M R) (mapcone (FORGET R) d cc)  ).
   Proof.
     intros R S f.
@@ -397,16 +397,16 @@ Section ColimsHAr.
   Qed.
 
 
-  Definition HAr_colimArrow {M : signature _} (cc : cocone d M) :
-    signature_Mor  HAr_colim M := _ ,, HAr_colimArrow_laws  cc.
+  Definition Sig_colimArrow {M : signature _} (cc : cocone d M) :
+    signature_Mor  Sig_colim M := _ ,, Sig_colimArrow_laws  cc.
 
-  Definition HAr_limArrow {M : signature C} (cc : cone d M) :
-    signature_Mor  M HAr_lim := _ ,, HAr_limArrow_laws  cc.
+  Definition Sig_limArrow {M : signature C} (cc : cone d M) :
+    signature_Mor  M Sig_lim := _ ,, Sig_limArrow_laws  cc.
 
-  Lemma HAr_isColimCocone : isColimCocone _ _ HAr_colim_cocone.
+  Lemma Sig_isColimCocone : isColimCocone _ _ Sig_colim_cocone.
     intros M cc.
     use unique_exists.
-    - exact (HAr_colimArrow cc).
+    - exact (Sig_colimArrow cc).
     - intro v.
       apply signature_Mor_eq.
       intro R.
@@ -423,10 +423,10 @@ Section ColimsHAr.
       intro u.
       apply (  maponpaths (fun z => pr1 z R) (h u)).
   Defined.
-  Lemma HAr_isLimCone : isLimCone _ _ HAr_lim_cone.
+  Lemma Sig_isLimCone : isLimCone _ _ Sig_lim_cone.
     intros M cc.
     use unique_exists.
-    - exact (HAr_limArrow cc).
+    - exact (Sig_limArrow cc).
     - intro v.
       apply signature_Mor_eq.
       intro R.
@@ -445,22 +445,22 @@ Section ColimsHAr.
   Defined.
 
 
-  Definition HAr_ColimCocone : ColimCocone d :=
-    mk_ColimCocone  _ _ _  HAr_isColimCocone.
+  Definition Sig_ColimCocone : ColimCocone d :=
+    mk_ColimCocone  _ _ _  Sig_isColimCocone.
 
-  Definition HAr_LimCone : LimCone d :=
-    mk_LimCone  _ _ _  HAr_isLimCone.
+  Definition Sig_LimCone : LimCone d :=
+    mk_LimCone  _ _ _  Sig_isLimCone.
 
-End ColimsHAr.
+End ColimsSig.
 
-Definition HAr_Colims_of_shape {C : category}
+Definition Sig_Colims_of_shape {C : category}
            (g : graph)
            (colims_g : Colims_of_shape g C)
             : Colims_of_shape g (signature_precategory) :=
-   HAr_ColimCocone  (C:= C) (g := g) colims_g.
-Definition HAr_Lims_of_shape {C : category}
+   Sig_ColimCocone  (C:= C) (g := g) colims_g.
+Definition Sig_Lims_of_shape {C : category}
            (g : graph)
            (lims_g : Lims_of_shape g C)
             : Lims_of_shape g (signature_precategory) :=
-   HAr_LimCone  (C:= C) (g := g) lims_g.
+   Sig_LimCone  (C:= C) (g := g) lims_g.
 

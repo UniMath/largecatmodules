@@ -57,11 +57,11 @@ Section CoprodPresentable.
 
   Let bind_α (o : O) : BindingSig := p_sig (pres_α o).
 
-  Let cpHAr := signature_Coproducts (C := C) (cp O).
+  Let cpSig := signature_Coproducts (C := C) (cp O).
 
   Definition coprod_ρ_mor :
     signature_precategory ⟦(hss_to_ar( C:=C) (toSig (coprod_BindingSig bind_α))),
-                       (CPO (cpHAr α) : signature _)⟧.
+                       (CPO (cpSig α) : signature _)⟧.
   Proof.
     eapply compose.
     {
@@ -107,7 +107,7 @@ Section CoprodPresentable.
   Qed.
 
 
-  Definition coprod_isPresentable : isPresentable bp bcp T cp (CoproductObject _ _ (cpHAr α)).
+  Definition coprod_isPresentable : isPresentable bp bcp T cp (CoproductObject _ _ (cpSig α)).
      use tpair.
      - eapply coprod_BindingSig.
        exact bind_α.

@@ -181,7 +181,7 @@ Section EpiSignatureSig.
        
        
 
-  Theorem algbraic_sig_representable (sig : BindingSig)
+  Theorem algebraic_sig_representable (sig : BindingSig)
     : isInitial _ (alg_initialR sig).
   Proof.
     intro b.

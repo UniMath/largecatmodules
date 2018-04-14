@@ -65,8 +65,8 @@ Section CoprodAr.
 
   Local Notation PO := (BinProductObject _). Local Notation CPO := (CoproductObject _ _).
   Let MOD R  := precategory_LModule (B:= C) R C.
-  Let HAr_bp := signature_BinProducts  bp.
-  Let HAr_cp I := signature_Coproducts  (cp I).
+  Let Sig_bp := signature_BinProducts  bp.
+  Let Sig_cp I := signature_Coproducts  (cp I).
 
   Let bpFunct :=
     (BinProducts_functor_precat C C bp (homset_property C)).
@@ -164,9 +164,9 @@ Proof.
 Defined.
 
 (* TODO : déplacer ce lemme qq part *)
-Lemma HAr_isDistributive_inv_law (Z :hSet) (X : signature C) (B : Z -> signature C) :
-  is_signature_Mor  (PO (HAr_bp  (CPO (HAr_cp  Z B)) X) : signature _ )
-                   ( CPO (HAr_cp  Z (fun o => PO (HAr_bp  _ _) )):signature _)
+Lemma Sig_isDistributive_inv_law (Z :hSet) (X : signature C) (B : Z -> signature C) :
+  is_signature_Mor  (PO (Sig_bp  (CPO (Sig_cp  Z B)) X) : signature _ )
+                   ( CPO (Sig_cp  Z (fun o => PO (Sig_bp  _ _) )):signature _)
                    (fun R => LMod_isDistributive_inv Z R (fun z => B z R) (X R)).
 Proof.
   intros R S f.
@@ -179,24 +179,24 @@ Proof.
   apply (iso_inv_on_right  _ _ _ _ (h R)).
   rewrite assoc.
   apply (iso_inv_on_left _ _ _ _ _ (h S)).
-  set  (i :=   bp_coprod_mor (HAr_cp _ B)
-                            (fun o => HAr_bp _ _) (HAr_bp _ X) (HAr_cp  _ _)).
+  set  (i :=   bp_coprod_mor (Sig_cp _ B)
+                            (fun o => Sig_bp _ _) (Sig_bp _ X) (Sig_cp  _ _)).
   apply pathsinv0.
   apply (signature_Mor_ax i f) .
 Qed.
 
-Definition HAr_isDistributive_inv (Z :hSet) (X : signature C) (B : Z -> signature C) :
-  signature_Mor  (PO (HAr_bp  (CPO (HAr_cp  Z B)) X) : signature _ )
-             ( CPO (HAr_cp  Z (fun o => PO (HAr_bp  _ _) )):signature _) :=
-  _ ,, HAr_isDistributive_inv_law Z X B.
+Definition Sig_isDistributive_inv (Z :hSet) (X : signature C) (B : Z -> signature C) :
+  signature_Mor  (PO (Sig_bp  (CPO (Sig_cp  Z B)) X) : signature _ )
+             ( CPO (Sig_cp  Z (fun o => PO (Sig_bp  _ _) )):signature _) :=
+  _ ,, Sig_isDistributive_inv_law Z X B.
 
-Lemma HAr_isDistributive_is_inverse (Z : hSet) (B : Z -> signature C) (X :signature C) :
+Lemma Sig_isDistributive_is_inverse (Z : hSet) (B : Z -> signature C) (X :signature C) :
   is_inverse_in_precat
-    (bp_coprod_mor (HAr_cp Z B)
-       (λ o : Z, HAr_bp (B o) X)
-       (HAr_bp (CPO (HAr_cp ( Z) B)) X)
-       (HAr_cp Z (λ o : Z, PO (HAr_bp  (B o) X))))
-    (HAr_isDistributive_inv Z X B).
+    (bp_coprod_mor (Sig_cp Z B)
+       (λ o : Z, Sig_bp (B o) X)
+       (Sig_bp (CPO (Sig_cp ( Z) B)) X)
+       (Sig_cp Z (λ o : Z, PO (Sig_bp  (B o) X))))
+    (Sig_isDistributive_inv Z X B).
 Proof.
     set (h := fun R => (iso_from_isDistributive _ _
                                           (LMod_isDistributive Z R)
@@ -214,15 +214,15 @@ Proof.
     + cbn; apply (iso_after_iso_inv (h' R)).
 Qed.
 
-Lemma HAr_isDistributive (Z : hSet)  :
+Lemma Sig_isDistributive (Z : hSet)  :
   bp_coprod_isDistributive
     (C :=  signature_precategory )
-    HAr_bp
-    (HAr_cp  Z).
+    Sig_bp
+    (Sig_cp  Z).
 Proof.
   intros B X.
   eapply is_iso_qinv.
-  apply HAr_isDistributive_is_inverse.
+  apply Sig_isDistributive_is_inverse.
 Defined.
   (** * The product of a presentable signature with the tautological signature is presentable 
 
@@ -259,7 +259,7 @@ Hypothesis
 becomes
 [[0 , a_1, a_2,.. ] , [0 , b_1, b_2, ...], ..]
 *)
-  Let b : signature _ := PO (HAr_bp a tautological_signature).
+  Let b : signature _ := PO (Sig_bp a tautological_signature).
   Definition har_binprodR_p_sig : BindingSig :=
     mkBindingSig (BindingSigIsaset (p_sig pres_a))
                  (λ i : BindingSigIndex (p_sig pres_a), cons 0 (BindingSigMap (p_sig pres_a) i)).
@@ -348,7 +348,7 @@ becomes
 
 Definition har_binprodR_commute_mor_mod 
   :  iso (C := signature_category)  (p_alg_ar' )
-                ((PO (HAr_bp (hss_to_ar (C := C) (toSig Ba)) tautological_signature) : signature C)
+                ((PO (Sig_bp (hss_to_ar (C := C) (toSig Ba)) tautological_signature) : signature C)
                 ) .
 Proof.
   unfold p_alg_ar'.
@@ -358,7 +358,7 @@ Proof.
     eapply iso_comp;[ apply coprod_sigs_har_iso|].
     eapply iso_comp.
     {
-      eapply (coprod_pw_iso (C:=signature_category) _ (HAr_cp  I _)).
+      eapply (coprod_pw_iso (C:=signature_category) _ (Sig_cp  I _)).
       intro o.
       eapply iso_comp.
       {
@@ -376,7 +376,7 @@ Proof.
     }
 
     apply (iso_from_isDistributive (C:=signature_category)).
-    apply HAr_isDistributive.
+    apply Sig_isDistributive.
   }
   apply BinProduct_pw_iso.
   - apply iso_inv_from_iso.
@@ -403,7 +403,7 @@ Defined.
                         : signature_Mor _ _) R : nat_trans _ _)).
     - apply is_iso_isEpi.
       apply is_z_iso_from_is_iso.
-      set (i := functor_on_iso (forget_HAr R) har_binprodR_commute_mor_mod).
+      set (i := functor_on_iso (forget_Sig R) har_binprodR_commute_mor_mod).
        apply ( (functor_on_iso_is_iso _ _ (forget_LMod R C)) _ _ i).
     - apply epiBinProd.
       + apply epiFa.
