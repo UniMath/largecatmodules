@@ -58,7 +58,7 @@ Set Automatic Introduction.
   
   
 (**
-A morphism of arity F : a -> b induces a functor between representation Rep(b) -> Rep(a)
+A morphism of signature F : a -> b induces a functor between representation Rep(b) -> Rep(a)
 
 In this section we construct the left adjoint of this functor (which is defined whenever
 F is an epimorphism)
@@ -67,13 +67,13 @@ F is an epimorphism)
 Section leftadjoint.
 
 Local Notation "'SET'" := hset_category.
-Local Notation CAT_ARITY := (@arity_category SET).
+Local Notation CAT_SIGNATURE := (@signature_category SET).
 Local Notation REP := (rep_disp SET).
 
 Variable (ax_choice : AxiomOfChoice.AxiomOfChoice_surj).
 
-Context {a b : arity SET}
-        (F : arity_Mor a b).
+Context {a b : signature SET}
+        (F : signature_Mor a b).
 
 Section fix_rep_of_a.
 
@@ -298,7 +298,7 @@ Context {S : REP b} (m : R -->[ F] S).
 
 Lemma cancel_ar_on {a'}
       {R'' (* : REP a*)}                  (*  *)
-      (* {F' : CAT_ARITY ⟦ a', b' ⟧ *)
+      (* {F' : CAT_SIGNATURE ⟦ a', b' ⟧ *)
       {S' (* : REP b *)}
       (m2 m' : Monad_Mor R'' S')
       (X : SET) 
@@ -334,19 +334,19 @@ Proof.
     { apply (cancel_ar_on _ _ _ Rep_mor_is_composition). }
     eapply nat_trans_eq_pointwise.
     apply maponpaths.
-    apply arity_comp.
+    apply signature_comp.
   }
   etrans;[|apply (assoc (C:=SET))].
   apply pathsinv0.
   etrans;[|apply (assoc (C:=SET))].
   cpre SET.
   apply pathsinv0.
-  apply (arity_Mor_ax_pw F (u_monad m)).
+  apply (signature_Mor_ax_pw F (u_monad m)).
 Qed.
 
 End eq_mr.
 
-Open Scope arity_scope.
+Open Scope signature_scope.
 
 (**
 
@@ -403,7 +403,7 @@ Lemma hab_alt : pr1 hab =
                 ((F (pr1 R) : nat_trans _ _) : functor_category _ _⟦_, _⟧) ·
                          ((# b projR_monad) : nat_trans _ _).
 Proof.
-  apply arity_Mor_ax.
+  apply signature_Mor_ax.
 Qed.
 
 (** This is the compatibility relation that is needed to construct
@@ -435,13 +435,13 @@ Qed.
 
 
 
-Definition preservesEpi_arity (c : arity SET) :=
+Definition preservesEpi_signature (c : signature SET) :=
   ∏ M N (f:category_Monad _⟦M,N⟧),
      isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
                                                        (pr1 (#c f)%ar).
 
 
-(** For the explicit subsitution arity example *)
+(** For the explicit subsitution signature example *)
 Example EpiSignatureThetaTheta (choice : AxiomOfChoice.AxiomOfChoice_surj)
         {M N} (f:category_Monad SET ⟦M,N⟧) :
      isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
@@ -465,12 +465,12 @@ Qed.
 
 (**
 Conditions that we require to prove that [hab] is epimorphic :
-either [a] is an epi arity and [F R'] is an epi, either [b] is an epi-arity
+either [a] is an epi signature and [F R'] is an epi, either [b] is an epi-signature
 and [F R] is an epi
 *)
 Definition cond_isEpi_hab :=
-  (isEpi (C := [_, _]) (pr1 (F R'_monad)) × preservesEpi_arity a) ⨿
-                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × preservesEpi_arity b).
+  (isEpi (C := [_, _]) (pr1 (F R'_monad)) × preservesEpi_signature a) ⨿
+                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × preservesEpi_signature b).
 
 
 Context (cond_hab : cond_isEpi_hab).
@@ -537,13 +537,13 @@ Section uRepresentation.
 Context {S : REP b} (m : R -->[ F] S).
 Context (cond_F : cond_isEpi_hab).
 
-Open Scope arity_scope.
+Open Scope signature_scope.
   
 (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
 
 (* TODO  : foutre ça dans quotientrep *)
 Lemma u_rep_laws 
-  : rep_ar_mor_law SET (R'_rep cond_F) S (identity (b : CAT_ARITY)) (u_monad m).
+  : rep_ar_mor_law SET (R'_rep cond_F) S (identity (b : CAT_SIGNATURE)) (u_monad m).
 Proof.
   intro X.
   apply pathsinv0.
@@ -569,7 +569,7 @@ Proof.
     apply homset_property.
     apply (u_def m).
   }
-  assert (h:=arity_comp a (projR_monad)  (u_monad m)).
+  assert (h:=signature_comp a (projR_monad)  (u_monad m)).
   apply LModule_Mor_equiv in h.
   eapply nat_trans_eq_pointwise in h.
   apply h.
@@ -577,12 +577,12 @@ Proof.
   etrans;revgoals.
   etrans;[|apply assoc].
   apply cancel_precomposition.
-  apply arity_Mor_ax_pw.
+  apply signature_Mor_ax_pw.
   reflexivity.
 Qed.
 
 
-Definition u_rep : (R'_rep cond_F) -->[identity (b: CAT_ARITY)] S 
+Definition u_rep : (R'_rep cond_F) -->[identity (b: CAT_SIGNATURE)] S 
   := _ ,, u_rep_laws.
 
 
@@ -595,7 +595,7 @@ Context {S : REP b}
         (m : R -->[ F] S).
 Context (cond_F : cond_isEpi_hab).
 
-Variable u'_rep : R'_rep cond_F -->[identity (b:CAT_ARITY)] S.
+Variable u'_rep : R'_rep cond_F -->[identity (b:CAT_SIGNATURE)] S.
 Variable (hu' : ∏ x,
                 ((projR_rep cond_F : rep_ar_mor_mor _ _ _ _ _ _) x
                  · (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)
@@ -626,7 +626,7 @@ Require Import UniMath.CategoryTheory.limits.initial.
 
 Lemma build_module_law (R : Rep_a) (cond_R :   cond_isEpi_hab R)
   (S : Rep_b) (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
-  : (rep_ar_mor_law _ R (pb_rep SET F S) (arity_Mor_id (pr1 a))
+  : (rep_ar_mor_law _ R (pb_rep SET F S) (signature_Mor_id (pr1 a))
       ((pr1 (projR_rep R cond_R) : category_Monad _ ⟦_,_⟧) · (pr1 m))
 
     ).
@@ -638,7 +638,7 @@ Proof.
     apply cancel_postcomposition.
     apply (rep_ar_mor_ax _ (projR_rep R cond_R)).
   }
-  rewrite arity_comp.
+  rewrite signature_comp.
   repeat rewrite <- assoc.
   etrans; [|apply assoc].
   apply cancel_precomposition.
@@ -648,7 +648,7 @@ Proof.
     eapply pathsinv0.
     etrans; [apply assoc|].
     apply cancel_postcomposition.
-    apply arity_Mor_ax_pw.
+    apply signature_Mor_ax_pw.
   }
   etrans.
   {
@@ -660,13 +660,13 @@ Qed.
 
 Definition build_module (R : Rep_a) (cond_R :   cond_isEpi_hab R)
   (S : Rep_b) (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
-  : (rep_ar_mor_mor _ a a R (pb_rep SET F S) (arity_Mor_id (pr1 a))
+  : (rep_ar_mor_mor _ a a R (pb_rep SET F S) (signature_Mor_id (pr1 a))
 
     )
       := (_ ,, build_module_law R cond_R S m).
   
 Theorem push_initiality (R : Rep_a) (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R))))
-        (epib : preservesEpi_arity b) :
+        (epib : preservesEpi_signature b) :
     isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
@@ -688,7 +688,7 @@ Qed.
 
 Theorem push_initiality_weaker (R : Rep_a) (epi_F : ∏ (R : Monad _),
                                                      isEpi (C := [_, _]) (pr1 (F (R))))
-        (epia : preservesEpi_arity a) :
+        (epia : preservesEpi_signature a) :
     isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
@@ -709,7 +709,7 @@ Proof.
 Qed.
 
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
-Context (aepi : preservesEpi_arity a).
+Context (aepi : preservesEpi_signature a).
 
 Let R'_monad R  := R'_monad ax_choice (congr_equivc R) (compat_μ_projR R).
 
@@ -725,9 +725,9 @@ Proof.
   intros u' x.
   apply pathsinv0.
   etrans ; [
-      apply (@transport_arity_mor SET a a 
-                                  (identity (a:CAT_ARITY) · identity (a:CAT_ARITY))
-                                  (identity (a:CAT_ARITY)) (id_right (identity (a:CAT_ARITY))) 
+      apply (@transport_signature_mor SET a a 
+                                  (identity (a:CAT_SIGNATURE) · identity (a:CAT_SIGNATURE))
+                                  (identity (a:CAT_SIGNATURE)) (id_right (identity (a:CAT_SIGNATURE))) 
                                   R 
                                   (FF S)
                                   _ 

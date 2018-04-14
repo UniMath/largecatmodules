@@ -1,5 +1,5 @@
 (**
-BinProducts of half arities using LModuleBinProduct
+BinProducts of  arities using LModuleBinProduct
 (inspired by SignatureCoproduct
 pullback binproducts
  *)
@@ -35,24 +35,24 @@ Section Binprod.
   Local Notation hsC := (homset_property C).
 
 
-  Local Notation HalfSignature := (arity C).
+  Local Notation Signature := (signature C).
   Local Notation MOD R := (precategory_LModule R C).
 
   Let cpLM (X : Monad C) := LModule_BinProducts   X cpC hsC.
   Let cpFunc := BinProducts_functor_precat  C _ cpC hsC .
 
 
-  (* Local Notation HARITY := (arity C). *)
+  (* Local Notation SIGNATURE := (signature C). *)
 
-  Context (a b : HalfSignature).
+  Context (a b : Signature).
   Local Notation BPO := (BinProductObject _ ).
 
-  Definition harity_BinProduct_on_objects (R : Monad C) : LModule R C :=
+  Definition signature_BinProduct_on_objects (R : Monad C) : LModule R C :=
     BPO (cpLM R (a R) (b R)).
 
-  Let ab := harity_BinProduct_on_objects.
+  Let ab := signature_BinProduct_on_objects.
 
-  Definition harity_BinProduct_on_morphisms (R S : Monad C)
+  Definition signature_BinProduct_on_morphisms (R S : Monad C)
              (f : Monad_Mor R S) : LModule_Mor _ (ab R)
                                                (pb_LModule f (ab S)).
     eapply (compose (C := (MOD _))); revgoals.
@@ -63,10 +63,10 @@ Section Binprod.
       exact ((# b f)%ar).
   Defined.
 
-  Definition harity_binProd_data : @arity_data C
-    := harity_BinProduct_on_objects ,, harity_BinProduct_on_morphisms.
+  Definition signature_binProd_data : @signature_data C
+    := signature_BinProduct_on_objects ,, signature_BinProduct_on_morphisms.
 
-  Lemma harity_binProd_is_arity : is_arity harity_binProd_data.
+  Lemma signature_binProd_is_signature : is_signature signature_binProd_data.
   Proof.
     split.
     - intros R c.
@@ -78,12 +78,12 @@ Section Binprod.
         apply pathsinv0.
         etrans;[|apply id_right].
         apply cancel_precomposition.
-        apply arity_id.
+        apply signature_id.
       + etrans;[apply id_left|].
         apply pathsinv0.
         etrans;[|apply id_right].
         apply cancel_precomposition.
-        apply arity_id.
+        apply signature_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
       { apply homset_property. }
@@ -95,7 +95,7 @@ Section Binprod.
       apply pathsinv0.
       etrans; [apply BinProductOfArrows_comp|].
       apply BinProductOfArrows_eq.
-      + assert (h := arity_comp a f g).
+      + assert (h := signature_comp a f g).
         apply LModule_Mor_equiv in h;[|apply homset_property].
         eapply nat_trans_eq_pointwise in h.
         apply pathsinv0.
@@ -103,7 +103,7 @@ Section Binprod.
         cbn.
         rewrite id_right.
         apply idpath.
-      + assert (h := arity_comp b f g).
+      + assert (h := signature_comp b f g).
         apply LModule_Mor_equiv in h;[|apply homset_property].
         eapply nat_trans_eq_pointwise in h.
         apply pathsinv0.
@@ -113,10 +113,10 @@ Section Binprod.
         apply idpath.
   Qed.
       
-  Definition harity_binProd : HalfSignature := _ ,, harity_binProd_is_arity.
+  Definition signature_binProd : Signature := _ ,, signature_binProd_is_signature.
 
-  Lemma harity_binProductPr1_laws : 
-    is_arity_Mor harity_binProd a 
+  Lemma signature_binProductPr1_laws : 
+    is_signature_Mor signature_binProd a 
                  (fun R => BinProductPr1  _  (cpLM R (a R) (b R)   )).
   Proof.
     intros R S f.
@@ -130,8 +130,8 @@ Section Binprod.
     use (BinProductOfArrowsPr1 _  CC).
   Qed.
 
-  Lemma harity_binProductPr2_laws : 
-    is_arity_Mor harity_binProd b 
+  Lemma signature_binProductPr2_laws : 
+    is_signature_Mor signature_binProd b 
                  (fun R => BinProductPr2  _  (cpLM R (a R) (b R)   )).
   Proof.
     intros R S f.
@@ -145,18 +145,18 @@ Section Binprod.
     use (BinProductOfArrowsPr2 _  CC).
   Qed.
 
-  Definition harity_binProductPr1 : 
-    arity_Mor  harity_binProd a := _ ,, harity_binProductPr1_laws .
+  Definition signature_binProductPr1 : 
+    signature_Mor  signature_binProd a := _ ,, signature_binProductPr1_laws .
 
-  Definition harity_binProductPr2 : 
-    arity_Mor  harity_binProd b := _ ,, harity_binProductPr2_laws .
+  Definition signature_binProductPr2 : 
+    signature_Mor  signature_binProd b := _ ,, signature_binProductPr2_laws .
 
   (* TODO : move to Signature *)
-  Definition harity_binProductArrow_laws {c : HalfSignature} (ca :  arity_Mor c a )
-             (cb : arity_Mor c b)
+  Definition signature_binProductArrow_laws {c : Signature} (ca :  signature_Mor c a )
+             (cb : signature_Mor c b)
     :
-    is_arity_Mor
-      c harity_binProd 
+    is_signature_Mor
+      c signature_binProd 
       (fun R => BinProductArrow  _  (cpLM R (a R) (b R)) (ca R) (cb R))  .
   Proof.
     intros R S f.
@@ -177,7 +177,7 @@ Section Binprod.
         set (CC := cpC _ _).
         apply (BinProductPr1Commutes _ _ _ CC).
       }
-      apply arity_Mor_ax_pw.
+      apply signature_Mor_ax_pw.
     - cbn.
       etrans.
       {
@@ -186,44 +186,44 @@ Section Binprod.
         set (CC := cpC _ _).
         apply (BinProductPr2Commutes _ _ _ CC).
       }
-      apply arity_Mor_ax_pw.
+      apply signature_Mor_ax_pw.
   Qed.
 
-  Definition harity_binProductArrow {c : HalfSignature} (ca :  arity_Mor c a )
-             (cb : arity_Mor c b) : 
-    arity_Mor c harity_binProd  := _ ,, harity_binProductArrow_laws ca cb.
+  Definition signature_binProductArrow {c : Signature} (ca :  signature_Mor c a )
+             (cb : signature_Mor c b) : 
+    signature_Mor c signature_binProd  := _ ,, signature_binProductArrow_laws ca cb.
 
-  Lemma harity_isBinProduct : isBinProduct arity_precategory   _ _ _
-                                           harity_binProductPr1 harity_binProductPr2.
+  Lemma signature_isBinProduct : isBinProduct signature_precategory   _ _ _
+                                           signature_binProductPr1 signature_binProductPr2.
   Proof.
     intros c ca cb.
     use unique_exists.
-    - exact (harity_binProductArrow ca cb).
+    - exact (signature_binProductArrow ca cb).
     - split.
-      + apply arity_Mor_eq.
+      + apply signature_Mor_eq.
         intro R.
         apply (BinProductPr1Commutes  (MOD R) _ _ (cpLM R (a R) (b R))).
-      + apply arity_Mor_eq.
+      + apply signature_Mor_eq.
         intro R.
         apply (BinProductPr2Commutes  (MOD R) _ _ (cpLM R (a R) (b R))).
     - intro y.
       cbn -[isaprop].
-      apply isapropdirprod; apply arity_category_has_homsets.
+      apply isapropdirprod; apply signature_category_has_homsets.
     - intros y [h1 h2].
-      apply arity_Mor_eq.
+      apply signature_Mor_eq.
       intro R.
       apply (BinProductArrowUnique   (MOD R) _ _ (cpLM R (a R) (b R))).
       + rewrite <- h1. apply idpath.
       + rewrite <- h2. apply idpath.
   Defined.
 
-  Definition harity_BinProduct : BinProduct arity_precategory a b :=
-    mk_BinProduct  _ _ _ _ _ _ harity_isBinProduct.
+  Definition signature_BinProduct : BinProduct signature_precategory a b :=
+    mk_BinProduct  _ _ _ _ _ _ signature_isBinProduct.
 
 
 End Binprod.
 
-Definition harity_BinProducts {C : category}
+Definition signature_BinProducts {C : category}
            (cpC : BinProducts C)
-            : BinProducts (arity_precategory (C := C)) :=
-   harity_BinProduct (cpC := cpC).
+            : BinProducts (signature_precategory (C := C)) :=
+   signature_BinProduct (cpC := cpC).

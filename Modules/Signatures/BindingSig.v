@@ -78,7 +78,7 @@ Section EpiSignatureSig.
   (* j_mon is a morphism of representation *)
   Definition alg_initial_arrow_law {sig : BindingSig} 
     (b : rep_ar SET (hss_to_ar (C := SET)(toSig sig))) :
-    rep_ar_mor_law SET (alg_initialR sig) b (arity_Mor_id (hss_to_ar_data (C:=SET) (toSig sig)))
+    rep_ar_mor_law SET (alg_initialR sig) b (signature_Mor_id (hss_to_ar_data (C:=SET) (toSig sig)))
       (alg_initial_arrow_mon b).
   Proof.
     intro c.

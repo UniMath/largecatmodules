@@ -1,4 +1,4 @@
-(* We show that coproducts of presentable (half-)arities are presentable
+(* We show that coproducts of presentable ()arities are presentable
 
  *)
 
@@ -52,16 +52,16 @@ Section CoprodPresentable.
                            sig (cp (BindingSigIndexhSet sig))).
 
 
-  Context {O : hSet} {α : O -> arity C} (pres_α : ∏ o, isPresentable bp bcp T cp (α o)).
+  Context {O : hSet} {α : O -> signature C} (pres_α : ∏ o, isPresentable bp bcp T cp (α o)).
   Local Notation CPO := (CoproductObject  _ _).
 
   Let bind_α (o : O) : BindingSig := p_sig (pres_α o).
 
-  Let cpHAr := harity_Coproducts (C := C) (cp O).
+  Let cpHAr := signature_Coproducts (C := C) (cp O).
 
   Definition coprod_ρ_mor :
-    arity_precategory ⟦(hss_to_ar( C:=C) (toSig (coprod_BindingSig bind_α))),
-                       (CPO (cpHAr α) : arity _)⟧.
+    signature_precategory ⟦(hss_to_ar( C:=C) (toSig (coprod_BindingSig bind_α))),
+                       (CPO (cpHAr α) : signature _)⟧.
   Proof.
     eapply compose.
     {
@@ -79,8 +79,8 @@ Section CoprodPresentable.
     use (p_mor (pres_α o)).
   Defined.
   Lemma coprod_epi_p_mor :
-    (* ∏ R : Monad SET, isEpi (C := [SET,SET])(((coprod_ρ_mor : arity_Mor _ _) R) : nat_trans _ _). *)
-    ∏ R : Monad C, isEpi (C := [C,C])(((coprod_ρ_mor : arity_Mor _ _) R) : nat_trans _ _).
+    (* ∏ R : Monad SET, isEpi (C := [SET,SET])(((coprod_ρ_mor : signature_Mor _ _) R) : nat_trans _ _). *)
+    ∏ R : Monad C, isEpi (C := [C,C])(((coprod_ρ_mor : signature_Mor _ _) R) : nat_trans _ _).
   Proof.
     intro R.
     use isEpi_comp;[| use isEpi_comp].

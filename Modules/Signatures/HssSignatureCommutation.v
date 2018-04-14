@@ -58,7 +58,7 @@ Section commuteBinProdSig.
   Let bpSig  : BinProducts  SIG
     := BinProducts_Signature_precategory C C bpC.
 
-  Let bpHAr := harity_BinProducts (C := C) bpC.
+  Let bpHAr := signature_BinProducts (C := C) bpC.
 
   Variable (a b : SIG).
 
@@ -82,7 +82,7 @@ Section commuteBinProdSig.
   Lemma  binprod_sigs_har_mod_iso R :
     iso (C := precategory_LModule R _)
         ( hss_to_ar (BPO (bpSig a b)) R)
-        ( (BPO (bpHAr ar_a ar_b) : arity _ ) R).
+        ( (BPO (bpHAr ar_a ar_b) : signature _ ) R).
   Proof.
     apply LModule_M1_M2_iso.
     apply binprod_sigs_har_mod_eq_mult.
@@ -95,8 +95,8 @@ Section commuteBinProdSig.
     (inv_from_iso  (binprod_sigs_har_mod_iso R)).
 
 
-  Lemma binprod_sigs_har_arity_laws : is_arity_Mor ( hss_to_ar (BPO (bpSig a b)) ) 
-                                                  ( (BPO (bpHAr ar_a ar_b) : arity _ ) )
+  Lemma binprod_sigs_har_signature_laws : is_signature_Mor ( hss_to_ar (BPO (bpSig a b)) ) 
+                                                  ( (BPO (bpHAr ar_a ar_b) : signature _ ) )
                                         binprod_sigs_har_mod.
   Proof.
     intros R S f.
@@ -109,8 +109,8 @@ Section commuteBinProdSig.
     rewrite id_left.
     apply idpath.
   Qed.
-  Lemma binprod_har_sigs_arity_laws : is_arity_Mor  
-                                                  ( (BPO (bpHAr ar_a ar_b) : arity _ ) )
+  Lemma binprod_har_sigs_signature_laws : is_signature_Mor  
+                                                  ( (BPO (bpHAr ar_a ar_b) : signature _ ) )
                                                   ( hss_to_ar (BPO (bpSig a b)) )
                                         binprod_har_sigs_mod.
   Proof.
@@ -125,27 +125,27 @@ Section commuteBinProdSig.
     apply idpath.
   Qed.
 
-  (* Definition coprod_sigs_har_mor :  arity_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))), *)
+  (* Definition coprod_sigs_har_mor :  signature_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))), *)
   (*                                                       (CPO (cpHAr ars))⟧  *)
-  Definition binprod_sigs_har_mor : arity_precategory ⟦ ( hss_to_ar (BPO (bpSig a b)) ) ,
-                                                  ( (BPO (bpHAr ar_a ar_b) : arity _ ) ) ⟧
+  Definition binprod_sigs_har_mor : signature_precategory ⟦ ( hss_to_ar (BPO (bpSig a b)) ) ,
+                                                  ( (BPO (bpHAr ar_a ar_b) : signature _ ) ) ⟧
                                                   :=
-    _ ,, binprod_sigs_har_arity_laws.
+    _ ,, binprod_sigs_har_signature_laws.
 
-  Definition binprod_har_sigs_mor : arity_precategory ⟦( (BPO (bpHAr ar_a ar_b) : arity _ ) )
+  Definition binprod_har_sigs_mor : signature_precategory ⟦( (BPO (bpHAr ar_a ar_b) : signature _ ) )
                                                        ,( hss_to_ar (BPO (bpSig a b)) )⟧
                                                   :=
-    _ ,, binprod_har_sigs_arity_laws.
+    _ ,, binprod_har_sigs_signature_laws.
 
 
   Lemma binprod_sigs_har_is_inverse :
     is_inverse_in_precat binprod_sigs_har_mor binprod_har_sigs_mor.
   Proof.
     use mk_is_inverse_in_precat.
-    - apply arity_Mor_eq.
+    - apply signature_Mor_eq.
       intro X.
       apply (iso_inv_after_iso (binprod_sigs_har_mod_iso X)).
-    - apply arity_Mor_eq.
+    - apply signature_Mor_eq.
       intro X.
       apply (iso_after_iso_inv (binprod_sigs_har_mod_iso X)).
   Defined.
@@ -156,9 +156,9 @@ Section commuteBinProdSig.
       (mk_is_z_isomorphism binprod_sigs_har_mor binprod_har_sigs_mor binprod_sigs_har_is_inverse).
 
 
-  Definition binprod_sigs_har_iso : iso (C := arity_precategory) 
+  Definition binprod_sigs_har_iso : iso (C := signature_precategory) 
                                         ( hss_to_ar (BPO (bpSig a b)) )
-                                        ( (BPO (bpHAr ar_a ar_b) : arity _ ) )
+                                        ( (BPO (bpHAr ar_a ar_b) : signature _ ) )
                                         :=
     isopair _ binprod_sigs_har_mor_is_iso.
 End commuteBinProdSig.
@@ -170,10 +170,10 @@ Section CoprodAr.
           (cpC :  Coproducts I C).
   Let cpSig  : Coproducts I SIG
     := Coproducts_Signature_precategory _ C _ cpC.
-  Let cpHAr := harity_Coproducts (C := C) cpC.
+  Let cpHAr := signature_Coproducts (C := C) cpC.
 
   Variable (sigs : I -> SIG).
-  Let ars : I -> arity C := fun i => hss_to_ar (sigs i).
+  Let ars : I -> signature C := fun i => hss_to_ar (sigs i).
   Local Notation CPO := (CoproductObject _ _).
 
   Lemma coprod_sigs_har_mod_eq_mult R c  :
@@ -195,7 +195,7 @@ Section CoprodAr.
   Lemma  coprod_sigs_har_mod_iso R :
     iso (C := precategory_LModule R _)
         ( hss_to_ar (CPO (cpSig sigs)) R)
-        ( (CPO (cpHAr ars) : arity _ ) R).
+        ( (CPO (cpHAr ars) : signature _ ) R).
   Proof.
     apply LModule_M1_M2_iso.
     apply coprod_sigs_har_mod_eq_mult.
@@ -210,8 +210,8 @@ Section CoprodAr.
 
 
 
-  Lemma coprod_sigs_har_arity_laws : is_arity_Mor  (hss_to_ar (CPO (cpSig sigs)))
-                                       (CPO (cpHAr ars) : arity _) coprod_sigs_har_mod.
+  Lemma coprod_sigs_har_signature_laws : is_signature_Mor  (hss_to_ar (CPO (cpSig sigs)))
+                                       (CPO (cpHAr ars) : signature _) coprod_sigs_har_mod.
   Proof.
     intros R S f.
 
@@ -228,8 +228,8 @@ Section CoprodAr.
     rewrite id_right.
     apply idpath.
   Qed.
-  Lemma coprod_har_sigs_arity_laws : is_arity_Mor  
-                                       (CPO (cpHAr ars) : arity _)
+  Lemma coprod_har_sigs_signature_laws : is_signature_Mor  
+                                       (CPO (cpHAr ars) : signature _)
                                        (hss_to_ar (CPO (cpSig sigs)))
                                        coprod_har_sigs_mod.
   Proof.
@@ -248,24 +248,24 @@ Section CoprodAr.
     apply idpath.
   Qed.
 
-  Definition coprod_sigs_har_mor :  arity_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))),
+  Definition coprod_sigs_har_mor :  signature_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))),
                                                         (CPO (cpHAr ars))⟧ :=
-    _ ,, coprod_sigs_har_arity_laws.
+    _ ,, coprod_sigs_har_signature_laws.
 
-  Definition coprod_har_sigs_mor :  arity_precategory ⟦ 
+  Definition coprod_har_sigs_mor :  signature_precategory ⟦ 
                                                         (CPO (cpHAr ars)),
                                                         (hss_to_ar (CPO (cpSig sigs)))⟧ :=
-    _ ,, coprod_har_sigs_arity_laws.
+    _ ,, coprod_har_sigs_signature_laws.
 
 
   Lemma coprod_sigs_har_is_inverse :
     is_inverse_in_precat coprod_sigs_har_mor coprod_har_sigs_mor.
   Proof.
     use mk_is_inverse_in_precat.
-    - apply arity_Mor_eq.
+    - apply signature_Mor_eq.
       intro X.
       apply (iso_inv_after_iso (coprod_sigs_har_mod_iso X)).
-    - apply arity_Mor_eq.
+    - apply signature_Mor_eq.
       intro X.
       apply (iso_after_iso_inv (coprod_sigs_har_mod_iso X)).
   Defined.
@@ -275,7 +275,7 @@ Section CoprodAr.
       coprod_sigs_har_mor
       (mk_is_z_isomorphism coprod_sigs_har_mor coprod_har_sigs_mor coprod_sigs_har_is_inverse).
 
-  Definition coprod_sigs_har_iso : iso (C := arity_precategory) (hss_to_ar (CPO (cpSig sigs)))
+  Definition coprod_sigs_har_iso : iso (C := signature_precategory) (hss_to_ar (CPO (cpSig sigs)))
                                        (CPO (cpHAr ars)) :=
     isopair _ coprod_sigs_har_mor_is_iso.
 
@@ -285,7 +285,7 @@ Section TautologicalPreserve.
   Context {C : category}.
   Local Notation SIG := (Signature_precategory C C).
   Let a := (hss_to_ar (IdSignature C (homset_property C))).
-  Let b := (tautological_harity (C:=C)).
+  Let b := (tautological_signature (C:=C)).
                                         
 
   Lemma  tauto_sigs_har_mod_iso R :
@@ -305,7 +305,7 @@ Section TautologicalPreserve.
     (inv_from_iso  (tauto_sigs_har_mod_iso R)).
 
 
-  Lemma tauto_sigs_har_arity_laws : is_arity_Mor  a b tauto_sigs_har_mod.
+  Lemma tauto_sigs_har_signature_laws : is_signature_Mor  a b tauto_sigs_har_mod.
   Proof.
     intros R S f.
     apply nat_trans_eq;[apply homset_property|].
@@ -315,7 +315,7 @@ Section TautologicalPreserve.
     repeat rewrite id_left.
     apply idpath.
   Qed.
-  Lemma tauto_har_sigs_arity_laws : is_arity_Mor b a tauto_har_sigs_mod.
+  Lemma tauto_har_sigs_signature_laws : is_signature_Mor b a tauto_har_sigs_mod.
   Proof.
     intros R S f.
     apply nat_trans_eq;[apply homset_property|].
@@ -326,21 +326,21 @@ Section TautologicalPreserve.
     apply idpath.
   Qed.
 
-  Definition tauto_sigs_har_mor :  arity_precategory ⟦ a, b⟧ :=
-    _ ,, tauto_sigs_har_arity_laws.
+  Definition tauto_sigs_har_mor :  signature_precategory ⟦ a, b⟧ :=
+    _ ,, tauto_sigs_har_signature_laws.
 
-  Definition tauto_har_sigs_mor :  arity_precategory ⟦b, a⟧ :=
-    _ ,, tauto_har_sigs_arity_laws.
+  Definition tauto_har_sigs_mor :  signature_precategory ⟦b, a⟧ :=
+    _ ,, tauto_har_sigs_signature_laws.
 
 
   Lemma tauto_sigs_har_is_inverse :
     is_inverse_in_precat tauto_sigs_har_mor tauto_har_sigs_mor.
   Proof.
     use mk_is_inverse_in_precat.
-    - apply arity_Mor_eq.
+    - apply signature_Mor_eq.
       intro X.
       apply (iso_inv_after_iso (tauto_sigs_har_mod_iso X)).
-    - apply arity_Mor_eq.
+    - apply signature_Mor_eq.
       intro X.
       apply (iso_after_iso_inv (tauto_sigs_har_mod_iso X)).
   Defined.
@@ -350,7 +350,7 @@ Section TautologicalPreserve.
       tauto_sigs_har_mor
       (mk_is_z_isomorphism tauto_sigs_har_mor tauto_har_sigs_mor tauto_sigs_har_is_inverse).
 
-  Definition tauto_sigs_har_iso : iso (C := arity_precategory) a
+  Definition tauto_sigs_har_iso : iso (C := signature_precategory) a
                                        b :=
     isopair _ tauto_sigs_har_mor_is_iso.
 
