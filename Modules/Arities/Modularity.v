@@ -1,7 +1,7 @@
-(** * Modularity for arities
+(** * Modularity for signatures
 
 
-Suppose we have the following pushout diagram in the category of arities:
+Suppose we have the following pushout diagram in the category of signatures:
 <<<
                 f1
        a0 ------------>  a1 
