@@ -12,8 +12,6 @@ To compile (coq 8.7): make.
 # List of formalized propositions and definitions
 
 - Definition of signatures and their actions : `Signatures/Signature`
-- Definition of signatures and their actions  : `Signatures/FullSignatures`
-- Definition of signatures and their actions  : `Signatures/Signature`
 - Representability of presentable signatures : `Signatures/PresentableSignature`
 - Representability of the codomain epimorphic morphism of signature : `Signatures/EpiSigRepresentability`
 - Adjunction in the category of modules over a specific monad R  on Set
@@ -27,7 +25,7 @@ To compile (coq 8.7): make.
 - pointwise limits and colimits of signatures : `Signatures/SignaturesColims`
 - quotient monad : `Prelims/quotientmonad`
 - Modularity in the context of a fibration : `Prelims/FibrationInitialPushout`
-- Modularity in the specific context of signatures and their representations : `Signatures/Modularity`
+- Modularity in the specific context of signatures and their models : `Signatures/Modularity`
           
 The fact that algebraic signatures are representable is already proved in
 a different setting in the Heterogeneous Substitution System package of UniMaths.
@@ -76,6 +74,4 @@ By folder
 - `SignatureBinproducts` : direct definition of bin products of  signatures
 - `SignatureCoproduct` : direct definition of coproducts of  signatures
 - `SignatureDerivation` : derivation of signatures
-- `Modularity` : Modularity in the specific context of signatures and their representations
-          
-
+- `Modularity` : Modularity in the specific context of signatures and their models

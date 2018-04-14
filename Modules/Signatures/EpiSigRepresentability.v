@@ -58,7 +58,7 @@ Set Automatic Introduction.
   
   
 (**
-A morphism of signature F : a -> b induces a functor between representation Rep(b) -> Rep(a)
+A morphism of signature F : a -> b induces a functor between model Rep(b) -> Rep(a)
 
 In this section we construct the left adjoint of this functor (which is defined whenever
 F is an epimorphism)
@@ -85,7 +85,7 @@ Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
 (**
 On any set X we define the following equivalence relation on R X : 
    x ~ y
-iff for any representation morphism f : R -> F*(S) (where S is a b-representation)
+iff for any model morphism f : R -> F*(S) (where S is a b-model)
   f x = f y.
 
 
@@ -164,7 +164,7 @@ Section Instantiating_Quotient_Constructions.
 
 (** We define short identifiers for the quotient constructions for 
     functors, monads, and modules (defined in previous files),
-    for the equivalence relation induced by a morphism of representations [m]
+    for the equivalence relation induced by a morphism of models [m]
     over a morphism of arities [F].
 *)
 
@@ -193,7 +193,7 @@ Qed.
 End Instantiating_Quotient_Constructions.
 
 
-(** We show that the relation induced by a morphism of representations
+(** We show that the relation induced by a morphism of models
     satisfies the conditions necessary to induce a quotient monad 
 *)
 
@@ -247,9 +247,9 @@ Definition u_monad {S} (m : R -->[ F] S)
 
 
 
-Section R'Representation.
+Section R'Model.
 
-(** Goal: define a representation of [b]
+(** Goal: define a model of [b]
     with underlying monad the quotient monad defined in the previous step
 *)
 
@@ -515,7 +515,7 @@ Defined.
 
 (* FIN DE LA PARTIE 5 *)
 
-(* projR est un morphisme de representation *)
+(* projR est un morphisme de model *)
 
 Lemma projR_rep_laws : rep_ar_mor_law SET R R'_rep F projR_monad.
 Proof.
@@ -527,12 +527,12 @@ Qed.
 Definition projR_rep : R -->[F] R'_rep := (_ ,, projR_rep_laws).
 
 
-End R'Representation.
+End R'Model.
 
 
 
-(** u morphism of representations *)
-Section uRepresentation.
+(** u morphism of models *)
+Section uModel.
 
 Context {S : REP b} (m : R -->[ F] S).
 Context (cond_F : cond_isEpi_hab).
@@ -586,7 +586,7 @@ Definition u_rep : (R'_rep cond_F) -->[identity (b: CAT_SIGNATURE)] S
   := _ ,, u_rep_laws.
 
 
-End uRepresentation.
+End uModel.
   (* FIN DE LA PARTIE 6 *)
 
 Section uUnique.

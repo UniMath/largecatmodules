@@ -1,4 +1,4 @@
-(* arities and representation of a  signature
+(* arities and model of a  signature
 forgetful functor to the category of modules over a given monad R
  *)
 Require Import UniMath.Foundations.PartD.
@@ -288,22 +288,22 @@ Section ForgetSigFunctor.
     mk_functor forget_Sig_data forget_Sig_is_functor.
 End ForgetSigFunctor.
 
-(* large category of representation defined as a display category
+(* large category of model defined as a display category
 
 Not that contrary to the large category of modules, we do not construct the category of
-representations of a specific signature
+models of a specific signature
 
 This is an attempt to use directly the display category construction.
 The category of represenations of a specific signature can be retrieved as a fiber category.
 
 
-Let us recall what it the category of representations of a signature B.
+Let us recall what it the category of models of a signature B.
 It is a pair (R,m) where R is monad and m a module morphism (on R) m : B(R) -> R.
 
 Now, any morphism of signature F : A -> B induces a functor F* : Rep(B) -> Rep(A) defined by
 F*(R,m) = (R, m o (F R))
 
-That's how the large category of representations is built.
+That's how the large category of models is built.
 
 *)
 
@@ -330,11 +330,11 @@ Abort.
 Local Notation Θ := tautological_LModule.
 
 
-  (* We define the displayed category of representations of a signature
+  (* We define the displayed category of models of a signature
 We could also define it as a displayed category over the monads
 and we have no idea what that would look like *)
 
-(** A representation is a monad with a module morphisme from its image by the signature
+(** A model is a monad with a module morphisme from its image by the signature
  to itself *)
 Definition rep_ar (ar : SIGNATURE) :=
   ∑ R : MONAD, LModule_Mor R (ar R) (Θ R).

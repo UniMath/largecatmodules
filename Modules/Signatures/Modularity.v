@@ -16,9 +16,9 @@ Suppose we have the following pushout diagram in the category of signatures:
                  g1 
 >>>
 
-such that a0, a1, a2 and a' are representable with initial representations
+such that a0, a1, a2 and a' are representable with initial models
 R0, R1, R2 and R'. Then, above this pushout there is a pushout square in the
-large category of representations:
+large category of models:
 <<<
                 ff1
        R0 ------------>  R1 

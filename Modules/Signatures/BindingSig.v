@@ -59,7 +59,7 @@ Section EpiSignatureSig.
                           BinCoproductsHSET TerminalHSET sig
                           (CoproductsHSET (BindingSigIndex sig) (BindingSigIsaset sig))).
 
-  (** The initial representation of the algebraic signature *)
+  (** The initial model of the algebraic signature *)
   Lemma alg_initialR (sig : BindingSig) : (rep_disp SET)[{hss_to_ar (C := SET) (toSig sig)}].
   Proof.
     use tpair.
@@ -75,7 +75,7 @@ Section EpiSignatureSig.
     apply (rep_τ _ b).
   Defined.
 
-  (* j_mon is a morphism of representation *)
+  (* j_mon is a morphism of model *)
   Definition alg_initial_arrow_law {sig : BindingSig} 
     (b : rep_ar SET (hss_to_ar (C := SET)(toSig sig))) :
     rep_ar_mor_law SET (alg_initialR sig) b (signature_Mor_id (hss_to_ar_data (C:=SET) (toSig sig)))
