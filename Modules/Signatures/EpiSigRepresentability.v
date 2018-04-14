@@ -17,7 +17,7 @@ to the previously mentionned for surjections.
  any pre-whiskering of it is also an epi.
 
 - Proof that pointwise epimorphisms of signature preserve representability
- if the codomain is an epi-signature
+ if the domain is an epi-signature
 
 Section leftadjoint : 
 Preuve d'André à traduire.
