@@ -1,9 +1,9 @@
 # largecatmodules
 Large category of modules over monads on top of UniMaths and TypeTheory
-Arities and signatures for higher order syntax.
+Signatures and signatures for higher order syntax.
 
 Preliminaries are in the subfolder Modules/Prelims
-Arity and Signature related proofs are in the subfolder Modules/Arities
+Signature and Signature related proofs are in the subfolder Modules/Signatures
 
 To compile (coq 8.7): make.
 
@@ -11,32 +11,32 @@ To compile (coq 8.7): make.
 
 # List of formalized propositions and definitions
 
-- Definition of half-arities and their actions : `Arities/aritiesalt`
-- Definition of arities and their actions  : `Arities/FullArities`
-- Definition of signatures and their actions  : `Arities/Signature`
-- Representability of presentable half-arities : `Arities/PresentableArity`
-- Representability of presentable signatures : `Arities/PresentableSig`
-- Representability of presentable raw signatures : `Arities/PresentableRawSig`
-- Representability of the codomain epimorphic morphism of half-arity : `Arities/uniproofalt`
+- Definition of signatures and their actions : `Signatures/Signature`
+- Definition of signatures and their actions  : `Signatures/FullSignatures`
+- Definition of signatures and their actions  : `Signatures/Signature`
+- Representability of presentable signatures : `Signatures/PresentableSignature`
+- Representability of presentable signatures : `Signatures/PresentableSig`
+- Representability of presentable raw signatures : `Signatures/PresentableRawSig`
+- Representability of the codomain epimorphic morphism of signature : `Signatures/EpiSigRepresentability`
 - Adjunction in the category of modules over a specific monad R  on Set
           Hom(M x R', N) ~ Hom(M , N') : `Prelims/derivadj.v`
           
 
-- A coproduct of presentable half arities is presentable : `Arities/PresentableHArityCoproducts` 
-- The binproduct of a presentable half arity with the tautological half-arity is
-     presentable : `Arities/PresentableHArityBinProdR` 
+- A coproduct of presentable  signatures is presentable : `Signatures/PresentableHSignatureCoproducts` 
+- The binproduct of a presentable  signature with the tautological signature is
+     presentable : `Signatures/PresentableHSignatureBinProdR` 
 - Equivalence of actions between a raw signature and the coproduct
-of its half arities : `Arities/RawSigToHAr` 
+of its  signatures : `Signatures/RawSigToHAr` 
 - pointwise limits and colimits of modules : `Prelims/LModuleColims`
-- pointwise limits and colimits of arities : `Arities/HAritiesColims`
+- pointwise limits and colimits of signatures : `Signatures/HSignaturesColims`
 - quotient monad : `Prelims/quotientmonad`
 - Modularity in the context of a fibration : `Prelims/FibrationInitialPushout`
-- Modularity in the specific context of arities and their representations : `Arities/Modularity`
+- Modularity in the specific context of signatures and their representations : `Signatures/Modularity`
           
 The fact that algebraic signatures are representable is already proved in
 a different setting in the Heterogeneous Substitution System package of UniMaths.
-The adaptation to our setting is carried out in the files : `Arities/HssToArity` and
-`Arities/BindingSig`
+The adaptation to our setting is carried out in the files : `Signatures/HssToSignature` and
+`Signatures/BindingSig`
 
 # Summary of files
 By folder
@@ -61,35 +61,34 @@ By folder
 - `CoproductsComplements`, `BinProductComplements`,`lib`, `SetCatComplements` : self-explanatory
 - `FibrationInitialPushout` : modularity in the context of a fibration
 
-## Arities
-- `aritiesalt` : definition of half arities and their actions
-- `uniproofalt` : proof of the technical lemma : epimorphisms of half-arities preserves
+## Signatures
+- `Signature` : definition of  signatures and their actions
+- `EpiSigRepresentability` : proof of the technical lemma : epimorphisms of signatures preserves
         representability
-- `FullArities` : definition of arities and their actions
+- `FullSignatures` : definition of signatures and their actions
 - `Signatures` : definition of signatures and their actions
 - `PresentableSig` : definition and representability of presentable signatures
-- `PresentableArity` : presentable half arities are representable.
+- `PresentableSignature` : presentable  signatures are representable.
 - `PresentableRawSig` : representability of presentable raw signatures
 - `quotientrep` : quotient action construction
-- `PresentableHArityCoproducts` : a coproduct of presentable half arities is presentable.
-- `PresentableHArityBinProdR` : if `a` is presentable, then so is the product of `a` with
-  the tautological half-arity 
-- `FullArToRaw`: convert an arity to a raw arity using the adjunction Hom(M x R, N) ~ Hom(M, N')
-- `SigEquivRep` : Equivalence of actions between two signatures whose arities 
+- `PresentableHSignatureCoproducts` : a coproduct of presentable  signatures is presentable.
+- `PresentableHSignatureBinProdR` : if `a` is presentable, then so is the product of `a` with
+  the tautological signature 
+- `FullArToRaw`: convert a signature to a raw signature using the adjunction Hom(M x R, N) ~ Hom(M, N')
+- `SigEquivRep` : Equivalence of actions between two signatures whose signatures 
      have equivalent actions
-- `RawSigToHAr` : equivalence of action between a raw signature and the coproduct of its half
-      arities
-- `HssToArity` : Functor between signatures in the sense of heterogeneous substitution systems
-       and our half arities.
-- `BindingSig` : adaptation of the proof in UniMath that algebraic signatures are 
-    representable
-- `HssArityCommutation` : Somme commutation rules between colimits/limits and the 
+- `RawSigToHAr` : equivalence of action between a raw signature and the coproduct of its 
+      signatures
+- `HssToSignature` : Functor between signatures in the sense of heterogeneous substitution systems
+       and our  signatures.
+- `BindingSig` : adaptation of the proof in UniMath that algebraic signatures are representable
+- `HssSignatureCommutation` : Somme commutation rules between colimits/limits and the 
     functor between signature in the sense of heterogeneous substitution systems and our
-    half-arities
-- `HAritiesColims` : colimits of half arities
-- `HArityBinproducts` : direct definition of bin products of half arities
-- `HArityCoproduct` : direct definition of coproducts of half arities
-- `HArityDerivation` : derivation of arities
-- `Modularity` : Modularity in the specific context of arities and their representations
+    signatures
+- `HSignaturesColims` : colimits of  signatures
+- `HSignatureBinproducts` : direct definition of bin products of  signatures
+- `HSignatureCoproduct` : direct definition of coproducts of  signatures
+- `HSignatureDerivation` : derivation of signatures
+- `Modularity` : Modularity in the specific context of signatures and their representations
           
 
