@@ -9,7 +9,7 @@ endif
 ############################################
 # The packages, listed in order by dependency:
 PACKAGES += Prelims
-PACKAGES += Arities
+PACKAGES += Signatures
 #PACKAGES += Displayed_Cats
 #PACKAGES += ALV2
 #PACKAGES += OtherDefs

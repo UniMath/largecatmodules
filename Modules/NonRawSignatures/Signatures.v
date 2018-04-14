@@ -35,8 +35,8 @@ Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.FullArities.
+Require Import Modules.Signatures.aritiesalt.
+Require Import Modules.Signatures.FullSignatures.
 
 Definition signature C := ∑ (O : hSet), O -> FullArity C.
 

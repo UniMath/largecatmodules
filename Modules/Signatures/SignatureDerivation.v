@@ -25,7 +25,7 @@ Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Prelims.LModuleCoproducts.
 Require Import Modules.Prelims.DerivationIsFunctorial.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 
 Section DAr.
 
@@ -35,7 +35,7 @@ Section DAr.
 Local Notation "∂" := (LModule_deriv_functor (TerminalObject CT) bcpC
                                              (homset_property _) _).
 
-Local Notation HalfArity := (arity C).
+Local Notation HalfSignature := (arity C).
 Local Notation MOD R := (precategory_LModule R C).
 
 Variable (a : arity C).
@@ -83,7 +83,7 @@ Variable (a : arity C).
       apply idpath.
   Qed.
 
-  Definition harity_deriv : HalfArity := _ ,, harity_deriv_is_arity.
+  Definition harity_deriv : HalfSignature := _ ,, harity_deriv_is_arity.
 
 End DAr.
 

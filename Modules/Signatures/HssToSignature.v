@@ -1,5 +1,5 @@
 (**
-HSS Signature to Arity functor
+HSS Signature to Signature functor
 H
 *)
 Require Import UniMath.Foundations.PartD.
@@ -25,7 +25,7 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModPbCommute.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 Open Scope cat.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
@@ -114,7 +114,7 @@ Definition lift_lmodule_mor {M N : LModule T C} (f : LModule_Mor T M N) :
 
 End LiftLModuleMor.
 
-Section HssToArity.
+Section HssToSignature.
 
 Context {C : category}.
 
@@ -245,9 +245,9 @@ Qed.
 
 Definition hss_to_ar : arity C := hss_to_ar_data ,, hss_to_ar_is_arity.
 
-End HssToArity.
+End HssToSignature.
 
-Section HssToArityMor.
+Section HssToSignatureMor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
@@ -335,9 +335,9 @@ And as f is a signature morphism, we have
   Qed.
   Definition hss_to_ar_mor   : arity_Mor (F A) (F B) :=
     _ ,, hss_to_ar_is_arity_Mor.
-End HssToArityMor.
+End HssToSignatureMor.
 
-Section HssToArityFunctor.
+Section HssToSignatureFunctor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
@@ -363,4 +363,4 @@ Section HssToArityFunctor.
 
   Definition hss_to_ar_functor : functor Sig (arity_precategory (C := C)) :=
     mk_functor _ hss_to_ar_is_functor.
-End HssToArityFunctor.
+End HssToSignatureFunctor.

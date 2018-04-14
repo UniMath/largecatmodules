@@ -25,10 +25,10 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 
 Require Import Modules.Prelims.CoproductsComplements.
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.FullArities.
-Require Import Modules.Arities.Signatures.
-Require Import Modules.Arities.RawSigToHAr.
+Require Import Modules.Signatures.aritiesalt.
+Require Import Modules.Signatures.FullSignatures.
+Require Import Modules.Signatures.Signatures.
+Require Import Modules.Signatures.RawSigToHAr.
 Require Import UniMath.CategoryTheory.catiso.
 
 

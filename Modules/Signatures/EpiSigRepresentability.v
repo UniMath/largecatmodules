@@ -16,6 +16,9 @@ to the previously mentionned for surjections.
 - Proof that if a natural transformation is pointwise epi, then
  any pre-whiskering of it is also an epi.
 
+- Proof that pointwise epimorphisms of signature preserve representability
+ if the codomain is an epi-signature
+
 Section leftadjoint : 
 Preuve d'André à traduire.
 
@@ -45,11 +48,11 @@ Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.quotientmonad.
-Require Import Modules.Arities.quotientrep.
+Require Import Modules.Signatures.quotientrep.
 
 Set Automatic Introduction.
   
@@ -439,7 +442,7 @@ Definition preservesEpi_arity (c : arity SET) :=
 
 
 (** For the explicit subsitution arity example *)
-Example EpiArityThetaTheta (choice : AxiomOfChoice.AxiomOfChoice_surj)
+Example EpiSignatureThetaTheta (choice : AxiomOfChoice.AxiomOfChoice_surj)
         {M N} (f:category_Monad SET ⟦M,N⟧) :
      isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
                                                        (horcomp (pr1 f )(pr1 f )).

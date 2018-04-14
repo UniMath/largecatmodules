@@ -35,12 +35,12 @@ Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.BindingSig.
-Require Import Modules.Arities.PresentableArity.
-Require Import Modules.Arities.HArityBinproducts.
-Require Import Modules.Arities.HArityCoproduct.
+Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.BindingSig.
+Require Import Modules.Signatures.PresentableSignature.
+Require Import Modules.Signatures.SignatureBinproducts.
+Require Import Modules.Signatures.SignatureCoproduct.
 
 Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Prelims.BinProductComplements.

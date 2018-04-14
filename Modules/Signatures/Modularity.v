@@ -50,7 +50,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 Require Import Modules.Prelims.FibrationInitialPushout.
 
 

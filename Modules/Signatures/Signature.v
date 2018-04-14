@@ -24,7 +24,7 @@ Set Automatic Introduction.
 Delimit Scope arity_scope with ar.
 
 
-Section Arities.
+Section Signatures.
 
 Context {C : category}.
 
@@ -264,7 +264,7 @@ Proof.
   apply arity_category_has_homsets.
 Defined.
 
-End Arities.
+End Signatures.
 
 Arguments arity _ : clear implicits.
 
@@ -317,7 +317,7 @@ Local Notation PRE_MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
   
 
-(* Arities are display functors over the identity *)
+(* Signatures are display functors over the identity *)
 Local Notation PRECAT_ARITY  := (@arity_precategory C).
 
 Notation arity  := (@arity C).

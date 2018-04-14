@@ -18,10 +18,10 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
-Require Import Modules.Arities.aritiesalt.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.BindingSig.
-Require Import Modules.Arities.uniproofalt.
+Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.BindingSig.
+Require Import Modules.Signatures.EpiSigRepresentability.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 

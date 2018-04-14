@@ -31,8 +31,8 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
-Require Import Modules.Arities.HssToArity.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.Signature.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.limits.binproducts.
@@ -48,7 +48,7 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
 
-Section EpiAritySig.
+Section EpiSignatureSig.
 
   (* Local Notation H_SET := hset_category. *)
   Local Notation hom_SET := has_homsets_HSET.
@@ -405,7 +405,7 @@ Section EpiAritySig.
     apply ArAreEpiSig.
   Qed.
 
-End EpiAritySig.
+End EpiSignatureSig.
 
 Definition BindingSigIndexhSet : BindingSig -> hSet :=
   fun S => hSetpair _ (BindingSigIsaset S).

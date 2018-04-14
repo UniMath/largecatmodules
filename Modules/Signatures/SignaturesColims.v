@@ -19,7 +19,7 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModuleColims.
 Require Import Modules.Prelims.LModPbCommute.
@@ -79,7 +79,7 @@ Lemma compColimOfArrows
 *)
 (* forget ful functor from Modules to functors *)
 
-(* TODO déplacer ça dans aritiesalt.v *)
+(* TODO déplacer ça dans Signature.v *)
 
 Section ColimsHAr.
   Context 

@@ -24,7 +24,7 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Prelims.LModuleCoproducts.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 
 
 Section Coprod.
@@ -36,7 +36,7 @@ Section Coprod.
   Local Notation hsC := (homset_property C).
 
 
-  Local Notation HalfArity := (arity C).
+  Local Notation HalfSignature := (arity C).
   Local Notation MOD R := (precategory_LModule R C).
 
   Let cpLM (X : Monad C) := LModule_Coproducts C  X cpC.
@@ -45,7 +45,7 @@ Section Coprod.
 
   (* Local Notation HARITY := (arity C). *)
 
-  Context (α : O -> HalfArity).
+  Context (α : O -> HalfSignature).
   Local Notation α' R := (fun o => α o R).
 
   Definition harity_coprod_on_objects (R : Monad C) : LModule R C :=
@@ -102,7 +102,7 @@ Section Coprod.
         apply idpath.
   Qed.
       
-  Definition harity_coprod : HalfArity := _ ,, harity_coprod_is_arity.
+  Definition harity_coprod : HalfSignature := _ ,, harity_coprod_is_arity.
 
   Lemma harity_coproductIn_laws o : 
     is_arity_Mor (α o) harity_coprod
@@ -123,8 +123,8 @@ Section Coprod.
   Definition harity_coproductIn o : 
     arity_Mor  (α o) harity_coprod := _ ,, harity_coproductIn_laws o.
 
-  (* TODO : move to aritiesalt *)
-  Definition harity_coproductArrow_laws {b : HalfArity} (cc : ∏ o, arity_Mor (α o) b ) :
+  (* TODO : move to Signature *)
+  Definition harity_coproductArrow_laws {b : HalfSignature} (cc : ∏ o, arity_Mor (α o) b ) :
     is_arity_Mor
       harity_coprod b
       (fun R => CoproductArrow  _ _  (cpLM R (fun o => α o R)) (c := b R) (fun o => cc o R)).
@@ -152,7 +152,7 @@ Section Coprod.
     apply arity_Mor_ax_pw.
   Qed.
 
-  Definition harity_coproductArrow {b : HalfArity} (cc : ∏ o, arity_Mor (α o) b ) :
+  Definition harity_coproductArrow {b : HalfSignature} (cc : ∏ o, arity_Mor (α o) b ) :
     arity_Mor harity_coprod b := _ ,, harity_coproductArrow_laws cc.
 
   Lemma harity_isCoproduct : isCoproduct _ arity_precategory   _ _ harity_coproductIn.

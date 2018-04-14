@@ -1,6 +1,6 @@
 (**
 BinProducts of half arities using LModuleBinProduct
-(inspired by HArityCoproduct
+(inspired by SignatureCoproduct
 pullback binproducts
  *)
 Require Import UniMath.Foundations.PartD.
@@ -24,7 +24,7 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModuleBinProduct.
 Require Import Modules.Prelims.LModPbCommute.
-Require Import Modules.Arities.aritiesalt.
+Require Import Modules.Signatures.Signature.
 
 
 Section Binprod.
@@ -35,7 +35,7 @@ Section Binprod.
   Local Notation hsC := (homset_property C).
 
 
-  Local Notation HalfArity := (arity C).
+  Local Notation HalfSignature := (arity C).
   Local Notation MOD R := (precategory_LModule R C).
 
   Let cpLM (X : Monad C) := LModule_BinProducts   X cpC hsC.
@@ -44,7 +44,7 @@ Section Binprod.
 
   (* Local Notation HARITY := (arity C). *)
 
-  Context (a b : HalfArity).
+  Context (a b : HalfSignature).
   Local Notation BPO := (BinProductObject _ ).
 
   Definition harity_BinProduct_on_objects (R : Monad C) : LModule R C :=
@@ -113,7 +113,7 @@ Section Binprod.
         apply idpath.
   Qed.
       
-  Definition harity_binProd : HalfArity := _ ,, harity_binProd_is_arity.
+  Definition harity_binProd : HalfSignature := _ ,, harity_binProd_is_arity.
 
   Lemma harity_binProductPr1_laws : 
     is_arity_Mor harity_binProd a 
@@ -151,8 +151,8 @@ Section Binprod.
   Definition harity_binProductPr2 : 
     arity_Mor  harity_binProd b := _ ,, harity_binProductPr2_laws .
 
-  (* TODO : move to aritiesalt *)
-  Definition harity_binProductArrow_laws {c : HalfArity} (ca :  arity_Mor c a )
+  (* TODO : move to Signature *)
+  Definition harity_binProductArrow_laws {c : HalfSignature} (ca :  arity_Mor c a )
              (cb : arity_Mor c b)
     :
     is_arity_Mor
@@ -189,7 +189,7 @@ Section Binprod.
       apply arity_Mor_ax_pw.
   Qed.
 
-  Definition harity_binProductArrow {c : HalfArity} (ca :  arity_Mor c a )
+  Definition harity_binProductArrow {c : HalfSignature} (ca :  arity_Mor c a )
              (cb : arity_Mor c b) : 
     arity_Mor c harity_binProd  := _ ,, harity_binProductArrow_laws ca cb.
 
