@@ -88,5 +88,5 @@ Proof.
     apply is_nat_trans_epi_from_pointwise_epis.
     intro X.
     apply (epi_nt_SET_pw _ epip X).
-  - apply algbraic_sig_representable.
+  - apply algebraic_sig_representable.
 Qed.
