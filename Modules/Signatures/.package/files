@@ -12,3 +12,4 @@ SignatureDerivation.v
 SignaturesColims.v
 PresentableSignatureBinProdR.v
 Modularity.v
+EpiArePointwise.v
