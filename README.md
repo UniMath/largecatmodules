@@ -24,6 +24,7 @@ To compile (coq 8.7): make.
 - pointwise limits and colimits of modules : `Prelims/LModuleColims`
 - pointwise limits and colimits of signatures : `Signatures/SignaturesColims`
 - quotient monad : `Prelims/quotientmonad`
+- Epimorphisms of signatures are pointwise epimorphisms : `Signatures/EpiArePointwise`
 - Modularity in the context of a fibration : `Prelims/FibrationInitialPushout`
 - Modularity in the specific context of signatures and their models : `Signatures/Modularity`
           
@@ -74,4 +75,5 @@ By folder
 - `SignatureBinproducts` : direct definition of bin products of  signatures
 - `SignatureCoproduct` : direct definition of coproducts of  signatures
 - `SignatureDerivation` : derivation of signatures
+- `Signatures/EpiArePointwise` : epimorphisms of signatures are pointwise epimorphisms
 - `Modularity` : Modularity in the specific context of signatures and their models
