@@ -1,5 +1,6 @@
 quotientrep.v
 Signature.v
+EpiArePointwise.v
 EpiSigRepresentability.v
 HssToSignature.v
 BindingSig.v
@@ -12,4 +13,3 @@ SignatureDerivation.v
 SignaturesColims.v
 PresentableSignatureBinProdR.v
 Modularity.v
-EpiArePointwise.v

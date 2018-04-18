@@ -53,6 +53,7 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Signatures.quotientrep.
+Require Import Modules.Signatures.EpiArePointwise.
 
 Set Automatic Introduction.
   
@@ -665,10 +666,17 @@ Definition build_module (R : Rep_a) (cond_R :   cond_isEpi_hab R)
     )
       := (_ ,, build_module_law R cond_R S m).
   
-Theorem push_initiality (R : Rep_a) (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R))))
+Theorem push_initiality (R : Rep_a)
+        (epiSig_F : isEpi (C:= signature_category ) F)
         (epib : preservesEpi_signature b) :
     isInitial _ R -> Initial Rep_b.
 Proof.
+  assert (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R)))).
+  {
+    apply epiSig_is_pwEpi.
+    - exact (ColimsHSET_of_shape pushouts.pushout_graph).
+    - exact epiSig_F.
+  }
   intro iniR.
   set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R).
   use tpair.
@@ -695,7 +703,6 @@ Proof.
   set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R).
   use tpair.
   - apply (R'_rep R cond_R).
-
   - intro S.
     unshelve eapply iscontrpair.
     +  use u_rep.
