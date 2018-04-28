@@ -1,3 +1,12 @@
+(* =================================================================================== *)
+(** ** Quotient of a monad.                                                            *)
+(* =================================================================================== *)
+
+(* ----------------------------------------------------------------------------------- *)
+(** Description: This module construct the quotient of a monad with respect to pointwise
+    equivalence relation which as suitable compatibility relations to ensure that the
+    monad structures goes through the quotient.                                        *)
+(* ----------------------------------------------------------------------------------- *)
 
 Require Import UniMath.Foundations.PartD.
 
@@ -26,15 +35,17 @@ Set Automatic Introduction.
 
 Section QuotientMonad.
 
-  (** the axiom of choice is needed to prove the the
-horizontal composition of the canonical projection with itself is epimorphic *)
+(** the axiom of choice is needed to prove the the horizontal composition of the
+    canonical projection with itself is epimorphic *)
+
 Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
+
+(** We start by just considering the quotient of the monad [R] as a functor.  Further
+    compatibility for the monad composition are assumed later. *)
 
 Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
         (congr_equivc : ∏ (x y : SET) (f : SET⟦x,y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f)).
-
-
 
 Let equivc {c:hSet} x y := eqrel_equivc c x y.
   
@@ -47,12 +58,11 @@ Coq takes a long time to check or compute things.
 For example :   R' ((R' □ R') c) = (R' □ R') (R' c) by reflexivity
 is so slow when R' is definitely equal to quot_functor !
 ----
-
 *)
 
 Definition R': functor SET SET := quot_functor (pr1 (pr1 R)) _ congr_equivc.
 
-Definition projR : (R:functor _ _) ⟹ R':= pr_quot_functor _ _ congr_equivc.
+Definition projR : (R:functor _ _) ⟹ R' := pr_quot_functor _ _ congr_equivc.
 
 Arguments projR : simpl never.
 Arguments R' : simpl never.
@@ -107,8 +117,10 @@ Definition R'_η : (functor_identity SET) ⟹ R' := η R ;;; projR .
 >>
    *)
 
-(** The following condition is required about the equivalence relation
-to make a monad out of R' *)
+(** Now, in order to carry the monad structure on the quotient functor [R'], we introduce
+    a condition that ensure the compatibility of the monad composition with the
+    equivalence relation.  Note that, no condition are needed for the the compatibility
+    of the unit of the monad.  *)
 
 Definition compat_μ_projR_def 
   := ∏ (X : SET) (x y : pr1 ((pr1 (R □ R)) X)),
@@ -122,9 +134,8 @@ Proof.
   apply (univ_surj_nt (A:= R □ R) (B:=functor_composite R' R')                    
                       ( projR ∙∙ projR)
                       (μ  ( R) ;;; projR)).
-  -  apply compat_μ_projR.
-  -
-    apply isEpi_projR_projR.
+  - apply compat_μ_projR.
+  - apply isEpi_projR_projR.
 Defined.
 
 Lemma R'_μ_def : ∏ (x:SET),
@@ -427,8 +438,12 @@ Proof.
   - exact u_monad_mor_law2.
 Qed.
 
-Local Definition u_monad : Monad_Mor (R'_monad) S :=
-      (_ ,, u_monad_laws).
+Local Definition u_monad : Monad_Mor (R'_monad) S
+  := (_ ,, u_monad_laws).
+
+(** Here we avoid to prove that the morphism is unique, since this follows easly from the
+    uniqueness of the natural transformation for the underlying quotient functor. *)
+
 End QuotientMonad.
   
 Arguments projR : simpl never.
