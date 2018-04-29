@@ -1,6 +1,12 @@
-(* arities and model of a  signature
-forgetful functor to the category of modules over a given monad R
- *)
+(* =================================================================================== *)
+(** * Signatures and their models.
+
+    Content:
+    - Definition of signature (aka arity).
+    - Definition of model of a signature.
+    - Forgetful functor to the category of modules over a given monad R.                *)
+(* =================================================================================== *)
+
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
@@ -32,13 +38,18 @@ Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
 
+(* ----------------------------------------------------------------------------------- *)
+(** ** Definition of signature.                                                        *)
+(* ----------------------------------------------------------------------------------- *)
+
 Definition signature_data :=
   ∑ F : (∏ R : MONAD, LModule R C),
         ∏ (R S : MONAD) (f : Monad_Mor R S), LModule_Mor _ (F R) (pb_LModule f (F S)).
 (* :(F R : bmod_disp C C R) -->[f] F S. *)
 
-Definition signature_on_objects  (a : signature_data) : ∏ R, LModule R C :=
-  pr1 a.
+Definition signature_on_objects (a : signature_data) : ∏ R, LModule R C
+  := pr1 a.
+
 Coercion signature_on_objects : signature_data >-> Funclass.
 
 Definition signature_on_morphisms  (F : signature_data) {R S : MONAD} 
@@ -47,6 +58,11 @@ Definition signature_on_morphisms  (F : signature_data) {R S : MONAD}
 
 Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
 
+(* ----------------------------------------------------------------------------------- *)
+(** In classical terms, signatures are sections of a functor.  Here the same fact is
+    expressed in the language of displayed cateteories with the following two
+    property.                                                                          *)
+(* ----------------------------------------------------------------------------------- *)
 
 Definition signature_idax  (F : signature_data) :=
   ∏ (R : MONAD), ∏ x ,
