@@ -34,6 +34,7 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.Adjunctions.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import UniMath.CategoryTheory.limits.initial.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
@@ -436,15 +437,18 @@ Qed.
 
 
 
-Definition preservesEpi_signature (c : signature SET) :=
-  ∏ M N (f:category_Monad _⟦M,N⟧),
+Definition preservesEpi_signature (c : signature SET)
+  : UU
+  := ∏ M N (f : category_Monad _⟦M,N⟧),
      isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
                                                        (pr1 (#c f)%ar).
 
 
 (** For the explicit subsitution signature example *)
-Example EpiSignatureThetaTheta (choice : AxiomOfChoice.AxiomOfChoice_surj)
-        {M N} (f:category_Monad SET ⟦M,N⟧) :
+Example EpiSignatureThetaTheta
+        (choice : AxiomOfChoice.AxiomOfChoice_surj)
+        {M N : category_Monad SET}
+        (f : category_Monad SET ⟦M,N⟧) :
      isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
                                                        (horcomp (pr1 f )(pr1 f )).
 Proof.
@@ -623,14 +627,17 @@ Let Rep_b : category := fiber_category (rep_disp SET) b.
 
 Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
 
-Require Import UniMath.CategoryTheory.limits.initial.
 
-Lemma build_module_law (R : Rep_a) (cond_R :   cond_isEpi_hab R)
-  (S : Rep_b) (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
-  : (rep_ar_mor_law _ R (pb_rep SET F S) (signature_Mor_id (pr1 a))
-      ((pr1 (projR_rep R cond_R) : category_Monad _ ⟦_,_⟧) · (pr1 m))
-
-    ).
+Lemma build_module_law
+      (R : Rep_a)
+      (cond_R : cond_isEpi_hab R)
+      (S : Rep_b)
+      (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
+  : rep_ar_mor_law _
+                   R
+                   (pb_rep SET F S)
+                   (signature_Mor_id (pr1 a))
+                   ((pr1 (projR_rep R cond_R) : category_Monad _ ⟦_,_⟧) · (pr1 m)).
 Proof.
   intro x.
   etrans.
@@ -659,17 +666,19 @@ Proof.
   reflexivity.
 Qed.
 
-Definition build_module (R : Rep_a) (cond_R :   cond_isEpi_hab R)
-  (S : Rep_b) (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
-  : (rep_ar_mor_mor _ a a R (pb_rep SET F S) (signature_Mor_id (pr1 a))
-
-    )
-      := (_ ,, build_module_law R cond_R S m).
+Definition build_module
+           (R : Rep_a)
+           (cond_R : cond_isEpi_hab R)
+           (S : Rep_b)
+           (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
+  : rep_ar_mor_mor _ a a R (pb_rep SET F S) (signature_Mor_id (pr1 a))
+  := _ ,, build_module_law R cond_R S m.
   
-Theorem push_initiality (R : Rep_a)
+Theorem push_initiality
+        (R : Rep_a)
         (epiSig_F : isEpi (C:= signature_category ) F)
-        (epib : preservesEpi_signature b) :
-    isInitial _ R -> Initial Rep_b.
+        (epib : preservesEpi_signature b)
+  : isInitial _ R -> Initial Rep_b.
 Proof.
   assert (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R)))).
   {
@@ -694,10 +703,11 @@ Proof.
       apply idpath.
 Qed.
 
-Theorem push_initiality_weaker (R : Rep_a) (epi_F : ∏ (R : Monad _),
-                                                     isEpi (C := [_, _]) (pr1 (F (R))))
-        (epia : preservesEpi_signature a) :
-    isInitial _ R -> Initial Rep_b.
+Theorem push_initiality_weaker
+        (R : Rep_a)
+        (epi_F : ∏ (R : Monad _), isEpi (C := [_, _]) (pr1 (F (R))))
+        (epia : preservesEpi_signature a)
+  : isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
   set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R).
@@ -718,16 +728,18 @@ Qed.
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
 Context (aepi : preservesEpi_signature a).
 
-Let R'_monad R  := R'_monad ax_choice (congr_equivc R) (compat_μ_projR R).
+Let R'_monad (R : REP a) : Monad SET := R'_monad ax_choice (congr_equivc R) (compat_μ_projR R).
 
-Lemma helper (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))))  (R : Rep_a)
+Lemma helper
+      (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))))
+      (R : Rep_a)
       (cond_F := inl (dirprodpair (Fepi R) aepi ) : cond_isEpi_hab R)
-  (S : rep_ar SET b)
+      (S : rep_ar SET b)
   : ∏ (u' : Rep_b ⟦ R'_rep R cond_F, S ⟧) x,
-                 (projR (congr_equivc R) x · (u' : rep_ar_mor_mor _ _ _ _ _ _) x) =
-                 (pr1 (pr1 (compose  (C:=Rep_a) (b:=FF (R'_rep R cond_F))
-                                     (projR_rep R cond_F : rep_ar_mor_mor _ _ _ _ _ _)
-                                     (# FF (u'))))) x.
+    projR (congr_equivc R) x · (u' : rep_ar_mor_mor _ _ _ _ _ _) x =
+    pr1 (pr1 (compose (C:=Rep_a) (b:=FF (R'_rep R cond_F))
+                      (projR_rep R cond_F : rep_ar_mor_mor _ _ _ _ _ _)
+                      (# FF u'))) x.
 Proof.
   intros u' x.
   apply pathsinv0.
@@ -746,8 +758,9 @@ Proof.
 Qed.
 
 
-Definition is_right_adjoint_functor_of_reps (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))) ) : 
-                                              is_right_adjoint FF.
+Definition is_right_adjoint_functor_of_reps
+           (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R'_monad R))) )
+  : is_right_adjoint FF.
 Proof.
   set (cond_F := fun R => inl ((Fepi R),, aepi) : cond_isEpi_hab R).
   use right_adjoint_left_from_partial.
@@ -775,8 +788,9 @@ Proof.
 Qed.
   
 Corollary is_right_adjoint_functor_of_reps_from_pw_epi 
-  (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
-                             (pr1 (F R))) : is_right_adjoint FF.
+          (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
+                                              (pr1 (F R)))
+  : is_right_adjoint FF.
 Proof.
   apply is_right_adjoint_functor_of_reps.
   intro R; apply Fepi.
