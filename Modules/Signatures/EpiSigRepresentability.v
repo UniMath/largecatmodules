@@ -82,7 +82,7 @@ Section fix_rep_of_a.
 Context (R : REP a).
 
 
-Local Notation "## F" := (pr1 (pr1 (F)))(at level 3).
+Local Notation "## F" := (pr1 (pr1 F))(at level 3).
 
 (**
 On any set X we define the following equivalence relation on R X : 
@@ -96,8 +96,16 @@ define the quotient of a monad, and of a module over a monad.
 
 *)
 
-Definition equivc {X : SET} (x y : pr1 ( ## R X)) : UU
-  := ∏ (S:REP b) ( f : R -->[F] S), ## f X x = ## f X y.
+
+(** Define two elements in R to be related if they are mapped
+    to the same element by any morphism f of models 
+*)
+
+Definition equivc {X : SET} (x y : (## R X : hSet)) : UU
+  := ∏ (S : REP b) (f : R -->[F] S), ## f X x = ## f X y.
+
+(** [equivc] is a proposition
+*)
 
 Lemma isaprop_equivc_xy (c : SET) x y : isaprop (equivc (X:=c) x y).
 Proof.
@@ -113,6 +121,9 @@ Definition equivc_xy_prop (X : SET) x y : hProp :=
 Definition hrel_equivc (X : SET) : hrel (##R X : hSet)
   := fun x y => equivc_xy_prop X x y.
 
+(** [equivc] is an equivalence relation
+*)
+
 Lemma iseqrel_equivc (X : SET) : iseqrel (hrel_equivc X).
 Proof.
   unfold hrel_equivc, equivc_xy_prop, equivc; simpl;
@@ -127,6 +138,8 @@ Proof.
     apply h.
 Qed.
 
+(** [equivc] is an equivalence relation
+*)
 Definition eqrel_equivc (X : SET) : eqrel _ := _ ,, iseqrel_equivc X.
 
 (** For any f : X -> Y, #R f is compatible with previous equivalence relation *)
@@ -172,21 +185,27 @@ Section Instantiating_Quotient_Constructions.
 
 Context {S : REP b} (m : R -->[ F] S). 
 
+(** Two elements that are equal in the quotient 
+    get mapped to equal elements by any morphism 
+    of actions
+*)
 Lemma compat_m
-  : ∏ (X : SET) (x y : (pr1 R X:hSet)),
+  : ∏ (X : SET) (x y : (pr1 R X : hSet)),
     projR X x = projR X y → (pr1 m) X x = (pr1 m) X y.
 Proof.
-  intros X x y eqpr;
-  apply eq_projR_rel in eqpr;
+  intros X x y eqpr.
+  apply eq_projR_rel in eqpr.
   use eqpr.
 Qed.
 
+(** The induced natural transformation out of the quotient *)
 Definition u : nat_trans (pr1 R') (## S).
 Proof.
   apply (quotientmonad.u congr_equivc _ (pr1 m)).
   apply compat_m.
 Defined.
 
+(** The induced natural transformation makes a triangle commute *)
 Lemma u_def : ∏ x, ## m x = projR x · u x.
 Proof.
   apply (quotientmonad.u_def).
@@ -198,7 +217,6 @@ End Instantiating_Quotient_Constructions.
 (** We show that the relation induced by a morphism of models
     satisfies the conditions necessary to induce a quotient monad 
 *)
-
 Lemma compat_μ_projR : compat_μ_projR_def congr_equivc.
 Proof.
   intros X x y hxy.
@@ -236,17 +254,20 @@ Proof.
     apply pathsinv0.
     apply hxy.
 Qed.
-  
-Let R'_monad  := R'_monad ax_choice congr_equivc compat_μ_projR.
-Let projR_monad  := projR_monad ax_choice congr_equivc compat_μ_projR.
 
-Definition u_monad {S} (m : R -->[ F] S) 
+(** Short notations for the quotient monad and the projection as a monad morphism *)
+Let R'_monad : Monad SET := R'_monad ax_choice congr_equivc compat_μ_projR.
+Let projR_monad
+  : Monad_Mor (pr1 R) R'_monad
+  := projR_monad ax_choice congr_equivc compat_μ_projR.
+
+(** Short name for the monad morphism out of the quotient *)
+Definition u_monad {S : REP b} (m : R -->[ F] S) 
   : Monad_Mor (quotientmonad.R'_monad ax_choice congr_equivc compat_μ_projR) (pr1 S)
   := quotientmonad.u_monad ax_choice compat_μ_projR (S:=pr1 S) (pr1 m) (compat_m m).
 
 
 (** * FIN DE LA TROISIEME ETAPE *)
-
 
 
 Section R'Model.
@@ -298,7 +319,7 @@ Section eq_mr.
    
 Context {S : REP b} (m : R -->[ F] S).
 
-Lemma cancel_ar_on {a'}
+Lemma cancel_ar_on {a' : signature SET}
       {R'' (* : REP a*)}                  (*  *)
       (* {F' : CAT_SIGNATURE ⟦ a', b' ⟧ *)
       {S' (* : REP b *)}
@@ -547,10 +568,56 @@ Open Scope signature_scope.
 (* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
 
 (* TODO  : foutre ça dans quotientrep *)
-Lemma u_rep_laws 
+
+(*
+Lemma u_rep_laws'
   : rep_ar_mor_law SET (R'_rep cond_F) S (identity (b : CAT_SIGNATURE)) (u_monad m).
 Proof.
   intro X.
+  set (RX := @u_rep_laws ax_choice (pr1 R) _ congr_equivc compat_μ_projR).
+  specialize (RX 
+  apply pathsinv0.
+  apply (
+               (quotientrep.u_rep_laws ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR
+                                       (isEpi_def_R'_rep_τ cond_F) (S:=pr1 S) (m:=pr1 m) _
+                                       (s:=rep_τ _ S) (F:=( (# b ( u_monad m))%ar))
+         )).
+  intro X'.
+  etrans; [apply (rep_ar_mor_ax _ m )|].
+  apply cancel_postcomposition.
+  etrans.
+  (* # a m ;; F_S = #a π ;; F_R' ;; # b u *)
+  (* je dois utilier la naturalité de F à droite
+     pour avoir #a π ;; #a u ;; F_S et ensuite par définition de m = π ;; u
+   *)
+  apply cancel_postcomposition.
+  etrans.
+  apply (cancel_ar_on _ (compose (C:=category_Monad _) projR_monad (u_monad m))).
+  use (invmap (Monad_Mor_equiv _ _ _)).
+  { apply homset_property. }
+  { apply nat_trans_eq.
+    apply homset_property.
+    apply (u_def m).
+  }
+  assert (h:=signature_comp a (projR_monad)  (u_monad m)).
+  apply LModule_Mor_equiv in h.
+  eapply nat_trans_eq_pointwise in h.
+  apply h.
+  apply homset_property.
+  etrans;revgoals.
+  etrans;[|apply assoc].
+  apply cancel_precomposition.
+  apply signature_Mor_ax_pw.
+  reflexivity.
+Qed.
+*)
+
+
+Lemma u_rep_laws
+  : rep_ar_mor_law SET (R'_rep cond_F) S (identity (b : CAT_SIGNATURE)) (u_monad m).
+Proof.
+  intro X.
+  set (RX := @u_rep_laws ax_choice (pr1 R) _ congr_equivc compat_μ_projR).
   apply pathsinv0.
   apply (
                (quotientrep.u_rep_laws ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR
