@@ -315,32 +315,56 @@ This is lemma [compat_rep_τ_projR]
 *)
 
 
-Section eq_mr.
-   
-Context {S : REP b} (m : R -->[ F] S).
-
-Lemma cancel_ar_on {a' : signature SET}
-      {R'' (* : REP a*)}                  (*  *)
-      (* {F' : CAT_SIGNATURE ⟦ a', b' ⟧ *)
-      {S' (* : REP b *)}
-      (m2 m' : Monad_Mor R'' S')
+(** First a general-purpose lemma: 
+    equal monad morphisms are mapped to 
+    equal module morphisms by any
+    signature
+*)
+Lemma cancel_ar_on {sig : signature SET}
+      {T : Monad SET} 
+      {S' : Monad SET}
+      (m m' : Monad_Mor T S')
       (X : SET) 
-  : m2 = m' ->  (# a')%ar m2 X = (# a')%ar m' X .
+  : m = m' ->  (# sig)%ar m X = (# sig)%ar m' X .
 Proof.
   intro e; induction e.
   apply idpath.
 Qed.
 
+  
+Section eq_mr.
+   
+Context {S : REP b} (m : R -->[ F] S).
+
+(** Any morphism of representations factors, 
+    as a monad morphism, via the monad projection *)
 Lemma Rep_mor_is_composition 
   : pr1 m = compose (C:=category_Monad _) projR_monad (u_monad m) .
 Proof.
   use (invmap (Monad_Mor_equiv _ _ _)).
-  apply (homset_property SET).
+  { apply (homset_property SET). }
   apply nat_trans_eq.
   - apply (homset_property SET).
   - intro X'.
     apply (u_def m).
 Qed.
+
+
+(** 
+<<
+                 rep_τ R
+            a R  ----->  R
+             |           |
+     a projR |           | m
+             v           |
+            a R'         |
+             |           |
+        F R' |           |
+             v           v
+            b R'->b(S)-> S
+     b(\overline{m}) · rep_τ S
+>>
+*)
 
 Lemma eq_mr X 
   : rep_τ _ R X · ## m X 
@@ -389,20 +413,17 @@ where π := projR
 
  *)
 
-Definition hab 
-  : mor_disp
+(** The R-module morphism 
+    #a R · Pullback (π)(F R') : a(R) ---> π^*(b R')
+ *)
+Definition hab : mor_disp
       (D:=bmod_disp_ob_mor _ _ )
       (a (pr1 R)) 
-      (b  R'_monad)
-      projR_monad.    (*: category_Monad _⟦_,_⟧ *)
-Proof.
-  set (aπ :=(# a projR_monad)%ar).
-  cbn.
-  eapply (compose (C:=category_LModule _ _) (a := a (pr1 R))).
-  - apply (#a projR_monad)%ar.
-  - apply pb_LModule_Mor.
-    apply (F R'_monad).
-Defined.
+      (b R'_monad)
+      projR_monad    
+  := compose (C:= category_LModule _ _ )
+             (# a projR_monad)
+             (pb_LModule_Mor projR_monad (F R'_monad)).
 
 (**
 By naturality of F,
@@ -422,17 +443,30 @@ F_R |   / b_π
 where π := projR
 
  *)
-Lemma hab_alt : pr1 hab =
-                ((F (pr1 R) : nat_trans _ _) : functor_category _ _⟦_, _⟧) ·
-                         ((# b projR_monad) : nat_trans _ _).
+Lemma hab_alt
+  : pr1 hab =
+    ((F (pr1 R) : nat_trans _ _) : functor_category _ _⟦_, _⟧)
+      ·
+      ((# b projR_monad) : nat_trans _ _).
 Proof.
   apply signature_Mor_ax.
 Qed.
 
 (** This is the compatibility relation that is needed to construct
-R'_rep_τ : b R -> R
-*)
 
+    R'_rep_τ : b R' -> R'
+
+<<
+               τ
+    a(R) -----------------> R
+     |                      |
+hab  |                      | π 
+     |                      |
+     v                      v
+   π^*(b R')                R'
+
+>>
+*)
 Lemma compat_rep_τ_projR 
   : ∏ (X : SET) x y,
     (pr1 hab) X x
@@ -455,7 +489,6 @@ Proof.
   do 2 apply maponpaths.
   apply (!comp).
 Qed.
-
 
 
 Definition preservesEpi_signature (c : signature SET)
@@ -521,7 +554,29 @@ Qed.
 Definition R'_rep_τ_module 
   : LModule_Mor _ (b R'_monad) (tautological_LModule R'_monad) 
   :=
-  quotientrep.R'_rep_τ_module ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ.
+    quotientrep.R'_rep_τ_module
+      ax_choice
+      congr_equivc
+      compat_μ_projR
+      (h:=hab) 
+      compat_rep_τ_projR
+      isEpi_def_R'_rep_τ.
+
+(** 
+<<
+           a(π)
+    a(R)-------> a(R')
+     |            |
+     |            | F(R')
+     |            v
+   τ |           b(R')
+     |            |
+     |            | τ 
+     v            v
+     R ---------> R'
+          π 
+>>
+*)
 
 Definition R'_rep_τ_def 
   : ∏ (X : SET),
@@ -530,10 +585,16 @@ Definition R'_rep_τ_def
     rep_τ _ R X · projR X .
 Proof.
   intro X.
-  apply (quotientrep.R'_rep_τ_def ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR isEpi_def_R'_rep_τ).
+  apply (quotientrep.R'_rep_τ_def
+           ax_choice
+           congr_equivc
+           compat_μ_projR
+           (h:=hab)
+           compat_rep_τ_projR
+           isEpi_def_R'_rep_τ).
 Qed.
 
-Definition R'_rep : rep_disp SET b.
+Definition rep_of_b_in_R' : rep_disp SET b.
   use tpair.
   - exact R'_monad.
   - exact R'_rep_τ_module.
@@ -543,14 +604,14 @@ Defined.
 
 (* projR est un morphisme de model *)
 
-Lemma projR_rep_laws : rep_ar_mor_law SET R R'_rep F projR_monad.
+Lemma projR_rep_laws : rep_ar_mor_law SET R rep_of_b_in_R' F projR_monad.
 Proof.
   intro X.
   symmetry.
   apply (R'_rep_τ_def X).
 Qed.
 
-Definition projR_rep : R -->[F] R'_rep := (_ ,, projR_rep_laws).
+Definition projR_rep : R -->[F] rep_of_b_in_R' := (_ ,, projR_rep_laws).
 
 
 End R'Model.
@@ -614,7 +675,7 @@ Qed.
 
 
 Lemma u_rep_laws
-  : rep_ar_mor_law SET (R'_rep cond_F) S (identity (b : CAT_SIGNATURE)) (u_monad m).
+  : rep_ar_mor_law SET (rep_of_b_in_R' cond_F) S (identity (b : CAT_SIGNATURE)) (u_monad m).
 Proof.
   intro X.
   set (RX := @u_rep_laws ax_choice (pr1 R) _ congr_equivc compat_μ_projR).
@@ -654,7 +715,7 @@ Proof.
 Qed.
 
 
-Definition u_rep : (R'_rep cond_F) -->[identity (b: CAT_SIGNATURE)] S 
+Definition u_rep : (rep_of_b_in_R' cond_F) -->[identity (b: CAT_SIGNATURE)] S 
   := _ ,, u_rep_laws.
 
 
@@ -667,7 +728,7 @@ Context {S : REP b}
         (m : R -->[ F] S).
 Context (cond_F : cond_isEpi_hab).
 
-Variable u'_rep : R'_rep cond_F -->[identity (b:CAT_SIGNATURE)] S.
+Variable u'_rep : rep_of_b_in_R' cond_F -->[identity (b:CAT_SIGNATURE)] S.
 Variable (hu' : ∏ x,
                 ((projR_rep cond_F : rep_ar_mor_mor _ _ _ _ _ _) x
                  · (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)
@@ -699,7 +760,7 @@ Lemma build_module_law
       (R : Rep_a)
       (cond_R : cond_isEpi_hab R)
       (S : Rep_b)
-      (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
+      (m : Rep_b ⟦ rep_of_b_in_R' R cond_R, S ⟧)
   : rep_ar_mor_law _
                    R
                    (pb_rep SET F S)
@@ -737,7 +798,7 @@ Definition build_module
            (R : Rep_a)
            (cond_R : cond_isEpi_hab R)
            (S : Rep_b)
-           (m : Rep_b ⟦ R'_rep R cond_R, S ⟧)
+           (m : Rep_b ⟦ rep_of_b_in_R' R cond_R, S ⟧)
   : rep_ar_mor_mor _ a a R (pb_rep SET F S) (signature_Mor_id (pr1 a))
   := _ ,, build_module_law R cond_R S m.
   
@@ -756,7 +817,7 @@ Proof.
   intro iniR.
   set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R).
   use tpair.
-  - apply (R'_rep R cond_R).
+  - apply (rep_of_b_in_R' R cond_R).
 
   - intro S.
     unshelve eapply iscontrpair.
@@ -779,7 +840,7 @@ Proof.
   intro iniR.
   set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R).
   use tpair.
-  - apply (R'_rep R cond_R).
+  - apply (rep_of_b_in_R' R cond_R).
   - intro S.
     unshelve eapply iscontrpair.
     +  use u_rep.
@@ -802,9 +863,9 @@ Lemma helper
       (R : Rep_a)
       (cond_F := inl (dirprodpair (Fepi R) aepi ) : cond_isEpi_hab R)
       (S : rep_ar SET b)
-  : ∏ (u' : Rep_b ⟦ R'_rep R cond_F, S ⟧) x,
+  : ∏ (u' : Rep_b ⟦ rep_of_b_in_R' R cond_F, S ⟧) x,
     projR (congr_equivc R) x · (u' : rep_ar_mor_mor _ _ _ _ _ _) x =
-    pr1 (pr1 (compose (C:=Rep_a) (b:=FF (R'_rep R cond_F))
+    pr1 (pr1 (compose (C:=Rep_a) (b:=FF (rep_of_b_in_R' R cond_F))
                       (projR_rep R cond_F : rep_ar_mor_mor _ _ _ _ _ _)
                       (# FF u'))) x.
 Proof.
@@ -832,7 +893,7 @@ Proof.
   set (cond_F := fun R => inl ((Fepi R),, aepi) : cond_isEpi_hab R).
   use right_adjoint_left_from_partial.
   - intro R. 
-    apply (R'_rep R (cond_F R)).
+    apply (rep_of_b_in_R' R (cond_F R)).
   - intro R. apply projR_rep.
   - intro R.
     unfold is_universal_arrow_to.
