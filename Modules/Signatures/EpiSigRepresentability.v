@@ -57,14 +57,36 @@ Require Import Modules.Signatures.quotientrep.
 Require Import Modules.Signatures.EpiArePointwise.
 
 Set Automatic Introduction.
+
+
+Section all_purpose.
   
-  
+(** First a general-purpose lemma: 
+    equal monad morphisms are mapped to 
+    equal module morphisms by any
+    signature
+*)
+Lemma cancel_ar_on {sig : signature SET}
+      {T : Monad SET} 
+      {S' : Monad SET}
+      (m m' : Monad_Mor T S')
+      (X : SET) 
+  : m = m' ->  (# sig)%ar m X = (# sig)%ar m' X .
+Proof.
+  intro e; induction e.
+  apply idpath.
+Qed.
+
+End all_purpose.
+
+
 (**
 A morphism of signature F : a -> b induces a functor between model Rep(b) -> Rep(a)
 
 In this section we construct the left adjoint of this functor (which is defined whenever
 F is an epimorphism)
 *)
+
 
 Section leftadjoint.
 
@@ -80,7 +102,6 @@ Context {a b : signature SET}
 Section fix_rep_of_a.
 
 Context (R : REP a).
-
 
 Local Notation "## F" := (pr1 (pr1 F))(at level 3).
 
@@ -121,8 +142,7 @@ Definition equivc_xy_prop (X : SET) x y : hProp :=
 Definition hrel_equivc (X : SET) : hrel (##R X : hSet)
   := fun x y => equivc_xy_prop X x y.
 
-(** [equivc] is an equivalence relation
-*)
+(** [equivc] is an equivalence relation *)
 
 Lemma iseqrel_equivc (X : SET) : iseqrel (hrel_equivc X).
 Proof.
@@ -138,8 +158,7 @@ Proof.
     apply h.
 Qed.
 
-(** [equivc] is an equivalence relation
-*)
+(** [equivc] is an equivalence relation *)
 Definition eqrel_equivc (X : SET) : eqrel _ := _ ,, iseqrel_equivc X.
 
 (** For any f : X -> Y, #R f is compatible with previous equivalence relation *)
@@ -270,68 +289,6 @@ Definition u_monad {S : REP b} (m : R -->[ F] S)
 (** * FIN DE LA TROISIEME ETAPE *)
 
 
-Section R'Model.
-
-(** Goal: define a model of [b]
-    with underlying monad the quotient monad defined in the previous step
-*)
-
-(** R'_rep_τ is defined by the following diagram :
-<<
-                  rep_τ R
-            a R  ----->  R
-             |           |
-         F R |           | projR
-             v           |
-            b R          |
-             |           |
-     b projR |           |
-             v           v
-           b R' -------> R'
-                R'_rep_τ
-
->>
-or rather the following diagram.
-<<
-                 rep_τ R
-            a R  ----->  R
-             |           |
-     a projR |           | projR
-             v           |
-            a R'         |
-             |           |
-        F R' |           |
-             v           v
-            b R' ------> R'
-                R'_rep_τ
->>
-
-We need to show that for all x,y such that
-F R' o a projR (x) = F R' o a projR (y), we have
-  projR o rep_τ R (x) = projR o rep_τ R (y)
-
-This is lemma [compat_rep_τ_projR]
-
-*)
-
-
-(** First a general-purpose lemma: 
-    equal monad morphisms are mapped to 
-    equal module morphisms by any
-    signature
-*)
-Lemma cancel_ar_on {sig : signature SET}
-      {T : Monad SET} 
-      {S' : Monad SET}
-      (m m' : Monad_Mor T S')
-      (X : SET) 
-  : m = m' ->  (# sig)%ar m X = (# sig)%ar m' X .
-Proof.
-  intro e; induction e.
-  apply idpath.
-Qed.
-
-  
 Section eq_mr.
    
 Context {S : REP b} (m : R -->[ F] S).
@@ -393,17 +350,68 @@ Qed.
 
 End eq_mr.
 
+
+
+
+Section R'Model.
+
+(** Goal: define a model of [b]
+    with underlying monad the quotient monad defined in the previous step
+*)
+
+(** R'_rep_τ is defined by the following diagram :
+<<
+                  rep_τ R
+            a R  ----->  R
+             |           |
+         F R |           | projR
+             v           |
+            b R          |
+             |           |
+     b projR |           |
+             v           v
+           b R' -------> R'
+                R'_rep_τ
+
+>>
+or rather the following diagram.
+<<
+                 rep_τ R
+            a R  ----->  R
+             |           |
+     a projR |           | projR
+             v           |
+            a R'         |
+             |           |
+        F R' |           |
+             v           v
+            b R' ------> R'
+                R'_rep_τ
+>>
+
+We need to show that for all x,y such that
+F R' o a projR (x) = F R' o a projR (y), we have
+  projR o rep_τ R (x) = projR o rep_τ R (y)
+
+This is lemma [compat_rep_τ_projR]
+
+*)
+
+
+
+  
+
 Open Scope signature_scope.
 
 (**
-
+Definition of [hab]
 <<<<
 
        hab
    a_R --> b_R'
     |     ^
     |    /
-a_π |   / F_R'
+a(π)|   / F_R'
     |  /
     V /
     a_R'
@@ -411,11 +419,9 @@ a_π |   / F_R'
 >>>>
 where π := projR
 
- *)
-
-(** The R-module morphism 
+The R-module morphism 
     #a R · Pullback (π)(F R') : a(R) ---> π^*(b R')
- *)
+*)
 Definition hab : mor_disp
       (D:=bmod_disp_ob_mor _ _ )
       (a (pr1 R)) 
@@ -434,7 +440,7 @@ By naturality of F,
    a_R --> b_R'
     |     ^
     |    /
-F_R |   / b_π
+F_R |   / b(π)
     |  /
     V /
     b_R 
@@ -765,7 +771,7 @@ Lemma build_module_law
                    R
                    (pb_rep SET F S)
                    (signature_Mor_id (pr1 a))
-                   ((pr1 (projR_rep R cond_R) : category_Monad _ ⟦_,_⟧) · (pr1 m)).
+                   ((pr1 (projR_rep R cond_R) : category_Monad _ ⟦_,_⟧) · pr1 m).
 Proof.
   intro x.
   etrans.
@@ -818,9 +824,8 @@ Proof.
   set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R).
   use tpair.
   - apply (rep_of_b_in_R' R cond_R).
-
   - intro S.
-    unshelve eapply iscontrpair.
+    use iscontrpair.
     +  use u_rep.
        use (iscontrpr1 (iniR (FF S))).
     + intro m.
@@ -842,7 +847,7 @@ Proof.
   use tpair.
   - apply (rep_of_b_in_R' R cond_R).
   - intro S.
-    unshelve eapply iscontrpair.
+    use iscontrpair.
     +  use u_rep.
        use (iscontrpr1 (iniR (FF S))).
     + intro m.
