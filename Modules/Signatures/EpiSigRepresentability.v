@@ -718,23 +718,14 @@ Definition u_rep : (rep_of_b_in_R' cond_F) -->[identity (b: CAT_SIGNATURE)] S
   := _ ,, u_rep_laws.
 
 
-End uModel.
-  (* FIN DE LA PARTIE 6 *)
-
-Section uUnique.
-
-Context {S : REP b} 
-        (m : R -->[ F] S).
-Context (cond_F : cond_isEpi_hab).
-
-Variable u'_rep : rep_of_b_in_R' cond_F -->[identity (b:CAT_SIGNATURE)] S.
-Variable (hu' : ∏ x,
-                ((projR_rep cond_F : rep_ar_mor_mor _ _ _ _ _ _) x
-                 · (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)
-                = (m : rep_ar_mor_mor _ _ _ _ _ _ ) x
-         ).
-
-Lemma u_rep_unique : u'_rep = u_rep m cond_F.
+Lemma u_rep_unique
+      (u'_rep : rep_of_b_in_R' cond_F -->[identity (b:CAT_SIGNATURE)] S)
+      (hu' : ∏ x,
+             ((projR_rep cond_F : rep_ar_mor_mor _ _ _ _ _ _) x
+              · (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)
+             =
+             (m : rep_ar_mor_mor _ _ _ _ _ _ ) x)
+  : u'_rep = u_rep (*m cond_F*).
 Proof.
   apply rep_ar_mor_mor_equiv.
   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
@@ -744,7 +735,9 @@ Proof.
       apply hu'.
 Qed.      
 
-End uUnique.
+
+End uModel.
+  (* FIN DE LA PARTIE 6 *)
 
 End fix_rep_of_a.
 
