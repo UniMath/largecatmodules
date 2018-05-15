@@ -77,6 +77,31 @@ Proof.
   apply idpath.
 Qed.
 
+
+(** For the explicit subsitution signature example *)
+Example EpiSignatureThetaTheta
+        (choice : AxiomOfChoice.AxiomOfChoice_surj)
+        {M N : category_Monad SET}
+        (f : category_Monad SET ⟦M,N⟧) :
+     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
+                                                       (horcomp (pr1 f )(pr1 f )).
+Proof.
+  intro hepi.
+  apply is_nat_trans_epi_from_pointwise_epis.
+  assert (hf : ∏ x, isEpi (pr1 f x)).
+  {
+    apply epi_nt_SET_pw.
+    exact hepi.
+  }
+  intro x.
+  apply isEpi_comp.
+  - apply hf.
+  - apply preserves_to_HSET_isEpi.
+    + apply choice.
+    + apply hf.
+Qed.
+   
+
 End all_purpose.
 
 
@@ -162,7 +187,7 @@ Qed.
 Definition eqrel_equivc (X : SET) : eqrel _ := _ ,, iseqrel_equivc X.
 
 (** For any f : X -> Y, #R f is compatible with previous equivalence relation *)
-Lemma congr_equivc (X Y : SET) (f:SET ⟦X , Y⟧)
+Lemma congr_equivc (X Y : SET) (f : SET ⟦X , Y⟧)
   : iscomprelrelfun (eqrel_equivc X) (eqrel_equivc Y) (# (## R) f).
 Proof.
   intros z z' eqz S g.
@@ -180,10 +205,12 @@ Qed.
 Arguments R' : simpl never.
 Arguments projR : simpl never.
 
-Let R' := R' congr_equivc.
-Let projR := projR congr_equivc.
-Let eq_projR_rel := eq_projR_rel congr_equivc.
-
+Let R' : SET ⟶ SET := R' congr_equivc.
+Let projR : (pr1 R : SET ⟶ SET) ⟹ quotientmonad.R' congr_equivc := projR congr_equivc.
+Let eq_projR_rel :
+  ∏ (X : hSet) (x y : (pr1 R) X : hSet),
+  (quotientmonad.projR congr_equivc) X x = (quotientmonad.projR congr_equivc) X y → equivc x y
+  := eq_projR_rel congr_equivc.
 
 (** R' est un pseudo objet initial au sens suivant :
      Quel que soit        g : R ---> S morphisme dans la catégorie des représentations de a
@@ -191,7 +218,6 @@ Let eq_projR_rel := eq_projR_rel congr_equivc.
 C'est un pseudo objet car il reste à montrer que R' est bien dans la catégorie des représentations
 de a et que u est un morphisme de modules.
 *)
-
 
 
 Section Instantiating_Quotient_Constructions.
@@ -251,10 +277,10 @@ Proof.
     { apply (cancel_postcomposition (C:=SET)).
       etrans.
       { apply cancel_postcomposition.
-        apply u_def. }
+        apply (quotientmonad.u_def  congr_equivc). }
       apply cancel_precomposition.
       apply maponpaths.
-      apply u_def.  
+      apply (quotientmonad.u_def congr_equivc).
     }
     etrans.
     { apply (cancel_postcomposition (C:=SET)).
@@ -289,13 +315,13 @@ Definition u_monad {S : REP b} (m : R -->[ F] S)
 (** * FIN DE LA TROISIEME ETAPE *)
 
 
-Section eq_mr.
-   
-Context {S : REP b} (m : R -->[ F] S).
+
+(** Some helper lemmas *)
 
 (** Any morphism of representations factors, 
     as a monad morphism, via the monad projection *)
-Lemma Rep_mor_is_composition 
+Lemma Rep_mor_is_composition
+      {S : REP b} (m : R -->[ F] S)
   : pr1 m = compose (C:=category_Monad _) projR_monad (u_monad m) .
 Proof.
   use (invmap (Monad_Mor_equiv _ _ _)).
@@ -305,7 +331,6 @@ Proof.
   - intro X'.
     apply (u_def m).
 Qed.
-
 
 (** 
 <<
@@ -323,7 +348,8 @@ Qed.
 >>
 *)
 
-Lemma eq_mr X 
+Lemma eq_mr
+      {S : REP b} (m : R -->[ F] S) (X : SET)
   : rep_τ _ R X · ## m X 
     =
     pr1 (# a projR_monad)%ar X · (F (R'_monad ))%ar X 
@@ -335,7 +361,7 @@ Proof.
   etrans.
   { cpost _.
     etrans.
-    { apply (cancel_ar_on _ _ _ Rep_mor_is_composition). }
+    { apply (cancel_ar_on _ _ _ (Rep_mor_is_composition m)). }
     eapply nat_trans_eq_pointwise.
     apply maponpaths.
     apply signature_comp.
@@ -347,8 +373,6 @@ Proof.
   apply pathsinv0.
   apply (signature_Mor_ax_pw F (u_monad m)).
 Qed.
-
-End eq_mr.
 
 
 
@@ -394,12 +418,8 @@ F R' o a projR (x) = F R' o a projR (y), we have
   projR o rep_τ R (x) = projR o rep_τ R (y)
 
 This is lemma [compat_rep_τ_projR]
-
 *)
 
-
-
-  
 
 Open Scope signature_scope.
 
@@ -448,7 +468,7 @@ F_R |   / b(π)
 >>>>
 where π := projR
 
- *)
+*)
 Lemma hab_alt
   : pr1 hab =
     ((F (pr1 R) : nat_trans _ _) : functor_category _ _⟦_, _⟧)
@@ -478,7 +498,7 @@ Lemma compat_rep_τ_projR
     (pr1 hab) X x
     (* =       ( pr1 (# a projR_monad )%ar X ;; (F `` R'_monad) X) y *)
     =
-    pr1 hab  X y
+    pr1 hab X y
     (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) x *)
     (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR_monad )%ar X) y *)
     ->
@@ -497,36 +517,9 @@ Proof.
 Qed.
 
 
-Definition preservesEpi_signature (c : signature SET)
-  : UU
-  := ∏ M N (f : category_Monad _⟦M,N⟧),
-     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
-                                                       (pr1 (#c f)%ar).
 
 
-(** For the explicit subsitution signature example *)
-Example EpiSignatureThetaTheta
-        (choice : AxiomOfChoice.AxiomOfChoice_surj)
-        {M N : category_Monad SET}
-        (f : category_Monad SET ⟦M,N⟧) :
-     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
-                                                       (horcomp (pr1 f )(pr1 f )).
-Proof.
-  intro hepi.
-  apply is_nat_trans_epi_from_pointwise_epis.
-  assert (hf : ∏ x, isEpi (pr1 f x)).
-  {
-    apply epi_nt_SET_pw.
-    exact hepi.
-  }
-  intro x.
-  apply isEpi_comp.
-  - apply hf.
-  - apply preserves_to_HSET_isEpi.
-    + apply choice.
-    + apply hf.
-Qed.
-   
+
 
 (**
 Conditions that we require to prove that [hab] is epimorphic :
@@ -928,5 +921,6 @@ Proof.
   apply is_right_adjoint_functor_of_reps.
   intro R; apply Fepi.
 Qed.
+
 End leftadjoint.
 
