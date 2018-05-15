@@ -424,19 +424,20 @@ This is lemma [compat_rep_τ_projR]
 Open Scope signature_scope.
 
 (**
-Definition of [hab]
-<<<<
+Definition of [hab]:
+The diagonal of the following square, which commutes by naturality of F:
 
-       hab
-   a_R --> b_R'
-    |     ^
-    |    /
-a(π)|   / F_R'
-    |  /
-    V /
-    a_R'
+<<
+               F(R)
+       a(R) ---------> b(R)
+        |               |
+    a(π)|               |b(π)
+        |               |
+        v               v
+       a(R') --------> b(R')
+               F(R')
+>>
 
->>>>
 where π := projR
 
 The R-module morphism 
@@ -451,24 +452,6 @@ Definition hab : mor_disp
              (# a projR_monad)
              (pb_LModule_Mor projR_monad (F R'_monad)).
 
-(**
-By naturality of F,
-
-<<<<
-
-       hab
-   a_R --> b_R'
-    |     ^
-    |    /
-F_R |   / b(π)
-    |  /
-    V /
-    b_R 
-
->>>>
-where π := projR
-
-*)
 Lemma hab_alt
   : pr1 hab =
     ((F (pr1 R) : nat_trans _ _) : functor_category _ _⟦_, _⟧)
@@ -515,9 +498,6 @@ Proof.
   do 2 apply maponpaths.
   apply (!comp).
 Qed.
-
-
-
 
 
 
@@ -625,54 +605,8 @@ Context (cond_F : cond_isEpi_hab).
 
 Open Scope signature_scope.
   
-(* Local Notation R'_REP := (R'_rep FepiR' aepiR). *)
 
 (* TODO  : foutre ça dans quotientrep *)
-
-(*
-Lemma u_rep_laws'
-  : rep_ar_mor_law SET (R'_rep cond_F) S (identity (b : CAT_SIGNATURE)) (u_monad m).
-Proof.
-  intro X.
-  set (RX := @u_rep_laws ax_choice (pr1 R) _ congr_equivc compat_μ_projR).
-  specialize (RX 
-  apply pathsinv0.
-  apply (
-               (quotientrep.u_rep_laws ax_choice congr_equivc compat_μ_projR (h:=hab)compat_rep_τ_projR
-                                       (isEpi_def_R'_rep_τ cond_F) (S:=pr1 S) (m:=pr1 m) _
-                                       (s:=rep_τ _ S) (F:=( (# b ( u_monad m))%ar))
-         )).
-  intro X'.
-  etrans; [apply (rep_ar_mor_ax _ m )|].
-  apply cancel_postcomposition.
-  etrans.
-  (* # a m ;; F_S = #a π ;; F_R' ;; # b u *)
-  (* je dois utilier la naturalité de F à droite
-     pour avoir #a π ;; #a u ;; F_S et ensuite par définition de m = π ;; u
-   *)
-  apply cancel_postcomposition.
-  etrans.
-  apply (cancel_ar_on _ (compose (C:=category_Monad _) projR_monad (u_monad m))).
-  use (invmap (Monad_Mor_equiv _ _ _)).
-  { apply homset_property. }
-  { apply nat_trans_eq.
-    apply homset_property.
-    apply (u_def m).
-  }
-  assert (h:=signature_comp a (projR_monad)  (u_monad m)).
-  apply LModule_Mor_equiv in h.
-  eapply nat_trans_eq_pointwise in h.
-  apply h.
-  apply homset_property.
-  etrans;revgoals.
-  etrans;[|apply assoc].
-  apply cancel_precomposition.
-  apply signature_Mor_ax_pw.
-  reflexivity.
-Qed.
-*)
-
-
 Lemma u_rep_laws
   : rep_ar_mor_law SET (rep_of_b_in_R' cond_F) S (identity (b : CAT_SIGNATURE)) (u_monad m).
 Proof.
@@ -725,7 +659,7 @@ Lemma u_rep_unique
               · (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)
              =
              (m : rep_ar_mor_mor _ _ _ _ _ _ ) x)
-  : u'_rep = u_rep (*m cond_F*).
+  : u'_rep = u_rep.
 Proof.
   apply rep_ar_mor_mor_equiv.
   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
