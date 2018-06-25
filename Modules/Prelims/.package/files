@@ -5,6 +5,7 @@ LModPbCommute.v
 modules.v
 LModuleColims.v
 quotientmonad.v
+quotientmonadslice.v
 DerivationIsFunctorial.v
 deriveadj.v
 CoproductsComplements.v
