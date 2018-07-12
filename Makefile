@@ -10,6 +10,7 @@ endif
 # The packages, listed in order by dependency:
 PACKAGES += Prelims
 PACKAGES += Signatures
+PACKAGES += SoftEquations
 #PACKAGES += Displayed_Cats
 #PACKAGES += ALV2
 #PACKAGES += OtherDefs

@@ -138,8 +138,8 @@ Proof.
       * intro x.
         cbn.
         rewrite id_right.
-        (* this was not needed in Signature.v, and I don't know exactly why  *)
         unfold comp.
+        (* this was not needed in Signature.v, and I don't know exactly why  *)
         destruct (id_left _).
         apply idpath.
 Qed.
