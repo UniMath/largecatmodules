@@ -185,6 +185,12 @@ Definition u_monad (j : J)  (m := ff j)
   : Monad_Mor R'_monad (d j)
   := quotientmonad.u_monad choice compat_μ_slice (S:= d j) m (compat_slice j).
 
+
+Lemma u_monad_def (j : J) (m := ff j) : m = (projR_monad : category_Monad SET ⟦_,_⟧) · (u_monad j).
+Proof.
+  apply (quotientmonad.u_monad_def).
+Qed.
+
 End QuotientMonad.
   
 Arguments projR : simpl never.
