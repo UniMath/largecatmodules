@@ -371,6 +371,13 @@ Proof.
   apply univ_surj_nt_ax_pw.
 Qed.
 
+(** not used here but nevermind *)
+Lemma u_def_nt :  (m : nat_trans _ _) = (compose (C := [SET,SET]) (projR : nat_trans _ _)  u)  . 
+Proof.
+  symmetry.
+  apply univ_surj_nt_ax.
+Qed.
+
 Lemma u_monad_mor_law1 
   : ∏ a : SET, (μ R'_monad) a · u a = u (R'_monad a) · # S (u a) · (μ S) a.
 Proof.

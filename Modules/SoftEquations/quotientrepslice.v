@@ -35,6 +35,14 @@ Require Import Modules.Prelims.LModuleEpiArePointwise.
 
 Open Scope cat.
 
+(* TODO: move this in lib.v *)
+Definition nat_trans_comp_pointwise' :
+  ∏ (C : precategory) (C' : category)  (F G H : [C, C' , _ ])
+    (A : [C, C' , _] ⟦ F, G ⟧) (A' : [C, C' , _] ⟦ G, H ⟧) (a : C),
+  (A  : nat_trans _ _) a ·  (A' : nat_trans _ _) a =  (A · A' : nat_trans _ _) a
+  :=
+  fun C C'  F G H A A' => @nat_trans_comp_pointwise C C' (homset_property C') F G H A A' _ (idpath _).
+
 (** TODO : move this section in Prelims/..
 and use thees results to shorten quotienrep (or don't do that because we don't care about
 this old presentable stuff 
@@ -106,6 +114,7 @@ Section univ_pb_mod.
 End univ_pb_mod.
 
     
+Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
 Section QuotientRep.
 
@@ -121,10 +130,11 @@ Context (epiSig : ∏ (R S : Monad _)
                   isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
 
 Local Notation REP := (rep_ar SET Sig).
+Local Notation REP_CAT := (rep_fiber_category Sig).
 
 Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
 Context {R : REP} {J : UU} (d : J -> REP)
-          (ff : ∏ (j : J), rep_fiber_mor R (d j)).
+          (ff : ∏ (j : J),  R →→ (d j)).
 
 Let R' : Monad SET := R'_monad choice d ff.
 Let projR : Monad_Mor R R' := projR_monad choice d ff.
@@ -198,7 +208,15 @@ Proof.
   use univ_surj_nt_ax_pw.
 Qed.
 
-Definition projR_rep : rep_fiber_mor R R'_model := projR ,, π_rep_laws.
+Definition projR_rep : R →→ R'_model := projR ,, π_rep_laws.
+
+Lemma isEpi_projR_rep : isEpi (C := REP_CAT) projR_rep.
+Proof.
+  intros f g h e.
+  apply rep_fiber_mor_eq_nt.
+  apply isEpi_projR.
+  exact (maponpaths (fun (x : _ →→ _) => (x : nat_trans _ _)) e).
+Qed.
 
 
 (** Let S a monad, m : R -> S a monad morphism compatible with the equivalence relation
@@ -222,13 +240,6 @@ This induces a monad morphism u : R' -> S that makes the following diagram commu
 
 Let u := u_monad choice d ff.
 
-(* TODO: move this in lib.v *)
-Definition nat_trans_comp_pointwise' :
-  ∏ (C : precategory) (C' : category)  (F G H : [C, C' , _ ])
-    (A : [C, C' , _] ⟦ F, G ⟧) (A' : [C, C' , _] ⟦ G, H ⟧) (a : C),
-  (A  : nat_trans _ _) a ·  (A' : nat_trans _ _) a =  (A · A' : nat_trans _ _) a
-  :=
-  fun C C'  F G H A A' => @nat_trans_comp_pointwise C C' (homset_property C') F G H A A' _ (idpath _).
 
 (** u is a morphism of model *)
 Lemma u_rep_laws j : rep_fiber_mor_law R'_model (d j) (u j).
@@ -268,7 +279,13 @@ Proof.
 Qed.
 
 
-Definition u_rep j : rep_fiber_mor R'_model (d j) := u j ,, u_rep_laws j.
+Definition u_rep j :  R'_model →→ (d j) := u j ,, u_rep_laws j.
+
+Lemma u_rep_def (j : J)  : ff j = (projR_rep : REP_CAT ⟦_,_⟧) · (u_rep j).
+Proof.
+  apply rep_fiber_mor_eq_nt.
+  apply (quotientmonad.u_def_nt).
+Qed.
 
 
 End QuotientRep.

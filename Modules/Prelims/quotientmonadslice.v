@@ -126,10 +126,17 @@ Proof.
   apply compat_slice.
 Defined.
 
-(** The induced natural transformation makes a triangle commute *)
+
+(** The induced natural transformation makes a triangle commute
+ *)
 Lemma u_def (j : J) (m := ff j) : ∏ x,  m x = projR x · u j x.
 Proof.
   apply (quotientmonad.u_def).
+Qed.
+
+Lemma u_def_nt (j : J) :  (ff j : nat_trans _ _) = (compose (C := [SET,SET]) (projR : nat_trans _ _)  (u j))  . 
+Proof.
+  apply quotientmonad.u_def_nt.
 Qed.
 
 (** We show that the relation induced by a morphism of models

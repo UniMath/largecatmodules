@@ -76,9 +76,9 @@ Definition rep_fiber_mor_ax {a : SIG} {M N : rep_ar _ a}
   ∏ c, rep_τ _ M c · h c = (#a h)%ar c ·  rep_τ _ N c 
   := pr2 h.
 
-Lemma rep_fiber_mor_eq {a : SIG} (R S:rep_ar _ a)
+Lemma rep_fiber_mor_eq_nt {a : SIG} (R S:rep_ar _ a)
       (u v: rep_fiber_mor R S) :
-  (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
+  ( u : nat_trans _ _) = v -> u = v.
 Proof.
   intros.
   use (invmap (subtypeInjectivity _ _ _ _  )). 
@@ -86,9 +86,18 @@ Proof.
     apply isaprop_rep_fiber_mor_law.
   - use (invmap (Monad_Mor_equiv _ _  _  )).  
      +  apply homset_property.
-     +  apply nat_trans_eq.
-        apply homset_property.
-        assumption.
+     +  assumption.
+Qed.
+
+Lemma rep_fiber_mor_eq {a : SIG} (R S:rep_ar _ a)
+      (u v: rep_fiber_mor R S) :
+  (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
+Proof.
+  intros.
+  apply rep_fiber_mor_eq_nt.
+  apply nat_trans_eq.
+  - apply homset_property.
+  - assumption.
 Qed.
 
 Lemma is_rep_fiber_id {a : SIG} (M : rep_ar _ a) : rep_fiber_mor_law M M (identity (C := PRE_MONAD) (M : Monad _)).
