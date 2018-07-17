@@ -116,7 +116,9 @@ Local Notation SIG := (signature SET).
 
 Context (Sig : SIG).
 Context (epiSig : ∏ (R S : Monad _)
-                     (f : Monad_Mor R S), isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+                    (f : Monad_Mor R S),
+                  isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
+                  isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
 
 Local Notation REP := (rep_ar SET Sig).
 
@@ -177,6 +179,7 @@ Proof.
          ((rep_τ _ R : MOD R ⟦_,_⟧ ) · (monad_mor_to_lmodule projR ))
       ); revgoals.
   - apply epiSig.
+    apply isEpi_projR.
   - apply R'_action_compat.
   - intro c.
     apply preserves_to_HSET_isEpi.
@@ -233,7 +236,8 @@ Proof.
   intro c.
   do 2 rewrite nat_trans_comp_pointwise'.
   apply nat_trans_eq_pointwise.
-  apply (epiSig _ _ projR).
+  apply (epiSig _ _ projR ).
+  { apply isEpi_projR. }
   (* TODO: ne pas repasser en pointwise *)
   apply nat_trans_eq; [apply homset_property|].
   intro X.

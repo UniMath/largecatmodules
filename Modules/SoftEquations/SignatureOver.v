@@ -308,3 +308,5 @@ Defined.
 
 
 End OverSignatures.
+
+Notation "# F" := (signature_over_on_morphisms _ F) (at level 3) : signature_over_scope.
