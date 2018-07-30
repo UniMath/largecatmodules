@@ -48,13 +48,34 @@ Context (epiSig : ∏ (R S : Monad _)
                   isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                   isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
 
-(** Definition of a soft-over signature *)
+(** Definition of a soft-over signature
+
+It is a signature Σ such that for any model R, and any family of model morphisms 
+(f_j : R --> d_j), the following diagram can be completed in the category
+of natural transformations:
+
+<<<
+           Σ(f_j)
+    Σ(R) ----------->  Σ(d_j)
+     |
+     |
+     |
+ Σ(π)|
+     |
+     V
+    Σ(S)
+
+>>>
+
+where π : R -> S is the canonical projection (S is R quotiented by the family (f_j)_j
+
+ *)
   Definition isSoft (OSig : signature_over Sig) :=
     ∏ (R : rep_ar _ Sig) (J : UU)(d : J -> (rep_ar _ Sig))(f : ∏ j, R →→ (d j))
-      X (x y : (OSig R X : hSet)),
+      X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig choice d f),
     (∏ j, (# OSig (f j))%sigo X x  = (# OSig (f j))%sigo X y )
-      -> (# OSig (projR_rep Sig epiSig choice d f) X x)%sigo = 
-        (# OSig (projR_rep Sig epiSig choice d f) X y)%sigo  .
+      -> (# OSig pi X x)%sigo = 
+        (# OSig pi X y)%sigo  .
 
   Local Notation REP := (rep_ar SET Sig).
 
