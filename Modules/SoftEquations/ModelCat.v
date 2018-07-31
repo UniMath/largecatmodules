@@ -3,7 +3,7 @@
 
 Direct definition, not as a fiber category over a displayed category
 
-TODO: prove that it is equivalent to the fiber category
+- proof  that it is isomorphic to the definition as a fiber category ([catiso_modelcat])
  *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
@@ -19,6 +19,7 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
+Require Import UniMath.CategoryTheory.catiso.
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
@@ -180,5 +181,54 @@ Proof.
   exists (rep_fiber_precategory S).
   apply rep_fiber_category_has_homsets.
 Defined.
+
+(** Proof that it is isomorphic to the fiber category definition *)
+
+Context (S : SIG).
+
+Local Notation FIBER_CAT := (fiber_category (rep_disp C) S).
+Local Notation MODEL_CAT := (rep_fiber_category S).
+
+  Definition fib_to_dir_weq : FIBER_CAT  ≃ MODEL_CAT := idweq _.
+  Local Notation FSob := fib_to_dir_weq.
+
+  Definition fib_to_dir_mor_weq (R R' : FIBER_CAT) :
+    FIBER_CAT ⟦ R , R' ⟧ ≃ MODEL_CAT  ⟦ FSob R , FSob R' ⟧.
+  Proof.
+    apply weqfibtototal.
+    intro f.
+    apply weqonsecfibers.
+    intro o.
+    apply eqweqmap.
+    apply maponpaths.
+    apply cancel_postcomposition.
+    apply ( (id_right _)).
+  Defined.
+  Local Notation FSmor := fib_to_dir_mor_weq.
+
+  Definition fib_to_dir_functor_data : functor_data FIBER_CAT MODEL_CAT :=
+    functor_data_constr _ _  FSob  FSmor.
+
+  Lemma fib_to_dir_is_functor : is_functor fib_to_dir_functor_data.
+  Proof.
+    split.
+    - intro R.
+      apply rep_fiber_mor_eq_nt.
+      apply idpath.
+    - intros R R' T f g.
+      apply rep_fiber_mor_eq_nt.
+      cbn.
+      set (e := id_right _).
+      induction e.
+      apply idpath.
+  Defined.
+
+  Definition fib_to_dir_functor : functor FIBER_CAT MODEL_CAT :=
+    _ ,, fib_to_dir_is_functor.
+  Local Notation FS := fib_to_dir_functor.
+
+  Definition catiso_modelcat : catiso FIBER_CAT MODEL_CAT
+    := FS,, (λ x y : FIBER_CAT, weqproperty (FSmor x y)),, weqproperty FSob.
+
 
 End ModelCat.
