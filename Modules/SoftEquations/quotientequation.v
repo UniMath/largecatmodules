@@ -3,7 +3,7 @@
 
 Proof that the quotient representation satisfies the equations
 
-Definition of a soft signature
+Definition of a soft signature with some examples (tautological, derivatives)
 
 *)
 Require Import UniMath.Foundations.PartD.
@@ -31,6 +31,7 @@ Require Import Modules.Prelims.modules.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.SignatureOver.
 Require Import Modules.SoftEquations.HalfEquation.
+Require Import Modules.SoftEquations.SignatureOverDerivation.
 
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
@@ -78,7 +79,28 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
         (# OSig pi X y)%sigo  .
 
   Local Notation REP := (rep_ar SET Sig).
+  (** Some examples of soft signatures *)
 
+  Lemma isSoft_tauto : isSoft (tautological_signature_over Sig).
+  Proof.
+    red; cbn.
+    intros.
+    apply rel_eq_projR.
+    assumption.
+  Defined.
+
+  (** Derivative of a soft is soft *)
+  Lemma isSoft_derivative {OSig} (soft : isSoft OSig)
+    : isSoft (signature_over_deriv (C := SET) BinCoproductsHSET TerminalHSET OSig).
+  Proof.
+    red; cbn.
+    intros R J d f X x y h.
+    use soft.
+    use h.
+  Defined.
+
+
+  (** Back to the proof *)
   Context {S1 S2 : signature_over Sig}.
   Context {eq1 eq2 : half_equation S1 S2}.
   Context (epiS1 : ∏ R S (f : R →→ S),
