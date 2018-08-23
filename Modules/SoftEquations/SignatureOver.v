@@ -3,6 +3,7 @@
 
     Content:
     - Definition of a signature (aka soft Σ-module) over the category of another signature Σ
+    - Over-signature from a signature
 
 I am faced with a dilemna. Mathematically, a soft Σ-module is a functor from the category
 of models of Σ to the total category of modules, preserving the underlying monad.
@@ -12,6 +13,7 @@ does not work well, because the composition of two morphisms  x ->[id] y and y -
 yield a morphism x ->[id ; id] z
 
 Our solution: re-define directly the category of models of a signature (Cf ModelCat)
+
 
 TODO : factor this definition and the standard definition of signatures ?
 (a lot of stuff was indeed copied and pasted from Signature.v
@@ -113,34 +115,27 @@ Definition signature_over : UU := ∑ F : signature_over_data, is_signature_over
 Definition signature_over_data_from_signature_over (F : signature_over) : signature_over_data := pr1 F.
 Coercion signature_over_data_from_signature_over : signature_over >-> signature_over_data.
 
-Notation Θ := tautological_LModule.
+(** Over signatures from signatures *)
+Definition sig_over_data_from_sig (sig : signature C) : signature_over_data.
+  use tpair.
+  use (signature_on_objects sig).
+  exact (fun R S f =>  signature_on_morphisms sig f).
+Defined.
 
-Definition tautological_signature_over_on_objects : ∏ (R : REP), LModule R C := Θ.
-Definition tautological_signature_over_on_morphisms : 
-  ∏ (R S : REP) (f : rep_fiber_mor R S), LModule_Mor _ (Θ R) (pb_LModule f (Θ S)) :=
-  @monad_mor_to_lmodule C.
+Local Notation OSig := sig_over_data_from_sig.
 
-
-Definition tautological_signature_over_data : signature_over_data  :=
-  tautological_signature_over_on_objects ,, tautological_signature_over_on_morphisms.
-
-Lemma tautological_signature_over_is_signature_over :  is_signature_over tautological_signature_over_data.
-Proof.
+Lemma is_sig_over_from_sig (sig : signature C) : is_signature_over (OSig sig). 
   split.
-  - intros R x.
-    apply idpath.
-  - intros R S T f g.
-    apply LModule_Mor_equiv.
-    + apply homset_property.
-    + apply nat_trans_eq.
-      * apply homset_property.
-      * intro x.
-        cbn.
-        rewrite id_right.
-        apply idpath.
-Qed.
+  - use signature_id.
+  - red.
+    intros; use signature_comp.
+Defined.
 
-Definition tautological_signature_over : signature_over := _ ,, tautological_signature_over_is_signature_over.
+Definition sig_over_from_sig (sig : signature C) : signature_over :=
+  (sig_over_data_from_sig sig ,, is_sig_over_from_sig sig).
+
+Definition tautological_signature_over : signature_over :=
+  sig_over_from_sig tautological_signature.
 
 Definition signature_over_id (F : signature_over) :
   ∏ (R : REP), ∏ x ,
@@ -289,7 +284,7 @@ Proof.
     apply (assoc (C:=category_LModule _ _)).
 Qed.
 
-Definition signature_over_precategory : precategory :=
+Definition signature_over_precategory : precategory := 
   tpair (fun C => is_precategory C)
         (signature_over_precategory_data)
         (is_precategory_signature_over_precategory_data).
@@ -305,6 +300,7 @@ Proof.
   exists (signature_over_precategory).
   apply signature_over_category_has_homsets.
 Defined.
+
 
 
 End OverSignatures.
