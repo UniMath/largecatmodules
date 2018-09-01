@@ -72,13 +72,13 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
  *)
   Definition isSoft (OSig : signature_over Sig) :=
-    ∏ (R : rep_ar _ Sig) (J : UU)(d : J -> (rep_ar _ Sig))(f : ∏ j, R →→ (d j))
+    ∏ (R : model Sig) (J : UU)(d : J -> (model Sig))(f : ∏ j, R →→ (d j))
       X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig choice d f),
     (∏ j, (# OSig (f j))%sigo X x  = (# OSig (f j))%sigo X y )
       -> (# OSig pi X x)%sigo = 
         (# OSig pi X y)%sigo  .
 
-  Local Notation REP := (rep_ar SET Sig).
+  Local Notation REP := (model Sig).
   (** Some examples of soft signatures *)
 
   Lemma isSoft_tauto : isSoft (tautological_signature_over Sig).

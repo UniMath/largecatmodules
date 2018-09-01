@@ -338,7 +338,7 @@ That's how the large category of models is built.
 
 Section LargeCatRep.
   
-Variable (C : category).
+Context {C : category}.
   
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
@@ -364,54 +364,54 @@ and we have no idea what that would look like *)
 
 (** A model is a monad with a module morphisme from its image by the signature
  to itself *)
-Definition rep_ar (ar : SIGNATURE) :=
+Definition model (ar : SIGNATURE) :=
   ∑ R : MONAD, LModule_Mor R (ar R) (Θ R).
 
-Coercion Monad_from_rep_ar (ar : SIGNATURE) (X : rep_ar ar) : MONAD := pr1 X.
+Coercion Monad_from_rep_ar (ar : SIGNATURE) (X : model ar) : MONAD := pr1 X.
 
-Definition rep_τ {ar : signature} (X : rep_ar ar) := pr2 X.
+Definition rep_τ {ar : signature} (X : model ar) := pr2 X.
 
-Definition rep_ar_mor_law {a b : signature} (M : rep_ar a) (N : rep_ar b)
+Definition model_mor_law {a b : signature} (M : model a) (N : model b)
            (f : signature_Mor a b) (g : Monad_Mor M N) 
   := ∏ c : C, rep_τ M c · g c = ((#a g)%ar:nat_trans _ _) c · f N c · rep_τ N c .
 
-Lemma isaprop_rep_ar_mor_law {a b : SIGNATURE} (M : rep_ar a) (N : rep_ar b)
+Lemma isaprop_model_mor_law {a b : SIGNATURE} (M : model a) (N : model b)
       (f : signature_Mor a b) (g : Monad_Mor M N) 
-  : isaprop (rep_ar_mor_law M N f g).
+  : isaprop (model_mor_law M N f g).
 Proof.
   intros.
   apply impred; intro c.
   apply homset_property.
 Qed.
 
-Definition rep_ar_mor_mor (a b : SIGNATURE) (M : rep_ar a) (N : rep_ar b) f :=
-  ∑ g:Monad_Mor M N, rep_ar_mor_law  M N f g.
+Definition model_mor_mor (a b : SIGNATURE) (M : model a) (N : model b) f :=
+  ∑ g:Monad_Mor M N, model_mor_law  M N f g.
 
-Lemma isaset_rep_ar_mor_mor (a b : SIGNATURE) (M : rep_ar a) (N : rep_ar b) f :
-  isaset (rep_ar_mor_mor a b M N f).
+Lemma isaset_model_mor_mor (a b : SIGNATURE) (M : model a) (N : model b) f :
+  isaset (model_mor_mor a b M N f).
 Proof.
   intros.
   apply isaset_total2 .
   - apply has_homsets_Monad.
   - intros.
     apply isasetaprop.
-    apply isaprop_rep_ar_mor_law.
+    apply isaprop_model_mor_law.
 Qed.
 
-Coercion monad_morphism_from_rep_ar_mor_mor {a b : SIGNATURE} {M : rep_ar a} {N : rep_ar b}
-         {f} (h : rep_ar_mor_mor a b M N f) : Monad_Mor M N
+Coercion monad_morphism_from_model_mor_mor {a b : SIGNATURE} {M : model a} {N : model b}
+         {f} (h : model_mor_mor a b M N f) : Monad_Mor M N
   := pr1 h.
 
-Definition rep_ar_mor_ax {a b : SIGNATURE} {M : rep_ar a} {N : rep_ar b}
-           {f} (h:rep_ar_mor_mor a b M N f) :
+Definition model_mor_ax {a b : SIGNATURE} {M : model a} {N : model b}
+           {f} (h:model_mor_mor a b M N f) :
   ∏ c, rep_τ M c · h c = (#a h)%ar c · f N c · rep_τ N c 
   := pr2 h.
 
 Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_SIGNATURE :=
-  (rep_ar,, rep_ar_mor_mor).
+  (model,, model_mor_mor).
 
 Lemma rep_id_law (a : SIGNATURE) (RM : rep_disp_ob_mor a) :
-  rep_ar_mor_law RM RM (identity (C:=PRECAT_SIGNATURE) _) (Monad_identity _).
+  model_mor_law RM RM (identity (C:=PRECAT_SIGNATURE) _) (Monad_identity _).
 Proof.
   intro c.
   apply pathsinv0.
@@ -450,7 +450,7 @@ Qed.
 
 
 (** type de ff ; b (pr1 R) tt -->[ identity (pr1 R) ;; pr1 α] c (pr1 S) tt *)
-Lemma rep_ar_mor_mor_equiv (a b : SIGNATURE) (R:rep_disp_ob_mor a)
+Lemma model_mor_mor_equiv (a b : SIGNATURE) (R:rep_disp_ob_mor a)
       (S:rep_disp_ob_mor b) (f:signature_Mor a b)
       (u v: R -->[ f] S) :
   (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
@@ -458,7 +458,7 @@ Proof.
   intros.
   use (invmap (subtypeInjectivity _ _ _ _  )). 
   - intro g.
-    apply isaprop_rep_ar_mor_law.
+    apply isaprop_model_mor_law.
   - use (invmap (Monad_Mor_equiv _ _  _  )).  
      +  apply homset_property.
      +  apply nat_trans_eq.
@@ -472,21 +472,21 @@ Qed.
 Lemma rep_comp_law  (a b c : SIGNATURE) (f : signature_Mor a b) (g : signature_Mor b c)
       (R : rep_disp_ob_mor a) (S : rep_disp_ob_mor b)    (T : rep_disp_ob_mor c)
       (α:R -->[ f ] S) (β:S -->[g]  T) :
-  (rep_ar_mor_law R T (compose (C:=PRECAT_SIGNATURE) f g)
-                  (compose (C:=PRE_MONAD) (monad_morphism_from_rep_ar_mor_mor α)
-                           ( monad_morphism_from_rep_ar_mor_mor  β))).
+  (model_mor_law R T (compose (C:=PRECAT_SIGNATURE) f g)
+                  (compose (C:=PRE_MONAD) (monad_morphism_from_model_mor_mor α)
+                           ( monad_morphism_from_model_mor_mor  β))).
 Proof.
   intro x.
   cbn.    
   rewrite assoc.
   etrans.
   { apply cancel_postcomposition.
-    use rep_ar_mor_ax. }
+    use model_mor_ax. }
     
   etrans.
   { rewrite <- assoc.
     apply cancel_precomposition.
-    use rep_ar_mor_ax. }
+    use model_mor_ax. }
   
   (* Cf diagramme à ce point *)
   
@@ -540,18 +540,18 @@ Definition rep_data : disp_cat_data _ := (rep_disp_ob_mor ,, rep_id_comp).
 Lemma rep_axioms : disp_cat_axioms signature_category rep_data.
 Proof.
   repeat apply tpair; intros; try apply homset_property.
-  - apply rep_ar_mor_mor_equiv.
+  - apply model_mor_mor_equiv.
     intros c.
     etrans. apply id_left.
     symmetry.
     apply transport_signature_mor.
-  - apply rep_ar_mor_mor_equiv.
+  - apply model_mor_mor_equiv.
     intro c.
     etrans. apply id_right.
     symmetry.
     apply transport_signature_mor.
   - set (heqf:= assoc f g h).
-    apply rep_ar_mor_mor_equiv.
+    apply model_mor_mor_equiv.
     intros c.
     etrans. Focus 2.
       symmetry.
@@ -559,16 +559,16 @@ Proof.
       cbn.
       rewrite assoc.
       apply idpath.
-  - apply isaset_rep_ar_mor_mor.
+  - apply isaset_model_mor_mor.
 Qed.
 
 Definition rep_disp : disp_cat signature_category := rep_data ,, rep_axioms.
 
-Definition pb_rep {a a' : signature} (f : signature_Mor a a') (R : rep_ar a') : rep_ar a :=
+Definition pb_rep {a a' : signature} (f : signature_Mor a a') (R : model a') : model a :=
   ((R : MONAD) ,, ((f R : category_LModule _ _ ⟦_, _⟧) · rep_τ R)).
 
-Lemma pb_rep_to_law {a a'} (f : signature_category ⟦ a, a' ⟧) (R : rep_ar a') :
-  rep_ar_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).
+Lemma pb_rep_to_law {a a'} (f : signature_category ⟦ a, a' ⟧) (R : model a') :
+  model_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).
 Proof.
   intros.
   intro c.
@@ -584,13 +584,13 @@ Qed.
 (** ** Now the cleaving *)
 
 
-Definition pb_rep_to {a a'} (f : signature_category ⟦ a, a' ⟧) (R : rep_ar a') :
+Definition pb_rep_to {a a'} (f : signature_category ⟦ a, a' ⟧) (R : model a') :
   (pb_rep f R : rep_disp a) -->[f] R :=
   (identity (C:=PRE_MONAD) (R:MONAD),, pb_rep_to_law f R).
 
 Lemma rep_mor_law_pb {a a' b} (f : signature_category ⟦ a, a' ⟧) (g : signature_category ⟦ b, a ⟧)
-      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
-  rep_ar_mor_law S (pb_rep f R) g (hh : rep_ar_mor_mor _ _ _ _ _ ).
+      (S : model b) (R : model a') (hh : (S : rep_disp _) -->[g·f] R) :
+  model_mor_law S (pb_rep f R) g (hh : model_mor_mor _ _ _ _ _ ).
 Proof.
   intros.
   destruct hh as [hh h].
@@ -602,7 +602,7 @@ Proof.
 Qed.
 
 Lemma rep_mor_pb {a a' b} (f : signature_category ⟦ a, a' ⟧) (g : signature_category ⟦ b, a ⟧)
-      (S : rep_ar b) (R : rep_ar a') (hh : (S : rep_disp _) -->[g·f] R) :
+      (S : model b) (R : model a') (hh : (S : rep_disp _) -->[g·f] R) :
    (S : rep_disp _) -->[ g] pb_rep f R.
 Proof.
     use tpair.
@@ -611,7 +611,7 @@ Proof.
 Defined.
     
 Definition pb_rep_to_cartesian {a a'} (f : signature_category ⟦ a, a' ⟧)
-           (R : rep_ar a') : is_cartesian ((pb_rep_to f R) :
+           (R : model a') : is_cartesian ((pb_rep_to f R) :
                                              (pb_rep f R : rep_disp a) -->[_] R).
 Proof.
   intros.
@@ -620,13 +620,13 @@ Proof.
   unshelve eapply unique_exists.
   - apply rep_mor_pb.
     exact hh.
-  - abstract (apply rep_ar_mor_mor_equiv;
+  - abstract (apply model_mor_mor_equiv;
     intro c;
     apply id_right).
   - intro u.
-    apply isaset_rep_ar_mor_mor.
+    apply isaset_model_mor_mor.
   - abstract (intros u h;
-    apply rep_ar_mor_mor_equiv;
+    apply model_mor_mor_equiv;
     intro c;
     cbn;
     rewrite <- h;
@@ -646,7 +646,7 @@ Defined.
      
 End LargeCatRep.
 
-
+Arguments rep_disp _ : clear implicits.
 
 
 

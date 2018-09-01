@@ -1,24 +1,22 @@
 
 (** * Category of models of a signature
 
-Direct definition, not as a fiber category over a displayed category
-
+- Direct definition, not as a fiber category over a displayed category
 - proof  that it is isomorphic to the definition as a fiber category ([catiso_modelcat])
- *)
+
+*)
+
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
-
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
-
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
-
 Require Import UniMath.CategoryTheory.catiso.
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
@@ -34,19 +32,18 @@ Section ModelCat.
 
 Context {C : category}.
 
-Local Notation MONAD := (Monad C).
-Local Notation PRE_MONAD := (category_Monad C).
+Local Notation MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
 Local Notation SIG := (signature C).
 
+(** *)
+Definition rep_fiber_mor_law {a : SIG} (M N : model a) 
+           (g : Monad_Mor M N)
+  : UU
+  := ∏ c : C, rep_τ M c · g c = ((#a g)%ar:nat_trans _ _) c ·  rep_τ N c .
 
-
-Definition rep_fiber_mor_law {a : SIG} (M N : rep_ar _ a) 
-            (g : Monad_Mor M N) 
-  := ∏ c : C, rep_τ _ M c · g c = ((#a g)%ar:nat_trans _ _) c ·  rep_τ _ N c .
-
-Lemma isaprop_rep_fiber_mor_law {a  : SIG} (M N : rep_ar _ a)
-       (g : Monad_Mor M N) 
+Lemma isaprop_rep_fiber_mor_law {a  : SIG} (M N : model a)
+      (g : Monad_Mor M N) 
   : isaprop (rep_fiber_mor_law  M N  g).
 Proof.
   intros.
@@ -54,10 +51,10 @@ Proof.
   apply homset_property.
 Qed.
 
-Definition rep_fiber_mor {a : SIG} (M N : rep_ar _ a)  :=
+Definition rep_fiber_mor {a : SIG} (M N : model a)  :=
   ∑ g:Monad_Mor M N, rep_fiber_mor_law  M N g.
 
-Lemma isaset_rep_fiber_mor {a : SIG} (M N : rep_ar _ a)  :
+Lemma isaset_rep_fiber_mor {a : SIG} (M N : model a)  :
   isaset (rep_fiber_mor  M N ).
 Proof.
   intros.
@@ -68,16 +65,16 @@ Proof.
     apply isaprop_rep_fiber_mor_law.
 Qed.
 
-Coercion monad_morphism_from_rep_fiber_mor {a : SIG} {M N : rep_ar _ a} 
+Coercion monad_morphism_from_rep_fiber_mor {a : SIG} {M N : model a} 
           (h : rep_fiber_mor M N) : Monad_Mor M N
   := pr1 h.
 
-Definition rep_fiber_mor_ax {a : SIG} {M N : rep_ar _ a} 
+Definition rep_fiber_mor_ax {a : SIG} {M N : model a} 
             (h:rep_fiber_mor  M N ) :
-  ∏ c, rep_τ _ M c · h c = (#a h)%ar c ·  rep_τ _ N c 
+  ∏ c, rep_τ M c · h c = (#a h)%ar c ·  rep_τ N c 
   := pr2 h.
 
-Lemma rep_fiber_mor_eq_nt {a : SIG} (R S:rep_ar _ a)
+Lemma rep_fiber_mor_eq_nt {a : SIG} (R S:model a)
       (u v: rep_fiber_mor R S) :
   ( u : nat_trans _ _) = v -> u = v.
 Proof.
@@ -90,7 +87,7 @@ Proof.
      +  assumption.
 Qed.
 
-Lemma rep_fiber_mor_eq {a : SIG} (R S:rep_ar _ a)
+Lemma rep_fiber_mor_eq {a : SIG} (R S:model a)
       (u v: rep_fiber_mor R S) :
   (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
 Proof.
@@ -101,7 +98,7 @@ Proof.
   - assumption.
 Qed.
 
-Lemma is_rep_fiber_id {a : SIG} (M : rep_ar _ a) : rep_fiber_mor_law M M (identity (C := PRE_MONAD) (M : Monad _)).
+Lemma is_rep_fiber_id {a : SIG} (M : model a) : rep_fiber_mor_law M M (identity (C := MONAD) (M : Monad _)).
 Proof.
   intro c.
   rewrite signature_id.
@@ -110,9 +107,9 @@ Proof.
   apply id_left.
 Qed.
 
-Lemma is_rep_fiber_comp {a : SIG} {M N O: rep_ar _ a}
+Lemma is_rep_fiber_comp {a : SIG} {M N O: model a}
       (f : rep_fiber_mor M N) (g : rep_fiber_mor N O) : rep_fiber_mor_law M O
-                                                                          (compose (C := PRE_MONAD)
+                                                                          (compose (C := MONAD)
                                                                                    (f : Monad_Mor _ _)
                                                                                    (g : Monad_Mor _ _)).
 Proof.
@@ -128,10 +125,10 @@ Proof.
   reflexivity.
 Qed.
 
-Definition rep_fiber_id {a : SIG} (M : rep_ar _ a) : rep_fiber_mor M M :=
+Definition rep_fiber_id {a : SIG} (M : model a) : rep_fiber_mor M M :=
     tpair _ _ (is_rep_fiber_id M).
 
-Definition rep_fiber_comp {a : SIG} {M N O: rep_ar _ a}
+Definition rep_fiber_comp {a : SIG} {M N O: model a}
       (f : rep_fiber_mor M N) (g : rep_fiber_mor N O) : rep_fiber_mor M O :=
   tpair _ _ (is_rep_fiber_comp f g).
 

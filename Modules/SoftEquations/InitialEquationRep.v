@@ -49,7 +49,7 @@ Section QuotientRep.
                     isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                     isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
 
-  Local Notation REP := (rep_ar SET Sig).
+  Local Notation REP := (model Sig).
 
   Local Notation REP_CAT := (rep_fiber_category Sig).
 

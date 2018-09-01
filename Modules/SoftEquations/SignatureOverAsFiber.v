@@ -54,14 +54,14 @@ Local Notation SIG := (signature C).
 
 Context (Sig : SIG).
 
-Local Notation REP := (rep_ar C Sig).
+Local Notation REP := (model Sig).
 
 (* Let rep_ar_mor (R S : REP) := rep_ar_mor_mor _ Sig Sig R S (signature_Mor_id Sig). *)
 
-Local Notation  "R →→ S" := (rep_ar_mor_mor _ Sig Sig R S (signature_Mor_id Sig))
+Local Notation  "R →→ S" := (model_mor_mor Sig Sig R S (signature_Mor_id Sig))
     (at level 6).
 Let comp {R S T : REP} (f : R →→ S)(g : S →→ T) : R →→ T :=
-  transportf _ (id_left _) (comp_disp  (D := rep_disp C ) f g  ).
+  transportf _ (id_left _) (comp_disp  (D := rep_disp _) f g  ).
 
 Local Infix  ";;" := comp.
 
@@ -84,7 +84,7 @@ Notation "# F" := (signature_over_on_morphisms F) (at level 3) : signature_over_
 
 Definition signature_over_idax  (F : signature_over_data) :=
   ∏ (R : REP), ∏ x ,
-  (# F (rep_id _ _ R))%sigo x  = identity  _.
+  (# F (rep_id _ R))%sigo x  = identity  _.
 
 
 
@@ -148,7 +148,7 @@ Definition tautological_signature_over : signature_over := _ ,, tautological_sig
 
 Definition signature_over_id (F : signature_over) :
   ∏ (R : REP), ∏ x ,
-  ((# F (rep_id _ _ R)))%sigo x  = identity  _
+  ((# F (rep_id _ R)))%sigo x  = identity  _
   := pr1 (pr2 F).
 
 Definition signature_over_comp (F : signature_over) {R S T : REP} 

@@ -151,8 +151,8 @@ define the quotient of a monad, and of a module over a monad.
 
 (* These definitions are used for exploiting quotientmonadslice *)
 Let J := ∑ (S : REP b), (R -->[ F] S).
-Let dd (j : J) : Monad _ := (pr1 j : rep_ar _ _).
-Let ff (j : J) : Monad_Mor  (R : rep_ar _ _) (dd j) := (pr2 j : rep_ar_mor_mor _ _ _ _ _ _).
+Let dd (j : J) : Monad _ := (pr1 j : model _ ).
+Let ff (j : J) : Monad_Mor  (R : model _) (dd j) := (pr2 j : model_mor_mor _ _ _ _ _ ).
 
 Arguments R' : simpl never.
 Arguments projR : simpl never.
@@ -240,13 +240,13 @@ Qed.
 
 Lemma eq_mr
       {S : REP b} (m : R -->[ F] S) (X : SET)
-  : rep_τ _ R X · ## m X 
+  : rep_τ R X · ## m X 
     =
     pr1 (# a projR)%ar X · (F (R' ))%ar X 
         ·
-        pr1 (# b (u m))%ar X · rep_τ _ S X.
+        pr1 (# b (u m))%ar X · rep_τ S X.
 Proof.
-  etrans. { apply rep_ar_mor_ax. }
+  etrans. { apply model_mor_ax. }
   cpost _.
   etrans.
   { cpost _.
@@ -375,7 +375,7 @@ Lemma compat_rep_τ_projR
     (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR )%ar X) x *)
     (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR )%ar X) y *)
     ->
-    (rep_τ _ R X · projR X) x = (rep_τ _ R X · projR X) y.
+    (rep_τ R X · projR X) x = (rep_τ R X · projR X) y.
 Proof.
   intros X x y comp.
   apply rel_eq_projR.
@@ -448,13 +448,13 @@ Definition R'_rep_τ_def
   : ∏ (X : SET),
     (# a (projR)%ar) X · (F R') X · R'_rep_τ_module X  
     = 
-    rep_τ _ R X · projR X .
+    rep_τ R X · projR X .
 Proof.
   intro X.
   use quotientrep.R'_rep_τ_def.
 Qed.
 
-Definition rep_of_b_in_R' : rep_disp SET b.
+Definition rep_of_b_in_R' : rep_disp _ b.
   use tpair.
   - exact R'.
   - exact R'_rep_τ_module.
@@ -464,7 +464,7 @@ Defined.
 
 (* projR est un morphisme de model *)
 
-Lemma projR_rep_laws : rep_ar_mor_law SET R rep_of_b_in_R' F projR.
+Lemma projR_rep_laws : model_mor_law R rep_of_b_in_R' F projR.
 Proof.
   intro X.
   symmetry.
@@ -489,13 +489,13 @@ Open Scope signature_scope.
 
 (* TODO  : foutre ça dans quotientrep *)
 Lemma u_rep_laws
-  : rep_ar_mor_law SET (rep_of_b_in_R' cond_F) S (identity (b : CAT_SIGNATURE)) (u m).
+  : model_mor_law (rep_of_b_in_R' cond_F) S (identity (b : CAT_SIGNATURE)) (u m).
 Proof.
   intro X.
   apply pathsinv0.
   apply quotientrep.u_rep_laws.
   intro X'.
-  etrans; [apply (rep_ar_mor_ax _ m )|].
+  etrans; [apply (model_mor_ax m )|].
   apply cancel_postcomposition.
   etrans.
   (* # a m ;; F_S = #a π ;; F_R' ;; # b u *)
@@ -531,13 +531,13 @@ Definition u_rep : (rep_of_b_in_R' cond_F) -->[identity (b: CAT_SIGNATURE)] S
 Lemma u_rep_unique
       (u'_rep : rep_of_b_in_R' cond_F -->[identity (b:CAT_SIGNATURE)] S)
       (hu' : ∏ x,
-             ((projR_rep cond_F : rep_ar_mor_mor _ _ _ _ _ _) x
-              · (u'_rep : rep_ar_mor_mor _ _ _ _ _ _) x)
+             ((projR_rep cond_F : model_mor_mor _ _ _ _ _) x
+              · (u'_rep : model_mor_mor _ _ _ _ _) x)
              =
-             (m : rep_ar_mor_mor _ _ _ _ _ _ ) x)
+             (m : model_mor_mor _ _ _ _ _) x)
   : u'_rep = u_rep.
 Proof.
-  apply rep_ar_mor_mor_equiv.
+  apply model_mor_mor_equiv.
   apply (univ_surj_nt_unique _ _ _ _ (##u'_rep)).
   - apply nat_trans_eq.
     + apply has_homsets_HSET.
@@ -555,7 +555,7 @@ End fix_rep_of_a.
 Let Rep_a : category := fiber_category (rep_disp SET) a.
 Let Rep_b : category := fiber_category (rep_disp SET) b.
 
-Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
+Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ rep_cleaving F.
 
 
 Lemma build_module_law
@@ -563,9 +563,8 @@ Lemma build_module_law
       (cond_R : cond_isEpi_hab R)
       (S : Rep_b)
       (m : Rep_b ⟦ rep_of_b_in_R' R cond_R, S ⟧)
-  : rep_ar_mor_law _
-                   R
-                   (pb_rep SET F S)
+  : model_mor_law  R
+                   (pb_rep F S)
                    (signature_Mor_id (pr1 a))
                    ((pr1 (projR_rep R cond_R) : category_Monad _ ⟦_,_⟧) · pr1 m).
 Proof.
@@ -574,7 +573,7 @@ Proof.
   {
     etrans; [apply assoc |].
     apply cancel_postcomposition.
-    apply (rep_ar_mor_ax _ (projR_rep R cond_R)).
+    apply (model_mor_ax (projR_rep R cond_R)).
   }
   rewrite signature_comp.
   repeat rewrite <- assoc.
@@ -591,7 +590,7 @@ Proof.
   etrans.
   {
     apply cancel_precomposition.
-    apply (rep_ar_mor_ax _ m).
+    apply (model_mor_ax m).
   }
   reflexivity.
 Qed.
@@ -601,7 +600,7 @@ Definition build_module
            (cond_R : cond_isEpi_hab R)
            (S : Rep_b)
            (m : Rep_b ⟦ rep_of_b_in_R' R cond_R, S ⟧)
-  : rep_ar_mor_mor _ a a R (pb_rep SET F S) (signature_Mor_id (pr1 a))
+  : model_mor_mor a a R (pb_rep F S) (signature_Mor_id (pr1 a))
   := _ ,, build_module_law R cond_R S m.
   
 Theorem push_initiality
@@ -663,11 +662,11 @@ Lemma helper
       (Fepi : forall R, isEpi (C := [_, _]) (pr1 (F (R' R))))
       (R : Rep_a)
       (cond_F := inl (dirprodpair (Fepi R) aepi ) : cond_isEpi_hab R)
-      (S : rep_ar SET b)
+      (S : model b)
   : ∏ (u' : Rep_b ⟦ rep_of_b_in_R' R cond_F, S ⟧) x,
-    projR R x · (u' : rep_ar_mor_mor _ _ _ _ _ _) x =
+    projR R x · (u' : model_mor_mor _ _ _ _ _) x =
     pr1 (pr1 (compose (C:=Rep_a) (b:=FF (rep_of_b_in_R' R cond_F))
-                      (projR_rep R cond_F : rep_ar_mor_mor _ _ _ _ _ _)
+                      (projR_rep R cond_F : model_mor_mor _ _ _ _ _)
                       (# FF u'))) x.
 Proof.
   intros u' x.
@@ -703,7 +702,7 @@ Proof.
     + apply (u_rep _ m). 
     + (* Ici ca devrait être apply quotientmonad.u_def *)
       apply pathsinv0. 
-      apply rep_ar_mor_mor_equiv.
+      apply model_mor_mor_equiv.
       intro x.
       etrans. { apply u_def. }
       apply (helper Fepi _ _ (u_rep R m (cond_F R))).
