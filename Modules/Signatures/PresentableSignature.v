@@ -74,7 +74,7 @@ Local Notation toSig sig :=
 Lemma PresentableisRepresentable (choice : AxiomOfChoice.AxiomOfChoice_surj)
       {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
                                          (fun i => CoproductsHSET _ (setproperty i)) a) :
-   Initial (rep_disp SET)[{a}].
+   Initial (rep_disp SET) [{a}].
 Proof.
   use (push_initiality_weaker choice (p_mor  p)).
   - apply alg_initialR.

@@ -42,7 +42,7 @@ Local Notation Signature := (signature C).
 Local Notation MOD R := (precategory_LModule R C).
 
 Context { Sig : signature C}.
-Local Notation MODEL := (rep_ar C Sig).
+Local Notation MODEL := (model Sig).
 Local Notation MODEL_MOR := rep_fiber_mor.
 Local Notation OSIG := (signature_over Sig).
 Variable (a : OSIG).
