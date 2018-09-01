@@ -40,7 +40,7 @@ Local Notation SIG := (signature C).
 Definition rep_fiber_mor_law {a : SIG} (M N : model a) 
            (g : Monad_Mor M N)
   : UU
-  := ∏ c : C, rep_τ M c · g c = ((#a g)%ar:nat_trans _ _) c ·  rep_τ N c .
+  := ∏ c : C, model_τ M c · g c = ((#a g)%ar:nat_trans _ _) c ·  model_τ N c .
 
 Lemma isaprop_rep_fiber_mor_law {a  : SIG} (M N : model a)
       (g : Monad_Mor M N) 
@@ -71,7 +71,7 @@ Coercion monad_morphism_from_rep_fiber_mor {a : SIG} {M N : model a}
 
 Definition rep_fiber_mor_ax {a : SIG} {M N : model a} 
             (h:rep_fiber_mor  M N ) :
-  ∏ c, rep_τ M c · h c = (#a h)%ar c ·  rep_τ N c 
+  ∏ c, model_τ M c · h c = (#a h)%ar c ·  model_τ N c 
   := pr2 h.
 
 Lemma rep_fiber_mor_eq_nt {a : SIG} (R S:model a)

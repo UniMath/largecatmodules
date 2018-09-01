@@ -109,16 +109,16 @@ Context {a : LModule R SET}
         (* TODO : demander que ce soit pointwise epi plutôt *)
         (isEpih : isEpi (C:=[SET,SET]) (h:nat_trans _ _)).
 
-Definition R'_rep_τ  : nat_trans b R'.
+Definition R'_model_τ  : nat_trans b R'.
 Proof.
   (* TODO : adapter univ_surj_nt pour que ça demande epi pointwise pour h *)
   apply (univ_surj_nt _ (((τ :nat_trans _ _):[SET,SET]⟦_,_⟧) · (projR_monad:nat_trans _ _)) compath).
   apply isEpih.
 Defined.
 
-Local Notation τ' := R'_rep_τ.
+Local Notation τ' := R'_model_τ.
            
-Definition R'_rep_τ_def : ∏ X, h X · τ' X = τ X · projR_monad X.
+Definition R'_model_τ_def : ∏ X, h X · τ' X = τ X · projR_monad X.
 Proof.
   apply (univ_surj_nt_ax_pw _
                             (((τ : nat_trans _ _ ) : [SET,SET]⟦_,_⟧) · (projR_monad : nat_trans _ _))
@@ -178,7 +178,7 @@ Proof.
     etrans; [apply assoc|].
     apply cancel_postcomposition.
     (* definition of τ' *)
-    apply R'_rep_τ_def.
+    apply R'_model_τ_def.
   }
   repeat rewrite <- assoc.
   etrans.
@@ -211,14 +211,14 @@ Proof.
   }
   repeat rewrite <- assoc.
   apply cancel_precomposition.
-  apply R'_rep_τ_def.
+  apply R'_model_τ_def.
 Qed.
 
-Lemma R'_rep_τ_module_laws 
+Lemma R'_model_τ_module_laws 
   : LModule_Mor_laws _ 
                      (T:=b)
                      (T':= tautological_LModule R'_monad)
-                     R'_rep_τ.
+                     R'_model_τ.
 Proof.
   intro X.
   
@@ -241,8 +241,8 @@ Proof.
   apply τ'_law_eq2.
 Qed.    
 
-Definition R'_rep_τ_module : LModule_Mor _ b (tautological_LModule R'_monad) 
-  := _ ,, R'_rep_τ_module_laws.
+Definition R'_model_τ_module : LModule_Mor _ b (tautological_LModule R'_monad) 
+  := _ ,, R'_model_τ_module_laws.
 
 (** Let S a monad, m : R -> S a monad morphism compatible with the equivalence relation
 This induces a monad morphism u : R' -> S that makes the following diagram commute
@@ -335,7 +335,7 @@ Proof.
   etrans.
   { rewrite assoc.
     apply cancel_postcomposition.
-    apply R'_rep_τ_def.
+    apply R'_model_τ_def.
   } 
   etrans.
   { rewrite <- assoc.

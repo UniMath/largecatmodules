@@ -369,11 +369,11 @@ Definition model (ar : SIGNATURE) :=
 
 Coercion Monad_from_rep_ar (ar : SIGNATURE) (X : model ar) : MONAD := pr1 X.
 
-Definition rep_τ {ar : signature} (X : model ar) := pr2 X.
+Definition model_τ {ar : signature} (X : model ar) := pr2 X.
 
 Definition model_mor_law {a b : signature} (M : model a) (N : model b)
            (f : signature_Mor a b) (g : Monad_Mor M N) 
-  := ∏ c : C, rep_τ M c · g c = ((#a g)%ar:nat_trans _ _) c · f N c · rep_τ N c .
+  := ∏ c : C, model_τ M c · g c = ((#a g)%ar:nat_trans _ _) c · f N c · model_τ N c .
 
 Lemma isaprop_model_mor_law {a b : SIGNATURE} (M : model a) (N : model b)
       (f : signature_Mor a b) (g : Monad_Mor M N) 
@@ -404,7 +404,7 @@ Coercion monad_morphism_from_model_mor_mor {a b : SIGNATURE} {M : model a} {N : 
 
 Definition model_mor_ax {a b : SIGNATURE} {M : model a} {N : model b}
            {f} (h:model_mor_mor a b M N f) :
-  ∏ c, rep_τ M c · h c = (#a h)%ar c · f N c · rep_τ N c 
+  ∏ c, model_τ M c · h c = (#a h)%ar c · f N c · model_τ N c 
   := pr2 h.
 
 Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_SIGNATURE :=
@@ -565,7 +565,7 @@ Qed.
 Definition rep_disp : disp_cat signature_category := rep_data ,, rep_axioms.
 
 Definition pb_rep {a a' : signature} (f : signature_Mor a a') (R : model a') : model a :=
-  ((R : MONAD) ,, ((f R : category_LModule _ _ ⟦_, _⟧) · rep_τ R)).
+  ((R : MONAD) ,, ((f R : category_LModule _ _ ⟦_, _⟧) · model_τ R)).
 
 Lemma pb_rep_to_law {a a'} (f : signature_category ⟦ a, a' ⟧) (R : model a') :
   model_mor_law (pb_rep f R) R f (identity ((R : MONAD) : PRE_MONAD)).

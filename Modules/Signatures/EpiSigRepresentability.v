@@ -224,7 +224,7 @@ Qed.
 
 (** 
 <<
-                 rep_τ R
+                 model_τ R
             a R  ----->  R
              |           |
      a projR |           | m
@@ -234,17 +234,17 @@ Qed.
         F R' |           |
              v           v
             b R'->b(S)-> S
-     b(\overline{m}) · rep_τ S
+     b(\overline{m}) · model_τ S
 >>
 *)
 
 Lemma eq_mr
       {S : REP b} (m : R -->[ F] S) (X : SET)
-  : rep_τ R X · ## m X 
+  : model_τ R X · ## m X 
     =
     pr1 (# a projR)%ar X · (F (R' ))%ar X 
         ·
-        pr1 (# b (u m))%ar X · rep_τ S X.
+        pr1 (# b (u m))%ar X · model_τ S X.
 Proof.
   etrans. { apply model_mor_ax. }
   cpost _.
@@ -273,9 +273,9 @@ Section R'Model.
     with underlying monad the quotient monad defined in the previous step
 *)
 
-(** R'_rep_τ is defined by the following diagram :
+(** R'_model_τ is defined by the following diagram :
 <<
-                  rep_τ R
+                  model_τ R
             a R  ----->  R
              |           |
          F R |           | projR
@@ -285,12 +285,12 @@ Section R'Model.
      b projR |           |
              v           v
            b R' -------> R'
-                R'_rep_τ
+                R'_model_τ
 
 >>
 or rather the following diagram.
 <<
-                 rep_τ R
+                 model_τ R
             a R  ----->  R
              |           |
      a projR |           | projR
@@ -300,14 +300,14 @@ or rather the following diagram.
         F R' |           |
              v           v
             b R' ------> R'
-                R'_rep_τ
+                R'_model_τ
 >>
 
 We need to show that for all x,y such that
 F R' o a projR (x) = F R' o a projR (y), we have
-  projR o rep_τ R (x) = projR o rep_τ R (y)
+  projR o model_τ R (x) = projR o model_τ R (y)
 
-This is lemma [compat_rep_τ_projR]
+This is lemma [compat_model_τ_projR]
 *)
 
 
@@ -353,7 +353,7 @@ Qed.
 
 (** This is the compatibility relation that is needed to construct
 
-    R'_rep_τ : b R' -> R'
+    R'_model_τ : b R' -> R'
 
 <<
                τ
@@ -366,7 +366,7 @@ hab  |                      | π
 
 >>
 *)
-Lemma compat_rep_τ_projR 
+Lemma compat_model_τ_projR 
   : ∏ (X : SET) x y,
     (pr1 hab) X x
     (* =       ( pr1 (# a projR )%ar X ;; (F `` R') X) y *)
@@ -375,7 +375,7 @@ Lemma compat_rep_τ_projR
     (* (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR )%ar X) x *)
     (* = (( armor_ob _ F (pr1 R) X ) ;; pr1 (# b projR )%ar X) y *)
     ->
-    (rep_τ R X · projR X) x = (rep_τ R X · projR X) y.
+    (model_τ R X · projR X) x = (model_τ R X · projR X) y.
 Proof.
   intros X x y comp.
   apply rel_eq_projR.
@@ -403,7 +403,7 @@ Definition cond_isEpi_hab :=
 
 Context (cond_hab : cond_isEpi_hab).
 
-Lemma isEpi_def_R'_rep_τ : isEpi (C:= [SET,SET]) (pr1 hab).
+Lemma isEpi_def_R'_model_τ : isEpi (C:= [SET,SET]) (pr1 hab).
 Proof.
   case cond_hab.
   - intros [epiFR' epia].
@@ -420,12 +420,12 @@ Proof.
 Qed.
 
 
-Definition R'_rep_τ_module 
+Definition R'_model_τ_module 
   : LModule_Mor _ (b R') (tautological_LModule R') .
 Proof.
-  use quotientrep.R'_rep_τ_module; revgoals.
-  - apply isEpi_def_R'_rep_τ.
-  - apply compat_rep_τ_projR.
+  use quotientrep.R'_model_τ_module; revgoals.
+  - apply isEpi_def_R'_model_τ.
+  - apply compat_model_τ_projR.
 Defined.
 
 (** 
@@ -444,20 +444,20 @@ Defined.
 >>
 *)
 
-Definition R'_rep_τ_def 
+Definition R'_model_τ_def 
   : ∏ (X : SET),
-    (# a (projR)%ar) X · (F R') X · R'_rep_τ_module X  
+    (# a (projR)%ar) X · (F R') X · R'_model_τ_module X  
     = 
-    rep_τ R X · projR X .
+    model_τ R X · projR X .
 Proof.
   intro X.
-  use quotientrep.R'_rep_τ_def.
+  use quotientrep.R'_model_τ_def.
 Qed.
 
 Definition rep_of_b_in_R' : rep_disp _ b.
   use tpair.
   - exact R'.
-  - exact R'_rep_τ_module.
+  - exact R'_model_τ_module.
 Defined.
 
 (* FIN DE LA PARTIE 5 *)
@@ -468,7 +468,7 @@ Lemma projR_rep_laws : model_mor_law R rep_of_b_in_R' F projR.
 Proof.
   intro X.
   symmetry.
-  apply (R'_rep_τ_def X).
+  apply (R'_model_τ_def X).
 Qed.
 
 Definition projR_rep : R -->[F] rep_of_b_in_R' := (_ ,, projR_rep_laws).

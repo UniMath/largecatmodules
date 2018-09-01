@@ -72,7 +72,7 @@ Section EpiSignatureSig.
       Monad_Mor  (pr1 (alg_initialR sig)) b.
   Proof.
     apply j_mon.
-    apply (rep_τ b).
+    apply (model_τ b).
   Defined.
 
   (* j_mon is a morphism of model *)
@@ -111,7 +111,7 @@ Section EpiSignatureSig.
              (t : (rep_disp SET) [{hss_to_ar (C := SET) (toSig sig)}] ⟦ alg_initialR sig, b ⟧) :
     is_algebra_mor (Id_H HSET hom_SET BinCoproductsHSET (toSig sig))
                    (pr1 (pr1 (iniHSS sig)))
-                   (M_alg (toSig sig) b (rep_τ b))
+                   (M_alg (toSig sig) b (model_τ b))
                    (pr1 (pr1 t)).
   Proof.
     red.
@@ -137,7 +137,7 @@ Section EpiSignatureSig.
   Definition rep_mor_to_alg_mor {sig : BindingSig}
              (b : model (hss_to_ar (C := SET)(toSig sig)))
              (t : (rep_disp SET) [{hss_to_ar (C := SET) (toSig sig)}] ⟦ alg_initialR sig, b ⟧) :
-    EndAlg sig ⟦ (pr1 (pr1 (iniHSS sig))) , M_alg (toSig sig) b (rep_τ b) ⟧.
+    EndAlg sig ⟦ (pr1 (pr1 (iniHSS sig))) , M_alg (toSig sig) b (model_τ b) ⟧.
   Proof.
     use tpair.
     - apply t.
@@ -170,7 +170,7 @@ Section EpiSignatureSig.
            HSET HSET hom_SET (ColimsHSET_of_shape nat_graph)
            (initChain (Initial_functor_precat HSET HSET InitialHSET hom_SET)
               (Id_H HSET hom_SET BinCoproductsHSET (toSig sig)))))
-     (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET (toSig sig) b (rep_τ b)))).
+     (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET (toSig sig) b (model_τ b)))).
     specialize (h (rep_mor_to_alg_mor b t)).
     apply model_mor_mor_equiv.
     apply algebra_mor_eq in h; [|apply (homset_property EndSet)].

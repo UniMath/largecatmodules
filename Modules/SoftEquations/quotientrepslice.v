@@ -144,8 +144,8 @@ Local Notation Θ := tautological_LModule.
 Lemma R'_action_compat :
   ∏ (X : SET) (x y : (Sig R) X : hSet),
   (# Sig)%ar projR X x = (# Sig)%ar projR X y
-  → ((rep_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X x =
-    ((rep_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X y.
+  → ((model_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X x =
+    ((model_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X y.
 Proof.
   - intros X x y eq.
     apply rel_eq_projR.
@@ -183,7 +183,7 @@ Proof.
   use (univ_surj_pb_lmod_nt_epi
          projR
          _ (# Sig projR)%ar
-         ((rep_τ R : MOD R ⟦_,_⟧ ) · (monad_mor_to_lmodule projR ))
+         ((model_τ R : MOD R ⟦_,_⟧ ) · (monad_mor_to_lmodule projR ))
       ); revgoals.
   - apply epiSig.
     apply isEpi_projR.
