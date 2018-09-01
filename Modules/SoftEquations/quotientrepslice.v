@@ -30,9 +30,6 @@ Require Import Modules.Signatures.Signature.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.Prelims.modules.
 
-
-Require Import Modules.Prelims.LModuleEpiArePointwise.
-
 Open Scope cat.
 
 (* TODO: move this in lib.v *)
