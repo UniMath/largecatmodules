@@ -2,7 +2,7 @@ SignatureOverAsFiber.v
 ModelCat.v
 SignatureOver.v
 quotientrepslice.v
-HalfEquation.v
+Equation.v
 quotientequation.v
 InitialEquationRep.v
 SignatureOverDerivation.v
