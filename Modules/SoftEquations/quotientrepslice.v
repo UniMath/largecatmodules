@@ -126,7 +126,7 @@ Context (epiSig : ∏ (R S : Monad _)
                   isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                   isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
 
-Local Notation REP := (rep_ar SET Sig).
+Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
 
 Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
@@ -144,8 +144,8 @@ Local Notation Θ := tautological_LModule.
 Lemma R'_action_compat :
   ∏ (X : SET) (x y : (Sig R) X : hSet),
   (# Sig)%ar projR X x = (# Sig)%ar projR X y
-  → ((rep_τ SET R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X x =
-    ((rep_τ SET R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X y.
+  → ((model_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X x =
+    ((model_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X y.
 Proof.
   - intros X x y eq.
     apply rel_eq_projR.
@@ -183,7 +183,7 @@ Proof.
   use (univ_surj_pb_lmod_nt_epi
          projR
          _ (# Sig projR)%ar
-         ((rep_τ _ R : MOD R ⟦_,_⟧ ) · (monad_mor_to_lmodule projR ))
+         ((model_τ R : MOD R ⟦_,_⟧ ) · (monad_mor_to_lmodule projR ))
       ); revgoals.
   - apply epiSig.
     apply isEpi_projR.
@@ -194,7 +194,7 @@ Proof.
     + apply isEpi_projR_pw.
 Defined.
 
-Definition R'_model : rep_ar _ Sig := R' ,, R'_action.
+Definition R'_model : model Sig := R' ,, R'_action.
 
 (** π is a morphism of model *)
 Lemma π_rep_laws : rep_fiber_mor_law R R'_model projR.

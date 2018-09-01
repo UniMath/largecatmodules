@@ -60,7 +60,7 @@ Local Notation SIG := (signature C).
 
 
 Context (Sig : SIG).
-Local Notation REP := (rep_ar C Sig).
+Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
 
 Local Notation  "R →→ S" := (rep_fiber_mor  R S) (at level 6).
