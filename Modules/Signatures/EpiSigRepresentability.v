@@ -555,7 +555,7 @@ End fix_rep_of_a.
 Let Rep_a : category := fiber_category (rep_disp SET) a.
 Let Rep_b : category := fiber_category (rep_disp SET) b.
 
-Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ rep_cleaving F.
+Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
 
 
 Lemma build_module_law

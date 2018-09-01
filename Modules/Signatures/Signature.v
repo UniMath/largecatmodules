@@ -647,7 +647,7 @@ Defined.
 End LargeCatRep.
 
 Arguments rep_disp _ : clear implicits.
-
+Arguments rep_cleaving : clear implicits.
 
 
 

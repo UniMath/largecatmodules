@@ -73,23 +73,23 @@ Section init.
     (poC : isPushout f1 f2 g1 g2 heq).
 
 
-  Let ff1 : R0 -->[f1] R1 :=  disp_InitialArrow (rep_disp _) rep_cleaving repr_R0 f1.
-  Let ff2 : R0 -->[f2] R2 :=  disp_InitialArrow (rep_disp _) rep_cleaving repr_R0 f2.
-  Let gg1 : R1 -->[g1] R' :=  disp_InitialArrow (rep_disp _) rep_cleaving repr_R1 g1.
-  Let gg2 : R2 -->[g2] R' :=  disp_InitialArrow (rep_disp _) rep_cleaving repr_R2 g2.
+  Let ff1 : R0 -->[f1] R1 :=  disp_InitialArrow (rep_disp _) (rep_cleaving _) repr_R0 f1.
+  Let ff2 : R0 -->[f2] R2 :=  disp_InitialArrow (rep_disp _) (rep_cleaving _) repr_R0 f2.
+  Let gg1 : R1 -->[g1] R' :=  disp_InitialArrow (rep_disp _) (rep_cleaving _) repr_R1 g1.
+  Let gg2 : R2 -->[g2] R' :=  disp_InitialArrow (rep_disp _) (rep_cleaving _) repr_R2 g2.
 
   Let eq_ff : TT ff1 · TT gg1 = TT ff2 · TT gg2.
   Proof.
     use total2_paths2_b.
     - exact heq.
-    - etrans; [ apply (disp_InitialArrowUnique _ rep_cleaving  repr_R0) | ].
+    - etrans; [ apply (disp_InitialArrowUnique _ (rep_cleaving _) repr_R0) | ].
       apply pathsinv0.
-      apply (disp_InitialArrowUnique _ rep_cleaving repr_R0).
+      apply (disp_InitialArrowUnique _ (rep_cleaving _) repr_R0).
   Qed.
 
 
   Definition pushout_in_big_rep : isPushout (TT ff1)(TT ff2)(TT gg1)(TT gg2) eq_ff :=
-    pushout_total (rep_disp C) rep_cleaving ff1 ff2 gg1 gg2 repr_R1 repr_R2 repr_R' poC.
+    pushout_total (rep_disp C) (rep_cleaving _) ff1 ff2 gg1 gg2 repr_R1 repr_R2 repr_R' poC.
 
 
 End init.
