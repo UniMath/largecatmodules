@@ -99,14 +99,27 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
     use h.
   Defined.
 
+  Local Notation σ := source_equation.
+  Local Notation τ := target_equation.
+
+  Definition isEpi_overSig (M : signature_over Sig) :=
+        ∏ R S (f : R →→ S),
+                   isEpi (C := [SET, SET]) (f : nat_trans _ _) ->
+                   isEpi (C := [SET, SET]) (# M f : nat_trans _ _)%sigo.
+
+  Definition soft_equation :=
+    ∑ (e : equation), isSoft (τ e) × isEpi_overSig (σ e).
+
+  Coercion eq_from_soft_equation (e : soft_equation) : equation := pr1 e.
+
+  Definition soft_equation_isSoft (e : soft_equation) : isSoft (τ e) :=
+    pr1 (pr2 e).
+
+  Definition soft_equation_isEpi (e : soft_equation) : isEpi_overSig (σ e) :=
+    pr2 (pr2 e).
+
 
   (** Back to the proof *)
-  Context {S1 S2 : signature_over Sig}.
-  Context (epiS1 : ∏ R S (f : R →→ S),
-                   isEpi (C := [SET, SET]) (f : nat_trans _ _) ->
-                   isEpi (C := [SET, SET]) (# S1 f : nat_trans _ _)%sigo).
-  Context (softS2 : isSoft S2).
-
 
 
   Context {R : REP} {J : UU} (d : J -> REP) 
@@ -118,13 +131,13 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   Local Notation π := projR.
   Local Notation Θ := tautological_LModule.
 
-  Lemma R'_satisfies_eq {eq1 eq2 : half_equation S1 S2}
-        (deq : ∏ j, satisfies_equation eq1 eq2 (d j))
-    : satisfies_equation eq1 eq2 R'.
+  Lemma R'_satisfies_eq (e : soft_equation)
+        (deq : ∏ j, satisfies_equation e (d j))
+    : satisfies_equation e  R'.
   Proof.
     red.
     apply LModule_Mor_equiv; [apply homset_property|].
-    apply (epiS1 _ _ projR).
+    apply (soft_equation_isEpi e _ _ projR).
     {  apply isEpi_projR. }
     etrans ; [apply signature_over_Mor_ax  |].
     etrans ; [ | apply pathsinv0; apply signature_over_Mor_ax  ].
@@ -132,29 +145,29 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
     intro X.
     apply funextfun.
     intro x.
-    apply softS2.
+    apply soft_equation_isSoft.
     intro j.
     do 2 rewrite comp_cat_comp.
     use (toforallpaths _ _ _ _ x).
     do 2 rewrite nat_trans_comp_pointwise'.
     use (toforallpaths _ _ _ _ X).
-    rewrite <- (signature_over_Mor_ax _ eq1).
-    rewrite <- (signature_over_Mor_ax _ eq2).
+    rewrite <- (signature_over_Mor_ax _ (halfeq1 e)).
+    rewrite <- (signature_over_Mor_ax _ (halfeq2 e)).
     apply maponpaths.
     apply (cancel_precomposition  [SET,SET]).
     repeat apply maponpaths.
     apply deq.
   Qed.
 
-  Definition R'_satisfies_all_equations {O : UU} (eq1 eq2 : O -> half_equation S1 S2) 
-    (deq : ∏ j, satisfies_all_equations_hp eq1 eq2 (d j))
-    : satisfies_all_equations_hp eq1 eq2 R'
-    := fun o => R'_satisfies_eq (fun j => deq j o).
+  Definition R'_satisfies_all_equations {O : UU} (e : O -> soft_equation)
+    (deq : ∏ j, satisfies_all_equations_hp e  (d j))
+    : satisfies_all_equations_hp e R'
+    := fun o => R'_satisfies_eq (e o) (fun j => deq j o).
 
-  Definition R'_model_equations {O : UU} (eq1 eq2 : O -> half_equation S1 S2) 
-    (deq : ∏ j, satisfies_all_equations_hp eq1 eq2 (d j))
-    : model_equations eq1 eq2
-    := R' ,, R'_satisfies_all_equations eq1 eq2 deq. 
+  Definition R'_model_equations {O : UU} (e : O -> soft_equation)
+    (deq : ∏ j, satisfies_all_equations_hp e (d j))
+    : model_equations e 
+    := R' ,, R'_satisfies_all_equations e deq. 
 
 
 

@@ -52,23 +52,24 @@ Section QuotientRep.
 
   Local Notation REP_CAT := (rep_fiber_category Sig).
 
-  Context {S1 S2 : signature_over Sig}.
-  Context {O : UU} {eq1 eq2 : O -> half_equation S1 S2}.
-  Context (epiS1 : ∏ R S (f : R →→ S),
-                   isEpi (C := [SET, SET]) (f : nat_trans _ _) ->
-                   isEpi (C := [SET, SET]) (# S1 f : nat_trans _ _)%sigo).
-  Context (softS2 : isSoft choice epiSig S2).
+  (* Context {S1 S2 : signature_over Sig}. *)
+  (* Context {O : UU} {eq1 eq2 : O -> half_equation S1 S2}. *)
+  (* Context (epiS1 : ∏ R S (f : R →→ S), *)
+  (*                  isEpi (C := [SET, SET]) (f : nat_trans _ _) -> *)
+  (*                  isEpi (C := [SET, SET]) (# S1 f : nat_trans _ _)%sigo). *)
+  (* Context (softS2 : isSoft choice epiSig S2). *)
+  Context {O : UU} (eq : O -> soft_equation choice epiSig ) .
 
-  Local Notation REP_EQ := (model_equations eq1 eq2).
-  Local Notation REP_EQ_PRECAT := (precategory_model_equations eq1 eq2).
+  Local Notation REP_EQ := (model_equations eq ).
+  Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
 
   Context (R : REP) .
 
-  Let J := ∑ (S : model_equations eq1 eq2), R →→ S.
-  Let d (j : J) : model_equations eq1 eq2 := pr1 j.
+  Let J := ∑ (S : model_equations eq), R →→ S.
+  Let d (j : J) : model_equations eq := pr1 j.
   Let ff (j : J) : R →→ (d j) := pr2 j.
 
-  Let R' : REP_EQ := R'_model_equations choice epiSig epiS1 softS2 d ff eq1 eq2
+  Let R' : REP_EQ := R'_model_equations choice epiSig  d ff eq
                                         (fun j => model_equations_eq (d j)).
   Let u_rep := u_rep Sig epiSig choice d ff.
 
