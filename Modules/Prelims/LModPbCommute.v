@@ -118,7 +118,7 @@ and also the morphism id* T -> T
 *)
 Section Pullback_Identity_Module.
 
-Context {B} {M':Monad B}  {C:precategory} {T : LModule M' C}.
+Context {B : precategory} {M' : Monad B} {C : precategory} {T : LModule M' C}.
 
 Local Notation pbmid := (pb_LModule (Monad_identity M') T).
 
@@ -153,7 +153,7 @@ between m*(m'*(T'')) and (m o m')*(T'')
 
 Section Pullback_Composition.
 
-Context {B} {M M':Monad B} (m:Monad_Mor M M') {C:precategory}
+Context {B : precategory} {M M':Monad B} (m:Monad_Mor M M') {C:precategory}
         {M'': Monad B} (m' : Monad_Mor M' M'') (T'' : LModule M'' C).
 
 Local Notation comp_pbm := (pb_LModule m (pb_LModule m' T'')).
