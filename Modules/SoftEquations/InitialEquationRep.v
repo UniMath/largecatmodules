@@ -9,7 +9,8 @@ Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.categories.category_hset.
-Require Import UniMath.CategoryTheory.sub_precategories.
+Require Import UniMath.CategoryTheory.Subcategory.Core.
+Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 
 Require Import UniMath.CategoryTheory.Categories.
@@ -26,7 +27,7 @@ Require Import Modules.Prelims.modules.
 
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.SignatureOver.
-Require Import Modules.SoftEquations.HalfEquation.
+Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
 

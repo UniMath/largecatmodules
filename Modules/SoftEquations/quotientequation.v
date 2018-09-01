@@ -30,7 +30,7 @@ Require Import Modules.Prelims.modules.
 
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.SignatureOver.
-Require Import Modules.SoftEquations.HalfEquation.
+Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.SignatureOverDerivation.
 
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).

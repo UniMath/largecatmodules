@@ -14,7 +14,8 @@ Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.Categories.
-Require Import UniMath.CategoryTheory.sub_precategories.
+Require Import UniMath.CategoryTheory.Subcategory.Core.
+Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.SoftEquations.SignatureOver.
