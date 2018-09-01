@@ -102,16 +102,14 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
   (** Back to the proof *)
   Context {S1 S2 : signature_over Sig}.
-  Context {eq1 eq2 : half_equation S1 S2}.
   Context (epiS1 : ∏ R S (f : R →→ S),
                    isEpi (C := [SET, SET]) (f : nat_trans _ _) ->
                    isEpi (C := [SET, SET]) (# S1 f : nat_trans _ _)%sigo).
   Context (softS2 : isSoft S2).
 
 
-  Local Notation REP_EQ := (model_equation eq1 eq2).
 
-  Context {R : REP} {J : UU} (d : J -> REP_EQ)
+  Context {R : REP} {J : UU} (d : J -> REP) 
             (ff : ∏ (j : J), R →→ (d j)).
 
   Let R' : REP := R'_model Sig epiSig choice d ff.
@@ -120,7 +118,9 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   Local Notation π := projR.
   Local Notation Θ := tautological_LModule.
 
-  Lemma R'_satisfies_eq : satisfies_equation eq1 eq2 R'.
+  Lemma R'_satisfies_eq {eq1 eq2 : half_equation S1 S2}
+        (deq : ∏ j, satisfies_equation eq1 eq2 (d j))
+    : satisfies_equation eq1 eq2 R'.
   Proof.
     red.
     apply LModule_Mor_equiv; [apply homset_property|].
@@ -143,10 +143,19 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
     apply maponpaths.
     apply (cancel_precomposition  [SET,SET]).
     repeat apply maponpaths.
-    apply model_equation_eq.
+    apply deq.
   Qed.
 
-  Definition R'_model_equation : model_equation eq1 eq2 := R' ,, R'_satisfies_eq.
+  Definition R'_satisfies_all_equations {O : UU} (eq1 eq2 : O -> half_equation S1 S2) 
+    (deq : ∏ j, satisfies_all_equations_hp eq1 eq2 (d j))
+    : satisfies_all_equations_hp eq1 eq2 R'
+    := fun o => R'_satisfies_eq (fun j => deq j o).
+
+  Definition R'_model_equations {O : UU} (eq1 eq2 : O -> half_equation S1 S2) 
+    (deq : ∏ j, satisfies_all_equations_hp eq1 eq2 (d j))
+    : model_equations eq1 eq2
+    := R' ,, R'_satisfies_all_equations eq1 eq2 deq. 
+
 
 
 End QuotientRep.

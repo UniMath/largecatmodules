@@ -41,15 +41,21 @@ Section Equation.
   Definition satisfies_equation_hp (eq1 eq2 : HALFEQ) (R : REP) : hProp  :=
     hProppair _ (satisfies_equation_isaprop eq1 eq2 R). 
 
-  Definition model_equation (eq1 eq2 : HALFEQ) : UU := ∑ (R : REP), satisfies_equation eq1 eq2 R.
+  (** if it satisfies all the equations *)
+  Definition satisfies_all_equations_hp {O} (eq1 eq2 : O -> HALFEQ) R :=
+    forall_hProp (fun o => satisfies_equation_hp (eq1 o)(eq2 o) R).
 
-  Coercion model_equation_to_model {eq1 eq2} (R : model_equation eq1 eq2) : REP := pr1 R.
+  Definition model_equations {O : UU} (eq1 eq2 : O -> HALFEQ) : UU :=
+    ∑ (R : REP), ∏ x, satisfies_equation (eq1 x) (eq2 x) R.
 
-  Definition model_equation_eq {eq1 eq2 : HALFEQ} (R : model_equation eq1 eq2) : eq1 R = eq2 R := pr2 R.
+  Coercion model_equations_to_model {O eq1 eq2} (R : model_equations (O := O) eq1 eq2) : REP := pr1 R.
 
-  Definition precategory_model_equation eq1 eq2 : precategory :=
+  Definition model_equations_eq {O} {eq1 eq2 : O -> HALFEQ} (R : model_equations eq1 eq2) :
+    satisfies_all_equations_hp eq1 eq2 R := pr2 R.
+
+  Definition precategory_model_equations {O} (eq1 eq2 : O -> HALFEQ) : precategory :=
     full_sub_precategory (C := rep_fiber_category Sig)
-                         (satisfies_equation_hp eq1 eq2).
+                         (satisfies_all_equations_hp eq1 eq2).
 End Equation.
 
 
