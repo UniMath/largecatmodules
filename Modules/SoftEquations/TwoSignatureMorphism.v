@@ -35,7 +35,7 @@ Section TwoSig.
 
 
   Context  {C : category} .
-  Local Notation REP := (rep_ar C ).
+  Local Notation REP := (model (C:=C)).
 
   Definition TwoSignature := ∑ (S : signature C) (O : UU), O -> equation (Sig := S).
 
@@ -49,7 +49,7 @@ Section TwoSig.
   (* Definition OneSig_Mor_preserves_eqs {S1 S2 : TwoSignature } (m : signature_Mor S1 S2) : UU := *)
   Let SIG_MOR_PRESERVES_EQS {S1 S2 : TwoSignature} (m : signature_Mor S1 S2) :=
     ∏ (R : model_equations (EQS S2)),
-    ∏ o, satisfies_equation (EQS S1 o) (pb_rep _ m R).
+    ∏ o, satisfies_equation (EQS S1 o) (pb_rep m R).
 
 
   Definition TwoSignature_Mor (S1 S2 : TwoSignature) :=
@@ -77,7 +77,7 @@ Proof.
 
   Definition pb_modeq {S1 S2 : TwoSignature} (m : S1 →→ S2) (R : model_equations (EQS S2)) :
     model_equations (EQS S1) :=
-    pb_rep _ m R ,, TwoSigMor_preserves_eqs m R.
+    pb_rep m R ,, TwoSigMor_preserves_eqs m R.
     
 
 
@@ -96,7 +96,7 @@ Proof.
 Definition TwoSignature_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
    TwoSignature (fun F F' => TwoSignature_Mor F F').
 
-Lemma pb_rep_id {S : signature C} (R : rep_ar C S) :(pb_rep _ (signature_Mor_id S ) R) = R.
+Lemma pb_rep_id {S : signature C} (R : model S) :(pb_rep (signature_Mor_id S ) R) = R.
 Admitted.
 
 Lemma is_TwoSignature_Mor_id (F : TwoSignature) : SIG_MOR_PRESERVES_EQS (signature_Mor_id F).
@@ -109,7 +109,7 @@ Qed.
 Definition TwoSignature_Mor_id (F : TwoSignature) : TwoSignature_Mor F F := _ ,, is_TwoSignature_Mor_id F.
 
 Lemma pb_rep_comp {F G H : signature C} (a : signature_Mor F G) (b : signature_Mor G H) (R : REP H) :
-   (pb_rep C (signature_Mor_comp a b) R) = pb_rep C a (pb_rep _ b R).
+   (pb_rep (signature_Mor_comp a b) R) = pb_rep a (pb_rep b R).
 Admitted.
 
 Lemma is_TwoSignature_Mor_comp {F G H : TwoSignature} (a : TwoSignature_Mor F G) (b : TwoSignature_Mor G H) 
@@ -215,7 +215,7 @@ Identity Coercion  two_model_to_model_equations  : two_model  >-> model_equation
 
 Definition two_model_disp_ob_mor : disp_cat_ob_mor TwoSignature_category.
   exists two_model.
-  refine ( fun (a b : TwoSignature) M N (f : a →→ b) => rep_ar_mor_mor _ a b M N f).
+  refine ( fun (a b : TwoSignature) M N (f : a →→ b) => model_mor_mor a b M N f).
 Defined.
 
 
@@ -244,18 +244,18 @@ Qed.
 Lemma two_mod_axioms : disp_cat_axioms _ two_mod_data.
 Proof.
   repeat apply tpair; intros; try apply homset_property.
-  - apply rep_ar_mor_mor_equiv.
+  - apply model_mor_mor_equiv.
     intros c.
     etrans. apply id_left.
     symmetry.
     apply transport_signature_mor.
-  - apply rep_ar_mor_mor_equiv.
+  - apply model_mor_mor_equiv.
     intro c.
     etrans. apply id_right.
     symmetry.
     apply transport_signature_mor.
   - set (heqf:= assoc f g h).
-    apply rep_ar_mor_mor_equiv.
+    apply model_mor_mor_equiv.
     intros c.
     etrans. Focus 2.
       symmetry.
@@ -263,7 +263,7 @@ Proof.
       cbn.
       rewrite assoc.
       apply idpath.
-  - apply isaset_rep_ar_mor_mor.
+  - apply isaset_model_mor_mor.
 Qed.
 
 Definition two_model_disp : disp_cat _ := two_mod_data ,, two_mod_axioms.
