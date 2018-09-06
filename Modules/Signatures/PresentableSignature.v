@@ -71,13 +71,17 @@ Local Notation toSig sig :=
                          BinCoproductsHSET TerminalHSET sig
                          (CoproductsHSET (BindingSigIndex sig) (BindingSigIsaset sig))).
 
-Lemma PresentableisRepresentable (choice : AxiomOfChoice.AxiomOfChoice_surj)
+Lemma PresentableisRepresentable 
       {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
                                          (fun i => CoproductsHSET _ (setproperty i)) a) :
    Initial (rep_disp SET) [{a}].
 Proof.
-  use (push_initiality_weaker choice (p_mor  p)).
+  use (push_initiality_weaker (p_mor  p) _ _  ).
   - apply alg_initialR.
+  - (* Could not be proven even for the tautological signature *)
+    admit.
+  - (* finitary endo presreves epis ? *)
+    admit.
   - apply epi_p_mor.
   - (* TODO : faire un lemme séparé *)
     intros M N f.
@@ -89,4 +93,4 @@ Proof.
     intro X.
     apply (epi_nt_SET_pw _ epip X).
   - apply algebraic_sig_representable.
-Qed.
+Admitted.

@@ -33,22 +33,65 @@ Open Scope cat.
     
 Set Automatic Introduction.
 
+(* TODO: move in lib.v *)
+
+Definition preserves_Epi {B C : precategory} (F : functor B C) : UU :=
+  ∏ a b (f : B ⟦a , b⟧), isEpi  f -> isEpi (# F f)%Cat.
+
+Lemma isEpi_horcomp_pw (B : precategory)(C D : category)
+      (G H : functor B C) (G' H' : functor C D)
+      (f : nat_trans G H) (f':nat_trans G' H')
+  : (∏ x, isEpi  (f' x))
+    -> (∏ x, isEpi ((# H')%Cat (f x)))
+    -> ∏ x,  isEpi (horcomp f f' x).
+Proof.
+  intros epif' epif.
+  intro x.
+  apply isEpi_comp.
+  - apply epif'.
+  - apply epif.
+Qed.
+
+Lemma isEpi_horcomp_pw2 (B : precategory)(C D : category)
+      (G H : functor B C) (G' H' : functor C D)
+      (f : nat_trans G H) (f':nat_trans G' H')
+  : (∏ x, isEpi  (f' x))
+    -> (∏ x, isEpi ((# G')%Cat (f x)))
+    -> ∏ x,  isEpi (horcomp f f' x).
+Proof.
+  intros epif epif'.
+  intro x.
+  cbn.
+  rewrite <- (nat_trans_ax f').
+  apply isEpi_comp.
+  - apply epif'.
+  - apply epif.
+Qed.
+
 Section QuotientMonad.
 
-(** the axiom of choice is needed to prove the the horizontal composition of the
-    canonical projection with itself is epimorphic *)
 
-Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
 
 (** We start by just considering the quotient of the monad [R] as a functor.  Further
-    compatibility for the monad composition are assumed later. *)
+    compatibility for the monad composition are assumed later. *) 
+  Context {R : Monad SET}.
 
-Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
+(**
+  R preserves epimorphisms.
+    This is needed to prove the the horizontal composition of the
+    canonical projection with itself is epimorphic.
+   This is always the case if one assumes the axiom of choice because then all
+  epimorphisms have a retract, and thus are absolute.
+ *)
+Context (Repi : preserves_Epi R).
+
+  Context 
+          {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
         (congr_equivc : ∏ (x y : SET) (f : SET⟦x,y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f)).
 
 Let equivc {c:hSet} x y := eqrel_equivc c x y.
-  
+ 
 (** We define the quotient functor of R by these equivalence relations
 
 The following comment may be outdated
@@ -71,6 +114,13 @@ Lemma isEpi_projR_pw : ∏ x, isEpi (projR x).
 Proof.
   apply isEpi_pw_pr_quot_functor.
 Qed.
+
+Lemma isEpi_RprojR_pw : ∏ x, isEpi (#R (projR x)).
+Proof.
+  intro x.
+  apply Repi.
+  apply isEpi_projR_pw.
+Qed.
   (* TODO: utiliser partout ce lemme où c'est nécessaire *)
 Lemma isEpi_projR : isEpi (C:=functor_category _ _) projR.
 Proof.
@@ -81,13 +131,19 @@ Qed.
 (* Lemma isEpi_projR_projR_pw x : isEpi (C:=functor_category _ _) (projR ∙∙ projR x). *)
 Lemma isEpi_projR_projR_pw x : isEpi  ((projR ∙∙ projR) x).
 Proof.
-  apply isEpi_comp.
+  apply isEpi_horcomp_pw2.
   - apply isEpi_projR_pw.
-  - apply preserves_to_HSET_isEpi; apply choice || apply isEpi_projR_pw. 
+  - apply isEpi_RprojR_pw.
+Qed.
+
+Lemma isEpi_R_projR_projR_pw x : isEpi  (#R ((projR ∙∙ projR) x)).
+Proof.
+  apply Repi.
+  apply isEpi_projR_projR_pw.
 Qed.
 
 
-Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR ).
+Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR).
 Proof.
   apply is_nat_trans_epi_from_pointwise_epis.
   apply isEpi_projR_projR_pw.
@@ -212,11 +268,9 @@ Qed.
 
 Lemma isEpi_projR_projR_projR_pw c : isEpi ((projR ∙∙ (projR ∙∙ projR)) c).
 Proof.
-  apply isEpi_comp.
+  apply isEpi_horcomp_pw2.
   - apply isEpi_projR_pw.
-  - apply preserves_to_HSET_isEpi.
-    + apply choice.
-    + apply isEpi_projR_projR_pw. 
+  - apply isEpi_R_projR_projR_pw. 
 Defined.
 
 Lemma R'_Monad_law_μ : ∏ c : SET,
@@ -465,4 +519,4 @@ End QuotientMonad.
   
 Arguments projR : simpl never.
 Arguments R' : simpl never.
-Arguments u_monad _ [R _ _] _ [_] _ .
+Arguments u_monad  [R] _ [ _ _]  _ [_] _ .

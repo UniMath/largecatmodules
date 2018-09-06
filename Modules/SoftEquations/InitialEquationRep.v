@@ -48,25 +48,29 @@ Section QuotientRep.
                       (f : Monad_Mor R S),
                     isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                     isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+(** implied by the axiom of choice *)
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
   Local Notation REP := (model Sig).
 
   Local Notation REP_CAT := (rep_fiber_category Sig).
 
-  Context {O : UU} (eq : O -> soft_equation choice epiSig ) .
+  Context {O : UU} (eq : O -> soft_equation epiSig epiSigpw) .
 
   Local Notation REP_EQ := (model_equations eq ).
   Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
 
   Context (R : REP) .
+  (** implied by the axiom of choice *)
+  Context (Repi : preserves_Epi R).
 
   Let J := ∑ (S : model_equations eq), R →→ S.
   Let d (j : J) : model_equations eq := pr1 j.
   Let ff (j : J) : R →→ (d j) := pr2 j.
 
-  Let R' : REP_EQ := R'_model_equations choice epiSig  d ff eq
+  Let R' : REP_EQ := R'_model_equations  epiSig epiSigpw Repi d ff eq
                                         (fun j => model_equations_eq (d j)).
-  Let u_rep := u_rep Sig epiSig choice d ff.
+  Let u_rep := u_rep Sig epiSig epiSigpw Repi d ff.
 
   Lemma push_initiality : isInitial REP_CAT R -> isInitial REP_EQ_PRECAT R'.
     intro h.
@@ -84,7 +88,7 @@ Section QuotientRep.
     - intros [f []].
       apply (maponpaths (fun x => x ,, tt)).
       apply isEpi_projR_rep.
-      etrans;[| apply (u_rep_def Sig epiSig choice d ff j)].
+      etrans;[| apply (u_rep_def Sig epiSig epiSigpw Repi d ff j)].
       apply iscontr_uniqueness.
   Qed.
 
