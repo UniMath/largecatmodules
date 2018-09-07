@@ -35,38 +35,6 @@ Set Automatic Introduction.
 
 (* TODO: move in lib.v *)
 
-Definition preserves_Epi {B C : precategory} (F : functor B C) : UU :=
-  ∏ a b (f : B ⟦a , b⟧), isEpi  f -> isEpi (# F f)%Cat.
-
-Lemma isEpi_horcomp_pw (B : precategory)(C D : category)
-      (G H : functor B C) (G' H' : functor C D)
-      (f : nat_trans G H) (f':nat_trans G' H')
-  : (∏ x, isEpi  (f' x))
-    -> (∏ x, isEpi ((# H')%Cat (f x)))
-    -> ∏ x,  isEpi (horcomp f f' x).
-Proof.
-  intros epif' epif.
-  intro x.
-  apply isEpi_comp.
-  - apply epif'.
-  - apply epif.
-Qed.
-
-Lemma isEpi_horcomp_pw2 (B : precategory)(C D : category)
-      (G H : functor B C) (G' H' : functor C D)
-      (f : nat_trans G H) (f':nat_trans G' H')
-  : (∏ x, isEpi  (f' x))
-    -> (∏ x, isEpi ((# G')%Cat (f x)))
-    -> ∏ x,  isEpi (horcomp f f' x).
-Proof.
-  intros epif epif'.
-  intro x.
-  cbn.
-  rewrite <- (nat_trans_ax f').
-  apply isEpi_comp.
-  - apply epif'.
-  - apply epif.
-Qed.
 
 Section QuotientMonad.
 
