@@ -77,12 +77,12 @@ Lemma PresentableisRepresentable
       (** this hypothesis is implied by the axiom of choice
            It says that syntax of the presenting algebraic signature preserves epis.
        *)
-      (alg_syntax_preserves_epi : quotientmonad.preserves_Epi (alg_initialR (p_sig p) : model (p_alg_ar p)))
+      (alg_syntax_preserves_epi : preserves_Epi (alg_initialR (p_sig p) : model (p_alg_ar p)))
 
     (** this hypothesis is implied by the axiom of choice
            It says that the image of the (algebraic) syntax by the algebraic signature preserves epis.
        *)
-      (alg_sig_syntax_preserves_epi : quotientmonad.preserves_Epi ((p_alg_ar p) (alg_initialR (p_sig p) : model _)))
+      (alg_sig_syntax_preserves_epi : preserves_Epi ((p_alg_ar p) (alg_initialR (p_sig p) : model _)))
 
 
   :
