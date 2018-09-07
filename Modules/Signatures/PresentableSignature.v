@@ -73,15 +73,26 @@ Local Notation toSig sig :=
 
 Lemma PresentableisRepresentable 
       {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
-                                         (fun i => CoproductsHSET _ (setproperty i)) a) :
+                                             (fun i => CoproductsHSET _ (setproperty i)) a)
+      (** this hypothesis is implied by the axiom of choice
+           It says that syntax of the presenting algebraic signature preserves epis.
+       *)
+      (alg_syntax_preserves_epi : quotientmonad.preserves_Epi (alg_initialR (p_sig p) : model (p_alg_ar p)))
+
+    (** this hypothesis is implied by the axiom of choice
+           It says that the image of the (algebraic) syntax by the algebraic signature preserves epis.
+       *)
+      (alg_sig_syntax_preserves_epi : quotientmonad.preserves_Epi ((p_alg_ar p) (alg_initialR (p_sig p) : model _)))
+
+
+  :
    Initial (rep_disp SET) [{a}].
 Proof.
   use (push_initiality_weaker (p_mor  p) _ _  ).
   - apply alg_initialR.
-  - (* Could not be proven even for the tautological signature *)
-    admit.
-  - (* finitary endo presreves epis ? *)
-    admit.
+  - apply alg_syntax_preserves_epi.
+  - apply ii1.
+    apply alg_sig_syntax_preserves_epi.
   - apply epi_p_mor.
   - (* TODO : faire un lemme séparé *)
     intros M N f.
@@ -93,4 +104,4 @@ Proof.
     intro X.
     apply (epi_nt_SET_pw _ epip X).
   - apply algebraic_sig_representable.
-Admitted.
+Qed.
