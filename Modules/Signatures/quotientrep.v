@@ -33,7 +33,7 @@ Set Automatic Introduction.
 Section QuotientMonad.
 
 Context {R : Monad SET}
-     (Repi : preserves_Epi R)
+     (R_epi : preserves_Epi R)
         {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
         (congr_equivc : ∏ (x y : SET) (f : SET⟦x, y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f))
@@ -59,10 +59,10 @@ Let R' : SET ⟶ SET
 Let projR : (R : SET ⟶ SET) ⟹ quotientmonad.R' congr_equivc
   := projR congr_equivc.
 Let R'_monad : Monad SET
-  := R'_monad  Repi congr_equivc compat_μ_projR.
+  := R'_monad  R_epi congr_equivc compat_μ_projR.
 Let projR_monad
-  : Monad_Mor R (quotientmonad.R'_monad  Repi congr_equivc compat_μ_projR)
-  := projR_monad Repi congr_equivc compat_μ_projR.
+  : Monad_Mor R (quotientmonad.R'_monad  R_epi congr_equivc compat_μ_projR)
+  := projR_monad R_epi congr_equivc compat_μ_projR.
 
 Local Notation π := projR_monad.
 Local Notation Θ := tautological_LModule.
@@ -269,7 +269,7 @@ Context {S : Monad SET}
         (compatm : ∏ (X : SET) 
                      (x y : (R X : hSet)), projR X x = projR X y → m X x = m X y).
 
-Let u_monad := quotientmonad.u_monad Repi compat_μ_projR _ compatm.
+Let u_monad := quotientmonad.u_monad R_epi compat_μ_projR _ compatm.
 
 (**
 Let c be a S-Module

@@ -129,7 +129,7 @@ Context  (F : signature_Mor a b).
 Section fix_rep_of_a.
 
 Context (R : REP a).
-Context (Repi : preserves_Epi (R : model  _)).
+Context (R_epi : preserves_Epi (R : model  _)).
 
 (** Either [a R] preserves epis, or for any monad S (actually only the quotient monad case
   is used), [b S] preserves epis *)
@@ -180,7 +180,7 @@ de a et que u est un morphisme de modules.
 *)
 
 (** Short notations for the quotient monad and the projection as a monad morphism *)
-Definition R' : Monad SET := R'_monad Repi  dd ff .
+Definition R' : Monad SET := R'_monad R_epi  dd ff .
 
 Lemma ab_epi2 : preserves_Epi (a (pr1 R)) ⨿ preserves_Epi (b R').
 Proof.
@@ -190,13 +190,13 @@ Defined.
 
 Definition projR
   : Monad_Mor (pr1 R) R'
-  := projR_monad Repi dd ff.
+  := projR_monad R_epi dd ff.
 
 
 (** Short name for the monad morphism out of the quotient *)
 Definition u {S : REP b} (m : R -->[ F] S)
   : Monad_Mor R' (pr1 S)
-  := u_monad Repi dd ff (S ,, m) .
+  := u_monad R_epi dd ff (S ,, m) .
 
 (** The induced natural transformation makes a triangle commute *)
 Lemma u_def {S : REP b} (m : R -->[ F] S) : ∏ x, ## m x = projR x · u m x.
@@ -573,23 +573,23 @@ Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
 
 Lemma build_module_law
       (R : Rep_a)
-      (Repi : preserves_Epi ( R : model _))
+      (R_epi : preserves_Epi ( R : model _))
       (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
 
-      (cond_R : cond_isEpi_hab R Repi)
+      (cond_R : cond_isEpi_hab R R_epi)
       (S : Rep_b)
-      (m : Rep_b ⟦ rep_of_b_in_R' R Repi epiab cond_R, S ⟧)
+      (m : Rep_b ⟦ rep_of_b_in_R' R R_epi epiab cond_R, S ⟧)
   : model_mor_law  R
                    (pb_rep F S)
                    (signature_Mor_id (pr1 a))
-                   ((pr1 (projR_rep R Repi epiab cond_R) : category_Monad _ ⟦_,_⟧) · pr1 m).
+                   ((pr1 (projR_rep R R_epi epiab cond_R) : category_Monad _ ⟦_,_⟧) · pr1 m).
 Proof.
   intro x.
   etrans.
   {
     etrans; [apply assoc |].
     apply cancel_postcomposition.
-    apply (model_mor_ax (projR_rep R Repi epiab cond_R)).
+    apply (model_mor_ax (projR_rep R R_epi epiab cond_R)).
   }
   rewrite signature_comp.
   repeat rewrite <- assoc.
@@ -613,17 +613,17 @@ Qed.
 
 Definition build_module
            (R : Rep_a)
-           (Repi : preserves_Epi ( R : model _))
+           (R_epi : preserves_Epi ( R : model _))
            (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-           (cond_R : cond_isEpi_hab R Repi)
+           (cond_R : cond_isEpi_hab R R_epi)
            (S : Rep_b)
-           (m : Rep_b ⟦ rep_of_b_in_R' R Repi epiab cond_R, S ⟧)
+           (m : Rep_b ⟦ rep_of_b_in_R' R R_epi epiab cond_R, S ⟧)
   : model_mor_mor a a R (pb_rep F S) (signature_Mor_id (pr1 a))
-  := _ ,, build_module_law R Repi epiab cond_R S m.
+  := _ ,, build_module_law R R_epi epiab cond_R S m.
   
 Theorem push_initiality
         (R : Rep_a)
-        (Repi : preserves_Epi ( R : model _))
+        (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
         (epiSig_F : isEpi (C:= signature_category ) F)
         (epib : preservesEpi_signature b)
@@ -636,16 +636,16 @@ Proof.
     - exact epiSig_F.
   }
   intro iniR.
-  set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R Repi).
+  set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R R_epi).
   use tpair.
-  - apply (rep_of_b_in_R' R Repi epiab cond_R).
+  - apply (rep_of_b_in_R' R R_epi epiab cond_R).
   - intro S.
     use iscontrpair.
     +  use u_rep.
        use (iscontrpr1 (iniR (FF S))).
     + intro m.
       apply u_rep_unique.
-      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R Repi epiab cond_R S m)).
+      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R R_epi epiab cond_R S m)).
       rewrite <- h.
       intros.
       apply idpath.
@@ -653,23 +653,23 @@ Qed.
 
 Theorem push_initiality_weaker
         (R : Rep_a)
-        (Repi : preserves_Epi ( R : model _))
+        (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
         (epi_F : ∏ (R : Monad _), isEpi (C := [_, _]) (pr1 (F (R))))
         (epia : preservesEpi_signature a)
   : isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
-  set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R Repi).
+  set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R R_epi).
   use tpair.
-  - apply (rep_of_b_in_R' R Repi epiab cond_R).
+  - apply (rep_of_b_in_R' R R_epi epiab cond_R).
   - intro S.
     use iscontrpair.
     +  use u_rep.
        use (iscontrpr1 (iniR (FF S))).
     + intro m.
       apply u_rep_unique.
-      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R Repi epiab cond_R S m)).
+      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R R_epi epiab cond_R S m)).
       rewrite <- h.
       intros;
       apply idpath.
@@ -681,16 +681,16 @@ Context (aepi : preservesEpi_signature a).
 (* Let R' (R : REP a) : Monad SET := R' ax_choice (congr_equivc R) (compat_μ_projR R). *)
 
 Lemma helper
-      (Fepi : ∏ R Repi, isEpi (C := [_, _]) (pr1 (F (R' R Repi))))
+      (Fepi : ∏ R R_epi, isEpi (C := [_, _]) (pr1 (F (R' R R_epi))))
       (R : Rep_a)
-        (Repi : preserves_Epi ( R : model _))
+        (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-      (cond_F := inl (dirprodpair (Fepi R Repi) aepi ) : cond_isEpi_hab R Repi)
+      (cond_F := inl (dirprodpair (Fepi R R_epi) aepi ) : cond_isEpi_hab R R_epi)
       (S : model b)
-  : ∏ (u' : Rep_b ⟦ rep_of_b_in_R' R Repi epiab cond_F, S ⟧) x,
-    projR R Repi x · (u' : model_mor_mor _ _ _ _ _) x =
-    pr1 (pr1 (compose (C:=Rep_a) (b:=FF (rep_of_b_in_R' R Repi epiab cond_F))
-                      (projR_rep R Repi epiab cond_F : model_mor_mor _ _ _ _ _)
+  : ∏ (u' : Rep_b ⟦ rep_of_b_in_R' R R_epi epiab cond_F, S ⟧) x,
+    projR R R_epi x · (u' : model_mor_mor _ _ _ _ _) x =
+    pr1 (pr1 (compose (C:=Rep_a) (b:=FF (rep_of_b_in_R' R R_epi epiab cond_F))
+                      (projR_rep R R_epi epiab cond_F : model_mor_mor _ _ _ _ _)
                       (# FF u'))) x.
 Proof.
   intros u' x.
@@ -713,10 +713,10 @@ Qed.
 Definition is_right_adjoint_functor_of_reps
            (* this is the case if the axiom of choice is assumed *)
            (epiall : ∏ (R : functor SET SET), preserves_Epi R)
-           (Fepi : ∏ R Repi, isEpi (C := [_, _]) (pr1 (F (R' R Repi))) )
+           (Fepi : ∏ R R_epi, isEpi (C := [_, _]) (pr1 (F (R' R R_epi))) )
   : is_right_adjoint FF.
 Proof.
-  set (cond_F := fun R Repi => inl ((Fepi R Repi),, aepi) : cond_isEpi_hab R Repi).
+  set (cond_F := fun R R_epi => inl ((Fepi R R_epi),, aepi) : cond_isEpi_hab R R_epi).
   use right_adjoint_left_from_partial.
   - intro R. 
     use (rep_of_b_in_R' R _ _ (cond_F R _ )).

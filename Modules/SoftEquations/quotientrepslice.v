@@ -168,12 +168,12 @@ Local Notation REP_CAT := (rep_fiber_category Sig).
 
 (* Variable (choice : AxiomOfChoice.AxiomOfChoice_surj). *)
 Context {R : REP}.
-Context (Repi : preserves_Epi R).
+Context (R_epi : preserves_Epi R).
 Context {J : UU} (d : J -> REP)
           (ff : ∏ (j : J),  R →→ (d j)).
 
-Let R' : Monad SET := R'_monad Repi d ff.
-Let projR : Monad_Mor R R' := projR_monad Repi d ff.
+Let R' : Monad SET := R'_monad R_epi d ff.
+Let projR : Monad_Mor R R' := projR_monad R_epi d ff.
 
   
 
@@ -193,7 +193,7 @@ Proof.
     rewrite comp_cat_comp.
     eapply changef_path.
     + etrans;[|apply (!(rep_fiber_mor_ax (ff j) _))].
-      rewrite (quotientmonadslice.u_monad_def Repi d ff j ).
+      rewrite (quotientmonadslice.u_monad_def R_epi d ff j ).
       rewrite signature_comp.
       reflexivity.
     + cbn.
@@ -273,7 +273,7 @@ This induces a monad morphism u : R' -> S that makes the following diagram commu
 
 *)
 
-Let u := u_monad Repi d ff.
+Let u := u_monad R_epi d ff.
 
 
 (** u is a morphism of model *)
@@ -305,7 +305,7 @@ Proof.
   rewrite assoc.
   apply cancel_postcomposition.
   
-  rewrite (u_monad_def Repi  d ff).
+  rewrite (u_monad_def R_epi  d ff).
   rewrite signature_comp.
   reflexivity.
   (* simpl. *)

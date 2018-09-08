@@ -51,7 +51,7 @@ Section QuotientMonad.
    This is always the case if one assumes the axiom of choice because then all
   epimorphisms have a retract, and thus are absolute.
  *)
-Context (Repi : preserves_Epi R).
+Context (R_epi : preserves_Epi R).
 
   Context 
           {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
@@ -86,7 +86,7 @@ Qed.
 Lemma isEpi_RprojR_pw : ∏ x, isEpi (#R (projR x)).
 Proof.
   intro x.
-  apply Repi.
+  apply R_epi.
   apply isEpi_projR_pw.
 Qed.
   (* TODO: utiliser partout ce lemme où c'est nécessaire *)
@@ -106,7 +106,7 @@ Qed.
 
 Lemma isEpi_R_projR_projR_pw x : isEpi  (#R ((projR ∙∙ projR) x)).
 Proof.
-  apply Repi.
+  apply R_epi.
   apply isEpi_projR_projR_pw.
 Qed.
 

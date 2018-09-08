@@ -62,15 +62,15 @@ Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
   Context (R : REP) .
   (** implied by the axiom of choice *)
-  Context (Repi : preserves_Epi R).
+  Context (R_epi : preserves_Epi R).
 
   Let J := ∑ (S : model_equations eq), R →→ S.
   Let d (j : J) : model_equations eq := pr1 j.
   Let ff (j : J) : R →→ (d j) := pr2 j.
 
-  Let R' : REP_EQ := R'_model_equations  epiSig epiSigpw Repi d ff eq
+  Let R' : REP_EQ := R'_model_equations  epiSig epiSigpw R_epi d ff eq
                                         (fun j => model_equations_eq (d j)).
-  Let u_rep := u_rep Sig epiSig epiSigpw Repi d ff.
+  Let u_rep := u_rep Sig epiSig epiSigpw R_epi d ff.
 
   Lemma push_initiality : isInitial REP_CAT R -> isInitial REP_EQ_PRECAT R'.
     intro h.
@@ -88,7 +88,7 @@ Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
     - intros [f []].
       apply (maponpaths (fun x => x ,, tt)).
       apply isEpi_projR_rep.
-      etrans;[| apply (u_rep_def Sig epiSig epiSigpw Repi d ff j)].
+      etrans;[| apply (u_rep_def Sig epiSig epiSigpw R_epi d ff j)].
       apply iscontr_uniqueness.
   Qed.
 
