@@ -675,6 +675,17 @@ Proof.
       apply idpath.
 Qed.
 
+Theorem push_initiality_weaker_choice
+        (R : Rep_a)
+        (choice : AxiomOfChoice.AxiomOfChoice_surj)
+        (epi_F : ∏ (R : Monad _), isEpi (C := [_, _]) (pr1 (F (R))))
+        (epia : preservesEpi_signature a)
+  : isInitial _ R -> Initial Rep_b.
+Proof.
+  apply push_initiality_weaker; (try apply preserves_to_HSET_isEpi); try assumption.
+  apply ii1; apply preserves_to_HSET_isEpi; assumption.
+Qed.
+
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
 Context (aepi : preservesEpi_signature a).
 
@@ -753,6 +764,15 @@ Proof.
   apply is_right_adjoint_functor_of_reps.
   - intro R; apply epiall.
   - intros; apply Fepi.
+Qed.
+
+Corollary is_right_adjoint_functor_of_reps_from_pw_epi_choice 
+           (choice : AxiomOfChoice.AxiomOfChoice_surj)
+          (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
+                                              (pr1 (F R)))
+  : is_right_adjoint FF.
+Proof.
+  apply is_right_adjoint_functor_of_reps_from_pw_epi; (try apply preserves_to_HSET_isEpi); try assumption.
 Qed.
 
 End leftadjoint.

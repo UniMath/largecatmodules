@@ -105,3 +105,14 @@ Proof.
     apply (epi_nt_SET_pw _ epip X).
   - apply algebraic_sig_representable.
 Qed.
+
+Lemma PresentableisRepresentable_choice
+      {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
+                                             (fun i => CoproductsHSET _ (setproperty i)) a)
+      (choice : AxiomOfChoice.AxiomOfChoice_surj)
+  :
+   Initial (rep_disp SET) [{a}].
+Proof.
+  use PresentableisRepresentable; (try apply preserves_to_HSET_isEpi); try assumption.
+Qed.
+
