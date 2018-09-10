@@ -160,3 +160,24 @@ Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
   Qed.
 End QuotientRepInit.
 
+
+(** A version using the axiom of choice *)
+Lemma soft_equations_preserve_initiality_choice 
+  (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) :
+
+         ∏ (** The 1-signature *)
+           (Sig : signature SET)
+           (** The 1-signature must be an epi-signature *)
+           (epiSig : ∏ (R S : Monad SET) (f : Monad_Mor R S),
+                     isEpi (C := [SET, SET]) (f : nat_trans R S)
+                     → isEpi (C := [SET, SET])
+                             ((# Sig)%ar f : nat_trans (Sig R)  (pb_LModule f (Sig S))))
+           (** A family of equations *)
+           (O : UU) (eq : O → soft_equation_choice ax_choice Sig epiSig ),
+         (** If the category of 1-models has an initial object, .. *)
+         Initial (rep_fiber_category Sig) ->
+        (** .. then the category of 2-models has an initial object *)
+         Initial (precategory_model_equations (λ x : O, eq x)).
+  intros; use soft_equations_preserve_initiality; try assumption.
+  apply preserves_to_HSET_isEpi; assumption.
+Qed.
