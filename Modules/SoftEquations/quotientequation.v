@@ -1,9 +1,20 @@
-(**
+(** * Equations satisfied by the quotient 1-model
 
 
-Proof that the quotient representation satisfies the equations
+Let Σ be an epi 1-signature.
+Let R be a 1-model of Σ and (α_i : R → S_i)_i be a (possibly large) family of
+1-model morphisms.
 
-Definition of a soft signature with some examples (tautological, derivatives)
+Then we can construct the quotient 1-model R' (see
+quotienrepslice) which is defined as R'(X) = R(X) / ~
+and x ~ y iff for all i, α_i(x) = α_i(y)
+
+In this file, we show that if each S_i satisfies the same family of soft
+equations, then it is also the case for R'.
+
+- Definition of the soft condition [isSoft]
+- Definition of a soft equation [soft_equation]
+- The quotient model as a 2-model [R'_model_equations]
 
 *)
 Require Import UniMath.Foundations.PartD.
@@ -33,6 +44,7 @@ Require Import Modules.SoftEquations.SignatureOver.
 Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.SignatureOverDerivation.
 
+(** Notation for 1-model morphism *)
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
 
@@ -42,8 +54,10 @@ Section QuotientRep.
 Local Notation MONAD := (Monad SET).
 Local Notation SIG := (signature SET).
 
-  (* Variable (choice : AxiomOfChoice.AxiomOfChoice_surj). *)
+  (** We fix a 1-signature Sig *)
 Context {Sig : SIG}.
+  (** Sig must be an epi-signature, i.e. preserves epimorphicity of natural
+      transformations *)
 Context (epiSig : ∏ (R S : Monad _)
                     (f : Monad_Mor R S),
                   isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
@@ -51,11 +65,11 @@ Context (epiSig : ∏ (R S : Monad _)
 (** implied by the axiom of choice *)
 Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
-(** Definition of a soft-over signature
+(** Definition of a soft Sig-module
 
-It is a signature Σ such that for any model R, and any family of model morphisms 
-(f_j : R --> d_j), the following diagram can be completed in the category
-of natural transformations:
+It is a soft module Σ such that for any model R, and any family of model morphisms 
+(f_j : R --> d_j), the following triangle can be completed in the category
+of natural transformations (from Σ(S) to Σ(d_j)):
 
 <<<
            Σ(f_j)
@@ -81,8 +95,10 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
         (# OSig pi X y)%sigo  .
 
   Local Notation REP := (model Sig).
-  (** Some examples of soft signatures *)
 
+  (** Some examples of soft Sig-modules: the tautological soft module assigning
+      a 1-model to itsefl.
+    *)
   Lemma isSoft_tauto : isSoft (tautological_signature_over Sig).
   Proof.
     red; cbn.
@@ -91,7 +107,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
     assumption.
   Defined.
 
-  (** Derivative of a soft is soft *)
+  (** Derivative of a soft Sig-module is soft *)
   Lemma isSoft_derivative {OSig} (soft : isSoft OSig)
     : isSoft (signature_over_deriv (C := SET) BinCoproductsHSET TerminalHSET OSig).
   Proof.
@@ -104,11 +120,15 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   Local Notation σ := source_equation.
   Local Notation τ := target_equation.
 
+  (** An epi Sig-module is a module M which preserves the epimorphicity
+      in the category of natural transformations *)
   Definition isEpi_overSig (M : signature_over Sig) :=
         ∏ R S (f : R →→ S),
                    isEpi (C := [SET, SET]) (f : nat_trans _ _) ->
                    isEpi (C := [SET, SET]) (# M f : nat_trans _ _)%sigo.
 
+  (** A soft equation is an equation where the source is an epi Sig-module
+      and the target is soft *)
   Definition soft_equation :=
     ∑ (e : equation), isSoft (τ e) × isEpi_overSig (σ e).
 
@@ -124,6 +144,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   (** Back to the proof *)
 
 
+  (** Consider a 1-model R with a family of 1-model morphisms (ff_j :  R -> d_j)_j *)
   Context {R : REP}.
   (** implied by the axiom of choice *)
   Context (R_epi : preserves_Epi R).
@@ -131,12 +152,17 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   Context {J : UU} (d : J -> REP) 
             (ff : ∏ (j : J), R →→ (d j)).
 
+  (** R' is the 1-model R quotiented by the following relation on R(X):
+         x ~ y iff ff_j(x) = ff_j(y) for all j *)
   Let R' : REP := R'_model Sig epiSig epiSigpw R_epi d ff.
+  (** The canonical projection R -> R' as a 1-model morphism *)
   Let projR : rep_fiber_mor R R' := projR_rep  Sig epiSig epiSigpw R_epi d ff.
 
   Local Notation π := projR.
   Local Notation Θ := tautological_LModule.
 
+  (** If all the d_j satisifes the same soft equation, then it is the case
+      of the quotient R' *)
   Lemma R'_satisfies_eq (e : soft_equation)
         (deq : ∏ j, satisfies_equation e (d j))
     : satisfies_equation e  R'.
@@ -165,11 +191,14 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
     apply deq.
   Qed.
 
+  (** Thus, if all the d_j satisfy the same family of soft equations, then it is
+       also the case of R' *)
   Definition R'_satisfies_all_equations {O : UU} (e : O -> soft_equation)
     (deq : ∏ j, satisfies_all_equations_hp e  (d j))
     : satisfies_all_equations_hp e R'
     := fun o => R'_satisfies_eq (e o) (fun j => deq j o).
 
+  (** R' can be thus given the structure of a 2-model *)
   Definition R'_model_equations {O : UU} (e : O -> soft_equation)
     (deq : ∏ j, satisfies_all_equations_hp e (d j))
     : model_equations e 

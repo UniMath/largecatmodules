@@ -1,7 +1,7 @@
 
 (** * Quotient a model by a given set of its slice arrows
 
-Let Σ be a 1-signature.
+Let Σ be an epi 1-signature.
 Let R be a 1-model of Σ and (α_i : R → S_i)_i be a (possibly large) family of
 1-model morphisms. Then we can construct the quotient monad R' (see
 Prelims.quotientmonadslice) which is defined as R'(X) = R(X) / ~
@@ -158,6 +158,7 @@ Local Notation MONAD := (Monad SET).
 Local Notation SIG := (signature SET).
 
 Context (Sig : SIG).
+(** The 1-signature must preserves epimorphicity of natural transformations *)
 Context (epiSig : ∏ (R S : Monad _)
                     (f : Monad_Mor R S),
                   isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
