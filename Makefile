@@ -10,6 +10,7 @@ endif
 # The packages, listed in order by dependency:
 PACKAGES += Prelims
 PACKAGES += Signatures
+PACKAGES += SoftEquations
 #PACKAGES += Displayed_Cats
 #PACKAGES += ALV2
 #PACKAGES += OtherDefs
@@ -97,7 +98,7 @@ COQDEFS := --language=none												\
 
 # $(foreach P,$(PACKAGES),$(eval TAGS-$P: $(filter Modules/$P/%,$(VFILES)); etags -o $$@ $$^))
 $(VFILES:.v=.vo) : # $(COQBIN)coqc
-# TAGS : $(PACKAGE_FILES) $(VFILES); etags $(COQDEFS) $(VFILES)
+TAGS : $(PACKAGE_FILES) $(VFILES); etags $(COQDEFS) $(VFILES)
 FILES_FILTER := grep -vE '^[[:space:]]*(\#.*)?$$'
 $(foreach P,$(PACKAGES),$(eval $P: $(shell <Modules/$P/.package/files $(FILES_FILTER) |sed "s=^\(.*\)=Modules/$P/\1o=" )))
 install:all

@@ -33,22 +33,33 @@ Open Scope cat.
     
 Set Automatic Introduction.
 
+(* TODO: move in lib.v *)
+
+
 Section QuotientMonad.
 
-(** the axiom of choice is needed to prove the the horizontal composition of the
-    canonical projection with itself is epimorphic *)
 
-Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
 
 (** We start by just considering the quotient of the monad [R] as a functor.  Further
-    compatibility for the monad composition are assumed later. *)
+    compatibility for the monad composition are assumed later. *) 
+  Context {R : Monad SET}.
 
-Context {R : Monad SET} {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
+(**
+  R preserves epimorphisms.
+    This is needed to prove the the horizontal composition of the
+    canonical projection with itself is epimorphic.
+   This is always the case if one assumes the axiom of choice because then all
+  epimorphisms have a retract, and thus are absolute.
+ *)
+Context (R_epi : preserves_Epi R).
+
+  Context 
+          {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
         (congr_equivc : ∏ (x y : SET) (f : SET⟦x,y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f)).
 
 Let equivc {c:hSet} x y := eqrel_equivc c x y.
-  
+ 
 (** We define the quotient functor of R by these equivalence relations
 
 The following comment may be outdated
@@ -71,6 +82,13 @@ Lemma isEpi_projR_pw : ∏ x, isEpi (projR x).
 Proof.
   apply isEpi_pw_pr_quot_functor.
 Qed.
+
+Lemma isEpi_RprojR_pw : ∏ x, isEpi (#R (projR x)).
+Proof.
+  intro x.
+  apply R_epi.
+  apply isEpi_projR_pw.
+Qed.
   (* TODO: utiliser partout ce lemme où c'est nécessaire *)
 Lemma isEpi_projR : isEpi (C:=functor_category _ _) projR.
 Proof.
@@ -81,13 +99,19 @@ Qed.
 (* Lemma isEpi_projR_projR_pw x : isEpi (C:=functor_category _ _) (projR ∙∙ projR x). *)
 Lemma isEpi_projR_projR_pw x : isEpi  ((projR ∙∙ projR) x).
 Proof.
-  apply isEpi_comp.
+  apply isEpi_horcomp_pw2.
   - apply isEpi_projR_pw.
-  - apply preserves_to_HSET_isEpi; apply choice || apply isEpi_projR_pw. 
+  - apply isEpi_RprojR_pw.
+Qed.
+
+Lemma isEpi_R_projR_projR_pw x : isEpi  (#R ((projR ∙∙ projR) x)).
+Proof.
+  apply R_epi.
+  apply isEpi_projR_projR_pw.
 Qed.
 
 
-Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR ).
+Lemma isEpi_projR_projR : isEpi (C:=functor_category _ _) (projR ∙∙ projR).
 Proof.
   apply is_nat_trans_epi_from_pointwise_epis.
   apply isEpi_projR_projR_pw.
@@ -212,11 +236,9 @@ Qed.
 
 Lemma isEpi_projR_projR_projR_pw c : isEpi ((projR ∙∙ (projR ∙∙ projR)) c).
 Proof.
-  apply isEpi_comp.
+  apply isEpi_horcomp_pw2.
   - apply isEpi_projR_pw.
-  - apply preserves_to_HSET_isEpi.
-    + apply choice.
-    + apply isEpi_projR_projR_pw. 
+  - apply isEpi_R_projR_projR_pw. 
 Defined.
 
 Lemma R'_Monad_law_μ : ∏ c : SET,
@@ -371,6 +393,13 @@ Proof.
   apply univ_surj_nt_ax_pw.
 Qed.
 
+(** not used here but nevermind *)
+Lemma u_def_nt :  (m : nat_trans _ _) = (compose (C := [SET,SET]) (projR : nat_trans _ _)  u)  . 
+Proof.
+  symmetry.
+  apply univ_surj_nt_ax.
+Qed.
+
 Lemma u_monad_mor_law1 
   : ∏ a : SET, (μ R'_monad) a · u a = u (R'_monad a) · # S (u a) · (μ S) a.
 Proof.
@@ -441,6 +470,16 @@ Qed.
 Local Definition u_monad : Monad_Mor (R'_monad) S
   := (_ ,, u_monad_laws).
 
+
+Local Lemma u_monad_def : m = (projR_monad : category_Monad SET ⟦_,_⟧) · u_monad .
+Proof.
+  apply Monad_Mor_equiv; [ apply homset_property|].
+  apply nat_trans_eq; [ apply homset_property|].
+  apply u_def.
+Qed.
+
+(* Lemma univ_surj_monad *)
+
 (** Here we avoid to prove that the morphism is unique, since this follows easly from the
     uniqueness of the natural transformation for the underlying quotient functor. *)
 
@@ -448,4 +487,4 @@ End QuotientMonad.
   
 Arguments projR : simpl never.
 Arguments R' : simpl never.
-Arguments u_monad _ [R _ _] _ [_] _ .
+Arguments u_monad  [R] _ [ _ _]  _ [_] _ .
