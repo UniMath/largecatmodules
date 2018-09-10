@@ -1,10 +1,21 @@
 
-(** Quotient a representation by a given set of its slice arrows
+(** * Quotient a model by a given set of its slice arrows
 
-(useful for equations only)
-We could try to reuse stuff in Signatures/quotientrep and related work about presentable signatures,
-and take the identity signature morphism. But it would probably make the definitions more tedious to
-use, so instead we do it again with the direct definition of category of models.
+Let Σ be a 1-signature.
+Let R be a 1-model of Σ and (α_i : R → S_i)_i be a (possibly large) family of
+1-model morphisms. Then we can construct the quotient monad R' (see
+Prelims.quotientmonadslice) which is defined as R'(X) = R(X) / ~
+and x ~ y iff for all i, α_i(x) = α_i(y)
+
+This file show that this quotient monad can be given an action so that it induces
+a 1-model.
+
+Note:
+It is probably possible to generalize in order to factorize this file with the quotient model
+built in Signatures/quotienrep.v (note, besides, that they do not use the same category of models: here we
+have defined the category of 1-models of a signature, where as there it is retrieved as a fiber category
+of the displayed category of 1-models  over 1-signatures). However, I fear that such generalization would
+complicate its use.
 
  *)
 
@@ -32,13 +43,6 @@ Require Import Modules.Prelims.modules.
 
 Open Scope cat.
 
-(* TODO: move this in lib.v *)
-Definition nat_trans_comp_pointwise' :
-  ∏ (C : precategory) (C' : category)  (F G H : [C, C' , _ ])
-    (A : [C, C' , _] ⟦ F, G ⟧) (A' : [C, C' , _] ⟦ G, H ⟧) (a : C),
-  (A  : nat_trans _ _) a ·  (A' : nat_trans _ _) a =  (A · A' : nat_trans _ _) a
-  :=
-  fun C C'  F G H A A' => @nat_trans_comp_pointwise C C' (homset_property C') F G H A A' _ (idpath _).
 
 (** TODO : move this section in Prelims/..
 and use thees results to shorten quotienrep (or don't do that because we don't care about
@@ -151,7 +155,6 @@ Section QuotientRep.
 
   Local Notation MOD Mon := (category_LModule Mon SET).
 Local Notation MONAD := (Monad SET).
-(* Local Notation BMOD := (bmod_disp C C). *)
 Local Notation SIG := (signature SET).
 
 Context (Sig : SIG).
@@ -276,7 +279,7 @@ This induces a monad morphism u : R' -> S that makes the following diagram commu
 Let u := u_monad R_epi d ff.
 
 
-(** u is a morphism of model *)
+(** u is a morphism of 1-model *)
 Lemma u_rep_laws j : rep_fiber_mor_law R'_model (d j) (u j).
 Proof.
   intro c.
