@@ -25,6 +25,56 @@ Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition).
 
 Set Automatic Introduction.
 
+Open Scope cat.
+(**
+If the source category B is Set, then with the axiom of choice every epimorphism is split,
+thus absolute (i.e. any functor preserves epis).
+*)
+Definition preserves_Epi {B C : precategory} (F : functor B C) : UU :=
+  ∏ a b (f : B ⟦a , b⟧), isEpi  f -> isEpi (# F f)%Cat.
+
+Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
+      (B := hset_category)  {C : category}
+      (G : functor B C)
+      : preserves_Epi G.
+Proof.
+  intros a b f epif.
+  apply isSplitEpi_isEpi; [ apply homset_property|].
+  apply preserves_isSplitEpi.
+  apply SplitEpis_HSET; [|apply epif].
+  apply ax_choice.
+Qed.
+
+Lemma isEpi_horcomp_pw (B : precategory)(C D : category)
+      (G H : functor B C) (G' H' : functor C D)
+      (f : nat_trans G H) (f':nat_trans G' H')
+  : (∏ x, isEpi  (f' x))
+    -> (∏ x, isEpi ((# H')%Cat (f x)))
+    -> ∏ x,  isEpi (horcomp f f' x).
+Proof.
+  intros epif' epif.
+  intro x.
+  apply isEpi_comp.
+  - apply epif'.
+  - apply epif.
+Qed.
+
+Lemma isEpi_horcomp_pw2 (B : precategory)(C D : category)
+      (G H : functor B C) (G' H' : functor C D)
+      (f : nat_trans G H) (f':nat_trans G' H')
+  : (∏ x, isEpi  (f' x))
+    -> (∏ x, isEpi ((# G')%Cat (f x)))
+    -> ∏ x,  isEpi (horcomp f f' x).
+Proof.
+  intros epif epif'.
+  intro x.
+  cbn.
+  rewrite <- (nat_trans_ax f').
+  apply isEpi_comp.
+  - apply epif'.
+  - apply epif.
+Qed.
+
 Lemma epi_nt_SET_pw {C : precategory} {A B : functor C SET} (a : nat_trans A B) :
     isEpi (C := functor_category C  SET) a → ∏ x : C, isEpi (a x).
 Proof.
@@ -43,20 +93,6 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
-      (B := hset_category)  {C : category}
-      (G : functor B C)
-      { a b : B}
-      (f : (B ⟦ a, b⟧)%Cat)
-  : isEpi f
-    -> isEpi (#G f)%Cat.
-Proof.
-  intros epif.
-  apply isSplitEpi_isEpi; [ apply homset_property|].
-  apply preserves_isSplitEpi.
-  apply SplitEpis_HSET; [|apply epif].
-  apply ax_choice.
-Qed.
 (*
 Lemma isEpi_pre_whisker (B C :precategory)(D : category)
       (G H : functor C D) (K : functor B C) (f : nat_trans G H)
@@ -213,6 +249,7 @@ Proof.
 Qed.
 *)
 
+Close Scope cat.
 Lemma horcomp_assoc 
   : ∏ {B C D E : precategory} {H H' : functor B C}
       {F F' : functor C D} {G G' : functor D E} 
