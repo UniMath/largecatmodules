@@ -3,11 +3,32 @@
 (* =================================================================================== *)
 
 (* ----------------------------------------------------------------------------------- *)
-(** Description: This module construct the quotient of a monad with respect
-    some elements of its coslice category (see pdf sent to Benedikt)
-    More precisely: let (f_j : R --> d_j) for j in a set J be a collection of
+(** Description: This module construct the quotient of a monad (on Set) with respect to
+    some elements of its coslice category 
+    More precisely: let (f_j : R --> d_j) for j in a (possibly large) set J be a collection of
     morphisms of monads. We quotient R(X) by the following relation: x ~ y
-    if and only if for all j, f_j(x) = f_j(y) *)
+    if and only if for all j, f_j(x) = f_j(y) 
+
+    Pairs of related elements can be characterized as the (possibly large) limit L of the
+    following diagram in the category of endofunctors: 
+<<<
+  R ----> d_j
+   \      ^
+    \     |
+     \    /
+      \  /
+        / .. 
+       / 
+      /  \
+     /    \
+    /     |
+   /      V
+  R ---> d_j'
+>>>
+
+   The quotient can be characterized as the coequalizer of the pair projections
+   out of this limit.
+*)
 (* ----------------------------------------------------------------------------------- *)
 
 Require Import UniMath.Foundations.PartD.
