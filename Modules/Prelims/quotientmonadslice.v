@@ -149,7 +149,7 @@ Proof.
   use eqpr.
 Qed.
 
-(** The induced natural transformation out of the quotient *)
+(** Any natural transformation from [R] to ff_j factors through the canonical projection R -> R' *)
 Definition u (j : J) (S := d j) : nat_trans (pr1 R') S.
 Proof.
   apply (quotientmonad.u congr_equivc _ (ff j)).
@@ -157,8 +157,6 @@ Proof.
 Defined.
 
 
-(** The induced natural transformation makes a triangle commute
- *)
 Lemma u_def (j : J) (m := ff j) : ∏ x,  m x = projR x · u j x.
 Proof.
   apply (quotientmonad.u_def).
@@ -217,7 +215,7 @@ Definition projR_monad
   : Monad_Mor R R'_monad
   := projR_monad  R_epi congr_equivc compat_μ_slice.
 
-(** Short name for the monad morphism out of the quotient *)
+(** Any monad morphism from [R] to ff_j factors through the canonical projection R -> R' *)
 Definition u_monad (j : J)  (m := ff j)
   : Monad_Mor R'_monad (d j)
   := quotientmonad.u_monad R_epi  compat_μ_slice (S:= d j) m (compat_slice j).

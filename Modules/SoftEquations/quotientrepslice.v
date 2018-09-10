@@ -318,6 +318,7 @@ Proof.
 Qed.
 
 
+(** Any morphism from [R] to d_j factors through the canonical projection R -> R' *)
 Definition u_rep j :  R'_model →→ (d j) := u j ,, u_rep_laws j.
 
 Lemma u_rep_def (j : J)  : ff j = (projR_rep : REP_CAT ⟦_,_⟧) · (u_rep j).
