@@ -13,3 +13,6 @@ SignatureDerivation.v
 SignaturesColims.v
 PresentableSignatureBinProdR.v
 Modularity.v
+SignatureOverAsFiber.v
+ModelCat.v
+SignatureOver.v
