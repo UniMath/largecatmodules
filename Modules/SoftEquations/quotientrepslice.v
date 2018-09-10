@@ -30,9 +30,6 @@ Require Import Modules.Signatures.Signature.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.Prelims.modules.
 
-
-Require Import Modules.Prelims.LModuleEpiArePointwise.
-
 Open Scope cat.
 
 (* TODO: move this in lib.v *)
@@ -51,9 +48,25 @@ Section univ_mod.
   Context {C  : category}{R : Monad C}.
   Local Notation MOD := (category_LModule R SET).
   Context {M N O : LModule R SET} (p : LModule_Mor _ M N) (f : LModule_Mor _ M O).
+  (**
+completion of the diagram with an arrow from N to O
+<<
+         p
+   M -------->> N
+   |
+   |
+ f |
+   |
+   V
+   O
+>>
+*)
   Context (compat : (∏ (X : C) (x y : (M X : hSet)), p X x = p X y → f X x = f X y)).
 
-  Lemma univ_surj_lmod_laws epip : LModule_Mor_laws R (univ_surj_nt p f compat epip).
+  Lemma univ_surj_lmod_laws
+        (epip : isEpi (C := [C, SET]) (p : nat_trans M N))
+    :
+    LModule_Mor_laws R (univ_surj_nt p f compat epip).
   Proof.
     intro c.
     assert (epip' := epip).
@@ -87,13 +100,31 @@ Section univ_pb_mod.
   Local Notation MOD Mon := (category_LModule Mon SET).
   Context {M : LModule R SET}.
   Context {N O : LModule S SET}.
-  Context (m : Monad_Mor R S) (epim_pw : ∏ c, isEpi (# N (m c))).
+  Context (m : Monad_Mor R S)
+          (epim_pw : ∏ c, isEpi (# N (m c))).
   Context (p : LModule_Mor R M (pb_LModule m N)) (f : LModule_Mor _ M (pb_LModule m O)).
   Context (compat : (∏ (X : C) (x y : (M X : hSet)), p X x = p X y → f X x = f X y)).
 
-  Lemma univ_surj_pb_lmod_laws epip : LModule_Mor_laws S (univ_surj_nt p f compat epip).
+
+  (**
+By the previous section, we get a R-module morphism from N to O.
+But here, we want a S-module morphism. Hence, we need an additional hypothesis, namely that #N m is epi
+         p
+   M -------->> m*N
+   |
+   |
+ f |
+   |
+   V
+   m*O
+*)
+
+  Lemma univ_surj_pb_lmod_laws 
+        (epip : isEpi (C := [C, SET]) (p : nat_trans M N)) :
+          LModule_Mor_laws S (univ_surj_nt p f compat epip).
   Proof.
     intro c.
+
     apply epim_pw.
     etrans; [ | apply (univ_surj_lmod_laws p f compat epip)].
     etrans.
@@ -129,15 +160,20 @@ Context (epiSig : ∏ (R S : Monad _)
                   isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                   isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
 
-Local Notation REP := (rep_ar SET Sig).
+(** implied by the axiom of choice *)
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+
+Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
 
-Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
-Context {R : REP} {J : UU} (d : J -> REP)
+(* Variable (choice : AxiomOfChoice.AxiomOfChoice_surj). *)
+Context {R : REP}.
+Context (R_epi : preserves_Epi R).
+Context {J : UU} (d : J -> REP)
           (ff : ∏ (j : J),  R →→ (d j)).
 
-Let R' : Monad SET := R'_monad choice d ff.
-Let projR : Monad_Mor R R' := projR_monad choice d ff.
+Let R' : Monad SET := R'_monad R_epi d ff.
+Let projR : Monad_Mor R R' := projR_monad R_epi d ff.
 
   
 
@@ -147,8 +183,8 @@ Local Notation Θ := tautological_LModule.
 Lemma R'_action_compat :
   ∏ (X : SET) (x y : (Sig R) X : hSet),
   (# Sig)%ar projR X x = (# Sig)%ar projR X y
-  → ((rep_τ SET R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X x =
-    ((rep_τ SET R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X y.
+  → ((model_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X x =
+    ((model_τ R : MOD R ⟦ Sig (pr1 R), Θ (pr1 R) ⟧) · monad_mor_to_lmodule projR : LModule_Mor _ _ _) X y.
 Proof.
   - intros X x y eq.
     apply rel_eq_projR.
@@ -157,7 +193,7 @@ Proof.
     rewrite comp_cat_comp.
     eapply changef_path.
     + etrans;[|apply (!(rep_fiber_mor_ax (ff j) _))].
-      rewrite (quotientmonadslice.u_monad_def choice d ff j ).
+      rewrite (quotientmonadslice.u_monad_def R_epi d ff j ).
       rewrite signature_comp.
       reflexivity.
     + cbn.
@@ -186,18 +222,17 @@ Proof.
   use (univ_surj_pb_lmod_nt_epi
          projR
          _ (# Sig projR)%ar
-         ((rep_τ _ R : MOD R ⟦_,_⟧ ) · (monad_mor_to_lmodule projR ))
+         ((model_τ R : MOD R ⟦_,_⟧ ) · (monad_mor_to_lmodule projR ))
       ); revgoals.
   - apply epiSig.
     apply isEpi_projR.
   - apply R'_action_compat.
   - intro c.
-    apply preserves_to_HSET_isEpi.
-    + exact choice.
-    + apply isEpi_projR_pw.
+    apply epiSigpw.
+    apply isEpi_projR_pw.
 Defined.
 
-Definition R'_model : rep_ar _ Sig := R' ,, R'_action.
+Definition R'_model : model Sig := R' ,, R'_action.
 
 (** π is a morphism of model *)
 Lemma π_rep_laws : rep_fiber_mor_law R R'_model projR.
@@ -238,7 +273,7 @@ This induces a monad morphism u : R' -> S that makes the following diagram commu
 
 *)
 
-Let u := u_monad choice d ff.
+Let u := u_monad R_epi d ff.
 
 
 (** u is a morphism of model *)
@@ -270,7 +305,7 @@ Proof.
   rewrite assoc.
   apply cancel_postcomposition.
   
-  rewrite (u_monad_def choice  d ff).
+  rewrite (u_monad_def R_epi  d ff).
   rewrite signature_comp.
   reflexivity.
   (* simpl. *)

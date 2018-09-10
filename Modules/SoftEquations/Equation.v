@@ -14,7 +14,8 @@ Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.Categories.
-Require Import UniMath.CategoryTheory.sub_precategories.
+Require Import UniMath.CategoryTheory.Subcategory.Core.
+Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.SoftEquations.SignatureOver.
@@ -25,7 +26,7 @@ Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
 Section Equation.
   Context  {C : category} {Sig : signature C}.
-  Local Notation REP := (rep_ar C Sig).
+  Local Notation REP := (model Sig).
   (* Local Notation REP_CAT := (rep_fiber_category Sig). *)
 
   Definition half_equation (S1 S2 : signature_over Sig) := signature_over_Mor Sig S1 S2.

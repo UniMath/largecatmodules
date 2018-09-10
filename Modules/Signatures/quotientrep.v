@@ -32,8 +32,8 @@ Set Automatic Introduction.
 
 Section QuotientMonad.
 
-Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
 Context {R : Monad SET}
+     (R_epi : preserves_Epi R)
         {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
         (congr_equivc : ∏ (x y : SET) (f : SET⟦x, y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f))
@@ -59,10 +59,10 @@ Let R' : SET ⟶ SET
 Let projR : (R : SET ⟶ SET) ⟹ quotientmonad.R' congr_equivc
   := projR congr_equivc.
 Let R'_monad : Monad SET
-  := R'_monad choice congr_equivc compat_μ_projR.
+  := R'_monad  R_epi congr_equivc compat_μ_projR.
 Let projR_monad
-  : Monad_Mor R (quotientmonad.R'_monad choice congr_equivc compat_μ_projR)
-  := projR_monad choice congr_equivc compat_μ_projR.
+  : Monad_Mor R (quotientmonad.R'_monad  R_epi congr_equivc compat_μ_projR)
+  := projR_monad R_epi congr_equivc compat_μ_projR.
 
 Local Notation π := projR_monad.
 Local Notation Θ := tautological_LModule.
@@ -99,7 +99,11 @@ h is compatible with π ∘ τ
    *)
 
 Context {a : LModule R SET}
-        {b : LModule R'_monad SET}
+        {b : LModule R'_monad SET}.
+
+(** We need that either [a] or [b] preserves epis *)
+Context (ab_epi : preserves_Epi a ⨿ preserves_Epi b).
+Context
         {τ : LModule_Mor _ a (Θ R)}
         {h : LModule_Mor _ a (pb_LModule projR_monad b)}
         (* TODO : define the general type of compatability that is used everywhere to define
@@ -109,16 +113,17 @@ Context {a : LModule R SET}
         (* TODO : demander que ce soit pointwise epi plutôt *)
         (isEpih : isEpi (C:=[SET,SET]) (h:nat_trans _ _)).
 
-Definition R'_rep_τ  : nat_trans b R'.
+
+Definition R'_model_τ  : nat_trans b R'.
 Proof.
   (* TODO : adapter univ_surj_nt pour que ça demande epi pointwise pour h *)
   apply (univ_surj_nt _ (((τ :nat_trans _ _):[SET,SET]⟦_,_⟧) · (projR_monad:nat_trans _ _)) compath).
   apply isEpih.
 Defined.
 
-Local Notation τ' := R'_rep_τ.
+Local Notation τ' := R'_model_τ.
            
-Definition R'_rep_τ_def : ∏ X, h X · τ' X = τ X · projR_monad X.
+Definition R'_model_τ_def : ∏ X, h X · τ' X = τ X · projR_monad X.
 Proof.
   apply (univ_surj_nt_ax_pw _
                             (((τ : nat_trans _ _ ) : [SET,SET]⟦_,_⟧) · (projR_monad : nat_trans _ _))
@@ -178,7 +183,7 @@ Proof.
     etrans; [apply assoc|].
     apply cancel_postcomposition.
     (* definition of τ' *)
-    apply R'_rep_τ_def.
+    apply R'_model_τ_def.
   }
   repeat rewrite <- assoc.
   etrans.
@@ -211,14 +216,14 @@ Proof.
   }
   repeat rewrite <- assoc.
   apply cancel_precomposition.
-  apply R'_rep_τ_def.
+  apply R'_model_τ_def.
 Qed.
 
-Lemma R'_rep_τ_module_laws 
+Lemma R'_model_τ_module_laws 
   : LModule_Mor_laws _ 
                      (T:=b)
                      (T':= tautological_LModule R'_monad)
-                     R'_rep_τ.
+                     R'_model_τ.
 Proof.
   intro X.
   
@@ -227,13 +232,10 @@ Proof.
                   ((h ∙∙ projR) X)
          ).
   {
-    apply isEpi_comp.
-    - intro Y.
-      apply epi_nt_SET_pw.
-      apply isEpih.
-    - apply preserves_to_HSET_isEpi.
-      + exact choice.
-      + apply isEpi_projR_pw.
+    induction ab_epi as [epiab|epiab];
+      [apply isEpi_horcomp_pw2 | apply isEpi_horcomp_pw ].
+    1,3:apply epi_nt_SET_pw; assumption.
+    all:intro Y; apply epiab; apply isEpi_projR_pw.
   }
   apply epi.
   etrans; [ apply τ'_law_eq1 |].
@@ -241,8 +243,8 @@ Proof.
   apply τ'_law_eq2.
 Qed.    
 
-Definition R'_rep_τ_module : LModule_Mor _ b (tautological_LModule R'_monad) 
-  := _ ,, R'_rep_τ_module_laws.
+Definition R'_model_τ_module : LModule_Mor _ b (tautological_LModule R'_monad) 
+  := _ ,, R'_model_τ_module_laws.
 
 (** Let S a monad, m : R -> S a monad morphism compatible with the equivalence relation
 This induces a monad morphism u : R' -> S that makes the following diagram commute
@@ -267,7 +269,7 @@ Context {S : Monad SET}
         (compatm : ∏ (X : SET) 
                      (x y : (R X : hSet)), projR X x = projR X y → m X x = m X y).
 
-Let u_monad := quotientmonad.u_monad choice compat_μ_projR _ compatm.
+Let u_monad := quotientmonad.u_monad R_epi compat_μ_projR _ compatm.
 
 (**
 Let c be a S-Module
@@ -335,7 +337,7 @@ Proof.
   etrans.
   { rewrite assoc.
     apply cancel_postcomposition.
-    apply R'_rep_τ_def.
+    apply R'_model_τ_def.
   } 
   etrans.
   { rewrite <- assoc.

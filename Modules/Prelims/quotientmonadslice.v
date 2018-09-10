@@ -37,13 +37,22 @@ Open Scope cat.
 
 Section QuotientMonad.
 
-(** the axiom of choice is needed to prove the the horizontal composition of the
-    canonical projection with itself is epimorphic *)
-
-Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
 
 
-Context {R : Monad SET} {J : UU} (d : J -> Monad SET)
+
+  Context {R : Monad SET}.
+
+(**
+  R preserves epimorphisms.
+    This is needed to prove the the horizontal composition of the
+    canonical projection with itself is epimorphic.
+   This is always the case if one assumes the axiom of choice because then all
+  epimorphisms have a retract, and thus are absolute.
+ *)
+Context (R_epi : preserves_Epi R).
+
+Context
+            {J : UU} (d : J -> Monad SET)
           (ff : ∏ (j : J), Monad_Mor R (d j)).
 
 (** Define two elements in R to be related if they are mapped
@@ -182,15 +191,15 @@ Proof.
 Qed.
   
 (** Short notations for the quotient monad and the projection as a monad morphism *)
-Definition R'_monad : Monad SET := R'_monad choice congr_equivc compat_μ_slice.
+Definition R'_monad : Monad SET := R'_monad R_epi congr_equivc compat_μ_slice.
 Definition projR_monad
   : Monad_Mor R R'_monad
-  := projR_monad choice congr_equivc compat_μ_slice.
+  := projR_monad  R_epi congr_equivc compat_μ_slice.
 
 (** Short name for the monad morphism out of the quotient *)
 Definition u_monad (j : J)  (m := ff j)
   : Monad_Mor R'_monad (d j)
-  := quotientmonad.u_monad choice compat_μ_slice (S:= d j) m (compat_slice j).
+  := quotientmonad.u_monad R_epi  compat_μ_slice (S:= d j) m (compat_slice j).
 
 
 Lemma u_monad_def (j : J) (m := ff j) : m = (projR_monad : category_Monad SET ⟦_,_⟧) · (u_monad j).
