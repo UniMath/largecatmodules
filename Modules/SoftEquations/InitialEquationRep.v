@@ -1,4 +1,19 @@
-(** Proof that the signatures with soft equations is representable *)
+(** * Syntax for soft 2-signatures
+
+Given an epi 1-signature Σ generating a syntax (i.e. whose category of models
+has an initial object), the 2-signature consisting of
+Σ and any family of soft equations also generates a syntax.
+
+The initial 2-model is the quotient of the initial 1-model R by the
+following relation on R(X):
+   x ~ y iff their image are equalized by the initial arrow to any 1-model of Σ
+             satisfying the equations.
+
+See [push_initiality].
+
+
+
+ *)
 
 
 Require Import UniMath.Foundations.PartD.
@@ -42,8 +57,12 @@ Section QuotientRep.
   Local Notation MONAD := (Monad SET).
   Local Notation SIG := (signature SET).
 
+  (** The axiom of choice allows to build quotients *)
   Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
+  (** We fix an epi 1-signature [Sig] for the following *)
   Context {Sig : SIG}.
+  (** Sig must be an epi-signature, i.e. preserves epimorphicity of natural
+      transformations *)
   Context (epiSig : ∏ (R S : Monad _)
                       (f : Monad_Mor R S),
                     isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
@@ -55,23 +74,32 @@ Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
   Local Notation REP_CAT := (rep_fiber_category Sig).
 
+  (** A family of soft equations indexed by O *)
   Context {O : UU} (eq : O -> soft_equation epiSig epiSigpw) .
 
   Local Notation REP_EQ := (model_equations eq ).
   Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
 
+  (** [R] will be the candidate for the initial 1-model of [Sig] *)
   Context (R : REP) .
   (** implied by the axiom of choice *)
   Context (R_epi : preserves_Epi R).
 
+  (** For the quotient, we consider the collections of morphisms
+      from [R] to any 1-model of [Sig] satisfying the family of equations *)
   Let J := ∑ (S : model_equations eq), R →→ S.
   Let d (j : J) : model_equations eq := pr1 j.
   Let ff (j : J) : R →→ (d j) := pr2 j.
 
+  (** The quotient model by this collection of arrows *)
   Let R' : REP_EQ := R'_model_equations  epiSig epiSigpw R_epi d ff eq
                                         (fun j => model_equations_eq (d j)).
+  (** Any morphism from R to a 1-model satisfying the equations factorize through
+      the canonical projection, followed by [u_rep] *)
   Let u_rep := u_rep Sig epiSig epiSigpw R_epi d ff.
 
+  (** Initiality of [R] in the category of 1-models of [Sig] implies initiality of
+      [R'] in the category of 2-models of [Sig] with the given family of equations *)
   Lemma push_initiality : isInitial REP_CAT R -> isInitial REP_EQ_PRECAT R'.
     intro h.
     (* inspired by push_initiality of EpiSigRepresentability *)
