@@ -62,7 +62,10 @@ Section QuotientRep.
   (** We fix an epi 1-signature [Sig] for the following *)
   Context {Sig : SIG}.
   (** Sig must be an epi-signature, i.e. preserves epimorphicity of natural
-      transformations *)
+      transformations. Note that this is not implied by the axiom of choice
+      because the retract may not be a monad morphism.
+      This is used to give the quotient monad an action.
+   *)
   Context (epiSig : ∏ (R S : Monad _)
                       (f : Monad_Mor R S),
                     isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
