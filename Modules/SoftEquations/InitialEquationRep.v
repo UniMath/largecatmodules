@@ -95,3 +95,35 @@ Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
 End QuotientRep.
 
+(** Mere reformulation which hides the initial object in the main statment (isInitial becomes Initial) *)
+Section QuotientRepInit.
+
+  Local Notation MOD Mon := (category_LModule Mon SET).
+  Local Notation MONAD := (Monad SET).
+  Local Notation SIG := (signature SET).
+
+  Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
+  Context {Sig : SIG}.
+  Context (epiSig : ∏ (R S : Monad _)
+                      (f : Monad_Mor R S),
+                    isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
+                    isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+
+  Local Notation REP := (model Sig).
+
+  Local Notation REP_CAT := (rep_fiber_category Sig).
+
+  Context {O : UU} (eq : O -> soft_equation choice epiSig ) .
+
+  Local Notation REP_EQ := (model_equations eq ).
+  Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
+
+  Lemma soft_equations_preserve_initiality : Initial REP_CAT -> Initial REP_EQ_PRECAT.
+  Proof.
+    intro init.
+    eapply mk_Initial.
+    apply push_initiality.
+    exact (pr2 init).
+  Qed.
+End QuotientRepInit.
+
