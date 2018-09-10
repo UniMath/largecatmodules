@@ -1,3 +1,10 @@
+(** * Some useful lemmas
+
+Among other things:
+- associativity of horizontal composition of natural transformations [horcomp_assoc]
+- functors from Set preserves epis, assuming the axiom of choice [preserves_to_HSET_isEpi]
+
+*)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
@@ -23,8 +30,6 @@ Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 Tactic Notation "cpre" uconstr(x) := apply (cancel_precomposition x).
 Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition).
 
-Set Automatic Introduction.
-
 Open Scope cat.
 (**
 If the source category B is Set, then with the axiom of choice every epimorphism is split,
@@ -33,6 +38,8 @@ thus absolute (i.e. any functor preserves epis).
 Definition preserves_Epi {B C : precategory} (F : functor B C) : UU :=
   ∏ a b (f : B ⟦a , b⟧), isEpi  f -> isEpi (# F f)%Cat.
 
+(** Functor from Set preserves epimorphisms because thanks to the axiom of choice, any
+    set epimorphism is absolute *)
 Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
       (B := hset_category)  {C : category}
       (G : functor B C)
@@ -75,23 +82,52 @@ Proof.
   - apply epif.
 Qed.
 
+(** Epimorphic natural transformation between Set valued functors are pointwise epimorphic
+ *)
 Lemma epi_nt_SET_pw {C : precategory} {A B : functor C SET} (a : nat_trans A B) :
     isEpi (C := functor_category C  SET) a → ∏ x : C, isEpi (a x).
 Proof.
   apply Pushouts_pw_epi.
   apply PushoutsHSET_from_Colims.
 Qed.
+(** common generalization to [maponpaths] and [toforallpaths] *)
 Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
-  f = g -> f t1 = f t2 ->g t1 = g t2.
+  f = g -> f t1 = f t2 -> g t1 = g t2.
 Proof.
   induction 1; auto.
 Qed.
 
+
+(** Associativity of horizontal composition of natural transformations *)
+Lemma horcomp_assoc 
+  : ∏ {B C D E : precategory} {H H' : functor B C}
+      {F F' : functor C D} {G G' : functor D E} 
+      (a : nat_trans H H') (b : nat_trans F F') (c : nat_trans G G') x,
+    ((c ∙∙ b) ∙∙ a) x = (c ∙∙( b ∙∙ a)) x.
+Proof.
+  intros.
+  cbn.
+  symmetry.
+  rewrite functor_comp,assoc. apply idpath.
+Qed.
+
+(** Same as [nat_trans_comp_pointwise], but with B = A · A' *)
+Definition nat_trans_comp_pointwise' :
+  ∏ (C : precategory) (C' : category)  (F G H : ([C, C' , _ ])%Cat)
+    (A : ([C, C' , _] ⟦ F, G ⟧)%Cat) (A' : ([C, C' , _] ⟦ G, H ⟧)%Cat) (a : C),
+  ((A  : nat_trans _ _) a ·  (A' : nat_trans _ _) a)%Cat =  (A · A' : nat_trans _ _)%Cat a
+  :=
+  fun C C'  F G H A A' => @nat_trans_comp_pointwise C C' (homset_property C') F G H A A' _ (idpath _).
+
+
+(** Composition in Set category is the usual composition of function *)
 Lemma comp_cat_comp {A B C:hSet} (f : A -> B) (g:B -> C) x :
   g (f x) = compose (C:= SET) f g x.
 Proof.
   reflexivity.
 Qed.
+
+
 
 (*
 Lemma isEpi_pre_whisker (B C :precategory)(D : category)
@@ -249,18 +285,6 @@ Proof.
 Qed.
 *)
 
-Close Scope cat.
-Lemma horcomp_assoc 
-  : ∏ {B C D E : precategory} {H H' : functor B C}
-      {F F' : functor C D} {G G' : functor D E} 
-      (a : H ⟶ H') (b : F ⟶ F') (c : G ⟶ G') x,
-    ((c ∙∙ b) ∙∙ a) x = (c ∙∙( b ∙∙ a)) x.
-Proof.
-  intros.
-  cbn.
-  symmetry.
-  rewrite functor_comp,assoc. apply idpath.
-Qed.
 
 (*
 (* copié de ssreflect. Pour l'instant inutile *)
