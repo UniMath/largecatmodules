@@ -67,8 +67,8 @@ Section QuotientRep.
                       (f : Monad_Mor R S),
                     isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                     isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
-(** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+  (** implied by the axiom of choice *)
+  Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
   Local Notation REP := (model Sig).
 
@@ -136,22 +136,27 @@ Section QuotientRepInit.
                       (f : Monad_Mor R S),
                     isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                     isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+(** implied by the axiom of choice *)
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
   Local Notation REP := (model Sig).
 
   Local Notation REP_CAT := (rep_fiber_category Sig).
 
-  Context {O : UU} (eq : O -> soft_equation choice epiSig ) .
+  Context {O : UU} (eq : O -> soft_equation epiSig epiSigpw) .
 
   Local Notation REP_EQ := (model_equations eq ).
   Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
 
-  Lemma soft_equations_preserve_initiality : Initial REP_CAT -> Initial REP_EQ_PRECAT.
+  Lemma soft_equations_preserve_initiality : ∏ (R : Initial REP_CAT) ,
+                                             (preserves_Epi (InitialObject  R : model _)) ->
+                                             Initial REP_EQ_PRECAT.
   Proof.
-    intro init.
+    intros init R_epi.
     eapply mk_Initial.
-    apply push_initiality.
-    exact (pr2 init).
+    use push_initiality; revgoals.
+    {   exact (pr2 init). }
+    assumption.
   Qed.
 End QuotientRepInit.
 
