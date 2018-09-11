@@ -166,7 +166,7 @@ Lemma soft_equations_preserve_initiality_choice
          ∏ (** The 1-signature *)
            (Sig : signature SET)
            (** The 1-signature must be an epi-signature *)
-           (epiSig : sig_preservesNatEpiMonad Sig).
+           (epiSig : sig_preservesNatEpiMonad Sig)
            (** A family of equations *)
            (O : UU) (eq : O → soft_equation_choice ax_choice Sig epiSig ),
          (** If the category of 1-models has an initial object, .. *)
