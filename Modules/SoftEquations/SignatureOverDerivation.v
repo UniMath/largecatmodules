@@ -93,11 +93,9 @@ Variable (a : OSIG).
   Definition signature_over_deriv : signature_over Sig := _ ,, signature_over_deriv_is_signature_over.
 
 End DAr.
-(*
 
-Fixpoint signature_over_deriv_n {C : category} bcp T a (n :nat) : signature_over C :=
+Fixpoint signature_over_deriv_n {C : category} (S : signature C) bcp T a (n :nat) : signature_over S :=
   match n with
     0 => a
-  | S m => @signature_over_deriv C bcp T (@signature_over_deriv_n C bcp T a m)
+  | S m => @signature_over_deriv C bcp T S (@signature_over_deriv_n C S bcp T a m)
   end.
-*)
