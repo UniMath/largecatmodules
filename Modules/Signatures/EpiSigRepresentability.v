@@ -409,8 +409,8 @@ either [a] is an epi signature and [F R'] is an epi, either [b] is an epi-signat
 and [F R] is an epi
 *)
 Definition cond_isEpi_hab :=
-  (isEpi (C := [_, _]) (pr1 (F R')) × preservesEpi_signature a) ⨿
-                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × preservesEpi_signature b).
+  (isEpi (C := [_, _]) (pr1 (F R')) × sig_preservesNatEpiMonad a) ⨿
+                           (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × sig_preservesNatEpiMonad b).
 
 
 Context (cond_hab : cond_isEpi_hab).
@@ -626,7 +626,7 @@ Theorem push_initiality
         (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
         (epiSig_F : isEpi (C:= signature_category ) F)
-        (epib : preservesEpi_signature b)
+        (epib : sig_preservesNatEpiMonad b)
   : isInitial _ R -> Initial Rep_b.
 Proof.
   assert (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R)))).
@@ -656,7 +656,7 @@ Theorem push_initiality_weaker
         (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
         (epi_F : ∏ (R : Monad _), isEpi (C := [_, _]) (pr1 (F (R))))
-        (epia : preservesEpi_signature a)
+        (epia : sig_preservesNatEpiMonad a)
   : isInitial _ R -> Initial Rep_b.
 Proof.
   intro iniR.
@@ -679,7 +679,7 @@ Theorem push_initiality_weaker_choice
         (R : Rep_a)
         (choice : AxiomOfChoice.AxiomOfChoice_surj)
         (epi_F : ∏ (R : Monad _), isEpi (C := [_, _]) (pr1 (F (R))))
-        (epia : preservesEpi_signature a)
+        (epia : sig_preservesNatEpiMonad a)
   : isInitial _ R -> Initial Rep_b.
 Proof.
   apply push_initiality_weaker; (try apply preserves_to_HSET_isEpi); try assumption.
@@ -687,7 +687,7 @@ Proof.
 Qed.
 
 (* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
-Context (aepi : preservesEpi_signature a).
+Context (aepi : sig_preservesNatEpiMonad a).
 
 (* Let R' (R : REP a) : Monad SET := R' ax_choice (congr_equivc R) (compat_μ_projR R). *)
 
