@@ -4,6 +4,8 @@ and that they are presentable
 COmmutation coproducts of binding sigs and signature
 hSet out of a binding signature
 
+TODO: generalize to an arbitrary category (rather than focus on SET for isEpiSig)
+
 -coprod of binding sig
 - iso between signature of coproducts of binding sig and coproduct of signautes of binding
 sigs
@@ -192,8 +194,6 @@ Section EpiSignatureSig.
   Qed.
 
 
-  Definition preserveEpi {C D : precategory} (F : functor C D) :=
-    ∏ M N (f : C ⟦ M, N ⟧), isEpi f → isEpi (#F f).
 
 
 
@@ -201,29 +201,8 @@ Section EpiSignatureSig.
   (*   ∏ M N (f:EndSet ⟦M,N⟧), isEpi (C := [_ , _]) f → isEpi (C := [H_SET, H_SET, *)
   (*                                                            has_homsets_HSET]) (# F f). *)
 
-  Definition isEpiSig (S : Sig) := preserveEpi (S : functor _ _).
+  Definition isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
 
-  (* Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) *)
-  (*       (B := hset_category)  {C : category} *)
-  (*       (G : functor B C) *)
-  (*       { a b : B} *)
-  (*       (f : (B ⟦ a, b⟧)%Cat) *)
-  (*   : isEpi f *)
-  (*     -> isEpi (#G f)%Cat. *)
-  (* Proof. *)
-  (*   intros epif. *)
-  (*   apply isSplitEpi_isEpi; [ apply homset_property|]. *)
-  (*   apply preserves_isSplitEpi. *)
-  (*   apply SplitEpis_HSET; [|apply epif]. *)
-  (*   apply ax_choice. *)
-  (* Qed. *)
-  (* Lemma SigAreEpis (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) (S : Sig) : isEpiSig S. *)
-  (* Proof. *)
-  (*   intros M N f isepif. *)
-  (*   apply is_nat_trans_epi_from_pointwise_epis. *)
-  (*   intro a. *)
-  (*   eapply preserves_to_HSET_isEpi. *)
-  (* Qed. *)
 
 
 
@@ -275,8 +254,8 @@ Section EpiSignatureSig.
   Defined.
 
   (* TODO : réfléchir à une généralisation de ce résultat *)
-  Lemma preserveEpi_binProdFunc F F' : preserveEpi F -> preserveEpi F' ->
-                                       preserveEpi (binProdFunc F F').
+  Lemma preserveEpi_binProdFunc F F' : preserves_Epi F -> preserves_Epi F' ->
+                                       preserves_Epi (binProdFunc F F').
   Proof.
     intros epiF epiF'.
     intros M N f epif.
@@ -318,8 +297,8 @@ Section EpiSignatureSig.
 
   (* TODO réfléchir à une généralisation *)
 
-  Lemma preserveEpi_sumFuncs I Ihset Fs (epiFs : ∏ i, preserveEpi (Fs i)) :
-    preserveEpi (sumFuncs I Ihset Fs).
+  Lemma preserveEpi_sumFuncs I Ihset Fs (epiFs : ∏ i, preserves_Epi (Fs i)) :
+    preserves_Epi (sumFuncs I Ihset Fs).
   Proof.
     intros M N f epif.
     apply is_nat_trans_epi_from_pointwise_epis.
@@ -352,7 +331,7 @@ Section EpiSignatureSig.
   Qed.
     
 
-  Lemma precomp_func_preserveEpi F : preserveEpi (precomp_functor F).
+  Lemma precomp_func_preserveEpi F : preserves_Epi (precomp_functor F).
   Proof.
     intros M N f epif.
     apply is_nat_trans_epi_from_pointwise_epis.
@@ -361,7 +340,7 @@ Section EpiSignatureSig.
   Qed.
 
   (** No need for an induction even though the functor is defined as such *)
-  Lemma precompEpiFunc (n : nat) : preserveEpi (precompToFunc n).
+  Lemma precompEpiFunc (n : nat) : preserves_Epi (precompToFunc n).
   Proof.
     destruct n as [|n ].
     - apply IdSigIsEpiSig.
