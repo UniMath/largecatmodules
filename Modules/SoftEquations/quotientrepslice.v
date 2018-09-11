@@ -1,10 +1,21 @@
 
-(** Quotient a representation by a given set of its slice arrows
+(** * Quotient a model by a given set of its slice arrows
 
-(useful for equations only)
-We could try to reuse stuff in Signatures/quotientrep and related work about presentable signatures,
-and take the identity signature morphism. But it would probably make the definitions more tedious to
-use, so instead we do it again with the direct definition of category of models.
+Let Σ be an epi 1-signature.
+Let R be a 1-model of Σ and (α_i : R → S_i)_i be a (possibly large) family of
+1-model morphisms. Then we can construct the quotient monad R' (see
+Prelims.quotientmonadslice) which is defined as R'(X) = R(X) / ~
+and x ~ y iff for all i, α_i(x) = α_i(y)
+
+This file show that this quotient monad can be given an action so that it induces
+a 1-model.
+
+Note:
+It is probably possible to generalize in order to factorize this file with the quotient model
+built in Signatures/quotienrep.v (note, besides, that they do not use the same category of models: here we
+have defined the category of 1-models of a signature, where as there it is retrieved as a fiber category
+of the displayed category of 1-models  over 1-signatures). However, I fear that such generalization would
+complicate its use.
 
  *)
 
@@ -32,13 +43,6 @@ Require Import Modules.Prelims.modules.
 
 Open Scope cat.
 
-(* TODO: move this in lib.v *)
-Definition nat_trans_comp_pointwise' :
-  ∏ (C : precategory) (C' : category)  (F G H : [C, C' , _ ])
-    (A : [C, C' , _] ⟦ F, G ⟧) (A' : [C, C' , _] ⟦ G, H ⟧) (a : C),
-  (A  : nat_trans _ _) a ·  (A' : nat_trans _ _) a =  (A · A' : nat_trans _ _) a
-  :=
-  fun C C'  F G H A A' => @nat_trans_comp_pointwise C C' (homset_property C') F G H A A' _ (idpath _).
 
 (** TODO : move this section in Prelims/..
 and use thees results to shorten quotienrep (or don't do that because we don't care about
@@ -48,9 +52,25 @@ Section univ_mod.
   Context {C  : category}{R : Monad C}.
   Local Notation MOD := (category_LModule R SET).
   Context {M N O : LModule R SET} (p : LModule_Mor _ M N) (f : LModule_Mor _ M O).
+  (**
+completion of the diagram with an arrow from N to O
+<<
+         p
+   M -------->> N
+   |
+   |
+ f |
+   |
+   V
+   O
+>>
+*)
   Context (compat : (∏ (X : C) (x y : (M X : hSet)), p X x = p X y → f X x = f X y)).
 
-  Lemma univ_surj_lmod_laws epip : LModule_Mor_laws R (univ_surj_nt p f compat epip).
+  Lemma univ_surj_lmod_laws
+        (epip : isEpi (C := [C, SET]) (p : nat_trans M N))
+    :
+    LModule_Mor_laws R (univ_surj_nt p f compat epip).
   Proof.
     intro c.
     assert (epip' := epip).
@@ -84,13 +104,31 @@ Section univ_pb_mod.
   Local Notation MOD Mon := (category_LModule Mon SET).
   Context {M : LModule R SET}.
   Context {N O : LModule S SET}.
-  Context (m : Monad_Mor R S) (epim_pw : ∏ c, isEpi (# N (m c))).
+  Context (m : Monad_Mor R S)
+          (epim_pw : ∏ c, isEpi (# N (m c))).
   Context (p : LModule_Mor R M (pb_LModule m N)) (f : LModule_Mor _ M (pb_LModule m O)).
   Context (compat : (∏ (X : C) (x y : (M X : hSet)), p X x = p X y → f X x = f X y)).
 
-  Lemma univ_surj_pb_lmod_laws epip : LModule_Mor_laws S (univ_surj_nt p f compat epip).
+
+  (**
+By the previous section, we get a R-module morphism from N to O.
+But here, we want a S-module morphism. Hence, we need an additional hypothesis, namely that #N m is epi
+         p
+   M -------->> m*N
+   |
+   |
+ f |
+   |
+   V
+   m*O
+*)
+
+  Lemma univ_surj_pb_lmod_laws 
+        (epip : isEpi (C := [C, SET]) (p : nat_trans M N)) :
+          LModule_Mor_laws S (univ_surj_nt p f compat epip).
   Proof.
     intro c.
+
     apply epim_pw.
     etrans; [ | apply (univ_surj_lmod_laws p f compat epip)].
     etrans.
@@ -117,24 +155,29 @@ Section QuotientRep.
 
   Local Notation MOD Mon := (category_LModule Mon SET).
 Local Notation MONAD := (Monad SET).
-(* Local Notation BMOD := (bmod_disp C C). *)
 Local Notation SIG := (signature SET).
 
 Context (Sig : SIG).
+(** The 1-signature must preserves epimorphicity of natural transformations *)
 Context (epiSig : ∏ (R S : Monad _)
                     (f : Monad_Mor R S),
                   isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                   isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
 
+(** implied by the axiom of choice *)
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+
 Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
 
-Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
-Context {R : REP} {J : UU} (d : J -> REP)
+(* Variable (choice : AxiomOfChoice.AxiomOfChoice_surj). *)
+Context {R : REP}.
+Context (R_epi : preserves_Epi R).
+Context {J : UU} (d : J -> REP)
           (ff : ∏ (j : J),  R →→ (d j)).
 
-Let R' : Monad SET := R'_monad choice d ff.
-Let projR : Monad_Mor R R' := projR_monad choice d ff.
+Let R' : Monad SET := R'_monad R_epi d ff.
+Let projR : Monad_Mor R R' := projR_monad R_epi d ff.
 
   
 
@@ -154,7 +197,7 @@ Proof.
     rewrite comp_cat_comp.
     eapply changef_path.
     + etrans;[|apply (!(rep_fiber_mor_ax (ff j) _))].
-      rewrite (quotientmonadslice.u_monad_def choice d ff j ).
+      rewrite (quotientmonadslice.u_monad_def R_epi d ff j ).
       rewrite signature_comp.
       reflexivity.
     + cbn.
@@ -189,9 +232,8 @@ Proof.
     apply isEpi_projR.
   - apply R'_action_compat.
   - intro c.
-    apply preserves_to_HSET_isEpi.
-    + exact choice.
-    + apply isEpi_projR_pw.
+    apply epiSigpw.
+    apply isEpi_projR_pw.
 Defined.
 
 Definition R'_model : model Sig := R' ,, R'_action.
@@ -235,10 +277,10 @@ This induces a monad morphism u : R' -> S that makes the following diagram commu
 
 *)
 
-Let u := u_monad choice d ff.
+Let u := u_monad R_epi d ff.
 
 
-(** u is a morphism of model *)
+(** u is a morphism of 1-model *)
 Lemma u_rep_laws j : rep_fiber_mor_law R'_model (d j) (u j).
 Proof.
   intro c.
@@ -267,7 +309,7 @@ Proof.
   rewrite assoc.
   apply cancel_postcomposition.
   
-  rewrite (u_monad_def choice  d ff).
+  rewrite (u_monad_def R_epi  d ff).
   rewrite signature_comp.
   reflexivity.
   (* simpl. *)
@@ -276,6 +318,7 @@ Proof.
 Qed.
 
 
+(** Any morphism from [R] to d_j factors through the canonical projection R -> R' *)
 Definition u_rep j :  R'_model →→ (d j) := u j ,, u_rep_laws j.
 
 Lemma u_rep_def (j : J)  : ff j = (projR_rep : REP_CAT ⟦_,_⟧) · (u_rep j).

@@ -1,4 +1,19 @@
-(** Proof that the signatures with soft equations is representable *)
+(** * Syntax for soft 2-signatures
+
+Given an epi 1-signature Σ generating a syntax (i.e. whose category of models
+has an initial object), the 2-signature consisting of
+Σ and any family of soft equations also generates a syntax.
+
+The initial 2-model is the quotient of the initial 1-model R by the
+following relation on R(X):
+   x ~ y iff their image are equalized by the initial arrow to any 1-model of Σ
+             satisfying the equations.
+
+See [push_initiality].
+
+
+
+ *)
 
 
 Require Import UniMath.Foundations.PartD.
@@ -42,32 +57,52 @@ Section QuotientRep.
   Local Notation MONAD := (Monad SET).
   Local Notation SIG := (signature SET).
 
+  (** The axiom of choice allows to build quotients *)
   Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
+  (** We fix an epi 1-signature [Sig] for the following *)
   Context {Sig : SIG}.
+  (** Sig must be an epi-signature, i.e. preserves epimorphicity of natural
+      transformations. Note that this is not implied by the axiom of choice
+      because the retract may not be a monad morphism.
+      This is used to give the quotient monad an action.
+   *)
   Context (epiSig : ∏ (R S : Monad _)
                       (f : Monad_Mor R S),
                     isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
                     isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+  (** implied by the axiom of choice *)
+  Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
   Local Notation REP := (model Sig).
 
   Local Notation REP_CAT := (rep_fiber_category Sig).
 
-  Context {O : UU} (eq : O -> soft_equation choice epiSig ) .
+  (** A family of soft equations indexed by O *)
+  Context {O : UU} (eq : O -> soft_equation epiSig epiSigpw) .
 
   Local Notation REP_EQ := (model_equations eq ).
   Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
 
+  (** [R] will be the candidate for the initial 1-model of [Sig] *)
   Context (R : REP) .
+  (** implied by the axiom of choice *)
+  Context (R_epi : preserves_Epi R).
 
+  (** For the quotient, we consider the collections of morphisms
+      from [R] to any 1-model of [Sig] satisfying the family of equations *)
   Let J := ∑ (S : model_equations eq), R →→ S.
   Let d (j : J) : model_equations eq := pr1 j.
   Let ff (j : J) : R →→ (d j) := pr2 j.
 
-  Let R' : REP_EQ := R'_model_equations choice epiSig  d ff eq
+  (** The quotient model by this collection of arrows *)
+  Let R' : REP_EQ := R'_model_equations  epiSig epiSigpw R_epi d ff eq
                                         (fun j => model_equations_eq (d j)).
-  Let u_rep := u_rep Sig epiSig choice d ff.
+  (** Any morphism from R to a 1-model satisfying the equations factorize through
+      the canonical projection, followed by [u_rep] *)
+  Let u_rep := u_rep Sig epiSig epiSigpw R_epi d ff.
 
+  (** Initiality of [R] in the category of 1-models of [Sig] implies initiality of
+      [R'] in the category of 2-models of [Sig] with the given family of equations *)
   Lemma push_initiality : isInitial REP_CAT R -> isInitial REP_EQ_PRECAT R'.
     intro h.
     (* inspired by push_initiality of EpiSigRepresentability *)
@@ -84,10 +119,68 @@ Section QuotientRep.
     - intros [f []].
       apply (maponpaths (fun x => x ,, tt)).
       apply isEpi_projR_rep.
-      etrans;[| apply (u_rep_def Sig epiSig choice d ff j)].
+      etrans;[| apply (u_rep_def Sig epiSig epiSigpw R_epi d ff j)].
       apply iscontr_uniqueness.
   Qed.
 
 
 End QuotientRep.
 
+(** Mere reformulation which hides the initial object in the main statment (isInitial becomes Initial) *)
+Section QuotientRepInit.
+
+  Local Notation MOD Mon := (category_LModule Mon SET).
+  Local Notation MONAD := (Monad SET).
+  Local Notation SIG := (signature SET).
+
+  Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
+  Context {Sig : SIG}.
+  Context (epiSig : ∏ (R S : Monad _)
+                      (f : Monad_Mor R S),
+                    isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
+                    isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+(** implied by the axiom of choice *)
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+
+  Local Notation REP := (model Sig).
+
+  Local Notation REP_CAT := (rep_fiber_category Sig).
+
+  Context {O : UU} (eq : O -> soft_equation epiSig epiSigpw) .
+
+  Local Notation REP_EQ := (model_equations eq ).
+  Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
+
+  Lemma soft_equations_preserve_initiality : ∏ (R : Initial REP_CAT) ,
+                                             (preserves_Epi (InitialObject  R : model _)) ->
+                                             Initial REP_EQ_PRECAT.
+  Proof.
+    intros init R_epi.
+    eapply mk_Initial.
+    use push_initiality; revgoals.
+    {   exact (pr2 init). }
+    assumption.
+  Qed.
+End QuotientRepInit.
+
+
+(** A version using the axiom of choice *)
+Lemma soft_equations_preserve_initiality_choice 
+  (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) :
+
+         ∏ (** The 1-signature *)
+           (Sig : signature SET)
+           (** The 1-signature must be an epi-signature *)
+           (epiSig : ∏ (R S : Monad SET) (f : Monad_Mor R S),
+                     isEpi (C := [SET, SET]) (f : nat_trans R S)
+                     → isEpi (C := [SET, SET])
+                             ((# Sig)%ar f : nat_trans (Sig R)  (pb_LModule f (Sig S))))
+           (** A family of equations *)
+           (O : UU) (eq : O → soft_equation_choice ax_choice Sig epiSig ),
+         (** If the category of 1-models has an initial object, .. *)
+         Initial (rep_fiber_category Sig) ->
+        (** .. then the category of 2-models has an initial object *)
+         Initial (precategory_model_equations (λ x : O, eq x)).
+  intros; use soft_equations_preserve_initiality; try assumption.
+  apply preserves_to_HSET_isEpi; assumption.
+Qed.

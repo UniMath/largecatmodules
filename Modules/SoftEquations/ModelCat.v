@@ -1,8 +1,9 @@
-
 (** * Category of models of a signature
 
-- Direct definition, not as a fiber category over a displayed category
-- proof  that it is isomorphic to the definition as a fiber category ([catiso_modelcat])
+- [rep_fiber_category]: Direct definition 
+- [catiso_modelcat]: proof that this category is isomorphic to the definition as a fiber category
+  of the fibration of the total 1-model category over the 1-signatures category,
+  as defined in Signatures/Signature.v
 
 *)
 
@@ -30,18 +31,24 @@ Require Import Modules.Signatures.Signature.
 
 Section ModelCat.
 
+(**
+We work  in a category [C], and are going to define the 1-models of a fixed 1-signature.
+*)
 Context {C : category}.
 
 Local Notation MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
 Local Notation SIG := (signature C).
 
-(** *)
+(** This proposition states that the monad morphism [g] between two 1-models
+    commutes with the action [model_τ].
+ *)
 Definition rep_fiber_mor_law {a : SIG} (M N : model a) 
            (g : Monad_Mor M N)
   : UU
   := ∏ c : C, model_τ M c · g c = ((#a g)%ar:nat_trans _ _) c ·  model_τ N c .
 
+(** This statment is hProp *)
 Lemma isaprop_rep_fiber_mor_law {a  : SIG} (M N : model a)
       (g : Monad_Mor M N) 
   : isaprop (rep_fiber_mor_law  M N  g).
@@ -51,9 +58,13 @@ Proof.
   apply homset_property.
 Qed.
 
+(** A model morphism [g] between two 1-models [M] and [N] is a monad morphism
+    commuting with the action [model_τ].
+ *)
 Definition rep_fiber_mor {a : SIG} (M N : model a)  :=
   ∑ g:Monad_Mor M N, rep_fiber_mor_law  M N g.
 
+(** Homsets of 1-models are hSet *)
 Lemma isaset_rep_fiber_mor {a : SIG} (M N : model a)  :
   isaset (rep_fiber_mor  M N ).
 Proof.
@@ -65,18 +76,21 @@ Proof.
     apply isaprop_rep_fiber_mor_law.
 Qed.
 
+(** Coercion from 1-model morphism to monad morphisms *)
 Coercion monad_morphism_from_rep_fiber_mor {a : SIG} {M N : model a} 
           (h : rep_fiber_mor M N) : Monad_Mor M N
   := pr1 h.
 
+(** A model morphism commutes with the action *)
 Definition rep_fiber_mor_ax {a : SIG} {M N : model a} 
             (h:rep_fiber_mor  M N ) :
   ∏ c, model_τ M c · h c = (#a h)%ar c ·  model_τ N c 
   := pr2 h.
 
+(** If two 1-model morphisms are equal as natural transformations, then they are equal *)
 Lemma rep_fiber_mor_eq_nt {a : SIG} (R S:model a)
       (u v: rep_fiber_mor R S) :
-  ( u : nat_trans _ _) = v -> u = v.
+  (u : nat_trans _ _) = v -> u = v.
 Proof.
   intros.
   use (invmap (subtypeInjectivity _ _ _ _  )). 
@@ -87,6 +101,7 @@ Proof.
      +  assumption.
 Qed.
 
+(** If two 1-model morphisms are pointwise equal, then they are equal *)
 Lemma rep_fiber_mor_eq {a : SIG} (R S:model a)
       (u v: rep_fiber_mor R S) :
   (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
@@ -98,7 +113,9 @@ Proof.
   - assumption.
 Qed.
 
-Lemma is_rep_fiber_id {a : SIG} (M : model a) : rep_fiber_mor_law M M (identity (C := MONAD) (M : Monad _)).
+(** The identity natural transformation commutes with the action *)
+Lemma is_rep_fiber_id {a : SIG} (M : model a)
+  : rep_fiber_mor_law M M (identity (C := MONAD) (M : Monad _)).
 Proof.
   intro c.
   rewrite signature_id.
@@ -107,6 +124,7 @@ Proof.
   apply id_left.
 Qed.
 
+(** The composition of two 1-model morphisms commutes with the action *)
 Lemma is_rep_fiber_comp {a : SIG} {M N O: model a}
       (f : rep_fiber_mor M N) (g : rep_fiber_mor N O) : rep_fiber_mor_law M O
                                                                           (compose (C := MONAD)
@@ -125,13 +143,16 @@ Proof.
   reflexivity.
 Qed.
 
+(** The identity 1-model morphism *)
 Definition rep_fiber_id {a : SIG} (M : model a) : rep_fiber_mor M M :=
     tpair _ _ (is_rep_fiber_id M).
 
+(** Composition of 1-model morphisms *)
 Definition rep_fiber_comp {a : SIG} {M N O: model a}
       (f : rep_fiber_mor M N) (g : rep_fiber_mor N O) : rep_fiber_mor M O :=
   tpair _ _ (is_rep_fiber_comp f g).
 
+(** Intermediate data to build the category of 1-models of a 1-signature [a] *)
 Definition rep_fiber_precategory_ob_mor (a : SIG) : precategory_ob_mor :=
   precategory_ob_mor_pair _ (rep_fiber_mor (a := a) ).
 
@@ -144,6 +165,10 @@ Proof.
     apply rep_fiber_comp.
 Defined.
 
+(** 1-model morphisms satisfy the axioms of category:
+- identity is a neutral element for composition
+- composition is associative
+ *)
 Lemma is_precategory_rep_fiber_precategory_data (S : SIG) :
    is_precategory (rep_fiber_precategory_data S).
 Proof.
@@ -161,11 +186,13 @@ Proof.
     apply assoc.
 Qed.
 
+(** The precategory of 1-model morphisms *)
 Definition rep_fiber_precategory (S : SIG) : precategory :=
   tpair (fun C => is_precategory C)
         (rep_fiber_precategory_data S)
         (is_precategory_rep_fiber_precategory_data S).
 
+(** Homsets are hSet *)
 Lemma rep_fiber_category_has_homsets (S : SIG) : has_homsets (rep_fiber_precategory S).
 Proof.
   intros F G.
@@ -173,13 +200,25 @@ Proof.
 Qed.
 
 
+(** The category of 1-model morphisms (= precategory + Homsets are hSet *)
 Definition rep_fiber_category (S : SIG) : category.
 Proof.
   exists (rep_fiber_precategory S).
   apply rep_fiber_category_has_homsets.
 Defined.
 
-(** Proof that it is isomorphic to the fiber category definition *)
+(**
+
+In our presentable signatures formalization (Cf Signatures/), we have defined the
+fibration (using the displayed category framework) of the total 1-model category
+over the 1-signatures category (Signature.v).
+
+A definition of 1-model category over a 1-signature is retrieved by taking the fiber category over
+this signature.
+
+The following is a proof that the two definitions (here and there) yield isomorphic categories.
+
+ *)
 
 Context (S : SIG).
 

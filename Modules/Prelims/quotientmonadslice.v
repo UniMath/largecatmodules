@@ -3,11 +3,32 @@
 (* =================================================================================== *)
 
 (* ----------------------------------------------------------------------------------- *)
-(** Description: This module construct the quotient of a monad with respect
-    some elements of its coslice category (see pdf sent to Benedikt)
-    More precisely: let (f_j : R --> d_j) for j in a set J be a collection of
+(** Description: This module construct the quotient of a monad (on Set) with respect to
+    some elements of its coslice category 
+    More precisely: let (f_j : R --> d_j) for j in a (possibly large) set J be a collection of
     morphisms of monads. We quotient R(X) by the following relation: x ~ y
-    if and only if for all j, f_j(x) = f_j(y) *)
+    if and only if for all j, f_j(x) = f_j(y) 
+
+    Pairs of related elements can be characterized as the (possibly large) limit L of the
+    following diagram in the category of endofunctors: 
+<<<
+  R ----> d_j
+   \      ^
+    \     |
+     \    /
+      \  /
+        / .. 
+       / 
+      /  \
+     /    \
+    /     |
+   /      V
+  R ---> d_j'
+>>>
+
+   The quotient can be characterized as the coequalizer of the pair projections
+   out of this limit.
+*)
 (* ----------------------------------------------------------------------------------- *)
 
 Require Import UniMath.Foundations.PartD.
@@ -37,13 +58,22 @@ Open Scope cat.
 
 Section QuotientMonad.
 
-(** the axiom of choice is needed to prove the the horizontal composition of the
-    canonical projection with itself is epimorphic *)
-
-Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
 
 
-Context {R : Monad SET} {J : UU} (d : J -> Monad SET)
+
+  Context {R : Monad SET}.
+
+(**
+  R preserves epimorphisms.
+    This is needed to prove the the horizontal composition of the
+    canonical projection with itself is epimorphic.
+   This is always the case if one assumes the axiom of choice because then all
+  epimorphisms have a retract, and thus are absolute.
+ *)
+Context (R_epi : preserves_Epi R).
+
+Context
+            {J : UU} (d : J -> Monad SET)
           (ff : ∏ (j : J), Monad_Mor R (d j)).
 
 (** Define two elements in R to be related if they are mapped
@@ -119,7 +149,7 @@ Proof.
   use eqpr.
 Qed.
 
-(** The induced natural transformation out of the quotient *)
+(** Any natural transformation from [R] to ff_j factors through the canonical projection R -> R' *)
 Definition u (j : J) (S := d j) : nat_trans (pr1 R') S.
 Proof.
   apply (quotientmonad.u congr_equivc _ (ff j)).
@@ -127,8 +157,6 @@ Proof.
 Defined.
 
 
-(** The induced natural transformation makes a triangle commute
- *)
 Lemma u_def (j : J) (m := ff j) : ∏ x,  m x = projR x · u j x.
 Proof.
   apply (quotientmonad.u_def).
@@ -182,15 +210,15 @@ Proof.
 Qed.
   
 (** Short notations for the quotient monad and the projection as a monad morphism *)
-Definition R'_monad : Monad SET := R'_monad choice congr_equivc compat_μ_slice.
+Definition R'_monad : Monad SET := R'_monad R_epi congr_equivc compat_μ_slice.
 Definition projR_monad
   : Monad_Mor R R'_monad
-  := projR_monad choice congr_equivc compat_μ_slice.
+  := projR_monad  R_epi congr_equivc compat_μ_slice.
 
-(** Short name for the monad morphism out of the quotient *)
+(** Any monad morphism from [R] to ff_j factors through the canonical projection R -> R' *)
 Definition u_monad (j : J)  (m := ff j)
   : Monad_Mor R'_monad (d j)
-  := quotientmonad.u_monad choice compat_μ_slice (S:= d j) m (compat_slice j).
+  := quotientmonad.u_monad R_epi  compat_μ_slice (S:= d j) m (compat_slice j).
 
 
 Lemma u_monad_def (j : J) (m := ff j) : m = (projR_monad : category_Monad SET ⟦_,_⟧) · (u_monad j).
