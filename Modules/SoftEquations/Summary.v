@@ -210,19 +210,21 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
  *)
 Check (∏ (S : SIGNATURE)
          (F : signature_over S)
-         (** The axiom of choice is necessary to make quotient monad *)
-         (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
+         (** this is implied by the axiom of choice *)
+         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R))
          (** S preserves epimorphisms of monads *)
          (isEpi_sig : ∏ (R R' : MONAD)
                         (f : Monad_Mor R R'),
                         (isEpi (C:= [SET,SET]) (f : nat_trans _ _) ->
                       isEpi (C:= [SET,SET]) ((#S f)%ar : nat_trans _ _))),
-       isSoft ax_choice isEpi_sig F
+       isSoft  isEpi_sig SR_epi F
        ::=
          (∏ (R : model S)
+            (** implied by the axiom of choice *)
+            (R_epi : preserves_Epi R)
             (J : UU)(d : J -> (model S))(f : ∏ j, R →→ (d j))
             X (x y : (F R X : hSet))
-            (pi := projR_rep S isEpi_sig ax_choice d f),
+            (pi := projR_rep S isEpi_sig SR_epi R_epi d f),
           (∏ j, (# F (f j))%sigo X x  = (# F (f j))%sigo X y )
           -> (# F pi X x)%sigo = 
             (# F pi X y)%sigo  )
@@ -247,16 +249,16 @@ Check (∏ (S : SIGNATURE),
     must be soft (SoftEquations/quotientequation)
  *)
 Check (∏ (S : SIGNATURE)
-         (** The axiom of choice is necessary to make quotient monad *)
-         (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
+         (** this is implied by the axiom of choice *)
+         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R))
          (** S preserves epimorphisms of monads *)
          (isEpi_sig : ∏ (R R' : MONAD)
                         (f : Monad_Mor R R'),
                         (isEpi (C:= [SET,SET]) (f : nat_trans _ _) ->
                       isEpi (C:= [SET,SET]) ((#S f)%ar : nat_trans _ _))),
 
-       soft_equation ax_choice isEpi_sig ::=
-        ∑ (e : equation), isSoft ax_choice isEpi_sig (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
+       soft_equation isEpi_sig SR_epi ::=
+        ∑ (e : equation), isSoft isEpi_sig SR_epi (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
 (** 
 Definition of the category of 2-models of a 1-signature with a family of equation.
 
@@ -303,20 +305,20 @@ consisting of any family of soft equations over Σ also generates a syntax
 (SoftEquations/InitialEquationRep.v)
 
 *)
-Check (soft_equations_preserve_initiality :
-         (** The axiom of choice is needed for quotient monads/models *)
-         ∏ (choice : AxiomOfChoice.AxiomOfChoice_surj)
-           (** The 1-signature *)
+Check (@soft_equations_preserve_initiality :
+         ∏ (** The 1-signature *)
            (Sig : SIGNATURE)
            (** The 1-signature must be an epi-signature *)
            (epiSig : ∏ (R S : Monad SET) (f : Monad_Mor R S),
                      isEpi (C := [SET, SET]) (f : nat_trans R S)
                      → isEpi (C := [SET, SET])
                              ((# Sig)%ar f : nat_trans (Sig R)  (pb_LModule f (Sig S))))
+           (** this is implied by the axiom of choice *)
+           (SR_epi : ∏ R : Monad SET, preserves_Epi (Sig R))
            (** A family of equations *)
-           (O : UU) (eq : O → soft_equation choice epiSig),
+           (O : UU) (eq : O → soft_equation epiSig SR_epi),
          (** If the category of 1-models has an initial object, .. *)
-         Initial (rep_fiber_category Sig)
+         ∏ (R : Initial (rep_fiber_category Sig)) , preserves_Epi (InitialObject R : model Sig)
         (** .. then the category of 2-models has an initial object *)
          → Initial (precategory_model_equations (λ x : O, eq x))).
 

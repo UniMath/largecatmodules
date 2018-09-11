@@ -207,3 +207,13 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
 
 End QuotientRep.
+
+Definition soft_equation_choice (choice : AxiomOfChoice.AxiomOfChoice_surj) (S : signature SET) 
+            (** S preserves epimorphisms of monads *)
+        (isEpi_sig : ∏ (R R' : Monad SET)
+                      (f : Monad_Mor R R'),
+                      (isEpi (C:= [SET,SET]) (f : nat_trans _ _) ->
+                        isEpi (C:= [SET,SET]) ((#S f)%ar : nat_trans _ _))) : UU :=
+    soft_equation isEpi_sig (λ R : Monad SET, preserves_to_HSET_isEpi choice (S R)).
+
+Identity Coercion forget_choice : soft_equation_choice >-> soft_equation.
