@@ -85,6 +85,17 @@ Check (∏ (F : signature_data (C:= SET)),
 
 Check (signature SET ::= ∑ F : signature_data, is_signature F).
 
+  (** An epi-signature preserves epimorphicity of natural
+      transformations. Note that this is not implied by the axiom of choice
+      because the retract may not be a monad morphism.
+   *)
+Check (∏ (S : signature SET),
+       sig_preservesNatEpiMonad S ::=
+         ∏ M N (f : category_Monad _⟦M,N⟧),
+         isEpi (C := functor_category SET SET) (pr1 f) ->
+         isEpi (C:= functor_category SET SET)
+               (pr1 (#S f)%ar)).
+
 
 Local Notation SIGNATURE := (signature SET).
 (** *******************
@@ -177,7 +188,10 @@ Check (∏ (S : SIGNATURE)
       ).
 
 (** Definition of an oversignature which preserve epimorphisms in the category of natural transformations
-(Cf SoftEquations/quotientequation.v *)
+(Cf SoftEquations/quotientequation.v).
+This definition is analogous to [sig_preservesNatEpiMonad], but for oversignature
+rathen than 1-signatures.
+ *)
 Check (∏ (S : SIGNATURE)
          (F : signature_over S),
        isEpi_overSig F ::=
@@ -209,14 +223,11 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
  *)
 Check (∏ (S : SIGNATURE)
+         (** S is an epi-signature *)
+         (isEpi_sig : sig_preservesNatEpiMonad S)
          (F : signature_over S)
          (** this is implied by the axiom of choice *)
-         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R))
-         (** S preserves epimorphisms of monads *)
-         (isEpi_sig : ∏ (R R' : MONAD)
-                        (f : Monad_Mor R R'),
-                        (isEpi (C:= [SET,SET]) (f : nat_trans _ _) ->
-                      isEpi (C:= [SET,SET]) ((#S f)%ar : nat_trans _ _))),
+         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R)) ,
        isSoft  isEpi_sig SR_epi F
        ::=
          (∏ (R : model S)
@@ -249,13 +260,10 @@ Check (∏ (S : SIGNATURE),
     must be soft (SoftEquations/quotientequation)
  *)
 Check (∏ (S : SIGNATURE)
+         (** S is an epi-signature *)
+         (isEpi_sig : sig_preservesNatEpiMonad S)
          (** this is implied by the axiom of choice *)
-         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R))
-         (** S preserves epimorphisms of monads *)
-         (isEpi_sig : ∏ (R R' : MONAD)
-                        (f : Monad_Mor R R'),
-                        (isEpi (C:= [SET,SET]) (f : nat_trans _ _) ->
-                      isEpi (C:= [SET,SET]) ((#S f)%ar : nat_trans _ _))),
+         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R)) ,
 
        soft_equation isEpi_sig SR_epi ::=
         ∑ (e : equation), isSoft isEpi_sig SR_epi (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
@@ -308,11 +316,8 @@ consisting of any family of soft equations over Σ also generates a syntax
 Check (@soft_equations_preserve_initiality :
          ∏ (** The 1-signature *)
            (Sig : SIGNATURE)
-           (** The 1-signature must be an epi-signature *)
-           (epiSig : ∏ (R S : Monad SET) (f : Monad_Mor R S),
-                     isEpi (C := [SET, SET]) (f : nat_trans R S)
-                     → isEpi (C := [SET, SET])
-                             ((# Sig)%ar f : nat_trans (Sig R)  (pb_LModule f (Sig S))))
+           (** S is an epi-signature *)
+           (epiSig : sig_preservesNatEpiMonad Sig)
            (** this is implied by the axiom of choice *)
            (SR_epi : ∏ R : Monad SET, preserves_Epi (Sig R))
            (** A family of equations *)

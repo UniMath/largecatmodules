@@ -66,10 +66,7 @@ Section QuotientRep.
       because the retract may not be a monad morphism.
       This is used to give the quotient monad an action.
    *)
-  Context (epiSig : ∏ (R S : Monad _)
-                      (f : Monad_Mor R S),
-                    isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
-                    isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+  Context (epiSig : sig_preservesNatEpiMonad Sig).
   (** implied by the axiom of choice *)
   Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
@@ -135,10 +132,8 @@ Section QuotientRepInit.
 
   Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
   Context {Sig : SIG}.
-  Context (epiSig : ∏ (R S : Monad _)
-                      (f : Monad_Mor R S),
-                    isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
-                    isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+  Context (epiSig : sig_preservesNatEpiMonad Sig).
+
 (** implied by the axiom of choice *)
 Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
@@ -171,10 +166,7 @@ Lemma soft_equations_preserve_initiality_choice
          ∏ (** The 1-signature *)
            (Sig : signature SET)
            (** The 1-signature must be an epi-signature *)
-           (epiSig : ∏ (R S : Monad SET) (f : Monad_Mor R S),
-                     isEpi (C := [SET, SET]) (f : nat_trans R S)
-                     → isEpi (C := [SET, SET])
-                             ((# Sig)%ar f : nat_trans (Sig R)  (pb_LModule f (Sig S))))
+           (epiSig : sig_preservesNatEpiMonad Sig).
            (** A family of equations *)
            (O : UU) (eq : O → soft_equation_choice ax_choice Sig epiSig ),
          (** If the category of 1-models has an initial object, .. *)

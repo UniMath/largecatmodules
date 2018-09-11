@@ -291,7 +291,11 @@ Arguments signature _ : clear implicits.
 Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
 
 
-Definition preservesEpi_signature (c : signature SET)
+  (** An epi-signature preserves epimorphicity of natural
+      transformations. Note that this is not implied by the axiom of choice
+      because the retract may not be a monad morphism.
+   *)
+Definition sig_preservesNatEpiMonad (c : signature SET)
   : UU
   := ∏ M N (f : category_Monad _⟦M,N⟧),
      isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)

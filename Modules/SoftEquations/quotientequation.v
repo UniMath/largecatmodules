@@ -58,10 +58,7 @@ Local Notation SIG := (signature SET).
 Context {Sig : SIG}.
   (** Sig must be an epi-signature, i.e. preserves epimorphicity of natural
       transformations *)
-Context (epiSig : ∏ (R S : Monad _)
-                    (f : Monad_Mor R S),
-                  isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
-                  isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+Context (epiSig : sig_preservesNatEpiMonad Sig).
 (** implied by the axiom of choice *)
 Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
