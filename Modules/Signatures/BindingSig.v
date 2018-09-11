@@ -4,6 +4,8 @@ and that they are presentable
 COmmutation coproducts of binding sigs and signature
 hSet out of a binding signature
 
+TODO: generalize to an arbitrary category (rather than focus on SET for isEpiSig)
+
 -coprod of binding sig
 - iso between signature of coproducts of binding sig and coproduct of signautes of binding
 sigs
