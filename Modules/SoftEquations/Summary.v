@@ -8,6 +8,7 @@ Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.Derivative.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.functor_categories.
@@ -28,6 +29,7 @@ Require Import Modules.Prelims.modules.
 
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.SignatureOver.
+Require Import Modules.SoftEquations.SignatureOverDerivation.
 Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
@@ -98,6 +100,10 @@ Check (∏ (S : signature SET),
 
 
 Local Notation SIGNATURE := (signature SET).
+
+Local Notation BC := BinCoproductsHSET.
+Local Notation T := TerminalHSET.
+
 (** *******************
 
  Definition of a model of a signature
@@ -107,10 +113,17 @@ The more detailed definitions of model morphisms can be found in SoftSignatures/
 
  ****** *)
 
-(** The tautological module R over the monad R *)
+(** The tautological module R over the monad R  (defined in UniMath) *)
 Local Notation Θ := tautological_LModule.
-
 Check (∏ (R : MONAD), (Θ R : functor _ _) ::= R).
+
+(** The derivative of a module M over the monad R (defined in UniMath) *)
+Local Notation "M ′" := (LModule_deriv unitHSET BC  M) (at level 6).
+(** M′ (X) = M′ (1 ⨿ X) where 1 = unit is the terminal object and ⨿ is the
+    disjoint union *)
+Check (∏ (R : MONAD) (M : LModule R SET) (X : SET),
+         (M ′ X) ::= M (setcoprod unitHSET (X : hSet))) .
+
 
 (**
 A model of a signature S is a monad R with a module morphism from S R to R, called an action.
@@ -173,7 +186,21 @@ Check (∏ (S : SIGNATURE),
                (** functoriality conditions (see SignatureOver.v) *)
                is_signature_over S F).
 
-Local Notation "F ⟹ G" := (signature_over_Mor _ F G) (at level 39).
+(** Some examples of 1-signature *)
+
+  (** The tautological signature maps a monad to itself *)
+  Local Notation ΣΘ := (tautological_signature_over _).
+  (** The n-th derivative of an over signature M *)
+  Local Notation "M ^( n )" := (signature_over_deriv_n (C := SET) _ BC T M n) (at level 6).
+  (** The n+1-th derivative is the derivative of the n-th derivative *)
+  Check (∏ (S : SIGNATURE) (F : signature_over S)(n : nat) (R : model S) (X : hSet),
+         F ^(1+n) R  ::= (F ^( n) R) ′).
+
+  (** The 0th derivative does not do anything *)
+  Check (∏ (S : SIGNATURE) (F : signature_over S)(n : nat) (R : model S) (X : hSet),
+         F ^(0) R  ::= F R).
+
+
 
 (**
 a morphism of oversignature is a natural transformation
@@ -186,6 +213,7 @@ Check (∏ (S : SIGNATURE)
          (** subject to naturality conditions (see SignatureOver.v for the full definition) *)
            is_signature_over_Mor S F F' f
       ).
+Local Notation "F ⟹ G" := (signature_over_Mor _ F G) (at level 39).
 
 (** Definition of an oversignature which preserve epimorphisms in the category of natural transformations
 (Cf SoftEquations/quotientequation.v).
@@ -242,7 +270,17 @@ Check (∏ (S : SIGNATURE)
        ).
 
 
-
+(**
+  Example of soft S-module: a finite derivative of the tautological signature
+ *)
+Check (@isSoft_finite_deriv_tauto:
+         ∏ (Sig : SIGNATURE)
+           (* Sig is an epi-1-signature *)
+           (epiSig : sig_preservesNatEpiMonad Sig)
+            (** implied by the axiom of choice *)
+           (epiSigpw : ∏ R : Monad SET, preserves_Epi (Sig R))
+           (n : nat),
+         isSoft epiSig epiSigpw (ΣΘ ^(n))).
 
 
 (* **********
@@ -267,6 +305,31 @@ Check (∏ (S : SIGNATURE)
 
        soft_equation isEpi_sig SR_epi ::=
         ∑ (e : equation), isSoft isEpi_sig SR_epi (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
+
+(** Elementary equations: the domain is an epi over-signature, and the target
+    is a finite derivative of the tautological signature mapping a model to itself
+    (SoftEquations/quotientequation.v).
+ *)
+Check (∏ (S : SIGNATURE),
+     elementary_equation (Sig := S) ::=
+         ∑ (S1 : signature_over S)(n : nat),
+         isEpi_overSig S1 × half_equation S1 (ΣΘ ^(n)) × half_equation S1 (ΣΘ ^(n))).
+
+(** Elementary equations yield soft equations
+ *)
+Check (∏ (S : SIGNATURE)
+         (** this is implied by the axiom of choice *)
+         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R))
+         (** but not that *)
+         epiSig
+         (e : elementary_equation),
+       (soft_equation_from_elementary_equation epiSig SR_epi e  : soft_equation _ _
+       ) ::=
+         mk_soft_equation epiSig SR_epi
+                          (half_elem_eqs e)  (source_elem_epiSig e)
+                          (isSoft_finite_deriv_tauto epiSig SR_epi (target_elem_eq e))).
+
+
 (** 
 Definition of the category of 2-models of a 1-signature with a family of equation.
 
@@ -314,7 +377,7 @@ consisting of any family of soft equations over Σ also generates a syntax
 
 *)
 Check (@soft_equations_preserve_initiality :
-         ∏ (** The 1-signature *)
+         ∏ 
            (Sig : SIGNATURE)
            (** S is an epi-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
@@ -325,6 +388,25 @@ Check (@soft_equations_preserve_initiality :
          (** If the category of 1-models has an initial object, .. *)
          ∏ (R : Initial (rep_fiber_category Sig)) , preserves_Epi (InitialObject R : model Sig)
         (** .. then the category of 2-models has an initial object *)
-         → Initial (precategory_model_equations (λ x : O, eq x))).
+         → Initial (precategory_model_equations eq)).
+
+
+(** As a corrolary, the case of a family of elementary equations *)
+Check (@elementary_equations_preserve_initiality :
+         ∏ 
+           (Sig : SIGNATURE)
+           (** The 1-signature must be an epi-signature *)
+           (epiSig : sig_preservesNatEpiMonad Sig)
+           (** this is implied by the axiom of choice *)
+           (SR_epi : ∏ R : Monad SET, preserves_Epi (Sig R))
+           (** A family of equations *)
+           (O : UU) (eq : O → elementary_equation (Sig := Sig))
+           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)),
+         (** If the category of 1-models has an initial object, .. *)
+         ∏ (R : Initial (rep_fiber_category Sig)) ,
+         (** preserving epis (implied by the axiom of choice *)
+         preserves_Epi (InitialObject R : model Sig)
+        (** .. then the category of 2-models has an initial object *)
+         → Initial (precategory_model_equations eq')).
 
 

@@ -45,6 +45,7 @@ Require Import Modules.SoftEquations.SignatureOver.
 Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
+Require Import Modules.SoftEquations.SignatureOverDerivation.
 
 Require Import UniMath.CategoryTheory.limits.initial.
 
@@ -130,32 +131,38 @@ Section QuotientRepInit.
   Local Notation MONAD := (Monad SET).
   Local Notation SIG := (signature SET).
 
-  Variable (choice : AxiomOfChoice.AxiomOfChoice_surj).
   Context {Sig : SIG}.
   Context (epiSig : sig_preservesNatEpiMonad Sig).
 
 (** implied by the axiom of choice *)
 Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
 
-  Local Notation REP := (model Sig).
 
-  Local Notation REP_CAT := (rep_fiber_category Sig).
 
-  Context {O : UU} (eq : O -> soft_equation epiSig epiSigpw) .
 
-  Local Notation REP_EQ := (model_equations eq ).
-  Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
-
-  Lemma soft_equations_preserve_initiality : ∏ (R : Initial REP_CAT) ,
-                                             (preserves_Epi (InitialObject  R : model _)) ->
-                                             Initial REP_EQ_PRECAT.
+  Lemma soft_equations_preserve_initiality
+        {O : UU}(eq : O -> soft_equation epiSig epiSigpw)
+    : ∏ (R : Initial (rep_fiber_category Sig)) ,
+      (preserves_Epi (InitialObject  R : model _)) ->
+      Initial (precategory_model_equations eq).
   Proof.
     intros init R_epi.
     eapply mk_Initial.
     use push_initiality; revgoals.
-    {   exact (pr2 init). }
+    { exact (pr2 init). }
     assumption.
   Qed.
+
+  Corollary elementary_equations_preserve_initiality
+        {O : UU}(eq : O -> elementary_equation (Sig := Sig))
+          (eq' := fun o => soft_equation_from_elementary_equation epiSig epiSigpw (eq o))
+    : ∏ (R : Initial (rep_fiber_category Sig)) ,
+      (preserves_Epi (InitialObject  R : model _)) ->
+      Initial (precategory_model_equations eq').
+  Proof.
+    apply soft_equations_preserve_initiality.
+  Qed.
+
 End QuotientRepInit.
 
 
@@ -175,4 +182,30 @@ Lemma soft_equations_preserve_initiality_choice
          Initial (precategory_model_equations (λ x : O, eq x)).
   intros; use soft_equations_preserve_initiality; try assumption.
   apply preserves_to_HSET_isEpi; assumption.
+Qed.
+
+
+(** A version using the axiom of choice *)
+Lemma elementary_equations_preserve_initiality_choice 
+  (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) :
+
+         ∏ (** The 1-signature *)
+           (Sig : signature SET)
+           (** The 1-signature must be an epi-signature *)
+           (epiSig : ∏ (R S : Monad SET) (f : Monad_Mor R S),
+                     isEpi (C := [SET, SET]) (f : nat_trans R S)
+                     → isEpi (C := [SET, SET])
+                             ((# Sig)%ar f : nat_trans (Sig R)  (pb_LModule f (Sig S))))
+           (** A family of equations *)
+           (O : UU) (eq : O → elementary_equation (Sig := Sig)),
+         (** If the category of 1-models has an initial object, .. *)
+         Initial (rep_fiber_category Sig) ->
+        (** .. then the category of 2-models has an initial object *)
+         Initial (precategory_model_equations
+                    (fun o =>
+                       soft_equation_from_elementary_equation
+                         epiSig (fun R => preserves_to_HSET_isEpi ax_choice _)
+                         (eq o))
+                 ).
+  intros; use soft_equations_preserve_initiality_choice;  assumption.
 Qed.
