@@ -5,7 +5,7 @@ The main result of this file is described here.
 Let D be a fibration (ie, a cleaving in the displayed category setting)
 over a category C such that the projection functor is faithful.
 
-Then the projection functor creates equalizers.
+Then the projection functor lifts equalizers.
 
  *)
 Require Import UniMath.Foundations.PartD.
