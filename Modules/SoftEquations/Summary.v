@@ -276,7 +276,7 @@ Check (∏ (S : SIGNATURE)
 Check (@isSoft_finite_deriv_tauto:
          ∏ (Sig : SIGNATURE)
            (* Sig is an epi-1-signature *)
-           epiSig
+           (epiSig : sig_preservesNatEpiMonad Sig)
             (** implied by the axiom of choice *)
            (epiSigpw : ∏ R : Monad SET, preserves_Epi (Sig R))
            (n : nat),
@@ -396,14 +396,16 @@ Check (@elementary_equations_preserve_initiality :
          ∏ 
            (Sig : SIGNATURE)
            (** The 1-signature must be an epi-signature *)
-           epiSig
+           (epiSig : sig_preservesNatEpiMonad Sig)
            (** this is implied by the axiom of choice *)
            (SR_epi : ∏ R : Monad SET, preserves_Epi (Sig R))
            (** A family of equations *)
            (O : UU) (eq : O → elementary_equation (Sig := Sig))
            (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)),
          (** If the category of 1-models has an initial object, .. *)
-         ∏ (R : Initial (rep_fiber_category Sig)) , preserves_Epi (InitialObject R : model Sig)
+         ∏ (R : Initial (rep_fiber_category Sig)) ,
+         (** preserving epis (implied by the axiom of choice *)
+         preserves_Epi (InitialObject R : model Sig)
         (** .. then the category of 2-models has an initial object *)
          → Initial (precategory_model_equations eq')).
 
