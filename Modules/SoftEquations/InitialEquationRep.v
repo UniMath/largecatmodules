@@ -69,7 +69,7 @@ Section QuotientRep.
    *)
   Context (epiSig : sig_preservesNatEpiMonad Sig).
   (** implied by the axiom of choice *)
-  Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+  Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
 
   Local Notation REP := (model Sig).
 
@@ -135,7 +135,7 @@ Section QuotientRepInit.
   Context (epiSig : sig_preservesNatEpiMonad Sig).
 
 (** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
 
 
 
@@ -204,7 +204,7 @@ Lemma elementary_equations_preserve_initiality_choice
          Initial (precategory_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
-                         epiSig (fun R => preserves_to_HSET_isEpi ax_choice _)
+                         epiSig (fun R _ => preserves_to_HSET_isEpi ax_choice _)
                          (eq o))
                  ).
   intros; use soft_equations_preserve_initiality_choice;  assumption.

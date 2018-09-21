@@ -52,6 +52,24 @@ Proof.
   apply ax_choice.
 Qed.
 
+(** let a : F -> G be a pointwise epimorphic natural transformation.
+  If F preserves epimorphisms, then G also does *)
+Lemma epi_nt_preserves_Epi {B C : precategory} {F G : functor B C} (a : nat_trans F G)
+      (epia : ∏ b, isEpi (a b))  (epiF : preserves_Epi F) : preserves_Epi G.
+Proof.
+  intros X Y f epif Z g h eq.
+  unshelve eapply (_ : isEpi (a _ · # G f)).
+  - rewrite <- (nat_trans_ax a).
+    apply isEpi_comp.
+    + apply epiF; assumption.
+    + apply epia.
+  - do 2 rewrite <- assoc.
+    apply cancel_precomposition.
+    exact eq.
+Qed.
+
+
+
 Lemma isEpi_horcomp_pw (B : precategory)(C D : category)
       (G H : functor B C) (G' H' : functor C D)
       (f : nat_trans G H) (f':nat_trans G' H')
