@@ -61,7 +61,7 @@ Context {Sig : SIG}.
       transformations *)
 Context (epiSig : sig_preservesNatEpiMonad Sig).
 (** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
 
 (** Definition of a soft Sig-module
 
@@ -273,6 +273,6 @@ Definition soft_equation_choice (choice : AxiomOfChoice.AxiomOfChoice_surj) (S :
             (** S preserves epimorphisms of monads *)
            (isEpi_sig : sig_preservesNatEpiMonad S)
          : UU :=
-    soft_equation isEpi_sig (λ R : Monad SET, preserves_to_HSET_isEpi choice (S R)).
+    soft_equation isEpi_sig (λ R : Monad SET, fun _ => preserves_to_HSET_isEpi choice (S R)).
 
 Identity Coercion forget_choice : soft_equation_choice >-> soft_equation.

@@ -162,7 +162,7 @@ Context (Sig : SIG).
 Context (epiSig : sig_preservesNatEpiMonad Sig).
 
 (** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
 
 Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
@@ -230,7 +230,9 @@ Proof.
   - apply R'_action_compat.
   - intro c.
     apply epiSigpw.
-    apply isEpi_projR_pw.
+    + apply R'_preserves_Epi.
+      exact R_epi.
+    + apply isEpi_projR_pw.
 Defined.
 
 Definition R'_model : model Sig := R' ,, R'_action.

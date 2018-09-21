@@ -374,6 +374,14 @@ Proof.
   [ apply forgetMonad_faithful|apply isEpi_projR].
 Qed.
 
+(** The quotient monad preserves epimorphisms (trivial with the axiom of choice) *)
+Lemma R'_preserves_Epi : preserves_Epi R'.
+Proof.
+  apply (epi_nt_preserves_Epi  projR).
+  - apply isEpi_projR_pw.
+  - exact R_epi.
+Qed.
+
   (* FIN DE LA SECONDE ETAPE *)
 
 Variables (S : Monad SET) 
