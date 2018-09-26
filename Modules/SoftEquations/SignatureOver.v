@@ -138,7 +138,7 @@ Lemma is_sig_over_from_sig (sig : signature C) : is_signature_over (OSig sig).
 Defined.
 
 (** Sig-module from a 1-signature *)
-Definition sig_over_from_sig (sig : signature C) : signature_over :=
+Coercion sig_over_from_sig (sig : signature C) : signature_over :=
   (sig_over_data_from_sig sig ,, is_sig_over_from_sig sig).
 
 (** The tautological Sig-module mapping a 1-model to the underlying monad *)

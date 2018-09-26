@@ -97,7 +97,7 @@ Section QuotientRep.
                                         (fun j => model_equations_eq (d j)).
   (** Any morphism from R to a 1-model satisfying the equations factorize through
       the canonical projection, followed by [u_rep] *)
-  Let u_rep := u_rep Sig epiSig epiSigpw R_epi d ff.
+  Let u_rep := u_rep Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
 
   (** Initiality of [R] in the category of 1-models of [Sig] implies initiality of
       [R'] in the category of 2-models of [Sig] with the given family of equations *)
@@ -117,7 +117,7 @@ Section QuotientRep.
     - intros [f []].
       apply (maponpaths (fun x => x ,, tt)).
       apply isEpi_projR_rep.
-      etrans;[| apply (u_rep_def Sig epiSig epiSigpw R_epi d ff j)].
+      etrans;[| apply (u_rep_def Sig epiSig R_epi (epiSigpw _ R_epi) d ff j)].
       apply iscontr_uniqueness.
   Qed.
 

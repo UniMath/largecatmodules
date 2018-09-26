@@ -87,7 +87,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
  *)
   Definition isSoft (OSig : signature_over Sig) :=
     ∏ (R : model Sig) (R_epi : preserves_Epi R) (J : UU)(d : J -> (model Sig))(f : ∏ j, R →→ (d j))
-      X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig epiSigpw R_epi d f),
+      X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig  R_epi (epiSigpw _ R_epi) d f),
     (∏ j, (# OSig (f j))%sigo X x  = (# OSig (f j))%sigo X y )
       -> (# OSig pi X x)%sigo = 
         (# OSig pi X y)%sigo  .
@@ -173,9 +173,9 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
   (** R' is the 1-model R quotiented by the following relation on R(X):
          x ~ y iff ff_j(x) = ff_j(y) for all j *)
-  Let R' : REP := R'_model Sig epiSig epiSigpw R_epi d ff.
+  Let R' : REP := R'_model Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
   (** The canonical projection R -> R' as a 1-model morphism *)
-  Let projR : rep_fiber_mor R R' := projR_rep  Sig epiSig epiSigpw R_epi d ff.
+  Let projR : rep_fiber_mor R R' := projR_rep  Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
 
   Local Notation π := projR.
   Local Notation Θ := tautological_LModule.

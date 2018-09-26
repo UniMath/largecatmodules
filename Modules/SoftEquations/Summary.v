@@ -263,7 +263,7 @@ Check (∏ (S : SIGNATURE)
             (R_epi : preserves_Epi R)
             (J : UU)(d : J -> (model S))(f : ∏ j, R →→ (d j))
             X (x y : (F R X : hSet))
-            (pi := projR_rep S isEpi_sig SR_epi R_epi d f),
+            (pi := projR_rep S isEpi_sig R_epi (SR_epi _ R_epi) d f),
           (∏ j, (# F (f j))%sigo X x  = (# F (f j))%sigo X y )
           -> (# F pi X x)%sigo = 
             (# F pi X y)%sigo  )
@@ -395,18 +395,104 @@ Check (@soft_equations_preserve_initiality :
 Check (@elementary_equations_preserve_initiality :
          ∏ 
            (Sig : SIGNATURE)
-           (** The 1-signature must be an epi-signature *)
+           (** (1) The 1-signature must be an epi-signature
+            *)
            (epiSig : sig_preservesNatEpiMonad Sig)
-           (** this is implied by the axiom of choice *)
+           (** (2) this is implied by the axiom of choice
+            *)
            (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
            (** A family of equations *)
            (O : UU) (eq : O → elementary_equation (Sig := Sig))
            (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)),
          (** If the category of 1-models has an initial object, .. *)
          ∏ (R : Initial (rep_fiber_category Sig)) ,
-         (** preserving epis (implied by the axiom of choice *)
+         (** (3) preserving epis (implied by the axiom of choice)
+          *)
          preserves_Epi (InitialObject R : model Sig)
         (** .. then the category of 2-models has an initial object *)
          → Initial (precategory_model_equations eq')).
+
+
+(**
+
+
+Note that an epimorphic monad morphism may not be epimorphic as a natural transformation.
+
+A natural transformation is epimorphic if and only if it is pointwise epimorphic.
+Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
+any epimorphism has a section). Hypothesis (1) does not seem (at least trivially) implied
+by the axiom of choice because one would need that the retract is a monad morphism (and even
+I don't know how to use the axiom of choice to yield a natural transformation retration).
+
+Where are the hypotheses (1), (2), (3) used in the proof of the theorem above:
+
+(3) is used:
+
+- to build the multiplication of the quotient monad. Indeed, it is defined as the
+completion of the following diagram (so that the canonical projection π is a monad morphism):
+<<
+                  μ R
+            R R  ----->   R
+             |           |
+         π π |           | π
+             v           v
+            R' R'        R'
+                  
+>>
+where R' is the quotient monad. This definition requires that π π = R' π ∘ π R = π R' ∘ R π
+is an epimorphism, and this is implied by R π being an epi. Hence the requirement that R preserves epis
+(since π is indeed an epi, as a canonical projection)
+
+- to show that Σ_R' preserves epi in when showing that 
+    the Σ-action of the quotient monad is a module morphism (see diagram (Act) below)
+
+
+(1) is used:
+
+- to build the Σ-action for the quotient monad. Indeed, it is defined as the completion of the
+ following diagram (so that the canonical projection π is a model morphism)
+
+<<
+            Σ_π
+     Σ_R -----------> Σ_R'
+     |                 
+     |                 
+  τ_R|                 
+     |                 
+     V                 
+     R ------------->  R'
+           π
+>>
+where R' is the quotient monad. This definition requires that Σ π 
+is an epimorphism, hence the requirement that Σ sends epimorphic natural transformations
+to epimorphisms (π is indeed an epimorphic natural transformation, as a canonical projection)
+
+
+(2) is used:
+
+- to show that the Σ-action is a module morphism. It is used for the specific
+  case of the monad R .
+  Indeed, I need to show that the following diagram commutes:
+<<
+                          
+     Σ_R' R' -----------> Σ_R'
+        |                 |
+        |                 |
+        |                 |       (Act)
+        |                 |
+        |                 |
+        V                 V
+     R'  R' ----------->  R'
+>>
+The strategy is to precompose this diagram with Σ_R'(π) in order to use the
+fact that the Σ-action for R is a module morphism. This argument requires that
+Σ_R'(π) is epi, and this is the case because Σ_R'(π) ∘ Σ_π R = Σ_π R' ∘ Σ_R (π) is epi,
+as a composition of epis.
+
+
+- as a consequence, it is used in the definition of soft equations for any model R
+  (because the quotient model is always required  to exist).
+
+*)
 
 
