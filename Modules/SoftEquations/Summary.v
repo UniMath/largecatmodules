@@ -395,18 +395,100 @@ Check (@soft_equations_preserve_initiality :
 Check (@elementary_equations_preserve_initiality :
          ∏ 
            (Sig : SIGNATURE)
-           (** The 1-signature must be an epi-signature *)
+           (** (1) The 1-signature must be an epi-signature
+            *)
            (epiSig : sig_preservesNatEpiMonad Sig)
-           (** this is implied by the axiom of choice *)
+           (** (2) this is implied by the axiom of choice
+            *)
            (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
            (** A family of equations *)
            (O : UU) (eq : O → elementary_equation (Sig := Sig))
            (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)),
          (** If the category of 1-models has an initial object, .. *)
          ∏ (R : Initial (rep_fiber_category Sig)) ,
-         (** preserving epis (implied by the axiom of choice *)
+         (** (3) preserving epis (implied by the axiom of choice)
+          *)
          preserves_Epi (InitialObject R : model Sig)
         (** .. then the category of 2-models has an initial object *)
          → Initial (precategory_model_equations eq')).
+
+
+(**
+
+
+Note that a natural transformation is epimorphic if and only if it is pointwise epimorphic.
+However, an epimorphic monad morphism may not be epimorphic as a natural transformation.
+Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
+any epimorphism has a section), and hypothesis (1) is not.
+
+Where are the hypotheses (1), (2), (3) used in the proof of the theorem above:
+
+(3) is used:
+
+- to build the multiplication of the quotient monad. Indeed, it is defined as the
+completion of the following diagram (so that the canonical projection π is a monad morphism):
+<<
+                  μ R
+            R R  ----->   R
+             |           |
+         π π |           | π
+             v           v
+            R' R'        R'
+                  
+>>
+where R' is the quotient monad. This definition requires that π π = R' π ∘ π R = π R' ∘ R π
+is an epimorphism, and this is implied by R π being an epi. Hence the requirement that R preserves epis
+(since π is indeed an epi, as a canonical projection)
+
+- to specialize (2) to the case of the quotient monad R' in
+  the construction of the Σ-action to the quotient monad
+
+
+(1) is used:
+
+- to build the Σ-action for the quotient monad. Indeed, it is defined as the completion of the
+ following diagram (so that the canonical projection π is a model morphism)
+
+<<
+            Σ_π
+     Σ_R -----------> Σ_R'
+     |                 
+     |                 
+  τ_R|                 
+     |                 
+     V                 
+     R ------------->  R'
+           π
+>>
+where R' is the quotient monad. This definition requires that Σ π 
+is an epimorphism, hence the requirement that Σ sends epimorphic natural transformations
+to epimorphisms (π is indeed an epimorphic natural transformation, as a canonical projection)
+
+
+(2) is used:
+
+- to show that the Σ-action is a module morphism. It is used for the specific
+  case of the quotient monad (which preserves epis, as R does).
+  Indeed, I need to show that the following diagram commutes:
+<<
+                          
+     Σ_R' R' -----------> Σ_R'
+        |                 |
+        |                 |
+        |                 |
+        |                 |
+        |                 |
+        V                 V
+     R'  R' ----------->  R'
+>>
+The strategy is to precompose this diagram with Σ_R'(π) in order to use the
+fact that the Σ-action for R is a module morphism. This argument requires that
+Σ_R'(π) is epi.
+
+Another idea would be to precompose with Σ_π R' but I don't know what to do then.
+Another idea would be to precompose with Σ_π π in order to use (2) for the case of R
+  rather than the quotient monad R'. I think this is worth a try.
+
+*)
 
 
