@@ -162,7 +162,7 @@ Context (Sig : SIG).
 Context (epiSig : sig_preservesNatEpiMonad Sig).
 
 (** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
+(* Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)). *)
 
 Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
@@ -170,11 +170,24 @@ Local Notation REP_CAT := (rep_fiber_category Sig).
 (* Variable (choice : AxiomOfChoice.AxiomOfChoice_surj). *)
 Context {R : REP}.
 Context (R_epi : preserves_Epi R).
+Context (epiSigR : preserves_Epi (Sig R)).
 Context {J : UU} (d : J -> REP)
           (ff : ∏ (j : J),  R →→ (d j)).
 
 Let R' : Monad SET := R'_monad R_epi d ff.
 Let projR : Monad_Mor R R' := projR_monad R_epi d ff.
+
+Lemma epiSigR' : preserves_Epi (Sig R').
+Proof.
+  intros a b f epif.
+  use (isEpi_precomp SET (# Sig projR _)%ar).
+  rewrite <- (nat_trans_ax (#Sig projR)%ar).
+  apply isEpi_comp.
+  - apply epiSigR; exact epif.
+  - apply epi_nt_SET_pw.
+    apply epiSig.
+    apply isEpi_projR.
+Qed.
 
   
 
@@ -229,10 +242,8 @@ Proof.
     apply isEpi_projR.
   - apply R'_action_compat.
   - intro c.
-    apply epiSigpw.
-    + apply R'_preserves_Epi.
-      exact R_epi.
-    + apply isEpi_projR_pw.
+    apply epiSigR'.
+    apply isEpi_projR_pw.
 Defined.
 
 Definition R'_model : model Sig := R' ,, R'_action.

@@ -263,7 +263,7 @@ Check (∏ (S : SIGNATURE)
             (R_epi : preserves_Epi R)
             (J : UU)(d : J -> (model S))(f : ∏ j, R →→ (d j))
             X (x y : (F R X : hSet))
-            (pi := projR_rep S isEpi_sig SR_epi R_epi d f),
+            (pi := projR_rep S isEpi_sig R_epi (SR_epi _ R_epi) d f),
           (∏ j, (# F (f j))%sigo X x  = (# F (f j))%sigo X y )
           -> (# F pi X x)%sigo = 
             (# F pi X y)%sigo  )
@@ -416,10 +416,13 @@ Check (@elementary_equations_preserve_initiality :
 (**
 
 
-Note that a natural transformation is epimorphic if and only if it is pointwise epimorphic.
-However, an epimorphic monad morphism may not be epimorphic as a natural transformation.
+Note that an epimorphic monad morphism may not be epimorphic as a natural transformation.
+
+A natural transformation is epimorphic if and only if it is pointwise epimorphic.
 Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
-any epimorphism has a section), and hypothesis (1) is not.
+any epimorphism has a section). Hypothesis (1) does not seem (at least trivially) implied
+by the axiom of choice because one would need that the retract is a monad morphism (and even
+I don't know how to use the axiom of choice to yield a natural transformation retration).
 
 Where are the hypotheses (1), (2), (3) used in the proof of the theorem above:
 
@@ -440,8 +443,8 @@ where R' is the quotient monad. This definition requires that π π = R' π ∘ 
 is an epimorphism, and this is implied by R π being an epi. Hence the requirement that R preserves epis
 (since π is indeed an epi, as a canonical projection)
 
-- to specialize (2) to the case of the quotient monad R' in
-  the construction of the Σ-action to the quotient monad
+- to show that Σ_R' preserves epi in when showing that 
+    the Σ-action of the quotient monad is a module morphism (see diagram (Act) below)
 
 
 (1) is used:
@@ -468,14 +471,14 @@ to epimorphisms (π is indeed an epimorphic natural transformation, as a canonic
 (2) is used:
 
 - to show that the Σ-action is a module morphism. It is used for the specific
-  case of the quotient monad (which preserves epis, as R does).
+  case of the monad R .
   Indeed, I need to show that the following diagram commutes:
 <<
                           
      Σ_R' R' -----------> Σ_R'
         |                 |
         |                 |
-        |                 |
+        |                 |       (Act)
         |                 |
         |                 |
         V                 V
@@ -483,11 +486,12 @@ to epimorphisms (π is indeed an epimorphic natural transformation, as a canonic
 >>
 The strategy is to precompose this diagram with Σ_R'(π) in order to use the
 fact that the Σ-action for R is a module morphism. This argument requires that
-Σ_R'(π) is epi.
+Σ_R'(π) is epi, and this is the case because Σ_R'(π) ∘ Σ_π R = Σ_π R' ∘ Σ_R (π) is epi,
+as a composition of epis.
 
-Another idea would be to precompose with Σ_π R' but I don't know what to do then.
-Another idea would be to precompose with Σ_π π in order to use (2) for the case of R
-  rather than the quotient monad R'. I think this is worth a try.
+
+- as a consequence, it is used in the definition of soft equations for any model R
+  (because the quotient model is always required  to exist).
 
 *)
 
