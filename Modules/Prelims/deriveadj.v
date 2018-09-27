@@ -59,12 +59,12 @@ Definition of the substitution operation M' × R -> M as a module morphism.
 (this will be the unit of the adjunction).
 This is defined as M' x R -> MR -> M
  *)
-Section substitution.
-  Context {R : Monad SET}.
-  Local Notation T := TerminalHSET.
   Local Notation bpS := BinProductsHSET.
   Local Notation bcpS := BinCoproductsHSET.
+  Local Notation T := TerminalHSET.
   Local Notation hsS := has_homsets_HSET.
+Section substitution.
+  Context {R : Monad SET}.
   Local Infix "+" := setcoprod : set_scope.
   Local Infix "×" := setdirprod : set_scope.
   Delimit Scope set_scope with set.
@@ -399,6 +399,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
     apply BinProductOfArrows_comp.
   Qed.
 
+
   Local Definition commutes_binproduct_derivation (M N : LModule R C) :
     LModule_Mor R ( (∂ M) ×× (∂ N) )( ∂ ( M ×× N)) :=
     _ ,, commutes_binproduct_derivation_laws M N.
@@ -495,69 +496,17 @@ R(T+RX) -------> RR(T+X)
     _ ,, toR'_laws M.
   (* ((∂ (Θ R): LModule _ _) : functor _ _))). *)
 
-  Local Definition M_to_M' (M : LModule R C ) : M ⟹ (∂ M : LModule R C).
-  Proof.
-  (*
-M ---> M Id ---> M ∂
-*)
-    eapply (compose (C := [C,C]) ); [apply EndofunctorsMonoidal.λ_functor_inv|].
-    apply post_whisker.
-    apply coproduct_nat_trans_in2.
-  Defined.
-
-  Local Lemma M_to_M'_laws (M : LModule R C) : LModule_Mor_laws _ (M_to_M' M).
-  Proof.
-    intro x.
-    cbn -[BinCoproductIn2 BinCoproductArrow].
-    repeat rewrite id_left.
-    (*
-The left hand side is top right. The outer diagram must commute
-f := η ∘ in₁
-<<<
-          Min₂
-    MRX --------> M(T+RX)
-      |             |
-      |             |
-  id  |             | M[f,Rin₂]
-      |             |
-      V   MRin₂     V
-    MRX --------> MR(T+X)
-      |             |
-      |             |
-   σ  |   nat of σ  | σ
-      |             |
-      V             V
-      MX -------> M(X+T)
-           Min₂
->>>
-*)
-    etrans;[|apply (nat_trans_ax (lm_mult R M))].
-    repeat rewrite assoc.
-    apply cancel_postcomposition.
-    rewrite <- functor_comp.
-    apply (maponpaths (fun x => # M x)).
-    apply BinCoproductIn2Commutes.
-  Qed.
 
 
-  Local Definition M_to_M'_MOD (M : LModule R C) : LModule_Mor _ M (∂ M) :=
-    _ ,, (M_to_M'_laws _).
 
   Definition deriv_counit_data (M : LModule R C) : LModule_Mor _ M  ((×ℜ ∙ ∂) M).
   Proof.
     eapply (compose (C := LMOD)); [ | apply commutes_binproduct_derivation].
     apply (( @BinProductArrow LMOD _ _ (LMOD_bp ((∂ M: LModule _ _) )
                                              ((∂ (Θ R): LModule _ _)))) M).
-    - apply M_to_M'_MOD.
+    - apply LModule_to_deriv.
     - apply toR'_MOD.
   Defined.
-
-  (* Local Notation BPAr t u:= *)
-  (*   (BinProductArrow _ _ t u _). *)
-
-  (* (* for better printing *) *)
-  (* Local Notation BPAr' := *)
-  (* (binproduct_nat_trans_data _ _ _ _ _ _). *)
 
 
 
@@ -720,9 +669,83 @@ Section derivadj.
   - apply substitution_nat_trans.
   - exact counit_subst_adjunction.
   Defined.
+
+
   
 End derivadj.
+Section Functoriality.
+  Local Notation LMOD_bp := (LModule_BinProducts _ bpS hsS).
+  (** A × B → C × D from a map A → C and B → D *)
+  Local Infix "×a" :=  (BinProductOfArrows _ (bpS _ _)(bpS _ _) ) (at level 9).
+  Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpS hsS _).
+  Local Notation Θ := tautological_LModule.
+
+
+(**
+Let f : R -> S be a monad morphism. Then,
+<<<
+            s_R
+ R' x R -----------> R
+    |                |
+    |                |
+f' x|f               | f
+    |                |
+    V                V
+ S' x S -----------> S
+           s_S
+>>>
+ *)
+  Lemma functorial_counit_derivadj {R S : Monad SET} (f : Monad_Mor (C := SET) R S) :
+      ∏ (X : hSet), (substitution (Θ R) X) · f X = ((f _) ×a (f _)) · (substitution (Θ S) X)  .
+  Proof.
+    intro X.
+    cbn -[compose].
+    apply funextfun.
+    intros [x' x].
+    cbn -[isasetcoprod].
+    unfold prodtofuntoprod.
+    cbn -[isasetcoprod].
+    unfold pre_subst_nt_data.
+    cbn -[isasetcoprod].
+    assert (h := Monad_Mor_μ f X).
+    eapply toforallpaths  in h.
+    etrans;[ eapply h|].
+    cbn -[isasetcoprod].
+    apply maponpaths.
+    set (ff := fun x => _).
+    set (bp := BinCoproductsHSET).
+    assert (h' := nat_trans_ax f (bp unitHSET X) _ ff).
+    apply toforallpaths in h'.
+    specialize (h' x').
+    cbn in h'.
+    etrans.
+    {
+    apply maponpaths.
+    apply h'.
+    }
+
+    etrans; [ do 2 rewrite comp_cat_comp | rewrite comp_cat_comp; reflexivity ].
+    etrans.
+    eapply (maponpaths (fun f => f x')).
+    apply (cancel_precomposition (SET)).
+    eapply pathsinv0.
+    apply  (functor_comp S (a := bp unitHSET X) ff (f X)).
+    cbn -[isasetcoprod].
+    apply (maponpaths (fun f => # S f _)).
+    apply funextfun.
+    intros [|y]; cbn.
+    + reflexivity.
+    + assert (hf := (Monad_Mor_η f X)).
+      apply toforallpaths in hf.
+      use hf.
+  Qed.
+
+  End Functoriality.
+
 (* Require Import Modules.Arities.FullArToRaw. *)
+(** Hom (M, N') ~ Hom (M x R, N)
+so adj1 (id_R') : R' x R → R
+ *)
 Local Definition adj1 := (fun R M N  => invweq (adjunction_hom_weq
                                                                     (@deriv_adj R) M N
                                                       )).
