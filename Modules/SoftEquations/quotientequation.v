@@ -37,6 +37,7 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.Prelims.modules.
 
@@ -138,6 +139,9 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
         ∏ R S (f : R →→ S),
                    isEpi (C := [SET, SET]) (f : nat_trans _ _) ->
                    isEpi (C := [SET, SET]) (# M f : nat_trans _ _)%sigo.
+
+  Definition isEpi_sig_isEpi_overSig (S : signature _) (h : sig_preservesNatEpiMonad S) :
+    isEpi_overSig (sig_over_from_sig _ S) := h.
 
   (** An equation is soft if the source is an epi Sig-module
       and the target is soft *)
