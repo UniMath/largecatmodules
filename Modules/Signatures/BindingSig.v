@@ -50,7 +50,8 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
   (** Turn a binding signature into an algebraic 1-signature *)
-Definition binding_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC cpC TC S : signature C :=
+Definition binding_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC
+           (cpC : ∏ X, isaset X -> Coproducts X C ) TC S : signature C :=
   (hss_to_ar (C := C) (BindingSigToSignature hsC bpC bcpC TC
                                               S (cpC _ (BindingSigIsaset S)))).
 

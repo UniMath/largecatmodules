@@ -4,6 +4,7 @@ EpiArePointwise.v
 EpiSigRepresentability.v
 HssToSignature.v
 BindingSig.v
+PreservesEpi.v
 PresentableSignature.v
 SignatureCoproduct.v
 HssSignatureCommutation.v
