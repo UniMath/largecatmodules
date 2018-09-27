@@ -1,4 +1,9 @@
-(* Derivation induces an endofcuntro on the category of LModules over a monad *)
+(**
+- Derivation induces an endofunctor on the category of LModules over a monad [LModule_deriv_functor]
+- natural transformation from the identity functor to the derivation functor [LModule_to_deriv_functor]
+
+TODO: reuse general stuff in Unimath Derivative about distributive laws
+ *)
 (* TODO : intégrer ça dans UniMath *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
@@ -16,6 +21,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import UniMath.CategoryTheory.Adjunctions.
 Require Import UniMath.CategoryTheory.whiskering.
+Require Import UniMath.CategoryTheory.limits.bincoproducts.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
@@ -93,4 +99,70 @@ MR(X+o)) --------->  NR(X+o)
   Qed.
 
   Definition LModule_deriv_functor  : functor LMOD LMOD := mk_functor _ LModule_deriv_is_functor. 
+
+  Local Notation "∂" := LModule_deriv_functor.
+
+  Definition LModule_to_deriv_nt (M : LModule T D ) : M ⟹ (∂ M : LModule T D).
+  Proof.
+  (*
+M ---> M Id ---> M ∂
+*)
+    eapply (compose (C := [C,D , hsD]) ); [apply EndofunctorsMonoidal.λ_functor_inv|].
+    apply post_whisker.
+    apply coproduct_nat_trans_in2.
+  Defined.
+
+  Lemma LModule_to_deriv_laws (M : LModule T D) : LModule_Mor_laws _ (LModule_to_deriv_nt M).
+  Proof.
+    intro x.
+    cbn -[BinCoproductIn2 BinCoproductArrow].
+    repeat rewrite id_left.
+    (*
+The left hand side is top right. The outer diagram must commute
+f := η ∘ in₁
+<<<
+          Min₂
+    MRX --------> M(T+RX)
+      |             |
+      |             |
+  id  |             | M[f,Rin₂]
+      |             |
+      V   MRin₂     V
+    MRX --------> MR(T+X)
+      |             |
+      |             |
+   σ  |   nat of σ  | σ
+      |             |
+      V             V
+      MX -------> M(X+T)
+           Min₂
+>>>
+*)
+    etrans;[|apply (nat_trans_ax (lm_mult T M))].
+    repeat rewrite assoc.
+    apply cancel_postcomposition.
+    rewrite <- functor_comp.
+    apply (maponpaths (fun x => # M x)).
+    apply BinCoproductIn2Commutes.
+  Qed.
+
+
+  Definition LModule_to_deriv (M : LModule T D) : LModule_Mor _ M (∂ M) :=
+    _ ,, (LModule_to_deriv_laws _).
+
+  Lemma LModule_to_deriv_is_nt : is_nat_trans (functor_identity _) ∂ LModule_to_deriv.
+  Proof.
+    intros M N f.
+    apply (LModule_Mor_equiv _ hsD).
+    apply (nat_trans_eq hsD).
+    intro c.
+    cbn.
+    unfold coproduct_nat_trans_in2_data; cbn.
+    repeat rewrite id_left.
+    apply pathsinv0.
+    apply (nat_trans_ax (f : LModule_Mor _ _ _)).
+  Qed.
+
+  Definition LModule_to_deriv_functor : (functor_identity _) ⟹ ∂ :=
+    mk_nat_trans _ _ _ LModule_to_deriv_is_nt.
 End DerivFunctor.

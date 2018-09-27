@@ -23,6 +23,7 @@ Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.HssToSignature.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.EpiSigRepresentability.
+Require Import Modules.Signatures.PreservesEpi.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
@@ -35,34 +36,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Open Scope cat.
 
 
-(** Proof that an epiSig preserves natural epimorphicity *)
-Lemma epiSig_NatEpi {C : category} (S : Signature C (homset_property C) C (homset_property C))
-      (epiS : preserves_Epi (S : functor _ _)) : sig_preservesNatEpiMonad (hss_to_ar S).
-Proof.
-    intros M N f.
-    intro epif.
-    assert (epip := (epiS _ _ (pr1 f)  epif )).
-    revert epip.
-    apply transportf.
-    cbn.
-    apply pathsinv0.
-    apply (id_right (C := [C,C]) (#S (pr1 f : nat_trans _ _))).
-Qed.
 
-(** An algebraic signature preserves natural epimorphicity *)
-Corollary  algSig_NatEpi (S : BindingSig)
-  : sig_preservesNatEpiMonad
-      (hss_to_ar (C := SET)
-                 (BindingSigToSignature (homset_property SET)
-                                        BinProductsHSET
-                                        BinCoproductsHSET TerminalHSET
-                                        S
-                                        (CoproductsHSET (BindingSigIndexhSet S) (setproperty _)))
-      ).
-Proof.
-  apply epiSig_NatEpi.
-  apply BindingSigAreEpiSig.
-Qed.
 
 
 

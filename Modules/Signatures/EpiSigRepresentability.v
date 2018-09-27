@@ -56,6 +56,7 @@ Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.quotientrep.
 Require Import Modules.Signatures.EpiArePointwise.
+Require Import Modules.Signatures.PreservesEpi.
 
 Set Automatic Introduction.
 

@@ -5,6 +5,7 @@ Commutation of  the functor from hss signature to arities:
 - preservation of coproducts
 - coproducts of binding signatures and preservation
 - preservation of tautological arities
+(* - preservation of derivation *)
 
 *)
 
@@ -41,6 +42,7 @@ Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.PresentableSignature.
 Require Import Modules.Signatures.SignatureBinproducts.
 Require Import Modules.Signatures.SignatureCoproduct.
+Require Import Modules.Signatures.SignatureDerivation.
 
 Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Prelims.BinProductComplements.
@@ -49,6 +51,92 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Open Scope cat.
+
+(** LModule_M1_M2_iso-like but for signatures.
+This section provides utilitary lemmas to show that two signatures sending a monad R
+to the same underlying functor are isomorphic.
+
+Then, they are used to show the required commutations.
+ *)
+Section GenericStrat.
+  Context {C : category}.
+
+  Context (Ffunc :  ∏ (R : Monad C), functor C C).
+  Context (m1 m2 : ∏ (R : Monad C),  R ∙ (Ffunc R) ⟹ (Ffunc R)).
+
+  Context (m1_law: ∏ R, LModule_laws R (Ffunc R,, m1 R)).
+  Context (m2_law: ∏ R, LModule_laws R (Ffunc R,, m2 R)).
+  Context (m12_eq : ∏ R, (∏ c : C, m1 R c = m2 R c)).
+
+  Let M1 R : LModule _ _ := _ ,, m1_law R.
+  Let M2 R : LModule _ _ := _ ,, m2_law R.
+
+  Context (Sf1 : ∏ (R S : Monad C) (f : Monad_Mor R S), LModule_Mor _ (M1 R) (pb_LModule f (M1 S))).
+  Context (Sf2 : ∏ (R S : Monad C) (f : Monad_Mor R S), LModule_Mor _ (M2 R) (pb_LModule f (M2 S))).
+
+  Let S1_data : signature_data  := _ ,, Sf1.
+  Let S2_data : signature_data  := _ ,, Sf2.
+
+  Context (isS1 : is_signature S1_data).
+  Context (isS2 : is_signature S2_data).
+
+  Let S1 : signature C := _ ,, isS1.
+  Let S2 : signature C := _ ,, isS2.
+
+  Let S1_S2_R_iso (R : Monad C) : 
+    iso (C := precategory_LModule R _)
+        (S1 R)
+        ( S2 R) :=
+    LModule_M1_M2_iso _ _ (m12_eq _) _.
+
+
+  Hypothesis (Sf12_eq : ∏ R S f c, (Sf2 R S f c)  = (Sf1 R S f c) ).
+  Definition signature_S1_S2_laws : is_signature_Mor  S1 S2 (fun R => (S1_S2_R_iso R : _ ⟦_ , _⟧ )).
+    intros R S f.
+    apply nat_trans_eq;[apply homset_property|].
+    intro c.
+    cbn.
+    etrans;[apply id_right|].
+    apply pathsinv0.
+    etrans;[apply ( (id_left _))|].
+    apply Sf12_eq.
+  Qed.
+  Definition signature_S2_S1_laws : is_signature_Mor  S2 S1 (fun R => (inv_from_iso (S1_S2_R_iso R))).
+    intros R S f.
+    apply nat_trans_eq;[apply homset_property|].
+    intro c.
+    cbn.
+    repeat rewrite id_right.
+    apply pathsinv0.
+    etrans;[apply ( (id_left _))|].
+    apply pathsinv0.
+    apply Sf12_eq.
+  Qed.
+
+  Definition signature_S1_S2 : signature_Mor S1 S2 := _ ,, signature_S1_S2_laws.
+  Definition signature_S2_S1 : signature_Mor S2 S1 := _ ,, signature_S2_S1_laws.
+
+  Lemma signature_S1_S2_is_inverse  :
+    is_inverse_in_precat (C := signature_category)
+                         signature_S1_S2 signature_S2_S1.
+  Proof.
+    use mk_is_inverse_in_precat.
+    - apply signature_Mor_eq.
+      intro X.
+      use (iso_inv_after_iso (S1_S2_R_iso X)).
+    - apply signature_Mor_eq.
+      intro X.
+      apply (iso_after_iso_inv (S1_S2_R_iso X)).
+  Qed.
+
+  Definition signature_S1_S2_iso : iso (C := signature_category) S1 S2 :=
+    isopair _ (
+              is_iso_from_is_z_iso
+                _
+                (mk_is_z_isomorphism _ _ signature_S1_S2_is_inverse)).
+
+
+End GenericStrat.
 
 Section commuteBinProdSig.
   Context {C : category}  .
@@ -60,13 +148,22 @@ Section commuteBinProdSig.
 
   Let bpSig := signature_BinProducts (C := C) bpC.
 
-  Variable (a b : SIG).
+  Variable (a b : Signature C (homset_property C) C (homset_property C) ).
 
   Let ar_a :=  hss_to_ar a.
   Let ar_b :=  hss_to_ar b.
   Local Notation BPO := (BinProductObject _ ).
 
+  (**  to get this statment, I first tried to use LModule_M1_M2_iso  
+  Lemma  binprod_sigs_har_mod_iso R :
+    iso (C := precategory_LModule R _)
+        ( hss_to_ar (BPO (hss_bpSig a b)) R)
+        ( (BPO (bpSig ar_a ar_b) : signature _ ) R).
+  Proof.
+    apply LModule_M1_M2_iso.
+*)
   Lemma binprod_sigs_har_mod_eq_mult R c  :
+
     (ModulesFromSignatures.lift_lm_mult (BPO (hss_bpSig a b)) R (tautological_LModule R) : nat_trans _ _) c =
     (LModuleBinProduct.LModule_binproduct_mult bpC (homset_property C) (ar_a R) (ar_b R) c).
   Proof.
@@ -79,88 +176,34 @@ Section commuteBinProdSig.
     apply idpath.
   Defined.
 
-  Lemma  binprod_sigs_har_mod_iso R :
-    iso (C := precategory_LModule R _)
-        ( hss_to_ar (BPO (hss_bpSig a b)) R)
-        ( (BPO (bpSig ar_a ar_b) : signature _ ) R).
+  Lemma binprod_sigs_har_eq (R S : Monad C) (f : Monad_Mor R S) (c : C) : 
+    (signature_BinProduct_on_morphisms ar_a ar_b R S f) c =
+    (lift_lmodule_mor (BPO (hss_bpSig a b)) R (modules.monad_mor_to_lmodule f) c) · (lift_pb_LModule 
+                                                                                 (BPO (hss_bpSig a b)) f) c.
   Proof.
-    apply LModule_M1_M2_iso.
-    apply binprod_sigs_har_mod_eq_mult.
-  Defined.
-
-  Definition binprod_sigs_har_mod R : LModule_Mor _ _ _ :=
-    (morphism_from_iso _ _ _ (binprod_sigs_har_mod_iso R)).
-
-  Definition binprod_har_sigs_mod R : LModule_Mor _ _ _ :=
-    (inv_from_iso  (binprod_sigs_har_mod_iso R)).
-
-
-  Lemma binprod_sigs_har_signature_laws : is_signature_Mor ( hss_to_ar (BPO (hss_bpSig a b)) ) 
-                                                  ( (BPO (bpSig ar_a ar_b) : signature _ ) )
-                                        binprod_sigs_har_mod.
-  Proof.
-    intros R S f.
-    apply nat_trans_eq;[apply homset_property|].
-    intro c.
     cbn.
-    unfold binproduct_nat_trans_data.
-    cbn.
+    unfold binproduct_nat_trans_data, nat_trans_comp; cbn.
+    unfold binproduct_nat_trans_pr1_data; cbn.
+    unfold binproduct_nat_trans_pr2_data; cbn.
+    unfold BinProduct_of_functors_ob.
     repeat rewrite id_right.
-    rewrite id_left.
-    apply idpath.
-  Qed.
-  Lemma binprod_har_sigs_signature_laws : is_signature_Mor  
-                                                  ( (BPO (bpSig ar_a ar_b) : signature _ ) )
-                                                  ( hss_to_ar (BPO (hss_bpSig a b)) )
-                                        binprod_har_sigs_mod.
-  Proof.
-    intros R S f.
-    apply nat_trans_eq;[apply homset_property|].
-    intro c.
-    cbn.
-    unfold binproduct_nat_trans_data.
-    cbn.
-    repeat rewrite id_right.
-    rewrite id_left.
-    apply idpath.
+    reflexivity.
   Qed.
 
-  (* Definition coprod_sigs_har_mor :  signature_precategory ⟦ (hss_to_ar (CPO (cpSig sigs))), *)
-  (*                                                       (CPO (cpSig ars))⟧  *)
-  Definition binprod_sigs_har_mor : signature_precategory ⟦ ( hss_to_ar (BPO (hss_bpSig a b)) ) ,
-                                                  ( (BPO (bpSig ar_a ar_b) : signature _ ) ) ⟧
-                                                  :=
-    _ ,, binprod_sigs_har_signature_laws.
-
-  Definition binprod_har_sigs_mor : signature_precategory ⟦( (BPO (bpSig ar_a ar_b) : signature _ ) )
-                                                       ,( hss_to_ar (BPO (hss_bpSig a b)) )⟧
-                                                  :=
-    _ ,, binprod_har_sigs_signature_laws.
-
-
-  Lemma binprod_sigs_har_is_inverse :
-    is_inverse_in_precat binprod_sigs_har_mor binprod_har_sigs_mor.
-  Proof.
-    use mk_is_inverse_in_precat.
-    - apply signature_Mor_eq.
-      intro X.
-      apply (iso_inv_after_iso (binprod_sigs_har_mod_iso X)).
-    - apply signature_Mor_eq.
-      intro X.
-      apply (iso_after_iso_inv (binprod_sigs_har_mod_iso X)).
-  Defined.
-
-  Definition binprod_sigs_har_mor_is_iso : is_iso binprod_sigs_har_mor :=
-    is_iso_from_is_z_iso
-      binprod_sigs_har_mor
-      (mk_is_z_isomorphism binprod_sigs_har_mor binprod_har_sigs_mor binprod_sigs_har_is_inverse).
+    
 
 
   Definition binprod_sigs_har_iso : iso (C := signature_precategory) 
                                         ( hss_to_ar (BPO (hss_bpSig a b)) )
-                                        ( (BPO (bpSig ar_a ar_b) : signature _ ) )
-                                        :=
-    isopair _ binprod_sigs_har_mor_is_iso.
+                                        ( (BPO (bpSig ar_a ar_b) : signature _ ) ).
+  Proof.
+    use signature_S1_S2_iso.
+    - intros R S.
+      use binprod_sigs_har_mod_eq_mult.
+    - intros R S f c.
+      cbn beta.
+      use binprod_sigs_har_eq.
+  Defined.
 End commuteBinProdSig.
 
 Section CoprodAr.
@@ -192,92 +235,27 @@ Section CoprodAr.
     apply  assoc.
   Qed.
 
-  Lemma  coprod_sigs_har_mod_iso R :
-    iso (C := precategory_LModule R _)
-        ( hss_to_ar (CPO (hss_cpSig sigs)) R)
-        ( (CPO (cpSig ars) : signature _ ) R).
+  Lemma  coprod_sigs_har_eq (R S : Monad C) (f : Monad_Mor R S) c :
+  (signature_coprod_on_morphisms ars R S f) c =
+  ((lift_lmodule_mor (CPO (hss_cpSig sigs)) R (modules.monad_mor_to_lmodule f )c) · lift_pb_LModule
+                                                                                  (CPO (hss_cpSig sigs)) f c) .
   Proof.
-    apply LModule_M1_M2_iso.
-    apply coprod_sigs_har_mod_eq_mult.
-  Defined.
-
-  Definition coprod_sigs_har_mod R : LModule_Mor _ _ _ :=
-    (morphism_from_iso _ _ _ (coprod_sigs_har_mod_iso R)).
-
-  Definition coprod_har_sigs_mod R : LModule_Mor _ _ _ :=
-    (inv_from_iso  (coprod_sigs_har_mod_iso R)).
-
-
-
-
-  Lemma coprod_sigs_har_signature_laws : is_signature_Mor  (hss_to_ar (CPO (hss_cpSig sigs)))
-                                       (CPO (cpSig ars) : signature _) coprod_sigs_har_mod.
-  Proof.
-    intros R S f.
-
-    apply nat_trans_eq;[apply homset_property|].
-    intro c.
     cbn.
-    unfold coproducts.coproduct_nat_trans_data.
-    cbn.
+    unfold coproduct_nat_trans_data , coproduct_nat_trans_in , nat_trans_comp, coproduct_of_functors; cbn.
     repeat rewrite id_right.
-    rewrite id_left.
+    repeat rewrite id_left.
     apply maponpaths.
     apply funextsec.
     intro i.
     rewrite id_right.
-    apply idpath.
+    reflexivity.
   Qed.
-  Lemma coprod_har_sigs_signature_laws : is_signature_Mor  
-                                       (CPO (cpSig ars) : signature _)
-                                       (hss_to_ar (CPO (hss_cpSig sigs)))
-                                       coprod_har_sigs_mod.
-  Proof.
-    intros R S f.
-    apply nat_trans_eq;[apply homset_property|].
-    intro c.
-    cbn.
-    unfold coproducts.coproduct_nat_trans_data.
-    cbn.
-    repeat rewrite id_right.
-    rewrite id_left.
-    apply maponpaths.
-    apply funextsec.
-    intro i.
-    rewrite id_right.
-    apply idpath.
-  Qed.
-
-  Definition coprod_sigs_har_mor :  signature_precategory ⟦ (hss_to_ar (CPO (hss_cpSig sigs))),
-                                                        (CPO (cpSig ars))⟧ :=
-    _ ,, coprod_sigs_har_signature_laws.
-
-  Definition coprod_har_sigs_mor :  signature_precategory ⟦ 
-                                                        (CPO (cpSig ars)),
-                                                        (hss_to_ar (CPO (hss_cpSig sigs)))⟧ :=
-    _ ,, coprod_har_sigs_signature_laws.
-
-
-  Lemma coprod_sigs_har_is_inverse :
-    is_inverse_in_precat coprod_sigs_har_mor coprod_har_sigs_mor.
-  Proof.
-    use mk_is_inverse_in_precat.
-    - apply signature_Mor_eq.
-      intro X.
-      apply (iso_inv_after_iso (coprod_sigs_har_mod_iso X)).
-    - apply signature_Mor_eq.
-      intro X.
-      apply (iso_after_iso_inv (coprod_sigs_har_mod_iso X)).
-  Defined.
-
-  Definition coprod_sigs_har_mor_is_iso : is_iso coprod_sigs_har_mor :=
-    is_iso_from_is_z_iso
-      coprod_sigs_har_mor
-      (mk_is_z_isomorphism coprod_sigs_har_mor coprod_har_sigs_mor coprod_sigs_har_is_inverse).
-
   Definition coprod_sigs_har_iso : iso (C := signature_precategory) (hss_to_ar (CPO (hss_cpSig sigs)))
-                                       (CPO (cpSig ars)) :=
-    isopair _ coprod_sigs_har_mor_is_iso.
+                                       (CPO (cpSig ars)).
+    use signature_S1_S2_iso.
+    - cbn.  use coprod_sigs_har_mod_eq_mult.
+    - use coprod_sigs_har_eq.
+  Defined.
 
 
 End CoprodAr.
@@ -286,72 +264,59 @@ Section TautologicalPreserve.
   Local Notation SIG := (Signature_precategory C C).
   Let a := (hss_to_ar (IdSignature C (homset_property C))).
   Let b := (tautological_signature (C:=C)).
-                                        
-
-  Lemma  tauto_sigs_har_mod_iso R :
-    iso (C := precategory_LModule R _)
-        ( a  R)
-        ( b R).
-  Proof.
-    apply LModule_M1_M2_iso.
-    intro c.
-    apply id_left.
-  Defined.
-
-  Definition tauto_sigs_har_mod R : LModule_Mor _ _ _ :=
-    (morphism_from_iso _ _ _ (tauto_sigs_har_mod_iso R)).
-
-  Definition tauto_har_sigs_mod R : LModule_Mor _ _ _ :=
-    (inv_from_iso  (tauto_sigs_har_mod_iso R)).
-
-
-  Lemma tauto_sigs_har_signature_laws : is_signature_Mor  a b tauto_sigs_har_mod.
-  Proof.
-    intros R S f.
-    apply nat_trans_eq;[apply homset_property|].
-    intro c.
-    cbn.
-    repeat rewrite id_right.
-    repeat rewrite id_left.
-    apply idpath.
-  Qed.
-  Lemma tauto_har_sigs_signature_laws : is_signature_Mor b a tauto_har_sigs_mod.
-  Proof.
-    intros R S f.
-    apply nat_trans_eq;[apply homset_property|].
-    intro c.
-    cbn.
-    repeat rewrite id_right.
-    repeat rewrite id_left.
-    apply idpath.
-  Qed.
-
-  Definition tauto_sigs_har_mor :  signature_precategory ⟦ a, b⟧ :=
-    _ ,, tauto_sigs_har_signature_laws.
-
-  Definition tauto_har_sigs_mor :  signature_precategory ⟦b, a⟧ :=
-    _ ,, tauto_har_sigs_signature_laws.
-
-
-  Lemma tauto_sigs_har_is_inverse :
-    is_inverse_in_precat tauto_sigs_har_mor tauto_har_sigs_mor.
-  Proof.
-    use mk_is_inverse_in_precat.
-    - apply signature_Mor_eq.
-      intro X.
-      apply (iso_inv_after_iso (tauto_sigs_har_mod_iso X)).
-    - apply signature_Mor_eq.
-      intro X.
-      apply (iso_after_iso_inv (tauto_sigs_har_mod_iso X)).
-  Defined.
-
-  Definition tauto_sigs_har_mor_is_iso : is_iso tauto_sigs_har_mor :=
-    is_iso_from_is_z_iso
-      tauto_sigs_har_mor
-      (mk_is_z_isomorphism tauto_sigs_har_mor tauto_har_sigs_mor tauto_sigs_har_is_inverse).
 
   Definition tauto_sigs_har_iso : iso (C := signature_precategory) a
-                                       b :=
-    isopair _ tauto_sigs_har_mor_is_iso.
+                                       b.
+  Proof.
+    use signature_S1_S2_iso.
+    - cbn.
+      intros; apply id_left.
+    - intros R S f c.
+      cbn.
+      apply pathsinv0, id_right.
+  Defined.
 
 End TautologicalPreserve.
+
+
+
+
+(*
+Section DerivationPreserve.
+  Context {C : category}.
+  Context (bc : BinCoproducts C)(T : Terminal C).
+
+  (** unfortunately, there isn't any notion of derivation of strengthened signature
+      in UniMath: only n-th derivation of the tautological signature *)
+  Context (n : nat).
+  Let a := precomp_option_iter_Signature (homset_property C) bc T n.
+
+  Lemma  deriv_sigs_har_mod_iso R :
+    iso (C := precategory_LModule R _)
+        ( hss_to_ar (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
+        ( (signature_deriv bc T
+                           (hss_to_ar
+                               (precomp_option_iter_Signature (homset_property C) bc T n)  )
+          )  R).
+    (*
+    iso (C := precategory_LModule R _)
+        ( hss_to_ar (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
+        ( (signature_deriv bc T
+                           (hss_to_ar
+                               (precomp_option_iter_Signature (homset_property C) bc T n)  )
+          )  R).
+*)
+  Proof.
+    cbn.
+    use tpair.
+    use tpair.
+    use tpair.
+    intro X.
+    cbn.
+    use tpair.
+        apply LModule_M1_M2_iso.
+
+    unfold a.
+    induction n.
+
+*)
