@@ -20,6 +20,7 @@ Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import UniMath.CategoryTheory.limits.binproducts.
 
 
 Local Notation "'SET'" := hset_category.
@@ -51,6 +52,34 @@ Proof.
   apply SplitEpis_HSET; [|apply epif].
   apply ax_choice.
 Qed.
+
+(** Products of epis are epis (this is true of pullbacks) *)
+Lemma productEpisSET {a b : hSet} (f : a -> b) {a' b' : hSet} (g :  a' -> b') :
+                     isEpi (C := SET) f -> isEpi (C := SET) g ->
+                     isEpi (BinProductOfArrows SET (BinProductsHSET _ _) (BinProductsHSET _ _) f g).
+Proof.
+  set (fg := BinProductOfArrows _ _ _ _ _).
+  intros epif epig.
+  apply EpisAreSurjective_HSET in epif.
+  apply EpisAreSurjective_HSET in epig.
+  intros Y u v eq.
+  apply funextfun.
+  use (surjectionisepitosets  fg); revgoals.
+  - apply toforallpaths.
+    exact eq.
+  - apply setproperty.
+  - intro xx'.
+    induction xx' as [x x'].
+    specialize (epif x).
+    specialize (epig x').
+    revert epif epig.
+    apply hinhfun2.
+    intros y y'.
+    use (hfiberpair fg ).
+    + exact (hfiberpr1 _ _ y ,, hfiberpr1 _ _ y').
+    + apply total2_paths2; use hfiberpr2.
+Qed.
+
 
 (** let a : F -> G be a pointwise epimorphic natural transformation.
   If F preserves epimorphisms, then G also does *)
