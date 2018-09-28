@@ -113,11 +113,11 @@ Lemma deriv_epiSig {C : category} bc T (Sig : signature C) (h : sig_preservesNat
    : (sig_preservesNatEpiMonad_pw (signature_deriv bc T Sig )).
 Proof.
   intros R S f epif.
-  intros c b u v eq.
-  eapply h; [exact epif|].
-  simpl in eq.
-  repeat rewrite id_right in eq.
-  exact eq.
+  intro o.
+  cbn.
+  repeat rewrite id_right.
+  apply h.
+  exact epif.
 Qed.
 
 Lemma binProd_epiSig {C : category} bp
@@ -132,13 +132,10 @@ Lemma binProd_epiSig {C : category} bp
       : sig_preservesNatEpiMonad_pw (BinProductObject _ (signature_BinProducts bp S1 S2)).
 Proof.
   intros R S f epif.
-  intros c c'  u v eq.
-  use (productEpis _ _ (# S1 f _)%ar _ _ (# S2 f _)%ar).
-  - apply h1; exact epif.
-  - apply h2; exact epif.
-  - cbn in eq.
-    repeat rewrite id_right in eq.
-    exact eq.
+  intro o.
+  cbn.
+  rewrite id_right.
+  apply productEpis;[apply h1|apply h2]; exact epif.
 Defined.
 
 Definition binProd_epiSigSET 
