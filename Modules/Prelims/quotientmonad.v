@@ -24,6 +24,7 @@ Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.EpiComplements.
 
 Local Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 Local Notation "'SET'" := hset_category.
@@ -372,6 +373,14 @@ Lemma isEpi_projR_monad : isEpi (C:=category_Monad _) projR_monad.
 Proof.    
   apply (faithful_reflects_epis (forgetfunctor_Monad _));
   [ apply forgetMonad_faithful|apply isEpi_projR].
+Qed.
+
+(** The quotient monad preserves epimorphisms (trivial with the axiom of choice) *)
+Lemma R'_preserves_Epi : preserves_Epi R'.
+Proof.
+  apply (epi_nt_preserves_Epi  projR).
+  - apply isEpi_projR_pw.
+  - exact R_epi.
 Qed.
 
   (* FIN DE LA SECONDE ETAPE *)

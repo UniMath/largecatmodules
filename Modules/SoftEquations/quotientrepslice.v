@@ -38,6 +38,8 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.PreservesEpi.
+Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.Prelims.modules.
 
@@ -159,13 +161,10 @@ Local Notation SIG := (signature SET).
 
 Context (Sig : SIG).
 (** The 1-signature must preserves epimorphicity of natural transformations *)
-Context (epiSig : ∏ (R S : Monad _)
-                    (f : Monad_Mor R S),
-                  isEpi (C := [ SET , SET]) ( f : nat_trans _ _) ->
-                  isEpi (C := [ SET , SET]) (# Sig f : nat_trans _ _)%ar).
+Context (epiSig : sig_preservesNatEpiMonad Sig).
 
 (** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi (Sig R)).
+(* Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)). *)
 
 Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
@@ -173,11 +172,24 @@ Local Notation REP_CAT := (rep_fiber_category Sig).
 (* Variable (choice : AxiomOfChoice.AxiomOfChoice_surj). *)
 Context {R : REP}.
 Context (R_epi : preserves_Epi R).
+Context (epiSigR : preserves_Epi (Sig R)).
 Context {J : UU} (d : J -> REP)
           (ff : ∏ (j : J),  R →→ (d j)).
 
 Let R' : Monad SET := R'_monad R_epi d ff.
 Let projR : Monad_Mor R R' := projR_monad R_epi d ff.
+
+Lemma epiSigR' : preserves_Epi (Sig R').
+Proof.
+  intros a b f epif.
+  use (isEpi_precomp SET (# Sig projR _)%ar).
+  rewrite <- (nat_trans_ax (#Sig projR)%ar).
+  apply isEpi_comp.
+  - apply epiSigR; exact epif.
+  - apply epi_nt_SET_pw.
+    apply epiSig.
+    apply isEpi_projR.
+Qed.
 
   
 
@@ -232,7 +244,7 @@ Proof.
     apply isEpi_projR.
   - apply R'_action_compat.
   - intro c.
-    apply epiSigpw.
+    apply epiSigR'.
     apply isEpi_projR_pw.
 Defined.
 

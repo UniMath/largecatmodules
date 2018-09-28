@@ -1,10 +1,17 @@
 (* We show that binding signatures (or algebraic arities) are epi arities
 and that they are presentable
 
+- binding signatures preserves epimorphisms [BindingSigAreEpiSig]
+- binding signatures preserves the preservations of epimorphisms [BindingSigAreEpiEpiSig]:
+  if a functor preserves epimorphisms, then its image by a binding
+  signature also preserves epimorphisms.
+
 COmmutation coproducts of binding sigs and signature
 hSet out of a binding signature
 
--coprod of binding sig
+TODO: generalize to an arbitrary category (rather than focus on SET for isEpiSig)
+
+- coprod of binding sig
 - iso between signature of coproducts of binding sig and coproduct of signautes of binding
 sigs
  *)
@@ -25,6 +32,7 @@ Require Import UniMath.CategoryTheory.functor_categories.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import Modules.Prelims.EpiComplements.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
@@ -47,6 +55,27 @@ Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
+  (** Turn a binding signature into an algebraic 1-signature *)
+Definition binding_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC
+           (cpC : ∏ X, isaset X -> Coproducts X C ) TC S : signature C :=
+  (hss_to_ar (C := C) (BindingSigToSignature hsC bpC bcpC TC
+                                              S (cpC _ (BindingSigIsaset S)))).
+
+  (** Turn an arity of a binding signature (i.e. a list of natural numbers
+specifying an operation in the syntax) into an elementary 1-signature *)
+Definition arity_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC  TC S : signature C :=
+  (hss_to_ar (C := C) (Arity_to_Signature hsC bpC bcpC TC S )).
+
+(** specific definition for the hSet category *)
+Definition binding_to_one_sigHSET S :=
+  (hss_to_ar (C := SET)
+     (BindingSigToSignatureHSET S)). 
+
+Definition Arity_to_SignatureHSET := 
+  Arity_to_Signature (homset_property SET) BinProductsHSET BinCoproductsHSET TerminalHSET.
+
+Definition arity_to_one_sigHSET S :=
+  (hss_to_ar (C := SET) (Arity_to_SignatureHSET  S )).
 
 Section EpiSignatureSig.
 
@@ -54,13 +83,10 @@ Section EpiSignatureSig.
   Local Notation hom_SET := has_homsets_HSET.
   Local Notation Sig := (Signature SET has_homsets_HSET hset_precategory has_homsets_HSET).
   Local Notation EndSet := [hset_category, hset_category].
-  Local Notation toSig sig :=
-    (BindingSigToSignature has_homsets_HSET BinProductsHSET
-                          BinCoproductsHSET TerminalHSET sig
-                          (CoproductsHSET (BindingSigIndex sig) (BindingSigIsaset sig))).
+  Local Notation toSig := BindingSigToSignatureHSET .
 
   (** The initial model of the algebraic signature *)
-  Lemma alg_initialR (sig : BindingSig) : (rep_disp SET) [{hss_to_ar (C := SET) (toSig sig)}].
+  Lemma alg_initialR (sig : BindingSig) : (rep_disp SET) [{binding_to_one_sigHSET sig}].
   Proof.
     use tpair.
     - apply (BindingSigToMonadHSET sig).
@@ -68,7 +94,7 @@ Section EpiSignatureSig.
   Defined.
 
   Definition alg_initial_arrow_mon {sig : BindingSig} 
-    (b : model (hss_to_ar (C := SET)(toSig sig))) :
+    (b : model (binding_to_one_sigHSET sig)) :
       Monad_Mor  (pr1 (alg_initialR sig)) b.
   Proof.
     apply j_mon.
@@ -77,8 +103,8 @@ Section EpiSignatureSig.
 
   (* j_mon is a morphism of model *)
   Definition alg_initial_arrow_law {sig : BindingSig} 
-    (b : model (hss_to_ar (C := SET)(toSig sig))) :
-    model_mor_law (alg_initialR sig) b (signature_Mor_id (hss_to_ar_data (C:=SET) (toSig sig)))
+    (b : model (binding_to_one_sigHSET sig)) :
+    model_mor_law (alg_initialR sig) b (signature_Mor_id (binding_to_one_sigHSET sig))
       (alg_initial_arrow_mon b).
   Proof.
     intro c.
@@ -87,7 +113,7 @@ Section EpiSignatureSig.
 
   Definition alg_initial_arrow {sig : BindingSig} 
     (b : model (hss_to_ar (C := SET)(toSig sig))) :
-    (rep_disp SET) [{hss_to_ar (C := SET)(toSig sig)}] ⟦ alg_initialR sig, b ⟧
+    (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧
     := alg_initial_arrow_mon b,, alg_initial_arrow_law b.
 
   Local Notation EndAlg sig :=
@@ -107,8 +133,8 @@ Section EpiSignatureSig.
 
 
   Lemma rep_mor_to_alg_is_alg_mor {sig : BindingSig}
-             (b : model (hss_to_ar (C := SET)(toSig sig)))
-             (t : (rep_disp SET) [{hss_to_ar (C := SET) (toSig sig)}] ⟦ alg_initialR sig, b ⟧) :
+             (b : model (binding_to_one_sigHSET sig))
+             (t : (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧) :
     is_algebra_mor (Id_H HSET hom_SET BinCoproductsHSET (toSig sig))
                    (pr1 (pr1 (iniHSS sig)))
                    (M_alg (toSig sig) b (model_τ b))
@@ -135,8 +161,8 @@ Section EpiSignatureSig.
     
   
   Definition rep_mor_to_alg_mor {sig : BindingSig}
-             (b : model (hss_to_ar (C := SET)(toSig sig)))
-             (t : (rep_disp SET) [{hss_to_ar (C := SET) (toSig sig)}] ⟦ alg_initialR sig, b ⟧) :
+             (b : model (binding_to_one_sigHSET sig))
+             (t : (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧) :
     EndAlg sig ⟦ (pr1 (pr1 (iniHSS sig))) , M_alg (toSig sig) b (model_τ b) ⟧.
   Proof.
     use tpair.
@@ -147,8 +173,8 @@ Section EpiSignatureSig.
 
 
   Lemma alg_initial_arrow_unique  {sig : BindingSig} 
-    (b : model (hss_to_ar (C := SET)(toSig sig))) :
-    ∏ t : (rep_disp SET) [{hss_to_ar (C := SET) (toSig sig)}] ⟦ alg_initialR sig, b ⟧,
+    (b : model (binding_to_one_sigHSET sig)) :
+    ∏ t : (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧,
           t = alg_initial_arrow b.
   Proof.
     intro t.
@@ -192,45 +218,17 @@ Section EpiSignatureSig.
   Qed.
 
 
-  Definition preserveEpi {C D : precategory} (F : functor C D) :=
-    ∏ M N (f : C ⟦ M, N ⟧), isEpi f → isEpi (#F f).
 
 
-
-  (* Definition isEpiFunc (F : functor _ _) := per *)
-  (*   ∏ M N (f:EndSet ⟦M,N⟧), isEpi (C := [_ , _]) f → isEpi (C := [H_SET, H_SET, *)
-  (*                                                            has_homsets_HSET]) (# F f). *)
-
-  Definition isEpiSig (S : Sig) := preserveEpi (S : functor _ _).
-
-  (* Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) *)
-  (*       (B := hset_category)  {C : category} *)
-  (*       (G : functor B C) *)
-  (*       { a b : B} *)
-  (*       (f : (B ⟦ a, b⟧)%Cat) *)
-  (*   : isEpi f *)
-  (*     -> isEpi (#G f)%Cat. *)
-  (* Proof. *)
-  (*   intros epif. *)
-  (*   apply isSplitEpi_isEpi; [ apply homset_property|]. *)
-  (*   apply preserves_isSplitEpi. *)
-  (*   apply SplitEpis_HSET; [|apply epif]. *)
-  (*   apply ax_choice. *)
-  (* Qed. *)
-  (* Lemma SigAreEpis (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) (S : Sig) : isEpiSig S. *)
-  (* Proof. *)
-  (*   intros M N f isepif. *)
-  (*   apply is_nat_trans_epi_from_pointwise_epis. *)
-  (*   intro a. *)
-  (*   eapply preserves_to_HSET_isEpi. *)
-  (* Qed. *)
+  Definition algebraic_sig_initial (sig : BindingSig)
+    : Initial (rep_disp SET)[{binding_to_one_sigHSET sig}]  := mk_Initial _ (algebraic_sig_representable sig).
 
 
+  Let isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
+  Let isEpiEpiFunc (S : functor [SET,SET] [SET,SET]) := ∏ R, preserves_Epi R -> preserves_Epi (S R).
 
 
-
-  Local Notation ArToSig ar :=
-     (Arity_to_Signature  has_homsets_HSET BinProductsHSET BinCoproductsHSET TerminalHSET ar).
+  Local Notation ArToSig  := Arity_to_SignatureHSET.
 
   Local Notation sumSig I Ihset  :=
       (SumOfSignatures.Sum_of_Signatures I HSET hom_SET HSET hom_SET
@@ -262,147 +260,110 @@ Section EpiSignatureSig.
 
 
   
-  Lemma IdSigIsEpiSig : isEpiSig (SignatureExamples.IdSignature HSET has_homsets_HSET).
-  Proof.
-    intros M N f epif.
-    exact epif.
-  Defined.
-  Lemma ConstSigIsEpiSig (x : hSet) :
-    isEpiSig (SignatureExamples.ConstConstSignature SET SET x).
-  Proof.
-    intros M N f epif.
-    apply identity_isEpi.
-  Defined.
-
-  (* TODO : réfléchir à une généralisation de ce résultat *)
-  Lemma preserveEpi_binProdFunc F F' : preserveEpi F -> preserveEpi F' ->
-                                       preserveEpi (binProdFunc F F').
-  Proof.
-    intros epiF epiF'.
-    intros M N f epif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intro X.
-    set (Ff := (# (binProdFunc F F') f : nat_trans _ _) X).
-    cbn in Ff.
-    intros Y g h eqfgh.
-    (* We use the characterization of surjectivity (easier) *)
-    apply funextfun.
-    intro x.
-    apply (surjectionisepitosets Ff).
-    - intros [y y'].
-      assert (hF : issurjective ((#F f : nat_trans _ _) X)).
-      {
-        apply EpisAreSurjective_HSET.
-        apply epi_nt_SET_pw.
-        apply epiF.
-        apply epif.
-      }
-      assert (hF' : issurjective ((#F' f : nat_trans _ _) X)).
-      {
-        apply EpisAreSurjective_HSET.
-        apply epi_nt_SET_pw.
-        apply epiF'.
-        apply epif.
-      }
-      generalize (hF y) (hF' y').
-      apply hinhfun2.
-      intros z z'.
-      apply (hfiberpair _ (pr1 z ,, pr1 z')).
-      apply total2_paths2.
-      + apply (pr2 z).
-      + apply (pr2 z').
-    - apply setproperty.
-    - apply toforallpaths in eqfgh.
-      apply eqfgh.
-  Qed.
-
-  (* TODO réfléchir à une généralisation *)
-
-  Lemma preserveEpi_sumFuncs I Ihset Fs (epiFs : ∏ i, preserveEpi (Fs i)) :
-    preserveEpi (sumFuncs I Ihset Fs).
-  Proof.
-    intros M N f epif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intros X Y g h.
-    cbn in g,h.
-    intros eqgh.
-    apply funextfun.
-    intros [i x].
-    set (g' x := g (i ,, x)).
-    set (h' x := h (i ,, x)).
-    apply (toforallpaths _ g' h').
-    specialize (epiFs i _ _ _ epif).
-    eapply epi_nt_SET_pw in epiFs.
-    apply epiFs.
-    apply funextfun.
-    intro y.
-    apply toforallpaths in eqgh.
-    apply (eqgh (i ,, y)).
-  Qed.
-
   Lemma isEpi_binProdSig S S' : isEpiSig S -> isEpiSig S' -> isEpiSig (binProdSig S S').
   Proof.
-    apply (preserveEpi_binProdFunc S S').
+    use preserveEpi_binProdFunc.
+    use (productEpisFunc (B := SET) (C := SET)).
+    - apply productEpisSET.
+    - apply epi_nt_SET_pw.
   Qed.
 
-  Lemma isEpiSumSigs I Ihset sigs (episigs : ∏ i, isEpiSig  (sigs i)) :
-      isEpiSig (sumSig I Ihset sigs).
-  Proof.
-    apply (preserveEpi_sumFuncs I Ihset sigs episigs).
-  Qed.
-    
 
-  Lemma precomp_func_preserveEpi F : preserveEpi (precomp_functor F).
+  Lemma precomp_func_preserveEpi F : preserves_Epi (precomp_functor F).
   Proof.
-    intros M N f epif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intro X.
-    apply (epi_nt_SET_pw f epif).
+    apply preserveEpi_precomp.
+    apply epi_nt_SET_pw.
   Qed.
 
   (** No need for an induction even though the functor is defined as such *)
-  Lemma precompEpiFunc (n : nat) : preserveEpi (precompToFunc n).
+  Lemma precompEpiFunc (n : nat) : preserves_Epi (precompToFunc n).
   Proof.
     destruct n as [|n ].
-    - apply IdSigIsEpiSig.
+    - apply id_preserves_Epi.
     - apply precomp_func_preserveEpi.
   Qed.
 
-  Lemma precompEpiSig (n : nat) : isEpiSig (precompToSig n).
+  Lemma precompEpiEpiFuncSn (n : nat) : isEpiEpiFunc (precompToFunc (S n)).
   Proof.
-    apply precompEpiFunc.
+    induction n as [|n ].
+    - intros R fhR.
+      apply composite_preserves_Epi.
+      + apply preserves_Epi_option.
+      + exact fhR.
+    - intros R hR.
+      apply composite_preserves_Epi.
+      + apply IHn.
+        apply preserves_Epi_option.
+      + exact hR.
   Qed.
-
+  Lemma precompEpiEpiFunc (n : nat) : isEpiEpiFunc (precompToFunc n).
+  Proof.
+    destruct n as [|n ].
+    - exact (fun R hR => hR).
+    - apply precompEpiEpiFuncSn.
+  Qed.
 
 
   Lemma ArAreEpiSig (ar : list nat) : isEpiSig (ArToSig ar).
   Proof.
     pattern ar.
     apply list_ind; clear ar.
-    - apply ConstSigIsEpiSig.
+    - apply const_preserves_Epi.
     - intros n ar.
       revert n.
       pattern ar.
       apply list_ind; clear ar.
       + intros n epinil.
         cbn.
-        apply precompEpiSig.
+        apply precompEpiFunc.
       + intros n ar HI m epi_ar.
         intros M N f epif.
         unfold ArToSig,  Arity_to_Signature.
         rewrite 2!map_cons.
         rewrite foldr1_cons.
         apply isEpi_binProdSig.
-        * apply precompEpiSig.
+        * apply precompEpiFunc.
         * exact epi_ar.
         * exact epif.
+  Qed.
+  Lemma ArAreEpiEpiSig (ar : list nat) : isEpiEpiFunc (ArToSig ar).
+  Proof.
+    pattern ar.
+    apply list_ind; clear ar.
+    - intros R _.
+      apply const_preserves_Epi.
+    - intros n ar.
+      revert n.
+      pattern ar.
+      apply list_ind; clear ar.
+      + intros n epinil.
+        apply precompEpiEpiFunc.
+      + intros n ar HI m epi_ar.
+        intros R epiR.
+        unfold ArToSig,  Arity_to_Signature.
+        rewrite 2!map_cons.
+        rewrite foldr1_cons.
+        apply preserveEpi_binProdFunc.
+        * apply productEpisSET.
+        * apply precompEpiEpiFunc.
+          exact epiR.
+        * apply epi_ar; assumption.
   Qed.
 
   Lemma BindingSigAreEpiSig (S : BindingSig) : isEpiSig (toSig S).
   Proof.
-    apply isEpiSumSigs.
+    apply preserveEpi_sumFuncs.
     intro i.
     apply ArAreEpiSig.
+  Qed.
+
+  Lemma BindingSigAreEpiEpiSig (S : BindingSig) : isEpiEpiFunc (toSig S).
+  Proof.
+    intros R hR.
+    apply preserveEpi_sumFuncs.
+    intro i.
+    apply ArAreEpiEpiSig.
+    exact hR.
   Qed.
 
 End EpiSignatureSig.

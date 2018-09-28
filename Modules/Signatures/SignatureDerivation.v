@@ -85,6 +85,21 @@ Variable (a : signature C).
 
   Definition signature_deriv : Signature := _ ,, signature_deriv_is_signature.
 
+  Lemma signature_to_deriv_laws : is_signature_Mor a signature_deriv
+                                                        (fun R => LModule_to_deriv CT bcpC (homset_property _) R (a R)).
+  Proof.
+    intros R S f.
+    apply (nat_trans_eq (homset_property _)).
+    intro c.
+    cbn.
+    repeat rewrite id_left.
+    rewrite id_right.
+    apply pathsinv0.
+    apply nat_trans_ax.
+  Qed.
+
+  Definition signature_to_deriv : signature_Mor a signature_deriv := _ ,, signature_to_deriv_laws.
+
 End DAr.
 
 Fixpoint signature_deriv_n {C : category} bcp T a (n :nat) : signature C :=

@@ -1,10 +1,14 @@
 SignatureOverAsFiber.v
 ModelCat.v
 SignatureOver.v
+SignatureOverDerivation.v
 quotientrepslice.v
 Equation.v
 quotientequation.v
 InitialEquationRep.v
 SignatureOverDerivation.v
 TwoSignatureMorphism.v
+SignatureOverBinproducts.v
+BindingSig.v
+Examples/LCBetaEta.v
 Summary.v

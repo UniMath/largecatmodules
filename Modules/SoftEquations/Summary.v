@@ -8,6 +8,7 @@ Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.Derivative.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.functor_categories.
@@ -18,16 +19,19 @@ Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import Modules.Prelims.EpiComplements.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.Prelims.modules.
 
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.SignatureOver.
+Require Import Modules.SoftEquations.SignatureOverDerivation.
 Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
@@ -42,6 +46,10 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
+
+Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
+Require Import Modules.Signatures.BindingSig.
+Require Import Modules.SoftEquations.BindingSig.
 
 Local Notation MONAD := (Monad SET).
 Local Notation MODULE R := (LModule R SET).
@@ -85,8 +93,23 @@ Check (∏ (F : signature_data (C:= SET)),
 
 Check (signature SET ::= ∑ F : signature_data, is_signature F).
 
+  (** An epi-signature preserves epimorphicity of natural
+      transformations. Note that this is not implied by the axiom of choice
+      because the retract may not be a monad morphism.
+   *)
+Check (∏ (S : signature SET),
+       sig_preservesNatEpiMonad S ::=
+         ∏ M N (f : category_Monad _⟦M,N⟧),
+         isEpi (C := functor_category SET SET) (pr1 f) ->
+         isEpi (C:= functor_category SET SET)
+               (pr1 (#S f)%ar)).
+
 
 Local Notation SIGNATURE := (signature SET).
+
+Local Notation BC := BinCoproductsHSET.
+Local Notation T := TerminalHSET.
+
 (** *******************
 
  Definition of a model of a signature
@@ -96,10 +119,17 @@ The more detailed definitions of model morphisms can be found in SoftSignatures/
 
  ****** *)
 
-(** The tautological module R over the monad R *)
+(** The tautological module R over the monad R  (defined in UniMath) *)
 Local Notation Θ := tautological_LModule.
-
 Check (∏ (R : MONAD), (Θ R : functor _ _) ::= R).
+
+(** The derivative of a module M over the monad R (defined in UniMath) *)
+Local Notation "M ′" := (LModule_deriv unitHSET BC  M) (at level 6).
+(** M′ (X) = M′ (1 ⨿ X) where 1 = unit is the terminal object and ⨿ is the
+    disjoint union *)
+Check (∏ (R : MONAD) (M : LModule R SET) (X : SET),
+         (M ′ X) ::= M (setcoprod unitHSET (X : hSet))) .
+
 
 (**
 A model of a signature S is a monad R with a module morphism from S R to R, called an action.
@@ -162,7 +192,21 @@ Check (∏ (S : SIGNATURE),
                (** functoriality conditions (see SignatureOver.v) *)
                is_signature_over S F).
 
-Local Notation "F ⟹ G" := (signature_over_Mor _ F G) (at level 39).
+(** Some examples of 1-signature *)
+
+  (** The tautological signature maps a monad to itself *)
+  Local Notation ΣΘ := (tautological_signature_over _).
+  (** The n-th derivative of an over signature M *)
+  Local Notation "M ^( n )" := (signature_over_deriv_n (C := SET) _ BC T M n) (at level 6).
+  (** The n+1-th derivative is the derivative of the n-th derivative *)
+  Check (∏ (S : SIGNATURE) (F : signature_over S)(n : nat) (R : model S) (X : hSet),
+         F ^(1+n) R  ::= (F ^( n) R) ′).
+
+  (** The 0th derivative does not do anything *)
+  Check (∏ (S : SIGNATURE) (F : signature_over S)(n : nat) (R : model S) (X : hSet),
+         F ^(0) R  ::= F R).
+
+
 
 (**
 a morphism of oversignature is a natural transformation
@@ -175,9 +219,13 @@ Check (∏ (S : SIGNATURE)
          (** subject to naturality conditions (see SignatureOver.v for the full definition) *)
            is_signature_over_Mor S F F' f
       ).
+Local Notation "F ⟹ G" := (signature_over_Mor _ F G) (at level 39).
 
 (** Definition of an oversignature which preserve epimorphisms in the category of natural transformations
-(Cf SoftEquations/quotientequation.v *)
+(Cf SoftEquations/quotientequation.v).
+This definition is analogous to [sig_preservesNatEpiMonad], but for oversignature
+rathen than 1-signatures.
+ *)
 Check (∏ (S : SIGNATURE)
          (F : signature_over S),
        isEpi_overSig F ::=
@@ -209,14 +257,11 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
  *)
 Check (∏ (S : SIGNATURE)
+         (** S is an epi-signature *)
+         (isEpi_sig : sig_preservesNatEpiMonad S)
          (F : signature_over S)
          (** this is implied by the axiom of choice *)
-         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R))
-         (** S preserves epimorphisms of monads *)
-         (isEpi_sig : ∏ (R R' : MONAD)
-                        (f : Monad_Mor R R'),
-                        (isEpi (C:= [SET,SET]) (f : nat_trans _ _) ->
-                      isEpi (C:= [SET,SET]) ((#S f)%ar : nat_trans _ _))),
+         (SR_epi : ∏ R : Monad SET, preserves_Epi R -> preserves_Epi (S R)) ,
        isSoft  isEpi_sig SR_epi F
        ::=
          (∏ (R : model S)
@@ -224,14 +269,24 @@ Check (∏ (S : SIGNATURE)
             (R_epi : preserves_Epi R)
             (J : UU)(d : J -> (model S))(f : ∏ j, R →→ (d j))
             X (x y : (F R X : hSet))
-            (pi := projR_rep S isEpi_sig SR_epi R_epi d f),
+            (pi := projR_rep S isEpi_sig R_epi (SR_epi _ R_epi) d f),
           (∏ j, (# F (f j))%sigo X x  = (# F (f j))%sigo X y )
           -> (# F pi X x)%sigo = 
             (# F pi X y)%sigo  )
        ).
 
 
-
+(**
+  Example of soft S-module: a finite derivative of the tautological signature
+ *)
+Check (@isSoft_finite_deriv_tauto:
+         ∏ (Sig : SIGNATURE)
+           (* Sig is an epi-1-signature *)
+           (epiSig : sig_preservesNatEpiMonad Sig)
+            (** implied by the axiom of choice *)
+          (epiSigpw : ∏ R : Monad SET, preserves_Epi R -> preserves_Epi (Sig R))
+           (n : nat),
+         isSoft epiSig epiSigpw (ΣΘ ^(n))).
 
 
 (* **********
@@ -249,16 +304,38 @@ Check (∏ (S : SIGNATURE),
     must be soft (SoftEquations/quotientequation)
  *)
 Check (∏ (S : SIGNATURE)
+         (** S is an epi-signature *)
+         (isEpi_sig : sig_preservesNatEpiMonad S)
          (** this is implied by the axiom of choice *)
-         (SR_epi : ∏ R : Monad SET, preserves_Epi (S R))
-         (** S preserves epimorphisms of monads *)
-         (isEpi_sig : ∏ (R R' : MONAD)
-                        (f : Monad_Mor R R'),
-                        (isEpi (C:= [SET,SET]) (f : nat_trans _ _) ->
-                      isEpi (C:= [SET,SET]) ((#S f)%ar : nat_trans _ _))),
+        (SR_epi : ∏ R : Monad SET, preserves_Epi R -> preserves_Epi (S R)),
 
        soft_equation isEpi_sig SR_epi ::=
         ∑ (e : equation), isSoft isEpi_sig SR_epi (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
+
+(** Elementary equations: the domain is an epi over-signature, and the target
+    is a finite derivative of the tautological signature mapping a model to itself
+    (SoftEquations/quotientequation.v).
+ *)
+Check (∏ (S : SIGNATURE),
+     elementary_equation (Sig := S) ::=
+         ∑ (S1 : signature_over S)(n : nat),
+         isEpi_overSig S1 × half_equation S1 (ΣΘ ^(n)) × half_equation S1 (ΣΘ ^(n))).
+
+(** Elementary equations yield soft equations
+ *)
+Check (∏ (S : SIGNATURE)
+         (** this is implied by the axiom of choice *)
+         (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (S R))
+         (** but not that *)
+         epiSig
+         (e : elementary_equation),
+       (soft_equation_from_elementary_equation epiSig SR_epi e  : soft_equation _ _
+       ) ::=
+         mk_soft_equation epiSig SR_epi
+                          (half_elem_eqs e)  (source_elem_epiSig e)
+                          (isSoft_finite_deriv_tauto epiSig SR_epi (target_elem_eq e))).
+
+
 (** 
 Definition of the category of 2-models of a 1-signature with a family of equation.
 
@@ -306,20 +383,139 @@ consisting of any family of soft equations over Σ also generates a syntax
 
 *)
 Check (@soft_equations_preserve_initiality :
-         ∏ (** The 1-signature *)
+         ∏ 
            (Sig : SIGNATURE)
-           (** The 1-signature must be an epi-signature *)
-           (epiSig : ∏ (R S : Monad SET) (f : Monad_Mor R S),
-                     isEpi (C := [SET, SET]) (f : nat_trans R S)
-                     → isEpi (C := [SET, SET])
-                             ((# Sig)%ar f : nat_trans (Sig R)  (pb_LModule f (Sig S))))
+           (** S is an epi-signature *)
+           (epiSig : sig_preservesNatEpiMonad Sig)
            (** this is implied by the axiom of choice *)
-           (SR_epi : ∏ R : Monad SET, preserves_Epi (Sig R))
+           (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
            (** A family of equations *)
            (O : UU) (eq : O → soft_equation epiSig SR_epi),
          (** If the category of 1-models has an initial object, .. *)
          ∏ (R : Initial (rep_fiber_category Sig)) , preserves_Epi (InitialObject R : model Sig)
         (** .. then the category of 2-models has an initial object *)
-         → Initial (precategory_model_equations (λ x : O, eq x))).
+         → Initial (precategory_model_equations eq)).
+
+
+(** As a corrolary, the case of a family of elementary equations *)
+Check (@elementary_equations_preserve_initiality :
+         ∏ 
+           (Sig : SIGNATURE)
+           (** (1) The 1-signature must be an epi-signature
+            *)
+           (epiSig : sig_preservesNatEpiMonad Sig)
+           (** (2) this is implied by the axiom of choice
+            *)
+           (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
+           (** A family of equations *)
+           (O : UU) (eq : O → elementary_equation (Sig := Sig))
+           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)),
+         (** If the category of 1-models has an initial object, .. *)
+         ∏ (R : Initial (rep_fiber_category Sig)) ,
+         (** (3) preserving epis (implied by the axiom of choice)
+          *)
+         preserves_Epi (InitialObject R : model Sig)
+        (** .. then the category of 2-models has an initial object *)
+         → Initial (precategory_model_equations eq')).
+
+(** As a corrolary, the case of an algebraic signature with elementary equations
+No preservation of epis is needed anymore
+(R := ..) is a notation for let R := .. in ..
+ *)
+Check (@elementary_equations_on_alg_preserve_initiality  : ∏
+          (S : BindingSig) (Sig := binding_to_one_sigHSET S)
+
+           (O : UU) (eq : O → elementary_equation (Sig := Sig))
+           (R := bindingSigHSET_Initial S : Initial (rep_fiber_category Sig))
+           (** TODO: show this last step *)
+           (iniEpi : preserves_Epi (InitialObject R : model Sig)) 
+           (epiSig := algSig_NatEpi S)
+           (SR_epi := BindingSigAreEpiEpiSig S)
+           (** A family of equations *)
+           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)) ,
+        (** .. then the category of 2-models has an initial object *)
+  Initial (precategory_model_equations eq')).
+
+(**
+
+
+Note that an epimorphic monad morphism may not be epimorphic as a natural transformation.
+
+A natural transformation is epimorphic if and only if it is pointwise epimorphic.
+Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
+any epimorphism has a section). Hypothesis (1) does not seem (at least trivially) implied
+by the axiom of choice because one would need that the retract is a monad morphism (and even
+I don't know how to use the axiom of choice to yield a natural transformation retration).
+
+Where are the hypotheses (1), (2), (3) used in the proof of the theorem above:
+
+(3) is used:
+
+- to build the multiplication of the quotient monad. Indeed, it is defined as the
+completion of the following diagram (so that the canonical projection π is a monad morphism):
+<<
+                  μ R
+            R R  ----->   R
+             |           |
+         π π |           | π
+             v           v
+            R' R'        R'
+                  
+>>
+where R' is the quotient monad. This definition requires that π π = R' π ∘ π R = π R' ∘ R π
+is an epimorphism, and this is implied by R π being an epi. Hence the requirement that R preserves epis
+(since π is indeed an epi, as a canonical projection)
+
+- to show that Σ_R' preserves epi in when showing that 
+    the Σ-action of the quotient monad is a module morphism (see diagram (Act) below)
+
+
+(1) is used:
+
+- to build the Σ-action for the quotient monad. Indeed, it is defined as the completion of the
+ following diagram (so that the canonical projection π is a model morphism)
+
+<<
+            Σ_π
+     Σ_R -----------> Σ_R'
+     |                 
+     |                 
+  τ_R|                 
+     |                 
+     V                 
+     R ------------->  R'
+           π
+>>
+where R' is the quotient monad. This definition requires that Σ π 
+is an epimorphism, hence the requirement that Σ sends epimorphic natural transformations
+to epimorphisms (π is indeed an epimorphic natural transformation, as a canonical projection)
+
+
+(2) is used:
+
+- to show that the Σ-action is a module morphism. It is used for the specific
+  case of the monad R .
+  Indeed, I need to show that the following diagram commutes:
+<<
+                          
+     Σ_R' R' -----------> Σ_R'
+        |                 |
+        |                 |
+        |                 |       (Act)
+        |                 |
+        |                 |
+        V                 V
+     R'  R' ----------->  R'
+>>
+The strategy is to precompose this diagram with Σ_R'(π) in order to use the
+fact that the Σ-action for R is a module morphism. This argument requires that
+Σ_R'(π) is epi, and this is the case because Σ_R'(π) ∘ Σ_π R = Σ_π R' ∘ Σ_R (π) is epi,
+as a composition of epis.
+
+
+- as a consequence, it is used in the definition of soft equations for any model R
+  (because the quotient model is always required  to exist).
+
+*)
 
 

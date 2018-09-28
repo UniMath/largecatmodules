@@ -291,11 +291,6 @@ Arguments signature _ : clear implicits.
 Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
 
 
-Definition preservesEpi_signature (c : signature SET)
-  : UU
-  := ∏ M N (f : category_Monad _⟦M,N⟧),
-     isEpi (C := functor_category _ _) (pr1 f) -> isEpi (C:= functor_category _ _)
-                                                       (pr1 (#c f)%ar).
 
 
 Section ForgetSigFunctor.

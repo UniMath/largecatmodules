@@ -1,4 +1,5 @@
 lib.v
+EpiComplements.v
 LModuleCoproducts.v
 LModuleBinProduct.v
 LModPbCommute.v
@@ -12,3 +13,4 @@ CoproductsComplements.v
 BinProductComplements.v
 SetCatComplements.v
 FibrationInitialPushout.v
+FaithfulFibrationEqualizer.v

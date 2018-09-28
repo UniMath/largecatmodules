@@ -4,6 +4,9 @@
     Content:
     - Definition of a signature (aka Σ-module) over the category of another signature Σ [signature_over]
     - Definition of the category Sig-modules (signature_over_category]
+    - The action of 1-models yield signature over morphism [action_sig_over_mor]
+    - 1-signature morphisms  yield signature over morphism [sig_sig_over_mor]
+
 
 
 TODO : factor this definition and the standard definition of signatures ?
@@ -138,7 +141,7 @@ Lemma is_sig_over_from_sig (sig : signature C) : is_signature_over (OSig sig).
 Defined.
 
 (** Sig-module from a 1-signature *)
-Definition sig_over_from_sig (sig : signature C) : signature_over :=
+Coercion sig_over_from_sig (sig : signature C) : signature_over :=
   (sig_over_data_from_sig sig ,, is_sig_over_from_sig sig).
 
 (** The tautological Sig-module mapping a 1-model to the underlying monad *)
@@ -201,6 +204,10 @@ Qed.
 
 (** A Sig-module morphism is a naturaly family of module morphisms *)
 Definition signature_over_Mor  (F F' : signature_over_data) : UU := ∑ X, is_signature_over_Mor F F' X.
+
+Definition mkSignature_over_Mor {F F' : signature_over_data} X
+           (hX : is_signature_over_Mor F F' X) : signature_over_Mor F F' :=
+  X ,, hX.
                             
 (** Notation for Sig-module morphisms *)
 Local Notation "F ⟹ G" := (signature_over_Mor F G) (at level 39) : signature_over_scope.
@@ -342,6 +349,26 @@ Proof.
   apply signature_over_category_has_homsets.
 Defined.
 
+
+
+Local Notation ι := sig_over_from_sig.
+Local Notation  "S1 →→s S2" := (signature_over_Mor S1 S2) (at level 23).
+
+(** The action of 1-models yield  signature over morphism *)
+Definition action_sig_over_mor : ι Sig  →→s tautological_signature_over.
+  use mkSignature_over_Mor.
+  - use model_τ.
+  - cbn.
+    intros R S f.
+    apply pathsinv0.
+    apply (nat_trans_eq (homset_property _)).
+    use (rep_fiber_mor_ax f).
+Defined.
+
+(** A 1-sig morphism yields a 2-sig morphism *)
+Definition sig_sig_over_mor {S1 S2 : SIG} (f : signature_Mor S1 S2) : ι S1  →→s ι S2 :=
+  @mkSignature_over_Mor (ι S1) (ι S2) (λ R : REP, f R)
+                        (λ (R S : REP) (g : R →→ S), signature_Mor_ax f g).
 
 
 End OverSignatures.
