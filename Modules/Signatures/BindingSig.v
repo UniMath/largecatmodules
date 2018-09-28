@@ -1,6 +1,11 @@
 (* We show that binding signatures (or algebraic arities) are epi arities
 and that they are presentable
 
+- binding signatures preserves epimorphisms [BindingSigAreEpiSig]
+- binding signatures preserves the preservations of epimorphisms [BindingSigAreEpiEpiSig]:
+  if a functor preserves epimorphisms, then its image by a binding
+  signature also preserves epimorphisms.
+
 COmmutation coproducts of binding sigs and signature
 hSet out of a binding signature
 
@@ -219,7 +224,9 @@ Section EpiSignatureSig.
     : Initial (rep_disp SET)[{binding_to_one_sigHSET sig}]  := mk_Initial _ (algebraic_sig_representable sig).
 
 
-  Definition isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
+  Let isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
+  Let isEpiEpiFunc (S : functor [SET,SET] [SET,SET]) := ∏ R, preserves_Epi R -> preserves_Epi (S R).
+
 
   Local Notation ArToSig  := Arity_to_SignatureHSET.
 
@@ -276,11 +283,25 @@ Section EpiSignatureSig.
     - apply precomp_func_preserveEpi.
   Qed.
 
-  Lemma precompEpiSig (n : nat) : isEpiSig (precompToSig n).
+  Lemma precompEpiEpiFuncSn (n : nat) : isEpiEpiFunc (precompToFunc (S n)).
   Proof.
-    apply precompEpiFunc.
+    induction n as [|n ].
+    - intros R fhR.
+      apply composite_preserves_Epi.
+      + apply preserves_Epi_option.
+      + exact fhR.
+    - intros R hR.
+      apply composite_preserves_Epi.
+      + apply IHn.
+        apply preserves_Epi_option.
+      + exact hR.
   Qed.
-
+  Lemma precompEpiEpiFunc (n : nat) : isEpiEpiFunc (precompToFunc n).
+  Proof.
+    destruct n as [|n ].
+    - exact (fun R hR => hR).
+    - apply precompEpiEpiFuncSn.
+  Qed.
 
 
   Lemma ArAreEpiSig (ar : list nat) : isEpiSig (ArToSig ar).
@@ -294,16 +315,39 @@ Section EpiSignatureSig.
       apply list_ind; clear ar.
       + intros n epinil.
         cbn.
-        apply precompEpiSig.
+        apply precompEpiFunc.
       + intros n ar HI m epi_ar.
         intros M N f epif.
         unfold ArToSig,  Arity_to_Signature.
         rewrite 2!map_cons.
         rewrite foldr1_cons.
         apply isEpi_binProdSig.
-        * apply precompEpiSig.
+        * apply precompEpiFunc.
         * exact epi_ar.
         * exact epif.
+  Qed.
+  Lemma ArAreEpiEpiSig (ar : list nat) : isEpiEpiFunc (ArToSig ar).
+  Proof.
+    pattern ar.
+    apply list_ind; clear ar.
+    - intros R _.
+      apply const_preserves_Epi.
+    - intros n ar.
+      revert n.
+      pattern ar.
+      apply list_ind; clear ar.
+      + intros n epinil.
+        apply precompEpiEpiFunc.
+      + intros n ar HI m epi_ar.
+        intros R epiR.
+        unfold ArToSig,  Arity_to_Signature.
+        rewrite 2!map_cons.
+        rewrite foldr1_cons.
+        apply preserveEpi_binProdFunc.
+        * apply productEpisSET.
+        * apply precompEpiEpiFunc.
+          exact epiR.
+        * apply epi_ar; assumption.
   Qed.
 
   Lemma BindingSigAreEpiSig (S : BindingSig) : isEpiSig (toSig S).
@@ -311,6 +355,15 @@ Section EpiSignatureSig.
     apply preserveEpi_sumFuncs.
     intro i.
     apply ArAreEpiSig.
+  Qed.
+
+  Lemma BindingSigAreEpiEpiSig (S : BindingSig) : isEpiEpiFunc (toSig S).
+  Proof.
+    intros R hR.
+    apply preserveEpi_sumFuncs.
+    intro i.
+    apply ArAreEpiEpiSig.
+    exact hR.
   Qed.
 
 End EpiSignatureSig.

@@ -7,6 +7,10 @@ Main definitions:
 
 and related proofs
 
+Note that a lot of statment (if not all) could be rephrased as preservation
+of epis by some functors (for example the fact that products preserve epi
+could be rephrased as the preservation of epis of some bifunctor).
+
 *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
@@ -24,6 +28,8 @@ Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.limits.binproducts.
+Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 
 Open Scope cat.
@@ -174,6 +180,14 @@ Proof.
   apply ax_choice.
 Qed.
 
+(** The composition of two epi-preserving functors preserves epis *)
+Definition composite_preserves_Epi {B C D : precategory} (F : functor B C) (G : functor C D) :
+  preserves_Epi F -> preserves_Epi G -> preserves_Epi (F ∙ G).
+Proof.
+  intros hF hG a b f epif.
+  apply hG, hF, epif.
+Qed.
+
 (** let a : F -> G be a pointwise epimorphic natural transformation.
   If F preserves epimorphisms, then G also does *)
 Lemma epi_nt_preserves_Epi {B C : precategory} {F G : functor B C} (a : nat_trans F G)
@@ -232,4 +246,18 @@ Proof.
   intro X.
   use pwEpi.
   exact epif.
+Qed.
+
+(** The option functor preserves epis (same idea as coproduct_Epis *)
+Lemma preserves_Epi_option {B : precategory} (bcp : BinCoproducts B) (T : Terminal B) :
+      preserves_Epi (option_functor bcp T).
+Proof.
+  intros R S f epif.
+  intros c u v eq.
+  apply BinCoproductArrowsEq; [apply (identity_isEpi _ (x := T))| apply epif]; 
+    do 2 rewrite assoc;
+    [erewrite <- BinCoproductOfArrowsIn1|erewrite <- BinCoproductOfArrowsIn2];
+    do 2 rewrite <- assoc;
+    apply cancel_precomposition;
+    exact eq.
 Qed.
