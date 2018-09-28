@@ -47,6 +47,7 @@ Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.Prelims.quotientmonad.
 
 Local Notation "α ∙∙ β" := (horcomp β α) (at level 20).

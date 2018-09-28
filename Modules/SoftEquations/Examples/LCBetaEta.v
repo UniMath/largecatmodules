@@ -71,6 +71,7 @@ Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import UniMath.CategoryTheory.Adjunctions.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.

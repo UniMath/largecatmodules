@@ -6,7 +6,7 @@ quotientrepslice.v
 Equation.v
 quotientequation.v
 InitialEquationRep.v
-Summary.v
 SignatureOverBinproducts.v
 BindingSig.v
 Examples/LCBetaEta.v
+Summary.v

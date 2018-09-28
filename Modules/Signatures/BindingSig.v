@@ -1,6 +1,11 @@
 (* We show that binding signatures (or algebraic arities) are epi arities
 and that they are presentable
 
+- binding signatures preserves epimorphisms [BindingSigAreEpiSig]
+- binding signatures preserves the preservations of epimorphisms [BindingSigAreEpiEpiSig]:
+  if a functor preserves epimorphisms, then its image by a binding
+  signature also preserves epimorphisms.
+
 COmmutation coproducts of binding sigs and signature
 hSet out of a binding signature
 
@@ -27,6 +32,7 @@ Require Import UniMath.CategoryTheory.functor_categories.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import Modules.Prelims.EpiComplements.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
@@ -218,10 +224,11 @@ Section EpiSignatureSig.
     : Initial (rep_disp SET)[{binding_to_one_sigHSET sig}]  := mk_Initial _ (algebraic_sig_representable sig).
 
 
-  Definition isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
+  Let isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
+  Let isEpiEpiFunc (S : functor [SET,SET] [SET,SET]) := ∏ R, preserves_Epi R -> preserves_Epi (S R).
 
-  Local Notation ArToSig ar :=
-     (Arity_to_Signature  has_homsets_HSET BinProductsHSET BinCoproductsHSET TerminalHSET ar).
+
+  Local Notation ArToSig  := Arity_to_SignatureHSET.
 
   Local Notation sumSig I Ihset  :=
       (SumOfSignatures.Sum_of_Signatures I HSET hom_SET HSET hom_SET
@@ -253,115 +260,110 @@ Section EpiSignatureSig.
 
 
   
-  Lemma IdSigIsEpiSig : isEpiSig (SignatureExamples.IdSignature HSET has_homsets_HSET).
-  Proof.
-    intros M N f epif.
-    exact epif.
-  Defined.
-  Lemma ConstSigIsEpiSig (x : hSet) :
-    isEpiSig (SignatureExamples.ConstConstSignature SET SET x).
-  Proof.
-    intros M N f epif.
-    apply identity_isEpi.
-  Defined.
-
-  (* TODO : réfléchir à une généralisation de ce résultat *)
-  Lemma preserveEpi_binProdFunc F F' : preserves_Epi F -> preserves_Epi F' ->
-                                       preserves_Epi (binProdFunc F F').
-  Proof.
-    intros epiF epiG M N f epif .
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intro X.
-    apply productEpisSET; apply epi_nt_SET_pw; [apply epiF | apply epiG ]; exact epif.
-  Qed.
-
-  (* TODO réfléchir à une généralisation *)
-
-  Lemma preserveEpi_sumFuncs I Ihset Fs (epiFs : ∏ i, preserves_Epi (Fs i)) :
-    preserves_Epi (sumFuncs I Ihset Fs).
-  Proof.
-    intros M N f epif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intros X Y g h.
-    cbn in g,h.
-    intros eqgh.
-    apply funextfun.
-    intros [i x].
-    set (g' x := g (i ,, x)).
-    set (h' x := h (i ,, x)).
-    apply (toforallpaths _ g' h').
-    specialize (epiFs i _ _ _ epif).
-    eapply epi_nt_SET_pw in epiFs.
-    apply epiFs.
-    apply funextfun.
-    intro y.
-    apply toforallpaths in eqgh.
-    apply (eqgh (i ,, y)).
-  Qed.
-
   Lemma isEpi_binProdSig S S' : isEpiSig S -> isEpiSig S' -> isEpiSig (binProdSig S S').
   Proof.
-    apply (preserveEpi_binProdFunc S S').
+    use preserveEpi_binProdFunc.
+    use (productEpisFunc (B := SET) (C := SET)).
+    - apply productEpisSET.
+    - apply epi_nt_SET_pw.
   Qed.
 
-  Lemma isEpiSumSigs I Ihset sigs (episigs : ∏ i, isEpiSig  (sigs i)) :
-      isEpiSig (sumSig I Ihset sigs).
-  Proof.
-    apply (preserveEpi_sumFuncs I Ihset sigs episigs).
-  Qed.
-    
 
   Lemma precomp_func_preserveEpi F : preserves_Epi (precomp_functor F).
   Proof.
-    intros M N f epif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intro X.
-    apply (epi_nt_SET_pw f epif).
+    apply preserveEpi_precomp.
+    apply epi_nt_SET_pw.
   Qed.
 
   (** No need for an induction even though the functor is defined as such *)
   Lemma precompEpiFunc (n : nat) : preserves_Epi (precompToFunc n).
   Proof.
     destruct n as [|n ].
-    - apply IdSigIsEpiSig.
+    - apply id_preserves_Epi.
     - apply precomp_func_preserveEpi.
   Qed.
 
-  Lemma precompEpiSig (n : nat) : isEpiSig (precompToSig n).
+  Lemma precompEpiEpiFuncSn (n : nat) : isEpiEpiFunc (precompToFunc (S n)).
   Proof.
-    apply precompEpiFunc.
+    induction n as [|n ].
+    - intros R fhR.
+      apply composite_preserves_Epi.
+      + apply preserves_Epi_option.
+      + exact fhR.
+    - intros R hR.
+      apply composite_preserves_Epi.
+      + apply IHn.
+        apply preserves_Epi_option.
+      + exact hR.
   Qed.
-
+  Lemma precompEpiEpiFunc (n : nat) : isEpiEpiFunc (precompToFunc n).
+  Proof.
+    destruct n as [|n ].
+    - exact (fun R hR => hR).
+    - apply precompEpiEpiFuncSn.
+  Qed.
 
 
   Lemma ArAreEpiSig (ar : list nat) : isEpiSig (ArToSig ar).
   Proof.
     pattern ar.
     apply list_ind; clear ar.
-    - apply ConstSigIsEpiSig.
+    - apply const_preserves_Epi.
     - intros n ar.
       revert n.
       pattern ar.
       apply list_ind; clear ar.
       + intros n epinil.
         cbn.
-        apply precompEpiSig.
+        apply precompEpiFunc.
       + intros n ar HI m epi_ar.
         intros M N f epif.
         unfold ArToSig,  Arity_to_Signature.
         rewrite 2!map_cons.
         rewrite foldr1_cons.
         apply isEpi_binProdSig.
-        * apply precompEpiSig.
+        * apply precompEpiFunc.
         * exact epi_ar.
         * exact epif.
+  Qed.
+  Lemma ArAreEpiEpiSig (ar : list nat) : isEpiEpiFunc (ArToSig ar).
+  Proof.
+    pattern ar.
+    apply list_ind; clear ar.
+    - intros R _.
+      apply const_preserves_Epi.
+    - intros n ar.
+      revert n.
+      pattern ar.
+      apply list_ind; clear ar.
+      + intros n epinil.
+        apply precompEpiEpiFunc.
+      + intros n ar HI m epi_ar.
+        intros R epiR.
+        unfold ArToSig,  Arity_to_Signature.
+        rewrite 2!map_cons.
+        rewrite foldr1_cons.
+        apply preserveEpi_binProdFunc.
+        * apply productEpisSET.
+        * apply precompEpiEpiFunc.
+          exact epiR.
+        * apply epi_ar; assumption.
   Qed.
 
   Lemma BindingSigAreEpiSig (S : BindingSig) : isEpiSig (toSig S).
   Proof.
-    apply isEpiSumSigs.
+    apply preserveEpi_sumFuncs.
     intro i.
     apply ArAreEpiSig.
+  Qed.
+
+  Lemma BindingSigAreEpiEpiSig (S : BindingSig) : isEpiEpiFunc (toSig S).
+  Proof.
+    intros R hR.
+    apply preserveEpi_sumFuncs.
+    intro i.
+    apply ArAreEpiEpiSig.
+    exact hR.
   Qed.
 
 End EpiSignatureSig.

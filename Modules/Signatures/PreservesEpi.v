@@ -30,6 +30,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Signatures.Signature.
 Require Import UniMath.SubstitutionSystems.Signatures.
@@ -112,11 +113,11 @@ Lemma deriv_epiSig {C : category} bc T (Sig : signature C) (h : sig_preservesNat
    : (sig_preservesNatEpiMonad_pw (signature_deriv bc T Sig )).
 Proof.
   intros R S f epif.
-  intros c b u v eq.
-  eapply h; [exact epif|].
-  simpl in eq.
-  repeat rewrite id_right in eq.
-  exact eq.
+  intro o.
+  cbn.
+  repeat rewrite id_right.
+  apply h.
+  exact epif.
 Qed.
 
 Lemma binProd_epiSig {C : category} bp
@@ -124,22 +125,17 @@ Lemma binProd_epiSig {C : category} bp
           This is true of regular epis in a regular category such as Set.
             (e.g. in a topos, pullbacks of epis are epis)
        *)
-      (productEpis : ∏ a b (f : C ⟦  a, b ⟧) a' b'  (g : C ⟦  a', b'⟧),
-                     isEpi f -> isEpi g ->
-                     isEpi (BinProductOfArrows C (bp _ _) (bp _ _) f g))
+      (productEpis : products_preserves_Epis (C := C) bp)
       (S1 S2 : signature C)
       (h1 : sig_preservesNatEpiMonad_pw S1)
       (h2 : sig_preservesNatEpiMonad_pw S2)
       : sig_preservesNatEpiMonad_pw (BinProductObject _ (signature_BinProducts bp S1 S2)).
 Proof.
   intros R S f epif.
-  intros c c'  u v eq.
-  use (productEpis _ _ (# S1 f _)%ar _ _ (# S2 f _)%ar).
-  - apply h1; exact epif.
-  - apply h2; exact epif.
-  - cbn in eq.
-    repeat rewrite id_right in eq.
-    exact eq.
+  intro o.
+  cbn.
+  rewrite id_right.
+  apply productEpis;[apply h1|apply h2]; exact epif.
 Defined.
 
 Definition binProd_epiSigSET 

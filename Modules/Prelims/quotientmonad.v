@@ -24,6 +24,7 @@ Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.EpiComplements.
 
 Local Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 Local Notation "'SET'" := hset_category.

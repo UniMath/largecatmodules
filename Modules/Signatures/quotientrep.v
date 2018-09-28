@@ -14,6 +14,7 @@ Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import Modules.Prelims.EpiComplements.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.quotientmonad.
