@@ -27,6 +27,7 @@ Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
@@ -48,6 +49,8 @@ Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
 Require Import Modules.SoftEquations.SignatureOverDerivation.
+Require Import Modules.Signatures.BindingSig.
+Require Import Modules.SoftEquations.BindingSig.
 
 Require Import UniMath.CategoryTheory.limits.initial.
 
@@ -136,13 +139,13 @@ Section QuotientRepInit.
   Context {Sig : SIG}.
   Context (epiSig : sig_preservesNatEpiMonad Sig).
 
-(** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
 
 
 
 
   Lemma soft_equations_preserve_initiality
+(** implied by the axiom of choice *)
+        (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R))
         {O : UU}(eq : O -> soft_equation epiSig epiSigpw)
     : ∏ (R : Initial (rep_fiber_category Sig)) ,
       (preserves_Epi (InitialObject  R : model _)) ->
@@ -156,6 +159,7 @@ Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R))
   Qed.
 
   Corollary elementary_equations_preserve_initiality
+            (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R))
         {O : UU}(eq : O -> elementary_equation (Sig := Sig))
           (eq' := fun o => soft_equation_from_elementary_equation epiSig epiSigpw (eq o))
     : ∏ (R : Initial (rep_fiber_category Sig)) ,
@@ -166,6 +170,23 @@ Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R))
   Qed.
 
 End QuotientRepInit.
+
+(** As a corrolary, the case of an algebraic signature *)
+Definition elementary_equations_on_alg_preserve_initiality 
+          (S : BindingSig) (Sig := binding_to_one_sigHSET S)
+
+           (O : UU) (eq : O → elementary_equation (Sig := Sig))
+           (R := bindingSigHSET_Initial S : Initial (rep_fiber_category Sig))
+           (** TODO: show this last step *)
+           (iniEpi : preserves_Epi (InitialObject R : model Sig)) 
+           (epiSig := algSig_NatEpi S)
+           (SR_epi := BindingSigAreEpiEpiSig S)
+           (** A family of equations *)
+           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)) :
+        (** .. then the category of 2-models has an initial object *)
+  Initial (precategory_model_equations eq')
+          :=
+  elementary_equations_preserve_initiality  epiSig SR_epi eq R iniEpi.
 
 
 (** A version using the axiom of choice *)

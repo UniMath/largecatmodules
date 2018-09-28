@@ -47,6 +47,10 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 
+Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
+Require Import Modules.Signatures.BindingSig.
+Require Import Modules.SoftEquations.BindingSig.
+
 Local Notation MONAD := (Monad SET).
 Local Notation MODULE R := (LModule R SET).
 
@@ -414,6 +418,23 @@ Check (@elementary_equations_preserve_initiality :
         (** .. then the category of 2-models has an initial object *)
          → Initial (precategory_model_equations eq')).
 
+(** As a corrolary, the case of an algebraic signature with elementary equations
+No preservation of epis is needed anymore
+(R := ..) is a notation for let R := .. in ..
+ *)
+Check (@elementary_equations_on_alg_preserve_initiality  : ∏
+          (S : BindingSig) (Sig := binding_to_one_sigHSET S)
+
+           (O : UU) (eq : O → elementary_equation (Sig := Sig))
+           (R := bindingSigHSET_Initial S : Initial (rep_fiber_category Sig))
+           (** TODO: show this last step *)
+           (iniEpi : preserves_Epi (InitialObject R : model Sig)) 
+           (epiSig := algSig_NatEpi S)
+           (SR_epi := BindingSigAreEpiEpiSig S)
+           (** A family of equations *)
+           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)) ,
+        (** .. then the category of 2-models has an initial object *)
+  Initial (precategory_model_equations eq')).
 
 (**
 
