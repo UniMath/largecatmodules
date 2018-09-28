@@ -16,6 +16,7 @@ Require Import UniMath.CategoryTheory.functor_categories.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import Modules.Prelims.EpiComplements.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.

@@ -27,6 +27,7 @@ Require Import UniMath.CategoryTheory.functor_categories.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import Modules.Prelims.EpiComplements.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
@@ -220,8 +221,7 @@ Section EpiSignatureSig.
 
   Definition isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
 
-  Local Notation ArToSig ar :=
-     (Arity_to_Signature  has_homsets_HSET BinProductsHSET BinCoproductsHSET TerminalHSET ar).
+  Local Notation ArToSig  := Arity_to_SignatureHSET.
 
   Local Notation sumSig I Ihset  :=
       (SumOfSignatures.Sum_of_Signatures I HSET hom_SET HSET hom_SET
@@ -253,77 +253,26 @@ Section EpiSignatureSig.
 
 
   
-  Lemma IdSigIsEpiSig : isEpiSig (SignatureExamples.IdSignature HSET has_homsets_HSET).
-  Proof.
-    intros M N f epif.
-    exact epif.
-  Defined.
-  Lemma ConstSigIsEpiSig (x : hSet) :
-    isEpiSig (SignatureExamples.ConstConstSignature SET SET x).
-  Proof.
-    intros M N f epif.
-    apply identity_isEpi.
-  Defined.
-
-  (* TODO : réfléchir à une généralisation de ce résultat *)
-  Lemma preserveEpi_binProdFunc F F' : preserves_Epi F -> preserves_Epi F' ->
-                                       preserves_Epi (binProdFunc F F').
-  Proof.
-    intros epiF epiG M N f epif .
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intro X.
-    apply productEpisSET; apply epi_nt_SET_pw; [apply epiF | apply epiG ]; exact epif.
-  Qed.
-
-  (* TODO réfléchir à une généralisation *)
-
-  Lemma preserveEpi_sumFuncs I Ihset Fs (epiFs : ∏ i, preserves_Epi (Fs i)) :
-    preserves_Epi (sumFuncs I Ihset Fs).
-  Proof.
-    intros M N f epif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intros X Y g h.
-    cbn in g,h.
-    intros eqgh.
-    apply funextfun.
-    intros [i x].
-    set (g' x := g (i ,, x)).
-    set (h' x := h (i ,, x)).
-    apply (toforallpaths _ g' h').
-    specialize (epiFs i _ _ _ epif).
-    eapply epi_nt_SET_pw in epiFs.
-    apply epiFs.
-    apply funextfun.
-    intro y.
-    apply toforallpaths in eqgh.
-    apply (eqgh (i ,, y)).
-  Qed.
-
   Lemma isEpi_binProdSig S S' : isEpiSig S -> isEpiSig S' -> isEpiSig (binProdSig S S').
   Proof.
-    apply (preserveEpi_binProdFunc S S').
+    use preserveEpi_binProdFunc.
+    use (productEpisFunc (B := SET) (C := SET)).
+    - apply productEpisSET.
+    - apply epi_nt_SET_pw.
   Qed.
 
-  Lemma isEpiSumSigs I Ihset sigs (episigs : ∏ i, isEpiSig  (sigs i)) :
-      isEpiSig (sumSig I Ihset sigs).
-  Proof.
-    apply (preserveEpi_sumFuncs I Ihset sigs episigs).
-  Qed.
-    
 
   Lemma precomp_func_preserveEpi F : preserves_Epi (precomp_functor F).
   Proof.
-    intros M N f epif.
-    apply is_nat_trans_epi_from_pointwise_epis.
-    intro X.
-    apply (epi_nt_SET_pw f epif).
+    apply preserveEpi_precomp.
+    apply epi_nt_SET_pw.
   Qed.
 
   (** No need for an induction even though the functor is defined as such *)
   Lemma precompEpiFunc (n : nat) : preserves_Epi (precompToFunc n).
   Proof.
     destruct n as [|n ].
-    - apply IdSigIsEpiSig.
+    - apply id_preserves_Epi.
     - apply precomp_func_preserveEpi.
   Qed.
 
@@ -338,7 +287,7 @@ Section EpiSignatureSig.
   Proof.
     pattern ar.
     apply list_ind; clear ar.
-    - apply ConstSigIsEpiSig.
+    - apply const_preserves_Epi.
     - intros n ar.
       revert n.
       pattern ar.
@@ -359,7 +308,7 @@ Section EpiSignatureSig.
 
   Lemma BindingSigAreEpiSig (S : BindingSig) : isEpiSig (toSig S).
   Proof.
-    apply isEpiSumSigs.
+    apply preserveEpi_sumFuncs.
     intro i.
     apply ArAreEpiSig.
   Qed.

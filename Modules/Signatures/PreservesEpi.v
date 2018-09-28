@@ -30,6 +30,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Signatures.Signature.
 Require Import UniMath.SubstitutionSystems.Signatures.
@@ -124,9 +125,7 @@ Lemma binProd_epiSig {C : category} bp
           This is true of regular epis in a regular category such as Set.
             (e.g. in a topos, pullbacks of epis are epis)
        *)
-      (productEpis : ∏ a b (f : C ⟦  a, b ⟧) a' b'  (g : C ⟦  a', b'⟧),
-                     isEpi f -> isEpi g ->
-                     isEpi (BinProductOfArrows C (bp _ _) (bp _ _) f g))
+      (productEpis : products_preserves_Epis (C := C) bp)
       (S1 S2 : signature C)
       (h1 : sig_preservesNatEpiMonad_pw S1)
       (h2 : sig_preservesNatEpiMonad_pw S2)
