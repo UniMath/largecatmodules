@@ -33,144 +33,106 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Section TwoSig.
 
-
   Context  {C : category} .
-  Local Notation REP := (model (C:=C)).
 
-  Definition TwoSignature := ∑ (S : signature C) (O : UU), O -> equation (Sig := S).
+
+Lemma pb_rep_id {S : signature C} (R : model S) : pb_rep (signature_Mor_id S)  R = R.
+Proof.
+  apply pair_path_in2.
+  apply (id_left (C := category_LModule _ _)).
+Defined.
+
+Lemma pb_rep_comp {F G H : signature C} (a : signature_Mor F G) (b : signature_Mor G H) (R : model H) :
+   (pb_rep (compose (C := signature_category) a b) R) = pb_rep a (pb_rep b R).
+Proof.
+  apply pair_path_in2.
+  cbn -[compose].
+  apply pathsinv0.
+  apply (assoc (C := category_LModule _ _)).
+Defined.
+
+Definition two_signature_disp_ob_mor : disp_cat_ob_mor (signature_category (C := C)) :=
+  mk_disp_cat_ob_mor
+    signature_category
+    (fun (S : signature C) => ∑ (O : UU), O -> equation (Sig := S))
+    (fun (S1 S2 : signature C) SS1 SS2 (f : signature_Mor S1 S2) =>
+       (** forall for hprop *)
+       ∀ (R : model_equations (pr2 SS2)) o ,
+         satisfies_equation_hp (pr2 SS1 o) (pb_rep f R)).
+
+
+(** The pullback model with equations *)
+Definition pb_modeq {S1 S2 : signature C} {m : signature_Mor S1 S2}
+           {SS1 : two_signature_disp_ob_mor S1}
+           {SS2 : two_signature_disp_ob_mor S2}
+           (mm: SS1 -->[ m ] SS2) (R : model_equations (pr2 SS2))
+           : model_equations (pr2 SS1) :=
+    pb_rep m R ,, mm R.
+
+
+Lemma two_signature_identity_Mor (x : signature_category) (xx : two_signature_disp_ob_mor x)
+      : xx -->[ identity x] xx.
+Proof.
+  intros R o.
+  unfold identity; cbn.
+  eapply (transportb (satisfies_equation _)).
+  apply pb_rep_id.
+  apply (model_equations_eq R o).
+Qed.
+
+Lemma two_signature_comp_Mor 
+  (x y z : signature_category) (f : signature_category ⟦ x, y ⟧) (g : signature_category ⟦ y, z ⟧)
+  (xx : two_signature_disp_ob_mor x) (yy : two_signature_disp_ob_mor y) (zz : two_signature_disp_ob_mor z) :
+  xx -->[ f] yy → yy -->[ g] zz → xx -->[ f · g] zz.
+Proof.
+  intros hf hg.
+  intros R .
+  rewrite pb_rep_comp.
+  apply (hf (pb_modeq hg R)).
+Qed.
+
+
+Definition two_signature_data : disp_cat_data (signature_category (C:= C)) :=
+   two_signature_disp_ob_mor ,, (two_signature_identity_Mor ,, two_signature_comp_Mor).
+
+
+Lemma two_signature_axioms : disp_cat_axioms _ two_signature_data.
+Proof.
+  repeat apply tpair; intros;  try apply Propositions.proofirrelevance_hProp.
+  apply isasetaprop; apply propproperty.
+Qed.
+
+Definition two_signature_disp : disp_cat _ := two_signature_data ,, two_signature_axioms.
+
+Definition TwoSignature_category : category :=  total_category  two_signature_disp.
+
+Definition TwoSignature := ob TwoSignature_category.
+  Definition TwoSignature_Mor (S1 S2 : TwoSignature) := TwoSignature_category ⟦S1 , S2⟧.
 
   Coercion OneSig_from_TwoSig (S : TwoSignature) : signature C := pr1 S.
 
-  Definition TwoSignature_index (S : TwoSignature) : UU := pr1 (pr2 S).
-  Definition TwoSignature_eqs (S : TwoSignature) : TwoSignature_index S -> equation := pr2 (pr2 S).
+Definition TwoSignature_index (S : TwoSignature) : UU := pr1 (pr2 S).
+Definition TwoSignature_eqs (S : TwoSignature) : TwoSignature_index S -> equation := pr2 (pr2 S).
 
-  Local Notation EQS := TwoSignature_eqs.
+Local Notation EQS := TwoSignature_eqs.
 
-  (* Definition OneSig_Mor_preserves_eqs {S1 S2 : TwoSignature } (m : signature_Mor S1 S2) : UU := *)
-  Let SIG_MOR_PRESERVES_EQS {S1 S2 : TwoSignature} (m : signature_Mor S1 S2) :=
-    ∏ (R : model_equations (EQS S2)),
-    ∏ o, satisfies_equation (EQS S1 o) (pb_rep m R).
-
-
-  Definition TwoSignature_Mor (S1 S2 : TwoSignature) :=
-    ∑ (m : signature_Mor S1 S2),
-    SIG_MOR_PRESERVES_EQS m.
-
-
-  Local Notation  "R →→ S" := (TwoSignature_Mor R S) (at level 6).
-  Coercion OneSigMore_from_TwoSigMor {R S} (m : R →→ S) : signature_Mor R S := pr1 m.
+Local Notation  "R →→ S" := (TwoSignature_Mor R S) (at level 6).
+Coercion OneSigMore_from_TwoSigMor {R S} (m : R →→ S) : signature_Mor R S := pr1 m.
 
 
 
-
-  Definition TwoSigMor_preserves_eqs {S1 S2} (m : S1 →→ S2) : 
-    SIG_MOR_PRESERVES_EQS m := pr2 m.
-    (* ∏ (R : model_equations (EQS S2)), *)
-    (* ∏ o, satisfies_equation (EQS S1 o) (pb_rep _ m R) *)
-    (* := pr2 m. *)
 
 
 Lemma TwoSignature_Mor_eq (F F' : TwoSignature)(a a' : TwoSignature_Mor F F'):
   (∏ x, a x = a' x) -> a = a'.
 Proof.
-  Admitted.
+  intro h.
+  apply subtypeEquality_prop.
+  apply signature_Mor_eq.
+  exact h.
+Qed.
 
-  Definition pb_modeq {S1 S2 : TwoSignature} (m : S1 →→ S2) (R : model_equations (EQS S2)) :
-    model_equations (EQS S1) :=
-    pb_rep m R ,, TwoSigMor_preserves_eqs m R.
     
-
-
-
-  Lemma isaset_TwoSignature_Mor (F F' : TwoSignature) : isaset (F →→ F').
-  Proof.
-    apply (isofhleveltotal2 2).
-    - apply isaset_signature_Mor.
-    - intro m.
-      apply impred  ; intro .
-      apply impred  ; intro .
-      apply isasetaprop.
-      apply satisfies_equation_isaprop.
-  Qed.
-
-Definition TwoSignature_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
-   TwoSignature (fun F F' => TwoSignature_Mor F F').
-
-Lemma pb_rep_id {S : signature C} (R : model S) :(pb_rep (signature_Mor_id S ) R) = R.
-Admitted.
-
-Lemma is_TwoSignature_Mor_id (F : TwoSignature) : SIG_MOR_PRESERVES_EQS (signature_Mor_id F).
-Proof.
-  intros R .
-  rewrite pb_rep_id.
-  exact (model_equations_eq R).
-Qed.
-
-Definition TwoSignature_Mor_id (F : TwoSignature) : TwoSignature_Mor F F := _ ,, is_TwoSignature_Mor_id F.
-
-Lemma pb_rep_comp {F G H : signature C} (a : signature_Mor F G) (b : signature_Mor G H) (R : REP H) :
-   (pb_rep (signature_Mor_comp a b) R) = pb_rep a (pb_rep b R).
-Admitted.
-
-Lemma is_TwoSignature_Mor_comp {F G H : TwoSignature} (a : TwoSignature_Mor F G) (b : TwoSignature_Mor G H) 
-  : SIG_MOR_PRESERVES_EQS (signature_Mor_comp  a b).
-Proof.
-  intros R .
-  rewrite pb_rep_comp.
-  apply (TwoSigMor_preserves_eqs a (pb_modeq b R)).
-Qed.
-
-Definition TwoSignature_Mor_comp {F G H : TwoSignature} (a : TwoSignature_Mor F G) (b : TwoSignature_Mor G H)
-  : TwoSignature_Mor F H 
-  := tpair _ _ (is_TwoSignature_Mor_comp a b).
-
-Definition TwoSignature_precategory_data : precategory_data.
-Proof.
-  apply (precategory_data_pair (TwoSignature_precategory_ob_mor )).
-  + intro a; simpl.
-    apply (TwoSignature_Mor_id a).
-  + intros a b c f g.
-    apply (TwoSignature_Mor_comp f g).
-Defined.
-
-Lemma is_precategory_TwoSignature_precategory_data :
-   is_precategory TwoSignature_precategory_data.
-Proof.
-  repeat split; simpl; intros.
-  - unfold identity.
-    simpl.
-    apply TwoSignature_Mor_eq. 
-    intro x; simpl.
-    apply (id_left (C:=category_LModule _ _)).
-  - apply TwoSignature_Mor_eq.
-    intro x; simpl.
-    apply (id_right (C:=category_LModule _ _)).
-  - apply TwoSignature_Mor_eq.
-    intro x; simpl.
-    apply (assoc (C:=category_LModule _ _)).
-Qed.
-
-Definition TwoSignature_precategory : precategory :=
-  tpair (fun C => is_precategory C)
-        (TwoSignature_precategory_data)
-        (is_precategory_TwoSignature_precategory_data).
-
-Lemma TwoSignature_category_has_homsets : has_homsets TwoSignature_precategory.
-Proof.
-  intros F G.
-  apply isaset_TwoSignature_Mor.
-Qed.
-
-
-Definition TwoSignature_category : category.
-Proof.
-  exists (TwoSignature_precategory).
-  apply TwoSignature_category_has_homsets.
-Defined.
-
-  
-
-
 
 
 
@@ -277,7 +239,7 @@ Proof.
   intros a a' f R.
   red.
   use tpair;[ |use tpair].
-  - apply (pb_modeq f R).
+  - apply (pb_modeq (pr2 f) R).
   - apply pb_rep_to.
   - simpl in f,R.
     simpl.
