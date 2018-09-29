@@ -37,7 +37,7 @@ Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
 
 Require Import UniMath.CategoryTheory.limits.initial.
-Require Import Modules.SoftEquations.InitialEquationRep.
+Require Import Modules.SoftEquations.AdjunctionEquationRep.
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
@@ -397,6 +397,7 @@ Check (@soft_equations_preserve_initiality :
          → Initial (precategory_model_equations eq)).
 
 
+
 (** As a corrolary, the case of a family of elementary equations *)
 Check (@elementary_equations_preserve_initiality :
          ∏ 
@@ -435,6 +436,22 @@ Check (@elementary_equations_on_alg_preserve_initiality  : ∏
            (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)) ,
         (** .. then the category of 2-models has an initial object *)
   Initial (precategory_model_equations eq')).
+
+(** With the stronger assumption (implied by the axiom of choice) that
+any model preserves epis, , we can prove that
+the forgetful functor from 2-models to 1-models has a left adjoint *)
+Check (@forget_2model_is_right_adjoint :
+         ∏ 
+           (Sig : SIGNATURE)
+           (** S is an epi-signature *)
+           (epiSig : sig_preservesNatEpiMonad Sig)
+           (** this is implied by the axiom of choice *)
+           (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
+           (** A family of equations *)
+           (O : UU) (eq : O → soft_equation epiSig SR_epi)
+         (** The stronger assumption is that any 1-model of Sig preserve epis *)
+         (modEpis : (∏ R : model Sig, preserves_Epi R)),
+         Adjunctions.is_right_adjoint (forget_2model eq)).
 
 (**
 

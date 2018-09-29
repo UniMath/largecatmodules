@@ -11,6 +11,13 @@ following relation on R(X):
 
 See [push_initiality].
 
+More generally, the forgetful functor from 2-models to 1-models has a left adjoint
+[forget_2model_is_right_adjoint]
+
+- if there is a universal arrow from the initial object, then the target category has
+  an initial object [initial_universal_to_lift_initial]
+
+
 
 
  *)
@@ -52,7 +59,26 @@ Require Import Modules.SoftEquations.SignatureOverDerivation.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.SoftEquations.BindingSig.
 
+Require Import UniMath.CategoryTheory.Adjunctions.
 Require Import UniMath.CategoryTheory.limits.initial.
+
+(** General lemma: TODO move somewhere else *)
+Lemma initial_universal_to_lift_initial {D C : precategory}
+      (S : D ⟶ C)
+      (c : Initial C)
+      {r : D} {f : C ⟦ c, S r ⟧}
+      (unif : is_universal_arrow_to  S c r f) :
+  isInitial _ r.
+Proof.
+  intro d.
+  specialize (unif d (InitialArrow _ _)).
+  use iscontrpair.
+  - apply (iscontrpr1 unif).
+  - intro g.
+    cbn.
+    apply limits.path_to_ctr.
+    apply InitialArrowUnique.
+Qed.
 
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
@@ -75,6 +101,7 @@ Section QuotientRep.
   Context (epiSig : sig_preservesNatEpiMonad Sig).
   (** implied by the axiom of choice *)
   Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
+  (* Context (modelEpi : ∏ (R : model Sig), preserves_Epi R). *)
 
   Local Notation REP := (model Sig).
 
@@ -86,46 +113,59 @@ Section QuotientRep.
   Local Notation REP_EQ := (model_equations eq ).
   Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
 
-  (** [R] will be the candidate for the initial 1-model of [Sig] *)
-  Context (R : REP) .
-  (** implied by the axiom of choice *)
-  Context (R_epi : preserves_Epi R).
+  (* Local Notation R_epi := (modelEpi _). *)
 
   (** For the quotient, we consider the collections of morphisms
       from [R] to any 1-model of [Sig] satisfying the family of equations *)
-  Let J := ∑ (S : model_equations eq), R →→ S.
-  Let d (j : J) : model_equations eq := pr1 j.
-  Let ff (j : J) : R →→ (d j) := pr2 j.
+  Let J R := ∑ (S : model_equations eq), R →→ S.
+  Let d {R} (j : J R) : model_equations eq := pr1 j.
+  Let ff {R} (j : J R) : R →→ (d j) := pr2 j.
 
   (** The quotient model by this collection of arrows *)
-  Let R' : REP_EQ := R'_model_equations  epiSig epiSigpw R_epi d ff eq
+  Let R' {R : model Sig} (R_epi : preserves_Epi R)  : REP_EQ
+    := R'_model_equations  epiSig epiSigpw R_epi d ff eq
                                         (fun j => model_equations_eq (d j)).
   (** Any morphism from R to a 1-model satisfying the equations factorize through
       the canonical projection, followed by [u_rep] *)
-  Let u_rep := u_rep Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
+  Definition u_rep_arrow {R : model Sig}{S : model_equations eq} R_epi (f : R →→ S)
+    := u_rep Sig epiSig R_epi (epiSigpw _ R_epi) d ff (S ,, f).
 
-  (** Initiality of [R] in the category of 1-models of [Sig] implies initiality of
-      [R'] in the category of 2-models of [Sig] with the given family of equations *)
-  Lemma push_initiality : isInitial REP_CAT R -> isInitial REP_EQ_PRECAT R'.
-    intro h.
-    (* inspired by push_initiality of EpiSigRepresentability *)
-    intro S.
-    set (j := ((S ,, iscontrpr1 (h ((S : REP_EQ) : REP))) : J)).
-    use iscontrpair.
-    -
-      (* ?? QUestion pour Benedkt : 
-              pourquoi ce n'est pas convertible à change (R' →→ (S : REP_EQ)) ?? *)
+  Let projR_rep (R : model Sig) (R_epi : preserves_Epi R)
+    := projR_rep Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
+
+  Lemma u_rep_universal (R : model _) (R_epi: preserves_Epi R)
+    : is_universal_arrow_to (forget_2model eq) R (R' R_epi) (projR_rep R R_epi).
+  Proof.
+    intros S f.
+    set (j := tpair (fun (x : model_equations _) => R →→ x) (S : model_equations _)  f).
+    eassert (def_u :=(u_rep_def _ _ _  _ (@d R) (@ff R) j)).
+    unshelve eapply unique_exists.
+    - exact (u_rep_arrow R_epi f ,, tt).
+    - exact (! def_u).
+    - intro.
+      apply homset_property.
+    - intros g eq'.
+      use eq_in_sub_precategory.
       cbn.
-      use tpair.
-      + use (u_rep j).
-      + exact tt.
-    - intros [f []].
-      apply (maponpaths (fun x => x ,, tt)).
-      apply isEpi_projR_rep.
-      etrans;[| apply (u_rep_def Sig epiSig R_epi (epiSigpw _ R_epi) d ff j)].
-      apply iscontr_uniqueness.
+      use (_ : isEpi (C := REP_CAT) (projR_rep R _)); [apply isEpi_projR_rep|].
+      etrans;[exact eq'|exact def_u].
   Qed.
 
+  (** If all models preserve epis, then we have an adjunctions *)
+  Definition forget_2model_is_right_adjoint
+             (modepis : ∏ (R : model Sig), preserves_Epi R)
+    : is_right_adjoint (forget_2model eq) :=
+    right_adjoint_left_from_partial (forget_2model (λ x : O, eq x))
+                                    (fun R => R' (modepis R))
+                                    (fun R => projR_rep R (modepis R))
+                                    (fun R => u_rep_universal R (modepis R)).
+
+
+  (** If the initial model preserve epis, then there is an initial model *)
+  Definition push_initiality (R : Initial REP_CAT)
+        (R_epi : preserves_Epi (InitialObject R : model _)) : isInitial REP_EQ_PRECAT
+                                                                        (R' R_epi) :=
+  initial_universal_to_lift_initial (forget_2model (λ x : O, eq x)) R (u_rep_universal _ R_epi).
 
 End QuotientRep.
 
@@ -153,8 +193,8 @@ Section QuotientRepInit.
   Proof.
     intros init R_epi.
     eapply mk_Initial.
-    use push_initiality; revgoals.
-    { exact (pr2 init). }
+    use push_initiality.
+    { exact init. }
     assumption.
   Qed.
 

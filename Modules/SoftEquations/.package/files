@@ -5,7 +5,7 @@ SignatureOverDerivation.v
 quotientrepslice.v
 Equation.v
 quotientequation.v
-InitialEquationRep.v
+AdjunctionEquationRep.v
 SignatureOverDerivation.v
 TwoSignatureMorphism.v
 SignatureOverBinproducts.v

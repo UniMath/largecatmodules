@@ -5,6 +5,7 @@
 - The satisfyability predicate for 1-model [satisfies_equation]
 - Definition of 2-model [model_equations]
 - Precategory of 2-model [precategory_model_equations]
+- Forgetful functor from 2-models to 1-models [forget_2model]
 
 *)
 (* =================================================================================== *)
@@ -17,6 +18,7 @@ Require Import UniMath.CategoryTheory.categories.category_hset.
 Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.Categories.
+Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import Modules.Signatures.Signature.
@@ -91,6 +93,13 @@ Section Equation.
   Definition precategory_model_equations {O} (e : O -> equation) : precategory :=
     full_sub_precategory (C := rep_fiber_category Sig)
                          (satisfies_all_equations_hp e).
+
+  (** Forgetful functor from 2-models to 1-models *)
+  Definition forget_2model {O} (e : O -> equation) :
+    functor (precategory_model_equations e) (rep_fiber_category Sig) :=
+    sub_precategory_inclusion _ _.
+
+
 End Equation.
 
 
