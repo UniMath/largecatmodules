@@ -89,7 +89,7 @@ Require Import Modules.Signatures.HssSignatureCommutation.
 Require Import Modules.Prelims.deriveadj.
 Require Import Modules.SoftEquations.SignatureOver.
 Require Import Modules.SoftEquations.Equation.
-Require Import Modules.SoftEquations.InitialEquationRep.
+Require Import Modules.SoftEquations.AdjunctionEquationRep.
 Require Import Modules.SoftEquations.quotientequation.
 Require Import Modules.Prelims.BinProductComplements.
 Require Import Modules.Prelims.CoproductsComplements.
