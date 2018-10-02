@@ -21,6 +21,8 @@ Require Import UniMath.CategoryTheory.categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.limits.binproducts.
+Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.catiso.
 
 
 Local Notation "'SET'" := hset_category.
@@ -32,11 +34,37 @@ Tactic Notation "cpre" uconstr(x) := apply (cancel_precomposition x).
 Tactic Notation "cpost" uconstr(x) := apply (cancel_postcomposition).
 
 Open Scope cat.
+
+(** Even true of equivalences *)
+Lemma catiso_initial {C D : precategory} (w : catiso C D) (ini : Initial C) : Initial D.
+Proof.
+  set (obweq := catiso_ob_weq w).
+  use mk_Initial.
+  - exact (w ini).
+  - use mk_isInitial.
+    intro b.
+    assert (h := homotweqinvweq obweq b).
+    rewrite <- h.
+    eapply iscontrweqb.
+    + apply invweq.
+      use catiso_fully_faithful_weq.
+    + apply (pr2 ini).
+Defined.
+
+                 
 (** common generalization to [maponpaths] and [toforallpaths] *)
+
 Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
   f = g -> f t1 = f t2 -> g t1 = g t2.
 Proof.
   induction 1; auto.
+Qed.
+
+Lemma changef_path_pw   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
+  (∏ x, f x = g x) -> f t1 = f t2 -> g t1 = g t2.
+Proof.
+  intro eq.
+  induction (eq t1); induction (eq t2); auto.
 Qed.
 
 
