@@ -11,6 +11,8 @@ hSet out of a binding signature
 
 TODO: generalize to an arbitrary category (rather than focus on SET for isEpiSig)
 
+- the initial model preserves epis
+
 - coprod of binding sig
 - iso between signature of coproducts of binding sig and coproduct of signautes of binding
 sigs
@@ -364,6 +366,24 @@ Section EpiSignatureSig.
     intro i.
     apply ArAreEpiEpiSig.
     exact hR.
+  Qed.
+
+  Lemma algebraic_model_Epi (sig: BindingSig) : preserves_Epi (alg_initialR sig : model _).
+  Proof.
+    use Colim_Functor_Preserves_Epi.
+    induction i.
+    - simpl.
+      intros X Y f epif.
+      cbn.
+      eapply (transportf (@isEpi SET _ _) (x := fun z => z) ).
+      apply (InitialArrowEq (O := InitialHSET)).
+      apply identity_isEpi.
+    - cbn -[functor_composite].
+      use preserveEpi_binCoprodFunc; [apply id_preserves_Epi|].
+      apply preserveEpi_sumFuncs.
+      intro j.
+      use ArAreEpiEpiSig.
+      apply IHi.
   Qed.
 
 End EpiSignatureSig.

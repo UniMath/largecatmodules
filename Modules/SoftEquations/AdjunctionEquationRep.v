@@ -217,8 +217,7 @@ Definition elementary_equations_on_alg_preserve_initiality
 
            (O : UU) (eq : O → elementary_equation (Sig := Sig))
            (R := bindingSigHSET_Initial S : Initial (rep_fiber_category Sig))
-           (** TODO: show this last step *)
-           (iniEpi : preserves_Epi (InitialObject R : model Sig)) 
+           (iniEpi :=  algebraic_model_Epi S : preserves_Epi (InitialObject R : model Sig)) 
            (epiSig := algSig_NatEpi S)
            (SR_epi := BindingSigAreEpiEpiSig S)
            (** A family of equations *)

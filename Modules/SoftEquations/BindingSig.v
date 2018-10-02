@@ -73,9 +73,11 @@ Definition bindingSig_op_to_sig_morHSET :=
   bindingSig_op_to_sig_mor (C := SET) BinProductsHSET BinCoproductsHSET
                             CoproductsHSET TerminalHSET .
 
+
+
 Definition bindingSigHSET_Initial (S : BindingSig) :  Initial (rep_fiber_category (binding_to_one_sigHSET  S)).
-  erewrite  <- catiso_to_precategory_path; revgoals.
+Proof.
+  eapply catiso_initial.
   - apply catiso_modelcat.
-  - apply homset_property.
-  - exact (algebraic_sig_initial S).
+  - apply algebraic_sig_initial.
 Defined.
