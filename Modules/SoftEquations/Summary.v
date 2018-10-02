@@ -409,32 +409,30 @@ Check (@elementary_equations_preserve_initiality :
             *)
            (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
            (** A family of equations *)
-           (O : UU) (eq : O → elementary_equation (Sig := Sig))
-           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)),
+           (O : UU) (eq : O → elementary_equation (Sig := Sig)),
          (** If the category of 1-models has an initial object, .. *)
          ∏ (R : Initial (rep_fiber_category Sig)) ,
          (** (3) preserving epis (implied by the axiom of choice)
           *)
          preserves_Epi (InitialObject R : model Sig)
         (** .. then the category of 2-models has an initial object *)
-         → Initial (precategory_model_equations eq')).
+         → Initial (precategory_model_equations
+                      (fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)))).
 
 (** As a corrolary, the case of an algebraic signature with elementary equations
 No preservation of epis is needed anymore
-(R := ..) is a notation for let R := .. in ..
  *)
-Check (@elementary_equations_on_alg_preserve_initiality  : ∏
-          (S : BindingSig) (Sig := binding_to_one_sigHSET S)
-
-           (O : UU) (eq : O → elementary_equation (Sig := Sig))
-           (R := bindingSigHSET_Initial S : Initial (rep_fiber_category Sig))
-           (iniEpi := preserves_Epi (InitialObject R : model Sig)) 
-           (epiSig := algSig_NatEpi S)
-           (SR_epi := BindingSigAreEpiEpiSig S)
-           (** A family of equations *)
-           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)) ,
-        (** .. then the category of 2-models has an initial object *)
-  Initial (precategory_model_equations eq')).
+Check (@elementary_equations_on_alg_preserve_initiality
+       : ∏
+           (S : BindingSig) (Sig := binding_to_one_sigHSET S)
+           (O : UU) (eq : O → elementary_equation (Sig := Sig)) ,
+         (** .. then the category of 2-models has an initial object *)
+         Initial (precategory_model_equations
+                    ( fun o => soft_equation_from_elementary_equation
+                           (algSig_NatEpi S)
+                           (BindingSigAreEpiEpiSig S)
+                           (eq o))
+      )).
 
 (** With the stronger assumption (implied by the axiom of choice) that
 any model preserves epis, , we can prove that
