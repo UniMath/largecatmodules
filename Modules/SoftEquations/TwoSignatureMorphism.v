@@ -400,3 +400,14 @@ Defined.
      
 End TwoSig.
 
+
+(** Colimits in the specific case of SET.
+In fact, from coequalizers and coproducts, we could construct any colimits *)
+Definition TwoSignature_CoequalizersSET : Coequalizers (TwoSignature_category (C := SET)) :=
+  TwoSignature_Coequalizers (C := SET) (ColimsHSET_of_shape _).
+
+Definition TwoSignature_CoproductsSET (O : hSet) : Coproducts O (TwoSignature_category (C := SET)) :=
+  TwoSignature_Coproducts (C := SET) (CoproductsHSET _ (setproperty O)).
+
+Definition TwoSignature_PushoutsSET : Pushouts (TwoSignature_category (C := SET)) :=
+  TwoSignature_Pushouts (C := SET) BinCoproductsHSET (ColimsHSET_of_shape _).
