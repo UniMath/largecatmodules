@@ -207,6 +207,40 @@ Proof.
   apply rep_fiber_category_has_homsets.
 Defined.
 
+  (** The pullback of models along a 1-signature morphism sends morphisms
+onto morphisms. This is a consequence of 1-models being fibered over 1-sigs.
+However we do a direct proof here because using the fibration would lead to
+a dirty term *)
+  Lemma pb_rep_mor_law  {S1 S2 : signature C} (f : signature_Mor S1 S2) {R S : model S2}
+             (m : rep_fiber_mor R S) : rep_fiber_mor_law (pb_rep f R) (pb_rep f S) m.
+  Proof.
+    intro c.
+    cbn.
+    etrans;[apply pathsinv0,assoc|].
+    etrans;[ apply cancel_precomposition, rep_fiber_mor_ax|].
+    do 2 rewrite assoc.
+    apply cancel_postcomposition.
+    apply pathsinv0.
+    apply signature_Mor_ax_pw.
+  Qed.
+
+  Definition pb_rep_mor  {S1 S2 : signature C} (f : signature_Mor S1 S2) {R S : model S2}
+        (m : rep_fiber_mor R S) : rep_fiber_mor (pb_rep f R) (pb_rep f S) :=
+    _ ,, pb_rep_mor_law f m.
+
+  Lemma pb_rep_mor_comp   {S1 S2 : signature C} (f : signature_Mor S1 S2) {R S T : model S2}
+        (m : rep_fiber_mor R S)(n : rep_fiber_mor S T)
+    : pb_rep_mor f (compose (C := rep_fiber_category S2) m n) =
+      compose (C := rep_fiber_category S1) (pb_rep_mor _ m)(pb_rep_mor _ n).
+  Proof.
+    apply rep_fiber_mor_eq; intro; apply idpath.
+  Defined.
+
+  Lemma pb_rep_mor_id  {S1 S2 : signature C} (f : signature_Mor S1 S2) (R : model S2) :
+   (pb_rep_mor f (rep_fiber_id R))  = identity (C := rep_fiber_category S1) _.
+  Proof.
+      apply rep_fiber_mor_eq; intro; apply idpath.
+  Defined.
 (**
 
 In our presentable signatures formalization (Cf Signatures/), we have defined the
