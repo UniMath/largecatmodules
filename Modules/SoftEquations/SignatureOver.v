@@ -6,6 +6,8 @@
     - Definition of the category Sig-modules (signature_over_category]
     - The action of 1-models yield signature over morphism [action_sig_over_mor]
     - 1-signature morphisms  yield signature over morphism [sig_sig_over_mor]
+    - starting from a 1-signature morphism f : S1 -> S2, a signature over f can be pushed out to
+      a signature over S2. This actually induces a functor f* (and thus an opfibration)
 
 
 
@@ -89,6 +91,12 @@ Definition signature_over_on_morphisms  (F : signature_over_data) {R S : REP}
 
 (** Notation for the map 1-model morphism -> module morphism *)
 Notation "# F" := (signature_over_on_morphisms F) (at level 3) : signature_over_scope.
+
+Definition signature_over_on_morphisms_cancel_pw (F : signature_over_data) {R S : REP} 
+           {u v : R →→ S}  (e : u = v) x : (# F u)%sigo x = (#F v)%sigo x.
+  induction e.
+  apply idpath.
+Defined.
 
 (** Statment that the raw data preserves identity *)
 Definition signature_over_idax  (F : signature_over_data) :=
@@ -374,3 +382,60 @@ Definition sig_sig_over_mor {S1 S2 : SIG} (f : signature_Mor S1 S2) : ι S1  →
 End OverSignatures.
 
 Notation "# F" := (signature_over_on_morphisms _ F) (at level 3) : signature_over_scope.
+
+Require Import Modules.Prelims.LModPbCommute.
+Section PushoutOverSig.
+
+
+
+  Definition po_signature_over_data
+             {C} {S1 S2 : signature C} (f : signature_Mor S1 S2) (SS1 : signature_over S1)
+  : signature_over_data S2.
+  Proof.
+    use tpair.
+    - intro R.
+      exact (SS1 (pb_rep f R)).
+    - intros R S g.
+      apply ((# SS1 (pb_rep_mor f g ))%sigo).
+  Defined.
+
+  Lemma  po_is_signature_over 
+        {C} {S1 S2 : signature C} (f : signature_Mor S1 S2) (SS1 : signature_over S1)
+  : is_signature_over _ (po_signature_over_data f SS1).
+  Proof.
+    split.
+    - intros R x.
+      cbn.
+      etrans;[|use signature_over_id ].
+      apply (signature_over_on_morphisms_cancel_pw _ SS1).
+      apply pb_rep_mor_id.
+    - intros R S T u v.
+      cbn -[compose].
+      apply LModule_Mor_equiv; [apply homset_property|].
+      apply nat_trans_eq;[apply homset_property|].
+      intro x.
+      etrans. {
+        eapply (signature_over_on_morphisms_cancel_pw _ SS1).
+        apply pb_rep_mor_comp.
+      }
+      rewrite signature_over_comp.
+      apply idpath.
+  Defined.
+
+  Definition  po_signature_over 
+         {C} {S1 S2 : signature C} (f : signature_Mor S1 S2) (SS1 : signature_over S1) :
+    signature_over S2 := _ ,, po_is_signature_over f SS1.
+
+  Definition  po_signature_over_mor
+              {C} {S1 S2 : signature C} (f : signature_Mor S1 S2) {SS1 SS1' : signature_over S1}
+              (ff1 : signature_over_Mor _ SS1 SS1')
+    :  signature_over_Mor _ 
+                             (po_signature_over f SS1)(po_signature_over f SS1')
+     :=
+     mkSignature_over_Mor _ (F := po_signature_over f SS1)
+                                 (F' := po_signature_over f SS1')
+                                 (fun R => ff1 (pb_rep f R))
+                                 (fun R S g =>  signature_over_Mor_ax _ ff1 _ ) .
+
+
+End PushoutOverSig.
