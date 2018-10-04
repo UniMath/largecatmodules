@@ -1,5 +1,9 @@
 (** The category of 2-signatures
-The fibration of 2-models over 2-signatures
+The fibration of 2-models over 2-signatures 
+- proof that 2-signatures is a opfibered over the 1-signatures [opfib_two_sig]
+- proof that 2-signatures have coequalizers [TwoSignature_Coequalizers] if the base category has
+- coproducts of 2-signatures [TwoSignature_Coproducts]
+- pushouts of 2-signatures [TwoSignature_Pushouts]
  *)
 
 
@@ -17,8 +21,10 @@ Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.FaithfulFibrationEqualizer.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.SoftEquations.ModelCat.
 Require Import Modules.Prelims.modules.
@@ -30,6 +36,16 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
+
+Require Import Modules.Prelims.Opfibration.
+Require Import Modules.Prelims.PushoutsFromCoeqBinCoproducts.
+Require Import Modules.Prelims.BinCoproductComplements.
+Require Import Modules.Signatures.SignaturesColims.
+Require Import Modules.Signatures.SignatureCoproduct.
+
+Require Import UniMath.CategoryTheory.limits.coproducts.
+Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.limits.pushouts.
 
 Section TwoSig.
 
@@ -104,23 +120,156 @@ Qed.
 
 Definition two_signature_disp : disp_cat _ := two_signature_data ,, two_signature_axioms.
 
+Definition opfib_two_sig : opcleaving two_signature_disp.
+Proof.
+  intros S S' f SS'.
+  red.
+  use tpair;[|use tpair].
+  - eapply tpair.
+    exact ( fun (o : pr1 SS') => po_equation f (pr2 SS' o)).
+  - exact model_equations_eq.
+  - red.
+    intros S2 f2 e2 hf2.
+    unshelve eapply unique_exists;
+      [| | intros; eapply isapropifcontr,propproperty |
+       intros; eapply proofirrelevance,propproperty].
+    + intros R o.
+      specialize (hf2 R o).
+      rewrite pb_rep_comp in hf2.
+      exact hf2.
+    + apply proofirrelevance.
+      apply propproperty.
+Defined.
+
+
 Definition TwoSignature_category : category :=  total_category  two_signature_disp.
 
 Definition TwoSignature := ob TwoSignature_category.
-  Definition TwoSignature_Mor (S1 S2 : TwoSignature) := TwoSignature_category ⟦S1 , S2⟧.
+Definition TwoSignature_Mor (S1 S2 : TwoSignature) := TwoSignature_category ⟦S1 , S2⟧.
 
-  Coercion OneSig_from_TwoSig (S : TwoSignature) : signature C := pr1 S.
+Coercion OneSig_from_TwoSig (S : TwoSignature) : signature C := pr1 S.
+
+
 
 Definition TwoSignature_index (S : TwoSignature) : UU := pr1 (pr2 S).
 Definition TwoSignature_eqs (S : TwoSignature) : TwoSignature_index S -> equation := pr2 (pr2 S).
+
+(** If thebase category has coequalizers, then the total two-sig category also *)
+Lemma TwoSignature_Coequalizers
+      (coeq : colimits.Colims_of_shape Coequalizer_graph  C)
+  : Coequalizers TwoSignature_category.
+Proof.
+  red.
+  intros S1 S2 f g.
+  apply (faithful_opfibration_coequalizer _ opfib_two_sig).
+  - apply faithful_pr1_category.
+    intros; apply propproperty.
+  - apply Sig_Colims_of_shape.
+    exact coeq.
+Defined.
+
+Definition two_signature_coproduct
+  {O : UU}
+  (c : Coproducts O C)
+  (sigs : O → TwoSignature_category) : TwoSignature.
+Proof.
+  use tpair.
+  + apply (signature_Coproduct (cpC := c) ).
+    apply sigs.
+  + cbn.
+    refine ((∑ (o : O), TwoSignature_index (sigs o)),, _).
+    intros oo.
+    eapply po_equation; revgoals.
+    * apply (TwoSignature_eqs (sigs (pr1 oo)) (pr2 oo)).
+    * exact ( CoproductIn  _ _ (signature_Coproduct (cpC := c) _) (pr1 oo)).
+Defined.
+
+Definition two_signature_coproduct_in
+  {O : UU}
+  (c : Coproducts O C)
+  (sigs : O → TwoSignature_category) 
+  (i : O) : 
+  TwoSignature_category ⟦ sigs i, two_signature_coproduct c sigs ⟧.
+Proof.
+  use tpair.
+  + exact ( CoproductIn  _ _ (signature_Coproduct (cpC := c) _) i).
+  + cbn.
+    intros R o.
+    apply (model_equations_eq R (i ,, o)).
+Defined.
+
+Lemma two_signature_is_coproduct 
+  {O : UU}
+  (c : Coproducts O C)
+  (sigs : O → TwoSignature_category)  :
+  isCoproduct O TwoSignature_category sigs (two_signature_coproduct c sigs) (two_signature_coproduct_in c sigs).
+Proof.
+  intros S fS.
+  use unique_exists.
+  - use tpair.
+    + use (CoproductArrow _ _  (signature_Coproduct (cpC := c) _)).
+      apply fS.
+    + cbn.
+      intros R oo.
+      hnf.
+      cbn.
+      set (he1 := halfeq1 _).
+      set (he2 := halfeq2 _).
+      set (r := pb_rep _ _).
+      change ((fun z => he1 z  = he2 z ) r).
+      eapply transportf.
+      * etrans;[| apply pb_rep_comp].
+        set (ff := compose _ _).
+        pattern ff.
+        eapply transportb.
+        apply (CoproductInCommutes _ _ _  (signature_Coproduct (cpC := c) _) _ (fun i => pr1 (fS i))).
+        apply idpath.
+      * exact(  pr2 (fS (pr1 oo)) R (pr2 oo)).
+  - intro i.
+    apply subtypeEquality_prop.
+    apply (CoproductInCommutes _ _ _  (signature_Coproduct (cpC := c) _) _ (fun i => pr1 (fS i))).
+  - cbn beta .
+    intro.
+    apply impred_isaprop.
+    intro.
+    apply homset_property.
+  - intros y hi.
+    apply subtypeEquality_prop.
+    apply (CoproductArrowUnique _ _ _  (signature_Coproduct (cpC := c) _) _ (fun i => pr1 (fS i))).
+    intro i.
+    specialize (hi i).
+    apply (base_paths _ _ hi).
+Defined.
+
+Lemma TwoSignature_Coproducts {O : UU}
+      (c : Coproducts O C)
+  : Coproducts O TwoSignature_category.
+Proof.
+  intros sigs.
+  use mk_Coproduct.
+  - exact (two_signature_coproduct c sigs).
+  - exact (two_signature_coproduct_in c sigs).
+  - apply two_signature_is_coproduct.
+Defined.
+
+Lemma TwoSignature_Pushouts 
+      (b : BinCoproducts C)
+    (coeq : colimits.Colims_of_shape Coequalizer_graph  C)
+  : Pushouts  TwoSignature_category.
+Proof.
+  apply pushouts_from_coeq_bincoprod; revgoals.
+  - apply TwoSignature_Coequalizers.
+    apply coeq.
+  - apply BinCoproducts_from_CoproductsBool.
+    apply TwoSignature_Coproducts.
+    apply CoproductsBool;[apply homset_property|].
+    exact b.
+Defined.
 
 Local Notation EQS := TwoSignature_eqs.
 
 Local Notation  "R →→ S" := (TwoSignature_Mor R S) (at level 6).
 Coercion OneSigMore_from_TwoSigMor {R S} (m : R →→ S) : signature_Mor R S := pr1 m.
-
-
-
 
 
 Lemma TwoSignature_Mor_eq (F F' : TwoSignature)(a a' : TwoSignature_Mor F F'):
