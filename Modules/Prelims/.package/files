@@ -15,3 +15,4 @@ SetCatComplements.v
 FibrationInitialPushout.v
 FaithfulFibrationEqualizer.v
 Opfibration.v
+PushoutsFromCoeqBinCoproducts.v
