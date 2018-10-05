@@ -146,17 +146,17 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
   (** An equation is soft if the source is an epi Sig-module
       and the target is soft *)
-  Definition isSoft_eq (e : equation) :=
+  Definition isSoft_eq (e : equation Sig) :=
     isSoft (τ e) × isEpi_overSig (σ e).
 
   (** A soft equation is an equation where the source is an epi Sig-module
       and the target is soft *)
   Definition soft_equation :=
-    ∑ (e : equation), isSoft_eq e.
+    ∑ (e : equation Sig), isSoft_eq e.
 
 
 
-  Coercion eq_from_soft_equation (e : soft_equation) : equation := pr1 e.
+  Coercion eq_from_soft_equation (e : soft_equation) : equation Sig := pr1 e.
 
   Definition soft_equation_isSoft (e : soft_equation) : isSoft (τ e) :=
     pr1 (pr2 e).

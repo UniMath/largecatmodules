@@ -104,26 +104,24 @@ Section Equation.
 
 End Equation.
 
-Section PoEquation.
+Arguments equation [_] _.
 
 
-  Definition po_equation
-             {C : category} {S1 S2 : signature C} (f : signature_Mor S1 S2)
-             (e : equation (Sig := S1))
-  : equation (Sig := S2) :=
-    po_signature_over f (source_equation e)  ,,
-    po_signature_over f (target_equation e)  ,,
-    po_signature_over_mor f (halfeq1 e)  ,,
-    po_signature_over_mor f (halfeq2 e).
 
-  (*
-  Definition po_satisfies_equation  
-             {C : category} {S1 S2 : signature C} (f : signature_Mor S1 S2)
-             (e : equation (Sig := S1)) 
-             (R : model _)
-             (hR : satisfies_equation (po_equation f e) R) :
-    satisfies_equation e (pb_rep f R) := hR.
-*)
+Definition po_equation
+           {C : category} {S1 S2 : signature C} (f : signature_Mor S1 S2)
+           (e : equation S1)
+  : equation S2 :=
+  po_signature_over f (source_equation e)  ,,
+                    po_signature_over f (target_equation e)  ,,
+                    po_signature_over_mor f (halfeq1 e)  ,,
+                    po_signature_over_mor f (halfeq2 e).
 
-End PoEquation.
+Definition po_satisfies_equation  
+           {C : category} {S1 S2 : signature C} (f : signature_Mor S1 S2)
+           (e : equation S1) 
+           (R : model _)
+           (hR : satisfies_equation (po_equation f e) R) :
+  satisfies_equation e (pb_rep f R) := hR.
+
 

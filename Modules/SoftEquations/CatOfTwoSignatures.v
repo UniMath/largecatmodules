@@ -70,7 +70,7 @@ Defined.
 Definition two_signature_disp_ob_mor : disp_cat_ob_mor (signature_category (C := C)) :=
   mk_disp_cat_ob_mor
     signature_category
-    (fun (S : signature C) => ∑ (O : UU), O -> equation (Sig := S))
+    (fun (S : signature C) => ∑ (O : UU), O -> equation S)
     (fun (S1 S2 : signature C) SS1 SS2 (f : signature_Mor S1 S2) =>
        (** forall for hprop *)
        ∀ (R : model_equations (pr2 SS2)) o ,
@@ -152,7 +152,7 @@ Coercion OneSig_from_TwoSig (S : TwoSignature) : signature C := pr1 S.
 
 
 Definition TwoSignature_index (S : TwoSignature) : UU := pr1 (pr2 S).
-Definition TwoSignature_eqs (S : TwoSignature) : TwoSignature_index S -> equation := pr2 (pr2 S).
+Definition TwoSignature_eqs (S : TwoSignature) : TwoSignature_index S -> equation S := pr2 (pr2 S).
 
 (** If thebase category has coequalizers, then the total two-sig category also *)
 Lemma TwoSignature_Coequalizers

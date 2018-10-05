@@ -7,7 +7,7 @@ Equation.v
 quotientequation.v
 AdjunctionEquationRep.v
 SignatureOverDerivation.v
-TwoSignatureMorphism.v
+CatOfTwoSignatures.v
 SignatureOverBinproducts.v
 BindingSig.v
 Examples/LCBetaEta.v
