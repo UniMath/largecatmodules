@@ -1,9 +1,10 @@
 (** The category of 2-signatures
-The fibration of 2-models over 2-signatures 
 - proof that 2-signatures is a opfibered over the 1-signatures [opfib_two_sig]
 - proof that 2-signatures have coequalizers [TwoSignature_Coequalizers] if the base category has
 - coproducts of 2-signatures [TwoSignature_Coproducts]
 - pushouts of 2-signatures [TwoSignature_Pushouts]
+- the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSignature_To_One_right_adjoint]
+- The fibration of 2-models over 2-signatures  [two_mod_cleaving]
  *)
 
 
@@ -46,6 +47,7 @@ Require Import Modules.Signatures.SignatureCoproduct.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 Require Import UniMath.CategoryTheory.limits.pushouts.
+Require Import UniMath.CategoryTheory.Adjunctions.
 
 Section TwoSig.
 
@@ -281,13 +283,45 @@ Proof.
   exact h.
 Qed.
 
+(** A 1-signature S induces a 2-signature consisting of no equation *)
+Definition OneSig_to_TwoSig (S : signature C) : TwoSignature := (S ,, ∅ ,, empty_rect _).
     
+(** This induces a left adjoint to the forgetful functor *)
+Lemma universal_OneSig_to_TwoSig (S : signature C) :
+  is_universal_arrow_to (pr1_category two_signature_disp) S (OneSig_to_TwoSig S) (identity _).
+Proof.
+  intros TT f.
+  unshelve eapply unique_exists.
+  - refine (f ,, _) .
+    intro.
+    use empty_rect.
+  - apply id_left.
+  - intro.
+    apply homset_property.
+  - intros y eqy.
+    apply subtypeEquality_prop.
+    etrans;[|exact eqy].
+    apply pathsinv0, id_left.
+Defined.
 
+Definition TwoSignature_To_One_right_adjoint : is_right_adjoint (pr1_category two_signature_disp) :=
+  right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
-
-
-
-
+Lemma OneSig_to_TwoSig_fully_faithful : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint).
+  intros S1 S2 ff.
+  use iscontrpair.
+  - use hfiberpair.
+    + exact (pr1 ff).
+    + apply subtypeEquality_prop.
+      apply id_right.
+  - intro t.
+    assert (ht' := hfiberpr2 _ _ t).
+    apply base_paths in ht'.
+    apply subtypeEquality'; [| apply homset_property].
+    etrans;[|apply ht'].
+    apply pathsinv0.
+    apply (id_right (C := signature_category)).
+Defined.
 
 
 (* now the cleaving *)
