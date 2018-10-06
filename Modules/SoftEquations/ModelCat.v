@@ -5,7 +5,7 @@
   of the fibration of the total 1-model category over the 1-signatures category,
   as defined in Signatures/Signature.v
 
-- The initial Σ-model R is isomorphic to Id + Σ(R)
+- if R is a Σ-model R, then so is Σ(R) + Id.
 
 *)
 
@@ -309,6 +309,14 @@ Local Notation MODEL_CAT := (rep_fiber_category S).
 
 End ModelCat.
 
+(** In this section, we prove that if m : M -> R is a R-module morphism,
+then
+- the functor M + Id is a monad
+- the morphism [m , η] : M + Id -> R is a monad morphism
+- M has a structure of a module over M + Id (by pulling it pack along the monad morphism)
+- the inclusion M -> M + Id is a a module morphism
+
+ *)
 Section InitAlg.
   Context {C : category} (bc : BinCoproducts C).
   Local Notation Θ := (tautological_LModule ).
@@ -318,24 +326,33 @@ Section InitAlg.
   Local Notation BC F := (BinCoproducts_functor_precat C C bc (homset_property C) (F : functor _ _)).
   Local Notation bcO := (BinCoproductObject _).
 
+  (** M + Id functor *)
   Definition mod_id_functor  : functor C C :=
     bcO (BC M (functor_identity C)).
 
   Local Notation IdM := mod_id_functor.
   Local Infix "+" := bc.
 
+  (** [m, η] : M + Id -> R will be the monad morphism *)
   Definition mod_id_nt : nat_trans IdM R.
     apply (BinCoproductArrow _ (BC _ _)).
     exact (m : nat_trans _ _).
     apply η.
   Defined.
 
+  (** ι₂ : Id -> M + Id  will be the unit of the monad *)
   Definition mod_id_η : nat_trans (functor_identity _) IdM :=
     BinCoproductIn2 [C,C] (BC _ _).
 
   Definition mod_M_idM : nat_trans M IdM :=
     BinCoproductIn1 [C,C] (BC _ _).
 
+  (** The (M + Id)-multiplication for M:
+<<
+            M[m , η]
+M (M + Id) ---------> M R --------> M
+>>
+   *)
   Definition mod_id_M_mod : nat_trans (IdM ∙ M) M.
   Proof.
     eapply (compose( C := [C,C]) (b := R ∙ M)).
@@ -345,6 +362,7 @@ Section InitAlg.
   Defined.
 
 
+  (** First law of (M + Id)-module for M *)
   Lemma mod_id_M_mod_law1  : ∏ c, 
        #M (mod_id_η c) · mod_id_M_mod c = identity _.
   Proof.
@@ -365,6 +383,7 @@ Section InitAlg.
   Definition postcomp_nt (F : functor C C) : nat_trans (F ∙ IdM)  (bcO (BC (F ∙ M) F): functor _ _) :=
     nat_trans_id (F ∙ IdM) . 
 
+  (** Isomorphism between F (M + Id) and F M + F *)
   Lemma isoRIdM (F : functor C C) : iso (C := [C,C]) (F ∙ IdM)  ((BC (F ∙ M) F)).
     use functor_iso_from_pointwise_iso.
     - apply postcomp_nt.
@@ -372,6 +391,13 @@ Section InitAlg.
       apply identity_is_iso.
   Defined.
 
+  (** The multiplication for the monad M + Id:
+<<
+
+                                             M [ρ,η]                   
+ (M + Id) (M + Id) ~ M (M + Id) + (M + Id)  ---------> M R + (M + Id) ---> M + (M + Id) ----> M + Id
+>>
+   *)
   Definition mod_id_μ   : IdM ∙ IdM ⟹ IdM.
     (* TODO/ utiliser ce lemme ailleurs dans la formalisation plutôt que de composer explicitement
       avec l'iso
@@ -383,6 +409,8 @@ Section InitAlg.
       + apply mod_id_M_mod.
       + apply mod_M_idM.
   Defined.
+
+  (** Data for the (M + Id) monad *)
   Definition mod_id_monad_data : Monad_data C :=
     ((IdM ,, mod_id_μ) ,, mod_id_η).
 
@@ -393,7 +421,7 @@ Section InitAlg.
   Local Notation ι2 :=  (BinCoproductIn2  _ (bc  _ _)).
 
 
-  Lemma helper (c : C) f :
+  Local Lemma helper (c : C) f :
     (η R) (M c + c) · # R f · (μ R) c = f.
   Proof.
     etrans.
@@ -408,6 +436,7 @@ Section InitAlg.
     apply Monad_law1.
   Qed.
 
+  (** Second (M + Id)-module law for M *)
   Lemma mod_id_M_mod_law2  : ∏ c, 
        #M (mod_id_μ _) · mod_id_M_mod c = mod_id_M_mod _ · mod_id_M_mod _.
   Proof.
@@ -480,7 +509,7 @@ Section InitAlg.
 
 
 
-
+  (** Monad laws for (M + Id) *)
   Lemma mod_id_monad_laws : Monad_laws mod_id_monad_data.
   Proof.
     repeat split.
@@ -515,13 +544,8 @@ Section InitAlg.
       repeat (unfold BinCoproduct_of_functors_ob, coproduct_nat_trans_data,
               coproduct_nat_trans_in1_data, coproduct_nat_trans_in2_data,
               BinCoproduct_of_functors_mor ;
-      (* cbn -[mod_id_M_mod mod_id_η mod_M_idM mod_id_μ] *)
       cbn -[mod_id_M_mod mod_id_η mod_M_idM ]
                ).
-      (* repeat (unfold BinCoproduct_of_functors_ob, coproduct_nat_trans_data, *)
-      (*         coproduct_nat_trans_in1_data, coproduct_nat_trans_in2_data, *)
-      (*         BinCoproduct_of_functors_mor *)
-      (*         ; cbn). *)
       repeat rewrite id_left.
       set (u := [[ _ , _ ]]).
       set (v := [[ _ , _ ]]).
@@ -545,14 +569,8 @@ Section InitAlg.
         rewrite BinCoproductIn2Commutes.
         apply id_left.
       + (** This is the difficult part: M(M(M+I) + M+I) *)
-
-
-        
-        (* rewrite <- (mod_M_idM_mod_laws c). *)
-
         unfold v.
         repeat rewrite assoc.
-
         rewrite BinCoproductIn1Commutes.
         unfold u.
         repeat rewrite <- assoc.
@@ -569,18 +587,20 @@ Section InitAlg.
   Qed.
   
 
+  (** The M + Id monad *)
   Definition mod_id_monad : Monad C := _ ,, mod_id_monad_laws.
 
-    Lemma mod_id_monad_mor_laws : Monad_Mor_laws (T := mod_id_monad) mod_id_nt.
-    Proof.
-      split.
-      - intro c.
+  (** The morphism M + Id  --> R is a monad morphism *)
+  Lemma mod_id_monad_mor_laws : Monad_Mor_laws (T := mod_id_monad) mod_id_nt.
+  Proof.
+    split.
+    - intro c.
 
-        repeat (unfold BinCoproduct_of_functors_ob, coproduct_nat_trans_data,
-                coproduct_nat_trans_in1_data, coproduct_nat_trans_in2_data,
-                BinCoproduct_of_functors_mor
-                ; cbn).
-        rewrite id_left.
+      repeat (unfold BinCoproduct_of_functors_ob, coproduct_nat_trans_data,
+              coproduct_nat_trans_in1_data, coproduct_nat_trans_in2_data,
+              BinCoproduct_of_functors_mor
+              ; cbn).
+      rewrite id_left.
       (etrans; [ apply BinCoproductArrowEta| apply pathsinv0; apply BinCoproductArrowUnique]); revgoals. 
       + repeat rewrite assoc.
         do 2 rewrite BinCoproductIn2Commutes.
@@ -600,25 +620,20 @@ Section InitAlg.
         rewrite <- assoc.
         apply cancel_precomposition.
         apply (LModule_Mor_σ _ m).
-      - intro c.
-        repeat (unfold BinCoproduct_of_functors_ob, coproduct_nat_trans_data,
-                coproduct_nat_trans_in1_data, coproduct_nat_trans_in2_data,
-                BinCoproduct_of_functors_mor
-                ; cbn).
-        apply BinCoproductIn2Commutes.
-    Qed.
+    - intro c.
+      repeat (unfold BinCoproduct_of_functors_ob, coproduct_nat_trans_data,
+              coproduct_nat_trans_in1_data, coproduct_nat_trans_in2_data,
+              BinCoproduct_of_functors_mor
+              ; cbn).
+      apply BinCoproductIn2Commutes.
+  Qed.
 
-   Definition mod_id_monad_mor : Monad_Mor mod_id_monad R :=  _ ,, mod_id_monad_mor_laws.
+  Definition mod_id_monad_mor : Monad_Mor mod_id_monad R :=  _ ,, mod_id_monad_mor_laws.
 
-   Definition M_IdM_mod_data : LModule_data mod_id_monad C.
-     eapply tpair.
-     use mod_id_M_mod.
-   Defined.
+  (** M is a (M + Id)-module *)
+  Definition M_IdM_mod : LModule mod_id_monad C := pb_LModule mod_id_monad_mor M.
 
-   Definition M_IdM_laws : LModule_laws mod_id_monad M_IdM_mod_data :=
-     mod_id_M_mod_law1 ,, mod_id_M_mod_law2.
-
-   Definition M_IdM_mod : LModule mod_id_monad C := _ ,, M_IdM_laws.
+  (** the inclusion M -> (M + Id) commutes with (M + Id)-substitution*)
   Lemma mod_M_idM_mod_laws : ∏ c, mod_M_idM  (IdM c) · mod_id_μ _ =  mod_id_M_mod _ · mod_M_idM _.
     intro c.
     repeat (unfold BinCoproduct_of_functors_ob, coproduct_nat_trans_data,
@@ -629,36 +644,40 @@ Section InitAlg.
     apply BinCoproductIn1Commutes.
   Qed.
 
+  (** The inclusion M -> (M + Id) is a module morphism *)
   Definition mod_M_idM_mod_Mor : LModule_Mor _ M_IdM_mod (Θ _) :=
     _ ,, mod_M_idM_mod_laws.
 
 End InitAlg.
 
+(** In this section, we prove that if R is a Σ-model, then
+Σ(R) + Id is also a Σ-model *)
 Section InitAlg2.
-  Context {C : category} (bc : BinCoproducts C).
 
-  Definition mod_id_model_monad {Sig : signature C} (R : model Sig) : Monad C :=
-    mod_id_monad bc _ (model_τ R ).
+Context {C : category} (bc : BinCoproducts C).
 
-  Local Notation IdM := mod_id_model_monad.
-  Local Notation Θ := (tautological_LModule ).
+(** The monad structure on Sig(R) + Id *)
+Definition mod_id_model_monad {Sig : signature C} (R : model Sig) : Monad C :=
+  mod_id_monad bc _ (model_τ R ).
 
-  (** Même foncteur/action *)
-  Definition pb_LModule_M_Id_mod_iso {Sig : signature C} (R : model Sig) :
-    iso (C := category_LModule _ _)
-        ( pb_LModule (mod_id_monad_mor bc (Sig (pr1 R)) (model_τ R)) (Sig (pr1 R)))
-        (M_IdM_mod bc (Sig (pr1 R)) (model_τ R) ) :=
-     LModule_M1_M2_iso _ _ (fun c => idpath _) (homset_property C).
+Local Notation IdM := mod_id_model_monad.
+Local Notation Θ := (tautological_LModule ).
 
 
-  Definition mod_id_model_action {Sig : signature C} (R : model Sig) :
-    LModule_Mor _ (Sig (IdM R)) (Θ _).
-  Proof.
-    eapply (compose (C := category_LModule _ _)).
-    - use ((# Sig  _)%ar); revgoals.
-      + apply mod_id_monad_mor.
-    - eapply (iso_comp_right_weq (pb_LModule_M_Id_mod_iso R)).
-      apply mod_M_idM_mod_Mor.
-  Defined.
-  End InitAlg2.
+(** Sig(R) + Id is given the following action:
+<<
+Sig(Sig(R) + Id) -> Sig(R) -> Sig(R) + Id
+>>
+*)
+Definition mod_id_model_action {Sig : signature C} (R : model Sig) :
+  LModule_Mor _ (Sig (IdM R)) (Θ _).
+Proof.
+  eapply (compose (C := category_LModule _ _)).
+  - use ((# Sig  _)%ar); revgoals.
+    + apply mod_id_monad_mor.
+  - apply mod_M_idM_mod_Mor.
+Defined.
+
+End InitAlg2.
+
                              
