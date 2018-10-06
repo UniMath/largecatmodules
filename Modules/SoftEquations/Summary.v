@@ -297,7 +297,7 @@ Definition of Equations. See SoftEquations/Equation.v
 
 (** An equation over a signature S is a pair of two signatures over S, and a signature over morphism between them *)
 Check (∏ (S : SIGNATURE),
-       equation (Sig := S) ::=
+       equation S ::=
     ∑ (S1 S2 : signature_over S), S1 ⟹ S2 × S1 ⟹ S2).
 
 (** Soft equation: the domain must be an epi over-signature, and the target
@@ -310,7 +310,7 @@ Check (∏ (S : SIGNATURE)
         (SR_epi : ∏ R : Monad SET, preserves_Epi R -> preserves_Epi (S R)),
 
        soft_equation isEpi_sig SR_epi ::=
-        ∑ (e : equation), isSoft isEpi_sig SR_epi (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
+        ∑ (e : equation S), isSoft isEpi_sig SR_epi (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
 
 (** Elementary equations: the domain is an epi over-signature, and the target
     is a finite derivative of the tautological signature mapping a model to itself
@@ -349,7 +349,7 @@ See SoftEquations/Equation.v for details
     equation of the family *)
 Check (∏ (S : SIGNATURE)
          (** a family of equations indexed by O *)
-         O (e : O -> equation (Sig := S))
+         O (e : O -> equation S)
          (R : model S)
        ,
     satisfies_all_equations_hp e R ::=
@@ -368,7 +368,7 @@ Check (∏ (S : SIGNATURE)
   satisfying all the equations *)
 Check (∏ (S : SIGNATURE)
          (** a family of equations indexed by O *)
-         O (e : O -> equation (Sig := S)),
+         O (e : O -> equation S),
 
    precategory_model_equations e ::=
     full_sub_precategory (C := rep_fiber_precategory S)

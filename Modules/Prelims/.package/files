@@ -14,3 +14,6 @@ BinProductComplements.v
 SetCatComplements.v
 FibrationInitialPushout.v
 FaithfulFibrationEqualizer.v
+Opfibration.v
+PushoutsFromCoeqBinCoproducts.v
+BinCoproductComplements.v
