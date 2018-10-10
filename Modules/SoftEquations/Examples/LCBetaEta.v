@@ -309,14 +309,14 @@ the boolean *)
 Definition beta_eta_equations (b : bool) : elementary_equation :=
   if true then beta_equation else eta_equation.
 
-(** TODO remove axiom of choice *)
 (** The lambda calculus modulo beta eta *)
-Definition LCBetaEta ax_choice : Initial
+Definition LCBetaEta : Initial
   (precategory_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
-                         LamOneSigHSET_epiSig (fun R _ => preserves_to_HSET_isEpi ax_choice _)
+                         LamOneSigHSET_epiSig 
                          (beta_eta_equations o))
-                 ) :=
-  elementary_equations_preserve_initiality_choice ax_choice
-                                                  _ _ bool beta_eta_equations  LamOneSigHSET_Initial.
+                 ). 
+Proof.
+  use  elementary_equations_on_alg_preserve_initiality.
+Defined.
