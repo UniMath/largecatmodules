@@ -99,16 +99,13 @@ Section QuotientRep.
       This is used to give the quotient monad an action.
    *)
   Context (epiSig : sig_preservesNatEpiMonad Sig).
-  (** implied by the axiom of choice *)
-  Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
-  (* Context (modelEpi : ∏ (R : model Sig), preserves_Epi R). *)
 
   Local Notation REP := (model Sig).
 
   Local Notation REP_CAT := (rep_fiber_category Sig).
 
   (** A family of soft equations indexed by O *)
-  Context {O : UU} (eq : O -> soft_equation epiSig epiSigpw) .
+  Context {O : UU} (eq : O -> soft_equation epiSig ) .
 
   Local Notation REP_EQ := (model_equations eq ).
   Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
@@ -122,50 +119,58 @@ Section QuotientRep.
   Let ff {R} (j : J R) : R →→ (d j) := pr2 j.
 
   (** The quotient model by this collection of arrows *)
-  Let R' {R : model Sig} (R_epi : preserves_Epi R)  : REP_EQ
-    := R'_model_equations  epiSig epiSigpw R_epi d ff eq
+  Let R' {R : model Sig}
+      (** implied by the axiom of choice *)
+      (R_epi : preserves_Epi R) (SigR_epi : preserves_Epi (Sig R))
+        : REP_EQ
+    := R'_model_equations  epiSig  R_epi SigR_epi d ff eq
                                         (fun j => model_equations_eq (d j)).
   (** Any morphism from R to a 1-model satisfying the equations factorize through
       the canonical projection, followed by [u_rep] *)
-  Definition u_rep_arrow {R : model Sig}{S : model_equations eq} R_epi (f : R →→ S)
-    := u_rep Sig epiSig R_epi (epiSigpw _ R_epi) d ff (S ,, f).
+  Definition u_rep_arrow {R : model Sig}{S : model_equations eq} R_epi SigR_epi (f : R →→ S)
+    := u_rep Sig epiSig R_epi SigR_epi d ff (S ,, f).
 
-  Let projR_rep (R : model Sig) (R_epi : preserves_Epi R)
-    := projR_rep Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
+  Let projR_rep (R : model Sig)
+      (R_epi : preserves_Epi R)(SigR_epi : preserves_Epi (Sig R))
+    := projR_rep Sig epiSig R_epi SigR_epi  d ff.
 
-  Lemma u_rep_universal (R : model _) (R_epi: preserves_Epi R)
-    : is_universal_arrow_to (forget_2model eq) R (R' R_epi) (projR_rep R R_epi).
+  Lemma u_rep_universal (R : model _) (R_epi: preserves_Epi R) (SigR_epi : preserves_Epi (Sig R))
+    : is_universal_arrow_to (forget_2model eq) R (R' R_epi SigR_epi) (projR_rep R R_epi SigR_epi).
   Proof.
     intros S f.
     set (j := tpair (fun (x : model_equations _) => R →→ x) (S : model_equations _)  f).
     eassert (def_u :=(u_rep_def _ _ _  _ (@d R) (@ff R) j)).
     unshelve eapply unique_exists.
-    - exact (u_rep_arrow R_epi f ,, tt).
+    - exact (u_rep_arrow R_epi SigR_epi f ,, tt).
     - exact (! def_u).
     - intro.
       apply homset_property.
     - intros g eq'.
       use eq_in_sub_precategory.
       cbn.
-      use (_ : isEpi (C := REP_CAT) (projR_rep R _)); [apply isEpi_projR_rep|].
+      use (_ : isEpi (C := REP_CAT) (projR_rep R _ _)); [apply isEpi_projR_rep|].
       etrans;[exact eq'|exact def_u].
   Qed.
 
-  (** If all models preserve epis, then we have an adjunctions *)
+  (** If all models preserve epis, and their image by the signature
+      preserve epis, then we have an adjunctions *)
   Definition forget_2model_is_right_adjoint
              (modepis : ∏ (R : model Sig), preserves_Epi R)
+             (SigR_epis : ∏ (R : model Sig) , preserves_Epi (Sig R))
     : is_right_adjoint (forget_2model eq) :=
     right_adjoint_left_from_partial (forget_2model (λ x : O, eq x))
-                                    (fun R => R' (modepis R))
-                                    (fun R => projR_rep R (modepis R))
-                                    (fun R => u_rep_universal R (modepis R)).
+                                    (fun R => R' (modepis R) (SigR_epis R ))
+                                    (fun R => projR_rep R (modepis R)(SigR_epis R ))
+                                    (fun R => u_rep_universal R (modepis R)(SigR_epis R )).
 
 
-  (** If the initial model preserve epis, then there is an initial model *)
+  (** If the initial model and its image by the signature preserve epis,
+     then there is an initial model *)
   Definition push_initiality (R : Initial REP_CAT)
-        (R_epi : preserves_Epi (InitialObject R : model _)) : isInitial REP_EQ_PRECAT
-                                                                        (R' R_epi) :=
-  initial_universal_to_lift_initial (forget_2model (λ x : O, eq x)) R (u_rep_universal _ R_epi).
+             (R_epi : preserves_Epi (InitialObject R : model _))
+             (SigR_epi : preserves_Epi (Sig (InitialObject R : model _)))
+    : isInitial REP_EQ_PRECAT (R' R_epi SigR_epi) :=
+  initial_universal_to_lift_initial (forget_2model (λ x : O, eq x)) R (u_rep_universal _ R_epi SigR_epi).
 
 End QuotientRep.
 
@@ -184,26 +189,28 @@ Section QuotientRepInit.
 
 
   Lemma soft_equations_preserve_initiality
-(** implied by the axiom of choice *)
-        (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R))
-        {O : UU}(eq : O -> soft_equation epiSig epiSigpw)
+        {O : UU}(eq : O -> soft_equation epiSig )
     : ∏ (R : Initial (rep_fiber_category Sig)) ,
+(** implied by the axiom of choice *)
       (preserves_Epi (InitialObject  R : model _)) ->
+      (preserves_Epi (Sig (InitialObject  R : model _))) ->
       Initial (precategory_model_equations eq).
   Proof.
-    intros init R_epi.
+    intros init R_epi SigR_epi.
     eapply mk_Initial.
     use push_initiality.
-    { exact init. }
-    assumption.
+    - exact init.
+    - assumption.
+    - assumption.
   Qed.
 
   Corollary elementary_equations_preserve_initiality
-            (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R))
+            (* (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)) *)
         {O : UU}(eq : O -> elementary_equation (Sig := Sig))
-          (eq' := fun o => soft_equation_from_elementary_equation epiSig epiSigpw (eq o))
+          (eq' := fun o => soft_equation_from_elementary_equation epiSig  (eq o))
     : ∏ (R : Initial (rep_fiber_category Sig)) ,
       (preserves_Epi (InitialObject  R : model _)) ->
+      preserves_Epi (Sig (InitialObject R : model _)) ->
       Initial (precategory_model_equations eq').
   Proof.
     apply soft_equations_preserve_initiality.
@@ -221,11 +228,11 @@ Definition elementary_equations_on_alg_preserve_initiality
            (epiSig := algSig_NatEpi S)
            (SR_epi := BindingSigAreEpiEpiSig S)
            (** A family of equations *)
-           (eq' := fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)) :
+           (eq' := fun o => soft_equation_from_elementary_equation epiSig  (eq o)) :
         (** .. then the category of 2-models has an initial object *)
   Initial (precategory_model_equations eq')
           :=
-  elementary_equations_preserve_initiality  epiSig SR_epi eq R iniEpi.
+  elementary_equations_preserve_initiality  epiSig eq R iniEpi (SR_epi _ iniEpi).
 
 
 (** A version using the axiom of choice *)
@@ -243,7 +250,8 @@ Lemma soft_equations_preserve_initiality_choice
         (** .. then the category of 2-models has an initial object *)
          Initial (precategory_model_equations (λ x : O, eq x)).
   intros; use soft_equations_preserve_initiality; try assumption.
-  apply preserves_to_HSET_isEpi; assumption.
+  - apply preserves_to_HSET_isEpi; assumption.
+  - apply preserves_to_HSET_isEpi; assumption.
 Qed.
 
 
@@ -266,7 +274,7 @@ Lemma elementary_equations_preserve_initiality_choice
          Initial (precategory_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
-                         epiSig (fun R _ => preserves_to_HSET_isEpi ax_choice _)
+                         epiSig 
                          (eq o))
                  ).
   intros; use soft_equations_preserve_initiality_choice;  assumption.

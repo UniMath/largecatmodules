@@ -259,17 +259,16 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 Check (∏ (S : SIGNATURE)
          (** S is an epi-signature *)
          (isEpi_sig : sig_preservesNatEpiMonad S)
-         (F : signature_over S)
-         (** this is implied by the axiom of choice *)
-         (SR_epi : ∏ R : Monad SET, preserves_Epi R -> preserves_Epi (S R)) ,
-       isSoft  isEpi_sig SR_epi F
+         (F : signature_over S),
+       isSoft  isEpi_sig  F
        ::=
          (∏ (R : model S)
             (** implied by the axiom of choice *)
             (R_epi : preserves_Epi R)
+            (SR_epi : preserves_Epi (S R))
             (J : UU)(d : J -> (model S))(f : ∏ j, R →→ (d j))
             X (x y : (F R X : hSet))
-            (pi := projR_rep S isEpi_sig R_epi (SR_epi _ R_epi) d f),
+            (pi := projR_rep S isEpi_sig R_epi SR_epi d f),
           (∏ j, (# F (f j))%sigo X x  = (# F (f j))%sigo X y )
           -> (# F pi X x)%sigo = 
             (# F pi X y)%sigo  )
@@ -283,10 +282,8 @@ Check (@isSoft_finite_deriv_tauto:
          ∏ (Sig : SIGNATURE)
            (* Sig is an epi-1-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
-            (** implied by the axiom of choice *)
-          (epiSigpw : ∏ R : Monad SET, preserves_Epi R -> preserves_Epi (Sig R))
            (n : nat),
-         isSoft epiSig epiSigpw (ΣΘ ^(n))).
+         isSoft epiSig  (ΣΘ ^(n))).
 
 
 (* **********
@@ -305,12 +302,10 @@ Check (∏ (S : SIGNATURE),
  *)
 Check (∏ (S : SIGNATURE)
          (** S is an epi-signature *)
-         (isEpi_sig : sig_preservesNatEpiMonad S)
-         (** this is implied by the axiom of choice *)
-        (SR_epi : ∏ R : Monad SET, preserves_Epi R -> preserves_Epi (S R)),
+         (isEpi_sig : sig_preservesNatEpiMonad S),
 
-       soft_equation isEpi_sig SR_epi ::=
-        ∑ (e : equation S), isSoft isEpi_sig SR_epi (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
+       soft_equation isEpi_sig  ::=
+        ∑ (e : equation S), isSoft isEpi_sig  (pr1 (pr2 e)) × isEpi_overSig (pr1 e)).
 
 (** Elementary equations: the domain is an epi over-signature, and the target
     is a finite derivative of the tautological signature mapping a model to itself
@@ -324,16 +319,14 @@ Check (∏ (S : SIGNATURE),
 (** Elementary equations yield soft equations
  *)
 Check (∏ (S : SIGNATURE)
-         (** this is implied by the axiom of choice *)
-         (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (S R))
          (** but not that *)
          epiSig
          (e : elementary_equation),
-       (soft_equation_from_elementary_equation epiSig SR_epi e  : soft_equation _ _
+       (soft_equation_from_elementary_equation epiSig  e  : soft_equation _ 
        ) ::=
-         mk_soft_equation epiSig SR_epi
+         mk_soft_equation epiSig 
                           (half_elem_eqs e)  (source_elem_epiSig e)
-                          (isSoft_finite_deriv_tauto epiSig SR_epi (target_elem_eq e))).
+                          (isSoft_finite_deriv_tauto epiSig  (target_elem_eq e))).
 
 
 (** 
@@ -387,14 +380,16 @@ Check (@soft_equations_preserve_initiality :
            (Sig : SIGNATURE)
            (** S is an epi-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
-           (** this is implied by the axiom of choice *)
-           (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
            (** A family of equations *)
-           (O : UU) (eq : O → soft_equation epiSig SR_epi),
+           (O : UU) (eq : O → soft_equation epiSig),
          (** If the category of 1-models has an initial object, .. *)
-         ∏ (R : Initial (rep_fiber_category Sig)) , preserves_Epi (InitialObject R : model Sig)
+         ∏ (R : Initial (rep_fiber_category Sig)) ,
+           (** this is implied by the axiom of choice *)
+         preserves_Epi (InitialObject R : model Sig) ->
+         preserves_Epi (Sig (InitialObject R : model Sig)) ->
+         
         (** .. then the category of 2-models has an initial object *)
-         → Initial (precategory_model_equations eq)).
+         Initial (precategory_model_equations eq)).
 
 
 
@@ -405,19 +400,17 @@ Check (@elementary_equations_preserve_initiality :
            (** (1) The 1-signature must be an epi-signature
             *)
            (epiSig : sig_preservesNatEpiMonad Sig)
-           (** (2) this is implied by the axiom of choice
-            *)
-           (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
            (** A family of equations *)
            (O : UU) (eq : O → elementary_equation (Sig := Sig)),
          (** If the category of 1-models has an initial object, .. *)
          ∏ (R : Initial (rep_fiber_category Sig)) ,
          (** (3) preserving epis (implied by the axiom of choice)
           *)
-         preserves_Epi (InitialObject R : model Sig)
+         preserves_Epi (InitialObject R : model Sig) ->
+         preserves_Epi (Sig (InitialObject R : model Sig)) ->
         (** .. then the category of 2-models has an initial object *)
-         → Initial (precategory_model_equations
-                      (fun o => soft_equation_from_elementary_equation epiSig SR_epi (eq o)))).
+         Initial (precategory_model_equations
+                      (fun o => soft_equation_from_elementary_equation epiSig (eq o)))).
 
 (** As a corrolary, the case of an algebraic signature with elementary equations
 No preservation of epis is needed anymore
@@ -430,7 +423,6 @@ Check (@elementary_equations_on_alg_preserve_initiality
          Initial (precategory_model_equations
                     ( fun o => soft_equation_from_elementary_equation
                            (algSig_NatEpi S)
-                           (BindingSigAreEpiEpiSig S)
                            (eq o))
       )).
 
@@ -442,12 +434,11 @@ Check (@forget_2model_is_right_adjoint :
            (Sig : SIGNATURE)
            (** S is an epi-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
-           (** this is implied by the axiom of choice *)
-           (SR_epi : ∏ R : Monad SET, preserves_Epi R ->  preserves_Epi (Sig R))
            (** A family of equations *)
-           (O : UU) (eq : O → soft_equation epiSig SR_epi)
-         (** The stronger assumption is that any 1-model of Sig preserve epis *)
-         (modEpis : (∏ R : model Sig, preserves_Epi R)),
+           (O : UU) (eq : O → soft_equation epiSig ),
+         (** The stronger assumption is that any 1-model of Sig preserve epis (implied by the axiom of choice) *)
+         (∏ R : model Sig, preserves_Epi R) ->
+         (∏ R : model Sig, preserves_Epi (Sig R)) ->
          Adjunctions.is_right_adjoint (forget_2model eq)).
 
 (**

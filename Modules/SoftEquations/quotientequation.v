@@ -62,8 +62,6 @@ Context {Sig : SIG}.
   (** Sig must be an epi-signature, i.e. preserves epimorphicity of natural
       transformations *)
 Context (epiSig : sig_preservesNatEpiMonad Sig).
-(** implied by the axiom of choice *)
-Context (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)).
 
 (** Definition of a soft Sig-module
 
@@ -88,8 +86,9 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
  *)
   Definition isSoft (OSig : signature_over Sig) :=
-    ∏ (R : model Sig) (R_epi : preserves_Epi R) (J : UU)(d : J -> (model Sig))(f : ∏ j, R →→ (d j))
-      X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig  R_epi (epiSigpw _ R_epi) d f),
+    ∏ (R : model Sig) (R_epi : preserves_Epi R)(SigR_epi : preserves_Epi (Sig R))
+      (J : UU)(d : J -> (model Sig))(f : ∏ j, R →→ (d j))
+      X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig  R_epi SigR_epi d f),
     (∏ j, (# OSig (f j))%sigo X x  = (# OSig (f j))%sigo X y )
       -> (# OSig pi X x)%sigo = 
         (# OSig pi X y)%sigo  .
@@ -172,15 +171,16 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   Context {R : REP}.
   (** implied by the axiom of choice *)
   Context (R_epi : preserves_Epi R).
+  Context (SigR_epi : preserves_Epi (Sig R)).
 
   Context {J : UU} (d : J -> REP) 
             (ff : ∏ (j : J), R →→ (d j)).
 
   (** R' is the 1-model R quotiented by the following relation on R(X):
          x ~ y iff ff_j(x) = ff_j(y) for all j *)
-  Let R' : REP := R'_model Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
+  Let R' : REP := R'_model Sig epiSig R_epi SigR_epi d ff.
   (** The canonical projection R -> R' as a 1-model morphism *)
-  Let projR : rep_fiber_mor R R' := projR_rep  Sig epiSig R_epi (epiSigpw _ R_epi) d ff.
+  Let projR : rep_fiber_mor R R' := projR_rep  Sig epiSig R_epi SigR_epi d ff.
 
   Local Notation π := projR.
   Local Notation Θ := tautological_LModule.
@@ -278,6 +278,6 @@ Definition soft_equation_choice (choice : AxiomOfChoice.AxiomOfChoice_surj) (S :
             (** S preserves epimorphisms of monads *)
            (isEpi_sig : sig_preservesNatEpiMonad S)
          : UU :=
-    soft_equation isEpi_sig (λ R : Monad SET, fun _ => preserves_to_HSET_isEpi choice (S R)).
+  soft_equation isEpi_sig.
 
 Identity Coercion forget_choice : soft_equation_choice >-> soft_equation.
