@@ -22,8 +22,7 @@ Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.categories.category_hset.
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
@@ -323,7 +322,7 @@ Defined.
 Lemma is_precategory_signature_over_precategory_data :
    is_precategory signature_over_precategory_data.
 Proof.
-  repeat split; simpl; intros.
+  apply mk_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
     apply signature_over_Mor_eq. 

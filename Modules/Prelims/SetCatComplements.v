@@ -36,9 +36,7 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
-Require Import UniMath.CategoryTheory.categories.category_hset.
-
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.categories.HSET.All.
 
 Lemma hset_category_isDistributive (I : hSet)  :
    bp_coprod_isDistributive BinProductsHSET (CoproductsHSET  I (setproperty I)).

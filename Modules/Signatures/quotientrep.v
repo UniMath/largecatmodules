@@ -6,8 +6,7 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.categories.category_hset.
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.categories.HSET.All.
 
 Require Import UniMath.CategoryTheory.Categories.
 
@@ -23,7 +22,7 @@ Require Import UniMath.CategoryTheory.whiskering.
 
 Local Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 Local Notation "α 'ø' Z" := (pre_whisker Z α)  (at level 25).
-Local Notation "Z ∘ α" := (post_whisker α Z) (at level 50, left associativity).
+Local Notation "Z ∘ α" := (post_whisker α Z).
 
 
 Open Scope cat.
