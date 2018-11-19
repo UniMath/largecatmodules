@@ -14,8 +14,7 @@ Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.categories.category_hset.
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.Monads.Monads.
@@ -178,7 +177,7 @@ Defined.
 Lemma is_precategory_rep_fiber_precategory_data (S : SIG) :
    is_precategory (rep_fiber_precategory_data S).
 Proof.
-  repeat split; simpl; intros.
+  apply mk_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
     apply rep_fiber_mor_eq. 
