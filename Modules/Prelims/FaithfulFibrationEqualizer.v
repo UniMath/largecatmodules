@@ -31,6 +31,8 @@ Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
 
 Require Import Modules.Prelims.Opfibration.
 
+Open Scope cat.
+
 Section pr.
   Context {C : category} (D : disp_cat C).
 

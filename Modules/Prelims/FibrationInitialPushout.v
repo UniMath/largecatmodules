@@ -49,6 +49,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
+Open Scope cat.
+
 Section pr.
   Context {C : category} (dC : disp_cat C).
 
