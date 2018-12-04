@@ -4,7 +4,7 @@
 - some complements that should be moved to Displayedcats.Core (Cf 2 lemmas at the beginning
 of this file)
  *)
-Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
+
 (** Definitions of various kinds of _fibraitions_, using displayed categories. *)
 
 Require Import UniMath.Foundations.Sets.
@@ -13,17 +13,19 @@ Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.limits.pullbacks.
 Require Import UniMath.CategoryTheory.Adjunctions.
-Require Import UniMath.CategoryTheory.equivalences.
+Require Import UniMath.CategoryTheory.Equivalences.Core.
 Require Import UniMath.CategoryTheory.opp_precat.
 Require Import UniMath.CategoryTheory.Presheaf.
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
+Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
 
+Local Open Scope cat.
 Local Open Scope type_scope.
 Local Open Scope mor_disp_scope.
 
@@ -310,7 +312,7 @@ Proof.
   { intros ff. repeat (apply impred; intro).
     apply isapropiscontr. }
   etrans.
-    use (@functtransportf_2 (D c) _ _ (λ x, pr1)).
+    use ( ! (@transport_map (D c) _ _ (λ x, pr1) _ _ _ _ )).
   cbn. etrans. apply transportf_postcompose_disp.
   rewrite idtoiso_isotoid_disp.
   use (pathscomp0 (maponpaths _ _) (transportfbinv _ _ _)).
