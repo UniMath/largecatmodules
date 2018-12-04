@@ -5,7 +5,8 @@
   of the fibration of the total 1-model category over the 1-signatures category,
   as defined in Signatures/Signature.v
 
-- if R is a Σ-model R, then so is Σ(R) + Id.
+- if R is a Σ-model R, then so is Σ(R) + Id, and R is isomorphic to Σ(R) + Id if it is the initial model.
+   [iso_mod_id_model]
 
 *)
 
@@ -26,6 +27,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import Modules.Prelims.lib.
@@ -676,6 +678,70 @@ Proof.
     + apply mod_id_monad_mor.
   - apply mod_M_idM_mod_Mor.
 Defined.
+
+(** Sig(R) + Id as a model *)
+Definition mod_id_model {Sig : signature C} (R : model Sig) : model Sig :=
+   mod_id_model_monad R ,, mod_id_model_action R.
+
+(** The monad morphism Sig(R) + Id -> R is a model morphism *)
+Definition mod_id_model_mor_laws {Sig : signature C} (R : model Sig) : 
+    rep_fiber_mor_law (mod_id_model R) R (mod_id_monad_mor bc (Sig  R) (model_τ R)).
+Proof.
+  intro.
+  etrans; [apply pathsinv0, assoc|].
+  apply cancel_precomposition.
+  apply BinCoproductIn1Commutes.
+Qed.
+
+Definition mod_id_model_mor {Sig : signature C} (R : model Sig) : 
+  rep_fiber_mor (mod_id_model R) R  :=
+  _ ,, mod_id_model_mor_laws R.
+
+(** If R is the initial model, then the model morphism Sig(R) + Id -> R is an iso (the inverse
+ is the initial arrow). The proof is similar to Lambek's theorem *)
+Lemma iso_mod_id_model {Sig : signature C} (R : model Sig) (iR : isInitial (rep_fiber_category Sig) R)
+      (** This is the initial arrow *)
+      (fR := iscontrpr1 (iR(mod_id_model R)))
+    :
+  is_iso (C := rep_fiber_category Sig) (mod_id_model_mor R).
+Proof.
+  use is_iso_qinv.
+  - exact fR.
+  - assert (h1 : fR · mod_id_model_mor R
+                 = identity (C:= rep_fiber_category _) R)
+           by apply proofirrelevancecontr, iR.
+    split.
+    + apply rep_fiber_mor_eq_nt.
+      apply nat_trans_eq;[apply homset_property|].
+      intro c.
+      cbn in fR.
+      apply pathsinv0.
+      use BinCoproduct_endo_is_identity; cbn; unfold coproduct_nat_trans_data; cbn; etrans;try apply assoc.
+      * etrans;[apply cancel_postcomposition,  BinCoproductIn1Commutes|].
+        etrans;[apply (rep_fiber_mor_ax fR)|].
+        etrans;[apply assoc|].
+        etrans;[|apply id_left].
+        apply cancel_postcomposition.
+        etrans;[|apply signature_id].
+        etrans.
+        {
+              eassert (h :=  signature_comp Sig _ _).
+              apply (maponpaths (T1 := LModule_Mor _ _ _) (fun m => m c)) in h.
+              simpl in h.
+              rewrite id_right in h.
+              apply pathsinv0.
+              exact h.
+        }
+        eapply (paths_rect _ _
+                (fun a eq => 
+                   (# Sig)%ar (Monad_composition fR (mod_id_monad_mor bc (Sig (pr1 R)) (model_τ R))) c
+                   = (# Sig)%ar a c));
+          [|exact (maponpaths  pr1 h1)].
+        apply idpath.
+      * etrans;[apply cancel_postcomposition,  BinCoproductIn2Commutes|].
+        apply (Monad_Mor_η fR).
+    + exact h1.
+Qed.
 
 End InitAlg2.
 
