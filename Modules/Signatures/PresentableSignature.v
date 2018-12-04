@@ -92,37 +92,17 @@ Local Notation toSig sig :=
 Lemma PresentableisRepresentable 
       {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
                                              (fun i => CoproductsHSET _ (setproperty i)) a)
-      (** this hypothesis is implied by the axiom of choice
-           It says that syntax of the presenting algebraic signature preserves epis.
-       *)
-      (alg_syntax_preserves_epi : preserves_Epi (alg_initialR (p_sig p) : model (p_alg_ar p)))
-
-    (** this hypothesis is implied by the axiom of choice
-           It says that the image of the (algebraic) syntax by the algebraic signature preserves epis.
-       *)
-      (alg_sig_syntax_preserves_epi : preserves_Epi ((p_alg_ar p) (alg_initialR (p_sig p) : model _)))
-
-
   :
    Initial (rep_disp SET) [{a}].
 Proof.
   use (push_initiality_weaker (p_mor  p) _ _  ).
   - apply alg_initialR.
-  - apply alg_syntax_preserves_epi.
+  - apply algebraic_model_Epi.
   - apply ii1.
-    apply alg_sig_syntax_preserves_epi.
+    apply BindingSigAreEpiEpiSig.
+    apply algebraic_model_Epi.
   - apply epi_p_mor.
   - apply algSig_NatEpi.
   - apply algebraic_sig_representable.
-Qed.
-
-Lemma PresentableisRepresentable_choice
-      {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
-                                             (fun i => CoproductsHSET _ (setproperty i)) a)
-      (choice : AxiomOfChoice.AxiomOfChoice_surj)
-  :
-   Initial (rep_disp SET) [{a}].
-Proof.
-  use PresentableisRepresentable; (try apply preserves_to_HSET_isEpi); try assumption.
 Qed.
 
