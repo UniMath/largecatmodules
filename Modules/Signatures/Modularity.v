@@ -53,6 +53,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Prelims.FibrationInitialPushout.
 
+Local Open Scope cat.
 
 Section init.
   Context {C : category} (dC : disp_cat C).
