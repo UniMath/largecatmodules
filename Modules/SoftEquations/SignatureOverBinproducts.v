@@ -31,7 +31,7 @@ Require Import Modules.Signatures.HssSignatureCommutation.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.SignatureBinproducts.
 Require Import Modules.SoftEquations.SignatureOver.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 
 
 Local Notation BPO := (BinProductObject _ ).

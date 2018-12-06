@@ -75,7 +75,7 @@ Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.PreservesEpi.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModuleBinProduct.
 Require Import Modules.Signatures.BindingSig.

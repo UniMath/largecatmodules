@@ -23,7 +23,7 @@ Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import Modules.Signatures.Signature.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 Require Import Modules.SoftEquations.SignatureOver.
 
 (** Notation for 1-model morphisms *)

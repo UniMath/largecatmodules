@@ -13,7 +13,7 @@ CoproductsComplements.v
 BinProductComplements.v
 SetCatComplements.v
 FibrationInitialPushout.v
-FaithfulFibrationEqualizer.v
 Opfibration.v
+FaithfulFibrationEqualizer.v
 PushoutsFromCoeqBinCoproducts.v
 BinCoproductComplements.v

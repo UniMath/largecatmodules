@@ -39,7 +39,7 @@ Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.Prelims.EpiComplements.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 Require Import Modules.Prelims.modules.
 
 Open Scope cat.
