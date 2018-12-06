@@ -27,7 +27,7 @@ Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.Prelims.LModuleCoproducts.
 Require Import Modules.Prelims.DerivationIsFunctorial.
 Require Import Modules.Signatures.Signature.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 Require Import Modules.SoftEquations.SignatureOver.
 
 Section DAr.

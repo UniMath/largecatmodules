@@ -1,5 +1,7 @@
 quotientrep.v
 Signature.v
+ModelCat.v
+SignaturesColims.v
 EpiArePointwise.v
 EpiSigRepresentability.v
 HssToSignature.v
@@ -11,6 +13,5 @@ HssSignatureCommutation.v
 PresentableSignatureCoproducts.v
 SignatureBinproducts.v
 SignatureDerivation.v
-SignaturesColims.v
 PresentableSignatureBinProdR.v
 Modularity.v

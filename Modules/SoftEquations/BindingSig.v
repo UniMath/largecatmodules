@@ -23,7 +23,7 @@ Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.PreservesEpi.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 Require Import Modules.Prelims.modules.
 Require Import Modules.Prelims.LModuleBinProduct.
 Require Import Modules.Signatures.BindingSig.

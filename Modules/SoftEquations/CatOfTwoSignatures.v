@@ -25,7 +25,7 @@ Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.FaithfulFibrationEqualizer.
 Require Import Modules.Signatures.Signature.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 Require Import Modules.Prelims.modules.
 
 Require Import Modules.SoftEquations.SignatureOver.

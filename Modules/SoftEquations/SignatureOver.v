@@ -38,7 +38,7 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
 
 Require Import Modules.Signatures.Signature.
-Require Import Modules.SoftEquations.ModelCat.
+Require Import Modules.Signatures.ModelCat.
 
 
 Set Automatic Introduction.
