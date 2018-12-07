@@ -22,9 +22,6 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import UniMath.CategoryTheory.Adjunctions.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleBinProduct.
-Require Import Modules.Prelims.DerivationIsFunctorial.
 Require Import Modules.Prelims.BinProductComplements.
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.

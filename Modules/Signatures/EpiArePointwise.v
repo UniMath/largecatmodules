@@ -22,8 +22,7 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleColims.
+Require Import Modules.Prelims.LModulesColims.
 Require Import Modules.Signatures.SignaturesColims.
 Require Import Modules.Signatures.Signature.
 
@@ -41,7 +40,7 @@ Section pwEpiAr.
   Lemma PO_eqdiag (R : Monad C) X : 
     eq_diag
   (diagram_pointwise (homset_property C)
-                     (mapdiagram (forget_LMod R C) (mapdiagram (forget_Sig R) (pushout_diagram SIG F F))) X)
+                     (mapdiagram (LModule_forget_functor R C) (mapdiagram (forget_Sig R) (pushout_diagram SIG F F))) X)
    (pushout_diagram C (F R X) (F R X) ).
   Proof.
     use tpair.
@@ -59,7 +58,7 @@ Section pwEpiAr.
       (pos
          (diagram_pointwise
             (homset_property C)
-            (mapdiagram (forget_LMod R C)
+            (mapdiagram (LModule_forget_functor R C)
                         (mapdiagram (forget_Sig R) (pushout_diagram signature_precategory F F))) X)).
     
 

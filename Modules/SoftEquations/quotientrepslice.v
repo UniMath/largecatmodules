@@ -34,13 +34,14 @@ Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.LModulesComplements.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.Signatures.ModelCat.
-Require Import Modules.Prelims.modules.
+
 
 Open Scope cat.
 

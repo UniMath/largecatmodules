@@ -14,6 +14,7 @@ Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.CategoryTheory.functor_categories.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
+Require Import UniMath.CategoryTheory.Monads.Derivative.
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
@@ -22,8 +23,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import UniMath.CategoryTheory.Adjunctions.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleBinProduct.
+Require Import Modules.Prelims.LModulesComplements.
+Require Import Modules.Prelims.LModulesBinProducts.
 Require Import Modules.Prelims.DerivationIsFunctorial.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.limits.binproducts.
@@ -800,7 +801,9 @@ Local Lemma adj_law2 :
    (adj1 R M (pb_LModule f B))
      ((u : (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M, pb_LModule f A ⟧) · 
       pb_LModule_Mor f v · (λ (R0 S0 : Monad SET) (f0 : Monad_Mor R0 S0),
-                            LModPbCommute.pb_deriv_to_deriv_pb_iso TerminalHSET BinCoproductsHSET f0) R
+                            (* LModPbCommute.pb_deriv_to_deriv_pb_iso *)
+                            pb_LModule_deriv_iso
+                              TerminalHSET BinCoproductsHSET f0) R
                              S f B) =
    BinProductOfArrows (precategory_LModule R (category_pair SET (homset_property SET)))
      ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET (homset_property SET)) R
@@ -812,7 +815,7 @@ Local Lemma adj_law2 :
       :
       (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ tautological_LModule R,
       pb_LModule f (tautological_LModule S) ⟧) · (λ (R0 S0 : Monad SET) (f0 : Monad_Mor R0 S0),
-                                                  LModPbCommute.binprod_pbm_to_pbm_iso f0) R S f A
+                                                  binprod_pbm_to_pbm_iso f0) R S f A
                                                    (tautological_LModule S) · 
    pb_LModule_Mor f ((adj1 S A B) v)).
 Proof.

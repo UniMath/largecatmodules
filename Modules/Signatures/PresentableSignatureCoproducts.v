@@ -31,7 +31,7 @@ Require Import Modules.Signatures.PresentableSignature.
 Require Import Modules.Signatures.SignatureCoproduct.
 Require Import Modules.Signatures.HssSignatureCommutation.
 
-Require Import Modules.Prelims.LModPbCommute.
+
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 

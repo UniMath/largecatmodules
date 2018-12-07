@@ -21,9 +21,7 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.limits.terminal.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModPbCommute.
-Require Import Modules.Prelims.LModuleCoproducts.
+Require Import Modules.Prelims.LModulesCoproducts.
 Require Import Modules.Prelims.DerivationIsFunctorial.
 Require Import Modules.Signatures.Signature.
 
@@ -46,7 +44,7 @@ Variable (a : signature C).
   Definition signature_deriv_on_morphisms (R S : Monad C)
              (f : Monad_Mor R S) : LModule_Mor _ (signature_deriv_on_objects R)
                                                (pb_LModule f (signature_deriv_on_objects S)) :=
-    (# ∂ (# a f)%ar ) · (inv_from_iso (pb_deriv_to_deriv_pb_iso _ bcpC  f _ )).
+    (# ∂ (# a f)%ar ) · (inv_from_iso (pb_LModule_deriv_iso _ bcpC  f _ )).
 
   Definition signature_deriv_data : @signature_data C
     := signature_deriv_on_objects ,, signature_deriv_on_morphisms.
@@ -61,7 +59,7 @@ Variable (a : signature C).
       {
         set (f := ((#a)%ar _)).
         eapply (maponpaths  (fun (z : LModule_Mor _ _ _) => (# ∂ z : LModule_Mor _ _ _) c )(t1 := f)
-                            (t2 := pbm_id)
+                            (t2 := morphism_from_iso _ _ _ (pb_LModule_id_iso _ ))
                ).
         apply LModule_Mor_equiv;[apply homset_property|].
         apply nat_trans_eq;[apply homset_property|].

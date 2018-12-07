@@ -1,15 +1,5 @@
 (**
 
-forgetful functor
-pullback functor
-
-- pull back functor (base change). This is mathematically redundant with the
-proof that it is a fibration
-but more convenient to use
-
-let f : R -> S be a morphism of monads
-
-- f' : R -> f* S morphism of R-modules
 - displayed categories of modules over a monad 
 - proof that it is a fibration
 
@@ -27,62 +17,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
-Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.LModPbCommute.
 
 Open Scope cat.
-
-Section ForgetLModFunctor.
-  Context {B : precategory} (R : Monad B) (C : category).
-  Local Notation MOD := (precategory_LModule R C).
-
-  Definition forget_LMod_data : functor_data MOD [B,C] :=
-    mk_functor_data (C := MOD) (C' := [B,C])
-                    (fun X => ((X : LModule _ _): functor _ _))
-                    (fun a b f => ((f : LModule_Mor _ _ _) : nat_trans _ _)).
-
-  Definition forget_LMod_is_functor : is_functor forget_LMod_data :=
-    (( fun x => idpath _) : functor_idax forget_LMod_data)
-      ,, ((fun a b c f g => idpath _) : functor_compax forget_LMod_data).
-
-  Definition forget_LMod: functor MOD [B,C] :=
-    mk_functor forget_LMod_data forget_LMod_is_functor.
-End ForgetLModFunctor.
-Section PbmFunctor.
-  Context {B : precategory} {C : category} {R S : Monad B} (f : Monad_Mor R S).
-  Let MOD (R : Monad B) := (precategory_LModule R C).
-  Definition pbm_functor_data : functor_data (MOD S) (MOD R) :=
-    mk_functor_data (C := MOD S) (C' := MOD R) (pb_LModule f )
-                    (@pb_LModule_Mor _ _ _ f _).
-  Lemma pbm_is_functor : is_functor pbm_functor_data.
-  Proof.
-    split.
-    - intro M.
-      apply LModule_Mor_equiv;[apply homset_property|]; apply idpath.
-    - intros X Y Z u v.
-      apply LModule_Mor_equiv;[apply homset_property|]; apply idpath.
-  Qed.
-
-  Definition pb_LModule_functor : functor (MOD S) (MOD R) :=
-                              mk_functor _ pbm_is_functor.
-End PbmFunctor.
-(** strangely enough, I didn't find the following lemma :
- *)
-Lemma monad_mor_to_lmodule_law {C : precategory} {R S : Monad C}
-           (f : Monad_Mor R S) :
-  LModule_Mor_laws R (T := tautological_LModule R)
-                   (T' := pb_LModule f (tautological_LModule S)) f.
-Proof.
-  intro x.
-  cbn.
-  rewrite assoc.
-  apply pathsinv0.
-  apply Monad_Mor_μ.
-Qed.
-
-Definition monad_mor_to_lmodule {C : precategory} {R S : Monad C}
-  (f : Monad_Mor R S) : LModule_Mor R (tautological_LModule R) (pb_LModule f (tautological_LModule S))
-  := (f : nat_trans _ _) ,, monad_mor_to_lmodule_law f.
 
 
 
@@ -111,10 +47,10 @@ Proof.
   split.
   - intros x xx.
     simpl.
-    apply pbm_id.
+    apply pb_LModule_id_iso.
   - intros x y z f g xx yy zz ff gg.
     set (pbm_g := pb_LModule_Mor f gg).
-    set (pbm_gf := (LModule_composition _ pbm_g (pbm_mor_comp f g _))).
+    set (pbm_gf := (LModule_composition _ pbm_g (morphism_from_iso _ _ _(pb_LModule_comp_iso f g _ _)))).
     simpl in ff.
     exact (compose (C:=category_LModule _ _ ) ff pbm_gf).
 Defined.
@@ -184,7 +120,7 @@ Proof.
       cbn in *.
       use unique_exists.
       * use (LModule_composition R'' a). 
-        apply (pbm_comp_mor _ _ _ ).
+        exact ( inv_from_iso (pb_LModule_comp_iso (C := D) f' f M _)).
       * hnf.
         apply (invmap ((@LModule_Mor_equiv _ _  _ (homset_property D) _ _ _ _  ))).
         cbn.

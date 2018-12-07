@@ -35,6 +35,7 @@ Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
+Require Import Modules.Prelims.LModulesComplements.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.HssToSignature.
 Require Import Modules.Signatures.BindingSig.
@@ -43,7 +44,7 @@ Require Import Modules.Signatures.SignatureBinproducts.
 Require Import Modules.Signatures.SignatureCoproduct.
 Require Import Modules.Signatures.SignatureDerivation.
 
-Require Import Modules.Prelims.LModPbCommute.
+
 Require Import Modules.Prelims.BinProductComplements.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
@@ -86,7 +87,7 @@ Section GenericStrat.
     iso (C := precategory_LModule R _)
         (S1 R)
         ( S2 R) :=
-    LModule_M1_M2_iso _ _ (m12_eq _) _.
+    LModule_same_func_iso _ _ (m12_eq _) _.
 
 
   Hypothesis (Sf12_eq : ∏ R S f c, (Sf2 R S f c)  = (Sf1 R S f c) ).
@@ -164,7 +165,7 @@ Section commuteBinProdSig.
   Lemma binprod_sigs_har_mod_eq_mult R c  :
 
     (ModulesFromSignatures.lift_lm_mult (BPO (hss_bpSig a b)) R (tautological_LModule R) : nat_trans _ _) c =
-    (LModuleBinProduct.LModule_binproduct_mult bpC (homset_property C) (ar_a R) (ar_b R) c).
+    (LModulesBinProducts.LModule_binproduct_mult bpC (homset_property C) (ar_a R) (ar_b R) c).
   Proof.
     cbn.
     unfold BinProductOfSignatures.θ_ob_fun.
@@ -177,7 +178,7 @@ Section commuteBinProdSig.
 
   Lemma binprod_sigs_har_eq (R S : Monad C) (f : Monad_Mor R S) (c : C) : 
     (signature_BinProduct_on_morphisms ar_a ar_b R S f) c =
-    (lift_lmodule_mor (BPO (hss_bpSig a b)) R (modules.monad_mor_to_lmodule f) c) · (lift_pb_LModule 
+    (lift_lmodule_mor (BPO (hss_bpSig a b)) R (monad_mor_to_lmodule f) c) · (lift_pb_LModule 
                                                                                  (BPO (hss_bpSig a b)) f) c.
   Proof.
     cbn.
@@ -220,13 +221,13 @@ Section CoprodAr.
 
   Lemma coprod_sigs_har_mod_eq_mult R c  :
     (ModulesFromSignatures.lift_lm_mult (CPO (hss_cpSig sigs)) R (tautological_LModule R) : nat_trans _ _) c =
-    (LModuleCoproducts.LModule_coproduct_mult cpC (homset_property C) (λ o : I, (ars o) R)) c.
+    (LModulesCoproducts.LModule_coproduct_mult cpC (homset_property C) (λ o : I, (ars o) R)) c.
   Proof.
     cbn.
     unfold SumOfSignatures.θ_ob_fun.
     unfold coproducts.coproduct_nat_trans_data.
     etrans;[apply precompWithCoproductArrow|].
-    unfold LModuleCoproducts.LModule_coproduct_mult_data.
+    unfold LModulesCoproducts.LModule_coproduct_mult_data.
     unfold CoproductOfArrows.
     apply maponpaths.
     apply funextsec.
@@ -236,7 +237,7 @@ Section CoprodAr.
 
   Lemma  coprod_sigs_har_eq (R S : Monad C) (f : Monad_Mor R S) c :
   (signature_coprod_on_morphisms ars R S f) c =
-  ((lift_lmodule_mor (CPO (hss_cpSig sigs)) R (modules.monad_mor_to_lmodule f )c) · lift_pb_LModule
+  ((lift_lmodule_mor (CPO (hss_cpSig sigs)) R (monad_mor_to_lmodule f )c) · lift_pb_LModule
                                                                                   (CPO (hss_cpSig sigs)) f c) .
   Proof.
     cbn.

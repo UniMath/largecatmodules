@@ -29,7 +29,7 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
+
 
 
 Require Import Modules.Prelims.CoproductsComplements.
@@ -43,9 +43,9 @@ Require Import Modules.Signatures.SignaturesColims.
 Require Import Modules.Signatures.PresentableSignatureCoproducts.
 Require Import Modules.Signatures.HssSignatureCommutation.
 
-Require Import Modules.Prelims.LModPbCommute.
-Require Import Modules.Prelims.LModuleBinProduct.
-Require Import Modules.Prelims.LModuleCoproducts.
+
+Require Import Modules.Prelims.LModulesBinProducts.
+Require Import Modules.Prelims.LModulesCoproducts.
 Require Import Modules.Prelims.BinProductComplements.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
@@ -403,7 +403,7 @@ Defined.
     - apply is_iso_isEpi.
       apply is_z_iso_from_is_iso.
       set (i := functor_on_iso (forget_Sig R) har_binprodR_commute_mor_mod).
-       apply ( (functor_on_iso_is_iso _ _ (forget_LMod R C)) _ _ i).
+       apply ( (functor_on_iso_is_iso _ _ (LModule_forget_functor R C)) _ _ i).
     - apply epiBinProd.
       + apply epiFa.
       + apply identity_isEpi.

@@ -35,7 +35,9 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
+Require Import Modules.Prelims.LModulesFibration.
+Require Import Modules.Prelims.LModulesComplements.
+
 
 Require Import Modules.Signatures.Signature.
 
@@ -49,7 +51,7 @@ Context {C : category}.
 
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
-Local Notation BMOD := (bmod_disp C C).
+(* Local Notation BMOD := (bmod_disp C C). *)
 Local Notation SIG := (signature C).
 
 Context (Sig : SIG).
