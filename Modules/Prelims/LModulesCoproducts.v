@@ -1,7 +1,8 @@
 (* coproducts are computed pointwise in the category of left modules
-This is redundant with LModuleColims, but maybye more convenient to use ? Cf HArityCoproducts
+This is redundant with LModulesColims, but maybye more convenient to use ? Cf HArityCoproducts
 to compare both uses
-(inspired by LModuleColims )
+(inspired by LModulesColims )
+commutation with pullbacks [coprod_pbm_to_pbm_coprod] TODO en faire un iso
  *)
 
 Require Import UniMath.Foundations.Propositions.
@@ -18,7 +19,7 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Local Open Scope cat.
 
 Section ColimsModule.
-  Context 
+  Context
           {C : precategory}
           {O : UU} (cpC : Coproducts O C)
           {B:precategory} {R:Monad B}
@@ -104,13 +105,13 @@ Section ColimsModule.
 
   Definition LModule_coproduct : LModule R C := (_ ,, LModule_coproduct_laws).
 
-  Lemma LModule_coproductIn_laws v : 
+  Lemma LModule_coproductIn_laws v :
     LModule_Mor_laws R
                      (T := (d v : LModule _ _)) (T' := LModule_coproduct)
       ((CoproductIn  _ _ ( (cpFunc d')) v : nat_trans _ _) ).
   Proof.
     intro c.
-    
+
     cbn.
     unfold LModule_coproduct_mult_data.
     set (CC1 := cpC _ ).
@@ -185,3 +186,35 @@ Definition LModule_Coproducts (C : category) {B : precategory}
             : Coproducts O (precategory_LModule R C) :=
    LModule_Coproduct  cpC (homset_property C).
 
+Section pullback_coprod.
+  Context {C : category} {B : precategory}.
+  Context {R : Monad B}{S : Monad B} (f : Monad_Mor R S).
+
+  Context {O : UU}.
+  Context {cpC : Coproducts O C}.
+
+  Let cpLM (X : Monad B) := LModule_Coproducts C  X cpC.
+  Let cpFunc := Coproducts_functor_precat _ B _ cpC (homset_property C).
+
+  Context (α : O -> LModule S C ).
+
+  Let αF : O -> functor B C := fun o => α o.
+  Let pbm_α : O -> LModule R C := fun o => pb_LModule f (α o).
+
+  Definition pbm_coprod := pb_LModule f (CoproductObject _ _ (cpLM _ α)).
+  Definition coprod_pbm : LModule _ _ := CoproductObject _ _ (cpLM _ pbm_α).
+
+  Lemma coprod_pbm_to_pbm_coprod_aux :
+    ∏ c : B,
+          (LModule_coproduct_mult cpC (homset_property C) pbm_α) c =
+          (pb_LModule_σ f (CoproductObject O (precategory_LModule S C) (cpLM S α))) c.
+  Proof.
+    intro b.
+    apply pathsinv0.
+    apply CoproductOfArrows_comp.
+  Defined.
+
+  Definition coprod_pbm_to_pbm_coprod : LModule_Mor  _ coprod_pbm pbm_coprod :=
+    LModule_same_func_Mor coprod_pbm_to_pbm_coprod_aux  _ _.
+
+End pullback_coprod.

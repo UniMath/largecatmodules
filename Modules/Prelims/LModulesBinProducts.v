@@ -1,7 +1,11 @@
 (* The binary product of two modules is a module *)
 (*
 Direct definition of binary product.
-It could also be deduced from LModuleColims.v *)
+
+It could also be deduced from LModulesColims.v
+
+commutation with pullbacks [binprod_pbm_to_pbm_iso]
+ *)
 (* TODO montrer que n'importe quel limite se calcule pointwise *)
 
 (**
@@ -67,7 +71,7 @@ Local Notation σ := (lm_mult _).
 
   Definition LModule_binproduct_mult : R ∙ F ⟹ F :=
     (_ ,, LModule_binproduct_mult_is_nat_trans).
-  
+
 
   Definition LModule_binproduct_data : LModule_data R C :=
     (F ,, LModule_binproduct_mult).
@@ -181,3 +185,39 @@ Section BinProductsLModule.
 
   Definition LModule_BinProducts : BinProducts LMOD := LModule_ProductCone bpC hsC.
 End BinProductsLModule.
+
+Section pullback_binprod.
+  Context {C : category} {B : precategory}.
+  Context {R : Monad B}{S : Monad B} (f : Monad_Mor R S).
+
+  Context {cpC : BinProducts C}.
+
+  Let cpLM (X : Monad B) := LModule_BinProducts   X cpC (homset_property C).
+  Let cpFunc := BinProducts_functor_precat  C _ cpC (homset_property C) .
+
+  Context (a b : LModule S C ).
+
+  (* Let αF : O -> functor B C := fun o => α o. *)
+  (* Let pbm_α : O -> LModule R C := fun o => pb_LModule f (α o). *)
+
+  Local Notation BPO := (BinProductObject _ ).
+
+  Definition pbm_binprod := pb_LModule f (BPO (cpLM _ a b)).
+  Definition binprod_pbm : LModule _ _ := BPO (cpLM _ (pb_LModule f a)(pb_LModule f b)).
+
+
+  Lemma binprod_pbm_to_pbm_eq_mult (c : B) :
+  (LModule_binproduct_mult cpC (homset_property C) (pb_LModule f a) (pb_LModule f b)) c =
+  (pb_LModule_σ f (BPO (cpLM S a b))) c.
+  Proof.
+    apply pathsinv0.
+    apply BinProductOfArrows_comp.
+  Defined.
+
+  Definition binprod_pbm_to_pbm_iso : iso (C:= precategory_LModule _ _)  binprod_pbm pbm_binprod :=
+    LModule_same_func_iso _ _ binprod_pbm_to_pbm_eq_mult (homset_property _).
+
+  Definition binprod_pbm_to_pbm_binprod : LModule_Mor  _ binprod_pbm pbm_binprod :=
+    morphism_from_iso _ _ _ binprod_pbm_to_pbm_iso.
+
+End pullback_binprod.

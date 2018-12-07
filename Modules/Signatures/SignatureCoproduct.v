@@ -21,9 +21,9 @@ Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModPbCommute.
-Require Import Modules.Prelims.LModuleCoproducts.
+
+
+Require Import Modules.Prelims.LModulesCoproducts.
 Require Import Modules.Signatures.Signature.
 
 

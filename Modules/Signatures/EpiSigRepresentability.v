@@ -51,7 +51,7 @@ Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
+
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.quotientrep.
@@ -346,11 +346,8 @@ where π := projR
 The R-module morphism 
     #a R · Pullback (π)(F R') : a(R) ---> π^*(b R')
 *)
-Definition hab : mor_disp
-      (D:=bmod_disp_ob_mor _ _ )
-      (a (pr1 R)) 
-      (b R')
-      projR    
+Definition hab :
+  LModule_Mor (pr1 R) (a (pr1 R)) (pb_LModule projR (b R'))
   := compose (C:= category_LModule _ _ )
              (# a projR)
              (pb_LModule_Mor projR (F R')).

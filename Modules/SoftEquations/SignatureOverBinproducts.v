@@ -1,5 +1,5 @@
 (**
-BinProducts of over-signatures using LModuleBinProduct
+BinProducts of over-signatures using LModulesBinProducts
 (inspired by SignatureBinproducts
 pullback binproducts
 
@@ -24,9 +24,9 @@ Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleBinProduct.
-Require Import Modules.Prelims.LModPbCommute.
+
+Require Import Modules.Prelims.LModulesBinProducts.
+
 Require Import Modules.Signatures.HssSignatureCommutation.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.SignatureBinproducts.

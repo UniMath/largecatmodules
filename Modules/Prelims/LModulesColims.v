@@ -30,8 +30,8 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
-Require Import Modules.Prelims.modules. (* for the definition of the forgetful functor *)
-Require Import Modules.Prelims.LModPbCommute. (* for the definition of the iso *)
+(* Require Import Modules.Prelims.modules. (* for the definition of the forgetful functor *) *)
+(* Require Import Modules.Prelims.LModPbCommute. (* for the definition of the iso *) *)
 
 Local Open Scope cat.
 
@@ -108,7 +108,7 @@ Section ColimsModule.
   (* TODO generalize this kind of construction : composition of a diagram and a functor
 (here the forget ful functor MOD --> [B , C])
    *)
-  Local Notation FORGET := (forget_LMod R (C ,, hsC)).
+  Local Notation FORGET := (LModule_forget_functor R (C ,, hsC)).
   Local Notation d' := (  mapdiagram FORGET d : diagram g [B , C , hsC] ).
   (* The natural candidate *)
   Local Notation F := (colim (coFunc d') : functor _ _).
@@ -621,8 +621,8 @@ Section pullback_lims.
   Qed.
 
   Definition pb_LModule_colim_iso : iso (C := MOD R) cR (pb_LModule f cS) :=
-    LModule_M1_M2_iso _ _ pb_colims_eq_mult (homset_property _).
+    LModule_same_func_iso _ _ pb_colims_eq_mult (homset_property _).
 
   Definition pb_LModule_lim_iso : iso (C := MOD R) lR (pb_LModule f lS) :=
-    LModule_M1_M2_iso _ _ pb_lims_eq_mult (homset_property _).
+    LModule_same_func_iso _ _ pb_lims_eq_mult (homset_property _).
 End pullback_lims.

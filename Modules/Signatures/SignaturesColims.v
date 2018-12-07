@@ -20,9 +20,7 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
 Require Import Modules.Signatures.Signature.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleColims.
-Require Import Modules.Prelims.LModPbCommute.
+Require Import Modules.Prelims.LModulesColims.
 Require Import Modules.Prelims.CoproductsComplements.
 
 Local Open Scope cat.

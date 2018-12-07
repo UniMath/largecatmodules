@@ -24,8 +24,8 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.Signatures.ModelCat.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleBinProduct.
+
+Require Import Modules.Prelims.LModulesBinProducts.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.SignatureBinproducts.
 Require Import Modules.Signatures.SignatureCoproduct.
@@ -44,7 +44,7 @@ Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.terminal.
-Require Import Modules.Prelims.LModPbCommute.
+
 Require Import Modules.SoftEquations.SignatureOverBinproducts.
 
 Local Notation ι := (sig_over_from_sig _).

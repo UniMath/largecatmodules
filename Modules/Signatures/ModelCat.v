@@ -31,8 +31,6 @@ Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModPbCommute.
 
 Require Import Modules.Signatures.Signature.
 
@@ -44,7 +42,6 @@ We work  in a category [C], and are going to define the 1-models of a fixed 1-si
 Context {C : category}.
 
 Local Notation MONAD := (category_Monad C).
-Local Notation BMOD := (bmod_disp C C).
 Local Notation SIG := (signature C).
 
 (** This proposition states that the monad morphism [g] between two 1-models

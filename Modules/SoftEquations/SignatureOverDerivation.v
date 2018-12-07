@@ -22,9 +22,9 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.limits.terminal.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModPbCommute.
-Require Import Modules.Prelims.LModuleCoproducts.
+
+
+Require Import Modules.Prelims.LModulesCoproducts.
 Require Import Modules.Prelims.DerivationIsFunctorial.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.ModelCat.
@@ -53,7 +53,7 @@ Variable (a : OSIG).
   Definition signature_over_deriv_on_morphisms (R S : MODEL)
              (f : MODEL_MOR R S) : LModule_Mor _ (signature_over_deriv_on_objects R)
                                                (pb_LModule f (signature_over_deriv_on_objects S)) :=
-    (# ∂ (# a f)%sigo ) · (inv_from_iso (pb_deriv_to_deriv_pb_iso _ bcpC  f _ )).
+    (# ∂ (# a f)%sigo ) · (inv_from_iso (pb_LModule_deriv_iso _ bcpC  f _ )).
 
   Definition signature_over_deriv_data : signature_over_data Sig
     := signature_over_deriv_on_objects ,, signature_over_deriv_on_morphisms.
@@ -68,7 +68,7 @@ Variable (a : OSIG).
       {
         set (f := ((#a)%sigo _)).
         eapply (maponpaths  (fun (z : LModule_Mor _ _ _) => (# ∂ z : LModule_Mor _ _ _) c )(t1 := f)
-                            (t2 := pbm_id)
+                            (t2 := morphism_from_iso _ _ _ (pb_LModule_id_iso _) )
                ).
         apply LModule_Mor_equiv;[apply homset_property|].
         apply nat_trans_eq;[apply homset_property|].

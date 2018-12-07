@@ -26,7 +26,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
+Require Import Modules.Prelims.LModulesFibration.
+Require Import Modules.Prelims.LModulesComplements.
 
 
 Set Automatic Introduction.

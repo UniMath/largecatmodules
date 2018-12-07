@@ -35,7 +35,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
+Require Import Modules.Prelims.LModulesFibration.
+
 
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.ModelCat.
@@ -51,7 +52,7 @@ Context {C : category}.
 
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
-Local Notation BMOD := (bmod_disp C C).
+(* Local Notation BMOD := (bmod_disp C C). *)
 Local Notation SIG := (signature C).
 
 
@@ -382,7 +383,6 @@ End OverSignatures.
 
 Notation "# F" := (signature_over_on_morphisms _ F) (at level 3) : signature_over_scope.
 
-Require Import Modules.Prelims.LModPbCommute.
 Section PushoutOverSig.
 
 

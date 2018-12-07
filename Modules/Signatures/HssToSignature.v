@@ -1,6 +1,6 @@
 (**
 HSS Signature to Signature functor
-H
+
 *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
@@ -16,14 +16,14 @@ Require Import UniMath.CategoryTheory.functor_categories.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+(* Require Import UniMath.CategoryTheory.Chains.All. *)
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModPbCommute.
+Require Import Modules.Prelims.LModulesComplements.
 Require Import Modules.Signatures.Signature.
 Open Scope cat.
 
@@ -119,7 +119,6 @@ Context {C : category}.
 
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
-Local Notation BMOD := (bmod_disp C C).
 
 Local Notation hsC := (homset_property C).
 
@@ -188,7 +187,7 @@ Lemma lift_pb_LModule_iso
     (liftlmodule R (pb_LModule f (tautological_LModule S)))
     (pb_LModule f (liftlmodule S (tautological_LModule S))).
 Proof.
-  apply LModule_M1_M2_iso.
+  apply LModule_same_func_iso.
   apply lift_pb_LModule_eq_mult.
 Defined.
 

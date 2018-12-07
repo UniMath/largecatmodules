@@ -70,14 +70,14 @@ Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import UniMath.CategoryTheory.Adjunctions.
 
 Require Import Modules.Prelims.lib.
+Require Import Modules.Prelims.LModulesComplements.
 Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.Prelims.quotientmonad.
 Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.Signatures.ModelCat.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleBinProduct.
+Require Import Modules.Prelims.LModulesBinProducts.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.SignatureBinproducts.
 Require Import Modules.Signatures.SignatureCoproduct.
@@ -97,7 +97,6 @@ Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.terminal.
-Require Import Modules.Prelims.LModPbCommute.
 Require Import Modules.SoftEquations.SignatureOverBinproducts.
 Require Import Modules.SoftEquations.BindingSig.
 

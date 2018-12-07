@@ -24,7 +24,6 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 
 Section DerivFunctor.

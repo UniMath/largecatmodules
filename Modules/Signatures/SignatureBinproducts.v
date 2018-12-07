@@ -1,5 +1,5 @@
 (**
-BinProducts of  arities using LModuleBinProduct
+BinProducts of  arities using LModulesBinProducts
 (inspired by SignatureCoproduct
 pullback binproducts
  *)
@@ -21,9 +21,7 @@ Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 
 Require Import Modules.Prelims.lib.
-Require Import Modules.Prelims.modules.
-Require Import Modules.Prelims.LModuleBinProduct.
-Require Import Modules.Prelims.LModPbCommute.
+Require Import Modules.Prelims.LModulesBinProducts.
 Require Import Modules.Signatures.Signature.
 
 

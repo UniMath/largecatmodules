@@ -26,7 +26,7 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.FaithfulFibrationEqualizer.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.ModelCat.
-Require Import Modules.Prelims.modules.
+
 
 Require Import Modules.SoftEquations.SignatureOver.
 Require Import Modules.SoftEquations.Equation.
@@ -331,7 +331,7 @@ Defined.
 
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
-Local Notation BMOD := (bmod_disp C C).
+(* Local Notation BMOD := (bmod_disp C C). *)
   
 
 (* Signatures are display functors over the identity *)

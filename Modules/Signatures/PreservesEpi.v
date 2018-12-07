@@ -30,7 +30,6 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.EpiComplements.
-Require Import Modules.Prelims.modules.
 Require Import Modules.Signatures.Signature.
 Require Import UniMath.SubstitutionSystems.Signatures.
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
