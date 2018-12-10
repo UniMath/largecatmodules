@@ -169,7 +169,6 @@ Context (epiSig : sig_preservesNatEpiMonad Sig).
 Local Notation REP := (model Sig).
 Local Notation REP_CAT := (rep_fiber_category Sig).
 
-(* Variable (choice : AxiomOfChoice.AxiomOfChoice_surj). *)
 Context {R : REP}.
 Context (R_epi : preserves_Epi R).
 Context (epiSigR : preserves_Epi (Sig R)).

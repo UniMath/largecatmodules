@@ -121,8 +121,6 @@ Local Notation "'SET'" := hset_category.
 Local Notation CAT_SIGNATURE := (@signature_category SET).
 Local Notation REP := (rep_disp SET).
 
-Variable (ax_choice : AxiomOfChoice.AxiomOfChoice_surj).
-
 Context {a b : signature SET}.
 
 Context  (F : signature_Mor a b).
