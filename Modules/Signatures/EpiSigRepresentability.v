@@ -569,132 +569,11 @@ Let Rep_b : category := fiber_category (rep_disp SET) b.
 Let FF : Rep_b ⟶ Rep_a := fiber_functor_from_cleaving _ (rep_cleaving SET) F.
 
 
-Lemma build_module_law
-      (R : Rep_a)
-      (R_epi : preserves_Epi ( R : model _))
-      (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-
-      (cond_R : cond_isEpi_hab R R_epi)
-      (S : Rep_b)
-      (m : Rep_b ⟦ rep_of_b_in_R' R R_epi epiab cond_R, S ⟧)
-  : model_mor_law  R
-                   (pb_rep F S)
-                   (signature_Mor_id (pr1 a))
-                   ((pr1 (projR_rep R R_epi epiab cond_R) : category_Monad _ ⟦_,_⟧) · pr1 m).
-Proof.
-  intro x.
-  etrans.
-  {
-    etrans; [apply assoc |].
-    apply cancel_postcomposition.
-    apply (model_mor_ax (projR_rep R R_epi epiab cond_R)).
-  }
-  rewrite signature_comp.
-  repeat rewrite <- assoc.
-  etrans; [|apply assoc].
-  apply cancel_precomposition.
-  etrans; revgoals.
-  {
-    repeat rewrite assoc.
-    eapply pathsinv0.
-    etrans; [apply assoc|].
-    apply cancel_postcomposition.
-    apply signature_Mor_ax_pw.
-  }
-  etrans.
-  {
-    apply cancel_precomposition.
-    apply (model_mor_ax m).
-  }
-  reflexivity.
-Qed.
-
-Definition build_module
-           (R : Rep_a)
-           (R_epi : preserves_Epi ( R : model _))
-           (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-           (cond_R : cond_isEpi_hab R R_epi)
-           (S : Rep_b)
-           (m : Rep_b ⟦ rep_of_b_in_R' R R_epi epiab cond_R, S ⟧)
-  : model_mor_mor a a R (pb_rep F S) (signature_Mor_id (pr1 a))
-  := _ ,, build_module_law R R_epi epiab cond_R S m.
-  
-Theorem push_initiality
-        (R : Rep_a)
-        (R_epi : preserves_Epi ( R : model _))
-        (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-        (epiSig_F : isEpi (C:= signature_category ) F)
-        (epib : sig_preservesNatEpiMonad b)
-  : isInitial _ R -> Initial Rep_b.
-Proof.
-  assert (epi_F : isEpi (C := [_, _]) (pr1 (F (pr1 R)))).
-  {
-    apply epiSig_is_pwEpi.
-    - exact (ColimsHSET_of_shape pushouts.pushout_graph).
-    - exact epiSig_F.
-  }
-  intro iniR.
-  set (cond_R := inr (epi_F ,, epib) : cond_isEpi_hab R R_epi).
-  use tpair.
-  - apply (rep_of_b_in_R' R R_epi epiab cond_R).
-  - intro S.
-    use iscontrpair.
-    +  use u_rep.
-       use (iscontrpr1 (iniR (FF S))).
-    + intro m.
-      apply u_rep_unique.
-      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R R_epi epiab cond_R S m)).
-      rewrite <- h.
-      intros.
-      apply idpath.
-Qed.
-
-Theorem push_initiality_weaker
-        (R : Rep_a)
-        (R_epi : preserves_Epi ( R : model _))
-        (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-        (epi_F : ∏ (R : Monad _), isEpi (C := [_, _]) (pr1 (F (R))))
-        (epia : sig_preservesNatEpiMonad a)
-  : isInitial _ R -> Initial Rep_b.
-Proof.
-  intro iniR.
-  set (cond_R := inl (epi_F _ ,, epia) : cond_isEpi_hab R R_epi).
-  use tpair.
-  - apply (rep_of_b_in_R' R R_epi epiab cond_R).
-  - intro S.
-    use iscontrpair.
-    +  use u_rep.
-       use (iscontrpr1 (iniR (FF S))).
-    + intro m.
-      apply u_rep_unique.
-      assert (h := iscontr_uniqueness (iniR (FF S)) (build_module R R_epi epiab cond_R S m)).
-      rewrite <- h.
-      intros;
-      apply idpath.
-Qed.
-
-Theorem push_initiality_weaker_choice
-        (R : Rep_a)
-        (choice : AxiomOfChoice.AxiomOfChoice_surj)
-        (epi_F : ∏ (R : Monad _), isEpi (C := [_, _]) (pr1 (F (R))))
-        (epia : sig_preservesNatEpiMonad a)
-  : isInitial _ R -> Initial Rep_b.
-Proof.
-  apply push_initiality_weaker; (try apply preserves_to_HSET_isEpi); try assumption.
-  apply ii1; apply preserves_to_HSET_isEpi; assumption.
-Qed.
-
-(* TODO : remplacer Fepi par isEpi F (comme dans le papier) et déduire la version pointwise *)
-Context (aepi : sig_preservesNatEpiMonad a).
-
-(* Let R' (R : REP a) : Monad SET := R' ax_choice (congr_equivc R) (compat_μ_projR R). *)
-
 Lemma helper
-      (Fepi : ∏ R R_epi, isEpi (C := [_, _]) (pr1 (F (R' R R_epi))))
       (R : Rep_a)
         (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-      (cond_F := inl (dirprodpair (Fepi R R_epi) aepi ) : cond_isEpi_hab R R_epi)
+      (cond_F : cond_isEpi_hab R R_epi)
       (S : model b)
   : ∏ (u' : Rep_b ⟦ rep_of_b_in_R' R R_epi epiab cond_F, S ⟧) x,
     projR R R_epi x · (u' : model_mor_mor _ _ _ _ _) x =
@@ -718,9 +597,73 @@ Proof.
   induction e; apply idpath.
 Qed.
 
+Lemma u_rep_universal (R : model _)
+    (Repi : preserves_Epi (R : model a))
+    (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
+    (cond_R : 
+       (isEpi (C := [_, _]) (pr1 (F (R' _ Repi) )) × sig_preservesNatEpiMonad a)
+         ⨿ (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × sig_preservesNatEpiMonad b))
+  :
+
+  is_universal_arrow_to FF R (rep_of_b_in_R' R Repi epiab cond_R)
+    (projR_rep R Repi epiab cond_R).
+Proof.
+    intros S m. cbn in S, m.
+    use unique_exists. 
+    + unshelve use (u_rep _ _ _ m). 
+    + (* Ici ca devrait être apply quotientmonad.u_def *)
+      apply pathsinv0. 
+      apply model_mor_mor_equiv.
+      intro x.
+      etrans. { apply u_def. }
+      use (helper _ Repi epiab _ _ (u_rep R _ _ m cond_R)).
+    + intro y; apply homset_property.
+    + intros u' hu'.
+      hnf in hu'.
+      apply u_rep_unique.
+      rewrite <- hu'.
+      intro x.
+      apply helper.
+Qed.
+
+Theorem push_initiality
+        (R : Rep_a) 
+        (R_epi : preserves_Epi ( R : model _))
+        (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
+        (cond_R : 
+           (isEpi (C := [_, _]) (pr1 (F (R' _ R_epi) )) × sig_preservesNatEpiMonad a)
+             ⨿ (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × sig_preservesNatEpiMonad b))
+  : isInitial _ R -> Initial Rep_b.
+Proof.
+  intro iniR.
+  eapply tpair.
+  eapply (initial_universal_to_lift_initial _ (_ ,, iniR)).
+  use ( u_rep_universal R R_epi epiab cond_R ).
+Qed.
+
+
+Theorem push_initiality_weaker_choice
+        (R : Rep_a)
+        (choice : AxiomOfChoice.AxiomOfChoice_surj)
+        (epi_F : isEpi (C := signature_category ) F)
+        (epia : sig_preservesNatEpiMonad a)
+  : isInitial _ R -> Initial Rep_b.
+Proof.
+  unshelve eapply push_initiality; (try apply preserves_to_HSET_isEpi); try assumption.
+  - apply ii1; apply preserves_to_HSET_isEpi; assumption.
+  - apply ii1.
+    apply dirprodpair.
+    + apply epiSig_is_pwEpi .
+      * apply ColimsHSET_of_shape.
+      * apply epi_F.
+    + exact epia.
+Qed.
+
+
 
 Definition is_right_adjoint_functor_of_reps
-           (* this is the case if the axiom of choice is assumed *)
+           (aepi : sig_preservesNatEpiMonad a)
+           (** this is the case if the axiom of choice is assumed *)
            (epiall : ∏ (R : functor SET SET), preserves_Epi R)
            (Fepi : ∏ R R_epi, isEpi (C := [_, _]) (pr1 (F (R' R R_epi))) )
   : is_right_adjoint FF.
@@ -734,38 +677,25 @@ Proof.
       apply epiall.
   - intro R. apply projR_rep.
   - intro R.
-    unfold is_universal_arrow_to.
-    intros S m. cbn in S, m.
-    use unique_exists. 
-    + unshelve use (u_rep _ _ _ m). 
-    + (* Ici ca devrait être apply quotientmonad.u_def *)
-      apply pathsinv0. 
-      apply model_mor_mor_equiv.
-      intro x.
-      etrans. { apply u_def. }
-      use (helper Fepi _ _ _ _ (u_rep R _ _ m (cond_F R _ ))).
-    + intro y; apply homset_property.
-    + intros u' hu'.
-      hnf in hu'.
-      apply u_rep_unique.
-      rewrite <- hu'.
-      intro x.
-      apply helper.
+    apply u_rep_universal.
 Qed.
   
 Corollary is_right_adjoint_functor_of_reps_from_pw_epi 
+            (aepi : sig_preservesNatEpiMonad a)
            (epiall : ∏ (R : functor SET SET), preserves_Epi R)
           (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
                                               (pr1 (F R)))
   : is_right_adjoint FF.
 Proof.
   apply is_right_adjoint_functor_of_reps.
+  - exact aepi.
   - intro R; apply epiall.
   - intros; apply Fepi.
 Qed.
 
 Corollary is_right_adjoint_functor_of_reps_from_pw_epi_choice 
            (choice : AxiomOfChoice.AxiomOfChoice_surj)
+           (aepi : sig_preservesNatEpiMonad a)
           (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
                                               (pr1 (F R)))
   : is_right_adjoint FF.

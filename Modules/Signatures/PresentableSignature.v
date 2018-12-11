@@ -95,14 +95,16 @@ Lemma PresentableisRepresentable
   :
    Initial (rep_disp SET) [{a}].
 Proof.
-  use (push_initiality_weaker (p_mor  p) _ _  ).
+  use (push_initiality (p_mor  p) _ _  ).
   - apply alg_initialR.
   - apply algebraic_model_Epi.
   - apply ii1.
     apply BindingSigAreEpiEpiSig.
     apply algebraic_model_Epi.
-  - apply epi_p_mor.
-  - apply algSig_NatEpi.
+  - apply ii1.
+    apply dirprodpair.
+    + apply epi_p_mor.
+    + apply algSig_NatEpi.
   - apply algebraic_sig_representable.
 Qed.
 
