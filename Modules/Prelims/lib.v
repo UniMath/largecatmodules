@@ -3,6 +3,9 @@
 Among other things:
 - associativity of horizontal composition of natural transformations [horcomp_assoc]
 - functors from Set preserves epis, assuming the axiom of choice [preserves_to_HSET_isEpi]
+- isomorphisms of categories transfer initiality
+- if there is a universal arrow from the initial object, then the target category has
+  an initial object [initial_universal_to_lift_initial]
 
 *)
 Require Import UniMath.Foundations.PartD.
@@ -22,6 +25,8 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.catiso.
+
+Require Import UniMath.CategoryTheory.Adjunctions.
 
 
 Local Notation "'SET'" := hset_category.
@@ -50,6 +55,22 @@ Proof.
     + apply (pr2 ini).
 Defined.
 
+Lemma initial_universal_to_lift_initial {D C : precategory}
+      (S : D ⟶ C)
+      (c : Initial C)
+      {r : D} {f : C ⟦ c, S r ⟧}
+      (unif : is_universal_arrow_to  S c r f) :
+  isInitial _ r.
+Proof.
+  intro d.
+  specialize (unif d (InitialArrow _ _)).
+  use iscontrpair.
+  - apply (iscontrpr1 unif).
+  - intro g.
+    cbn.
+    apply limits.path_to_ctr.
+    apply InitialArrowUnique.
+Qed.
                  
 (** common generalization to [maponpaths] and [toforallpaths] *)
 
