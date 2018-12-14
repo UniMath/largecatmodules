@@ -101,7 +101,9 @@ h is compatible with π ∘ τ
 Context {a : LModule R SET}
         {b : LModule R'_monad SET}.
 
-(** We need that either [a] or [b] preserves epis *)
+(** We need that either [a] or [b] preserves epis to show that
+     τ' is a module morphism
+   *)
 Context (ab_epi : preserves_Epi a ⨿ preserves_Epi b).
 Context
         {τ : LModule_Mor _ a (Θ R)}

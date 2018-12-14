@@ -384,6 +384,13 @@ Section EpiSignatureSig.
       apply IHi.
   Qed.
 
+  Lemma BindingSig_on_model_isEpi (S : BindingSig) :
+        preserves_Epi ((toSig S : functor _ _) ((alg_initialR S : model  _) : functor _ _)).
+  Proof.
+    apply BindingSigAreEpiEpiSig.
+    apply algebraic_model_Epi.
+  Qed.
+
 End EpiSignatureSig.
 
 Definition BindingSigIndexhSet : BindingSig -> hSet :=

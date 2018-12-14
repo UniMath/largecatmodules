@@ -1,8 +1,9 @@
 (**
 
 Let F : Σ → ϒ be an epimorphism of signatures.
-If the base category has pushouts, then for each monad R, F(R) is
-an epimorphic natural transformation ([epiSig_is_pwEpi]).
+- If it pointwise epi, then it is epi (easy) [pwEpiSig_isEpi]
+- If the base category has pushouts, then for each monad R, F(R) is
+  an epimorphic natural transformation ([epiSig_is_pwEpi]).
 
 *)
 Require Import UniMath.Foundations.PartD.
@@ -33,8 +34,20 @@ Section pwEpiAr.
 
   Context 
           (pos : colimits.Colims_of_shape pushout_graph C)
-          {A B : signature C} (F : signature_Mor A  B)
-          (epiF : isEpi (C:=SIG) F).
+          {A B : signature C} (F : signature_Mor A  B).
+
+  Lemma pwEpiSig_isEpi : (∏ (R : Monad C) , isEpi (C := [C,C] ) (F R:nat_trans _ _)) -> isEpi (C := SIG) F.
+  Proof.
+    intro hepi.
+    intros x y z e.
+    apply signature_Mor_eq.
+    intro R.
+    apply LModule_Mor_equiv;[apply homset_property|].
+    apply hepi.
+    exact (maponpaths (T1 := signature_Mor _ _) (fun z => (z R : nat_trans _ _)) e).
+  Qed.
+
+  Context    (epiF : isEpi (C:=SIG) F).
 
 
   Lemma PO_eqdiag (R : Monad C) X : 

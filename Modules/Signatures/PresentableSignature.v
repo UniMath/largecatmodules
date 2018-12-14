@@ -24,6 +24,7 @@ Require Import Modules.Signatures.HssToSignature.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.EpiSigRepresentability.
 Require Import Modules.Signatures.PreservesEpi.
+Require Import Modules.Signatures.EpiArePointwise.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
@@ -98,13 +99,10 @@ Proof.
   use (push_initiality (p_mor  p) _ _  ).
   - apply alg_initialR.
   - apply algebraic_model_Epi.
-  - apply ii1.
-    apply BindingSigAreEpiEpiSig.
-    apply algebraic_model_Epi.
-  - apply ii1.
-    apply dirprodpair.
-    + apply epi_p_mor.
-    + apply algSig_NatEpi.
+  - apply BindingSig_on_model_isEpi.
+  - apply algSig_NatEpi.
+  - apply pwEpiSig_isEpi.
+    apply epi_p_mor.
   - apply algebraic_sig_representable.
 Qed.
 
