@@ -624,7 +624,7 @@ Proof.
       apply helper.
 Qed.
 
-Theorem push_initiality
+Theorem push_initiality_weaker
         (R : Rep_a) 
         (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
@@ -639,6 +639,24 @@ Proof.
   use ( u_rep_universal R R_epi epiab cond_R ).
 Qed.
 
+Theorem push_initiality
+        (** R is a model of a *)
+        (R : Rep_a) 
+        (R_epi : preserves_Epi ( R : model _))
+        (epiaR :  preserves_Epi (a (R : model _)))
+        (** a is an epi-signature *)
+        (epia : sig_preservesNatEpiMonad a)
+        (Fepi : isEpi (C := signature_category) F)
+  : isInitial _ R -> Initial Rep_b.
+Proof.
+  use push_initiality_weaker; try assumption.
+  - left; assumption.
+  - left; split;[| assumption].
+     apply epiSig_is_pwEpi .
+      * apply ColimsHSET_of_shape.
+      * apply Fepi.
+Qed.
+
 
 Theorem push_initiality_weaker_choice
         (R : Rep_a)
@@ -647,7 +665,7 @@ Theorem push_initiality_weaker_choice
         (epia : sig_preservesNatEpiMonad a)
   : isInitial _ R -> Initial Rep_b.
 Proof.
-  unshelve eapply push_initiality; (try apply preserves_to_HSET_isEpi); try assumption.
+  unshelve eapply push_initiality_weaker; (try apply preserves_to_HSET_isEpi); try assumption.
   - apply ii1; apply preserves_to_HSET_isEpi; assumption.
   - apply ii1.
     apply dirprodpair.
