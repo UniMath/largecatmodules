@@ -307,8 +307,8 @@ Definition TwoSignature_To_One_right_adjoint : is_right_adjoint (pr1_category tw
   right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
 Lemma OneSig_to_TwoSig_fully_faithful : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint).
-  use isounit_coreflection.
 Proof.
+  use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
   cbn.
   unshelve eapply functor_iso_if_pointwise_iso; [exact (homset_property signature_category)|].
@@ -486,8 +486,8 @@ Definition TwoMod_To_One_right_adjoint : is_right_adjoint Two_to_OneMod_functor 
   right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_to_TwoMod.
 
 Lemma OneMod_to_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_To_One_right_adjoint).
-  use isounit_coreflection.
 Proof.
+  use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
   cbn.
   unshelve eapply functor_iso_if_pointwise_iso; [exact (homset_property MOD1)|].
