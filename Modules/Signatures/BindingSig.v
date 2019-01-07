@@ -378,9 +378,7 @@ Section EpiSignatureSig.
       apply identity_isEpi.
     - cbn -[functor_composite].
       use preserveEpi_binCoprodFunc; [apply id_preserves_Epi|].
-      apply preserveEpi_sumFuncs.
-      intro j.
-      use ArAreEpiEpiSig.
+      apply BindingSigAreEpiEpiSig.
       apply IHi.
   Qed.
 
