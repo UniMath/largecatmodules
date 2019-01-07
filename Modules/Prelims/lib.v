@@ -6,7 +6,8 @@ Among other things:
 - isomorphisms of categories transfer initiality
 - if there is a universal arrow from the initial object, then the target category has
   an initial object [initial_universal_to_lift_initial]
-
+- an adjunction whose unit is iso is a coreflection (i.e. the left adjoint is full and faithful)
+    [isounit_coreflection]
 *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
@@ -71,6 +72,37 @@ Proof.
     apply limits.path_to_ctr.
     apply InitialArrowUnique.
 Qed.
+
+(**
+hom(X , Y) ~ hom(X , U F Y) ~ hom(F X , F Y)
+*)
+Lemma isounit_coreflection {C : category}{D : category } {F} (isF : is_left_adjoint (A := C) (B := D) F) :
+  is_iso (C := [C , C])
+         (unit_from_left_adjoint isF
+          : [C,C] ⟦ functor_identity _, F ∙ right_adjoint isF ⟧) -> fully_faithful F.
+Proof.
+  intro isounit.
+  assert (homweq := (adjunction_homsetiso_weq (pr2 isF))).
+  assert (isounitpw := is_functor_iso_pointwise_if_iso _ _ _ _ _ _ isounit).
+  intros S1 S2.
+  eapply isweqhomot; revgoals.
+  - unshelve apply weqproperty.
+    eapply weqcomp.
+    + eapply iso_comp_left_weq.
+      use (_ ,, isounitpw S2 ).
+    + apply invweq.
+      use hom_weq.
+      apply (adjunction_homsetiso_weq (pr2 isF)).
+  - intro ff.
+    cbn.
+    unfold φ_adj_inv; cbn.
+    rewrite functor_comp.
+    rewrite <- assoc.
+    etrans;[ apply cancel_precomposition, triangle_id_left_ad|].
+    apply id_right.
+Defined.
+
+ 
                  
 (** common generalization to [maponpaths] and [toforallpaths] *)
 

@@ -5,6 +5,7 @@
 - pushouts of 2-signatures [TwoSignature_Pushouts]
 - the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSignature_To_One_right_adjoint]
 - The fibration of 2-models over 2-signatures  [two_mod_cleaving]
+- the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_To_One_right_adjoint]
  *)
 
 
@@ -306,19 +307,13 @@ Definition TwoSignature_To_One_right_adjoint : is_right_adjoint (pr1_category tw
   right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
 Lemma OneSig_to_TwoSig_fully_faithful : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint).
-  intros S1 S2 ff.
-  use iscontrpair.
-  - use hfiberpair.
-    + exact (pr1 ff).
-    + apply subtypeEquality_prop.
-      apply id_right.
-  - intro t.
-    assert (ht' := hfiberpr2 _ _ t).
-    apply base_paths in ht'.
-    apply subtypeEquality'; [| apply homset_property].
-    etrans;[|apply ht'].
-    apply pathsinv0.
-    apply (id_right (C := signature_category)).
+  use isounit_coreflection.
+Proof.
+  apply is_left_adjoint_left_adjoint.
+  cbn.
+  unshelve eapply functor_iso_if_pointwise_iso; [exact (homset_property signature_category)|].
+  intro.
+  apply identity_is_iso.
 Defined.
 
 
@@ -413,6 +408,7 @@ Definition two_model_disp : disp_cat _ := two_mod_data ,, two_mod_axioms.
 
 
 
+
 (** ** Now the cleaving *)
 
 Lemma two_mod_cleaving : cleaving two_model_disp.
@@ -428,6 +424,75 @@ Proof.
     simpl.
     intros.
     use pb_rep_to_cartesian.
+Defined.
+
+(** * Adjunction between 2-models and 1-models
+ *)
+
+
+Local Notation MOD1 := (total_category (rep_disp C)).
+Local Notation MOD2 := (total_category two_model_disp).
+
+
+Definition Two_to_OneMod_functor_data : functor_data MOD2 MOD1 :=
+  mk_functor_data (C := MOD2) (C' := MOD1)
+    (fun M => (pr1 (pr1 M) ,, ((pr2 M : model_equations  _) : model _)))
+    (fun a b f => (pr1 (pr1 f) ,, pr2 f)).
+
+
+Definition Two_to_OneMod_is_functor : is_functor Two_to_OneMod_functor_data :=
+  (fun x => idpath _)  ,, (fun a b c f g => idpath _).
+
+
+Definition Two_to_OneMod_functor : functor MOD2 MOD1 :=
+   mk_functor Two_to_OneMod_functor_data Two_to_OneMod_is_functor.
+
+(** A 1-model S induces a 2-model consisting of no equation *)
+Definition OneMod_to_TwoMod (M : MOD1) : MOD2 :=
+  OneSig_to_TwoSig (pr1 M) ,, pr2 M ,, empty_rect _.
+
+(** This induces a left adjoint to the forgetful functor *)
+Lemma universal_OneMod_to_TwoMod (M : MOD1) :
+  is_universal_arrow_to Two_to_OneMod_functor M  (OneMod_to_TwoMod M ) (identity _).
+Proof.
+  intros TT f.
+  unshelve eapply unique_exists.
+  - exact ((pr1 f ,, fun x => empty_rect _) ,, pr2 f) .
+  - apply id_left.
+  - intro.
+    apply homset_property.
+  -
+    intros y eqy.
+    rewrite id_left in eqy.
+    cbn in eqy.
+    rewrite <- eqy.
+    cbn.
+    set (y2' := fun (x : model_equations _) => _).
+    assert (e : y2' = (pr2 (pr1 y))).
+    {
+      apply proofirrelevance.
+      apply impred_isaprop.
+      intro t.
+      apply impred_isaprop.
+      use empty_rect.
+    }
+    rewrite e.
+    (** reflexivity thanks to primitive projections *)
+    apply idpath.
+Defined.
+      
+
+Definition TwoMod_To_One_right_adjoint : is_right_adjoint Two_to_OneMod_functor :=
+  right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_to_TwoMod.
+
+Lemma OneMod_to_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_To_One_right_adjoint).
+  use isounit_coreflection.
+Proof.
+  apply is_left_adjoint_left_adjoint.
+  cbn.
+  unshelve eapply functor_iso_if_pointwise_iso; [exact (homset_property MOD1)|].
+  intro.
+  apply identity_is_iso.
 Defined.
      
 End TwoSig.
