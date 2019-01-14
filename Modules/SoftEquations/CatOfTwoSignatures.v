@@ -15,9 +15,9 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
-Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
@@ -46,7 +46,7 @@ Require Import Modules.Signatures.SignatureCoproduct.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 Require Import UniMath.CategoryTheory.limits.pushouts.
-Require Import UniMath.CategoryTheory.Adjunctions.
+Require Import UniMath.CategoryTheory.Adjunctions.Core.
 
 Section TwoSig.
 
@@ -143,7 +143,7 @@ Proof.
 Defined.
 
 
-Definition TwoSignature_category : category :=  total_category  two_signature_disp.
+Definition TwoSignature_category : category :=  total_category two_signature_disp.
 
 Definition TwoSignature := ob TwoSignature_category.
 Definition TwoSignature_Mor (S1 S2 : TwoSignature) := TwoSignature_category ⟦S1 , S2⟧.
@@ -303,10 +303,12 @@ Proof.
     apply pathsinv0, id_left.
 Defined.
 
-Definition TwoSignature_To_One_right_adjoint : is_right_adjoint (pr1_category two_signature_disp) :=
-  right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
+Definition TwoSignature_To_One_right_adjoint
+  : is_right_adjoint (pr1_category two_signature_disp)
+  := right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
-Lemma OneSig_to_TwoSig_fully_faithful : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint).
+Lemma OneSig_to_TwoSig_fully_faithful
+  : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint : _ ⟶  TwoSignature_category).
 Proof.
   use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.

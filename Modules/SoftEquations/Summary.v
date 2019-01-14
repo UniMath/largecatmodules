@@ -11,10 +11,10 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.Monads.Derivative.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
 
-Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
@@ -26,7 +26,7 @@ Require Import Modules.Prelims.quotientmonadslice.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.Signatures.ModelCat.
-
+Require Import UniMath.CategoryTheory.Adjunctions.Core.
 
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.SignatureOver.
@@ -438,7 +438,7 @@ Check (@forget_2model_is_right_adjoint :
          (** The stronger assumption is that any 1-model of Sig preserve epis (implied by the axiom of choice) *)
          (∏ R : model Sig, preserves_Epi R) ->
          (∏ R : model Sig, preserves_Epi (Sig R)) ->
-         Adjunctions.is_right_adjoint (forget_2model eq)).
+         is_right_adjoint (forget_2model eq)).
 
 (**
 
