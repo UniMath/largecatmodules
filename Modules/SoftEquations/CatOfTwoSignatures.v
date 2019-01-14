@@ -143,7 +143,7 @@ Proof.
 Defined.
 
 
-Definition TwoSignature_category : category :=  total_category  two_signature_disp.
+Definition TwoSignature_category : category :=  total_category two_signature_disp.
 
 Definition TwoSignature := ob TwoSignature_category.
 Definition TwoSignature_Mor (S1 S2 : TwoSignature) := TwoSignature_category ⟦S1 , S2⟧.
@@ -303,14 +303,14 @@ Proof.
     apply pathsinv0, id_left.
 Defined.
 
-Definition TwoSignature_To_One_right_adjoint : is_right_adjoint (pr1_category two_signature_disp) :=
-  right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
+Definition TwoSignature_To_One_right_adjoint
+  : is_right_adjoint (pr1_category two_signature_disp)
+  := right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
-Lemma OneSig_to_TwoSig_fully_faithful : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint).
+Lemma OneSig_to_TwoSig_fully_faithful
+  : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint : _ ⟶  TwoSignature_category).
 Proof.
-  match goal with [ |- _ (?FF : functor ?AA ?BB)] =>
-                  set (F := FF) end.
-  simple refine ( @isounit_coreflection _ _ F _ _ ).
+  use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
   cbn.
   unshelve eapply functor_iso_if_pointwise_iso; [exact (homset_property signature_category)|].
