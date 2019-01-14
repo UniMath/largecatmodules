@@ -27,13 +27,13 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 
-Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
@@ -56,7 +56,7 @@ Require Import Modules.SoftEquations.SignatureOverDerivation.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.SoftEquations.BindingSig.
 
-Require Import UniMath.CategoryTheory.Adjunctions.
+Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.limits.initial.
 
 

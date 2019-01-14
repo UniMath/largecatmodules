@@ -54,20 +54,20 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 Require Import UniMath.CategoryTheory.catiso.
 
-Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.SubstitutionSystems.LamFromBindingSig.
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 
-Require Import UniMath.CategoryTheory.Adjunctions.
+Require Import UniMath.CategoryTheory.Adjunctions.Core.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.LModulesComplements.

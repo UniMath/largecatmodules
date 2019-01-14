@@ -15,9 +15,9 @@ Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
-Require Import UniMath.CategoryTheory.Categories.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
@@ -46,7 +46,7 @@ Require Import Modules.Signatures.SignatureCoproduct.
 Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 Require Import UniMath.CategoryTheory.limits.pushouts.
-Require Import UniMath.CategoryTheory.Adjunctions.
+Require Import UniMath.CategoryTheory.Adjunctions.Core.
 
 Section TwoSig.
 
@@ -308,7 +308,9 @@ Definition TwoSignature_To_One_right_adjoint : is_right_adjoint (pr1_category tw
 
 Lemma OneSig_to_TwoSig_fully_faithful : fully_faithful (left_adjoint TwoSignature_To_One_right_adjoint).
 Proof.
-  use isounit_coreflection.
+  match goal with [ |- _ (?FF : functor ?AA ?BB)] =>
+                  set (F := FF) end.
+  simple refine ( @isounit_coreflection _ _ F _ _ ).
   apply is_left_adjoint_left_adjoint.
   cbn.
   unshelve eapply functor_iso_if_pointwise_iso; [exact (homset_property signature_category)|].

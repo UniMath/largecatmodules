@@ -10,8 +10,8 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
-Require Import UniMath.CategoryTheory.Categories.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.Monads.Derivative.
@@ -20,7 +20,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
-Require Import UniMath.CategoryTheory.Adjunctions.
+Require Import UniMath.CategoryTheory.Adjunctions.Core.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.LModulesComplements.

@@ -27,11 +27,10 @@ Preuve d'André à traduire.
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
-
-Require Import UniMath.CategoryTheory.Categories.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.whiskering.
-Require Import UniMath.CategoryTheory.Adjunctions.
+Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import Modules.Prelims.EpiComplements.

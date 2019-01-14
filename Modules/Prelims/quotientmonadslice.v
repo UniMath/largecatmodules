@@ -36,10 +36,10 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
-Require Import UniMath.CategoryTheory.functor_categories.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Core.Prelude.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 
-Require Import UniMath.CategoryTheory.Categories.
+Require Import UniMath.CategoryTheory.categories.HSET.All.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
