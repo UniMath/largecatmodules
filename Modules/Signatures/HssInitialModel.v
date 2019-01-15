@@ -10,9 +10,9 @@ Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
 Require Import UniMath.SubstitutionSystems.Signatures.
 
-Require Import UniMath.CategoryTheory.Categories.
+Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
-Require Import UniMath.CategoryTheory.functor_categories.
+Require Import UniMath.CategoryTheory.FunctorCategory.
 
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
