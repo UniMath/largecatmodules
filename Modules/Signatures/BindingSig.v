@@ -40,6 +40,7 @@ Require Import UniMath.CategoryTheory.limits.initial.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import Modules.Signatures.HssToSignature.
 Require Import Modules.Signatures.Signature.
+Require Import Modules.Signatures.HssInitialModel.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.limits.binproducts.
@@ -83,137 +84,18 @@ Section EpiSignatureSig.
   Local Notation Sig := (Signature SET has_homsets_HSET hset_precategory has_homsets_HSET).
   Local Notation EndSet := [hset_category, hset_category].
   Local Notation toSig := BindingSigToSignatureHSET .
+  Local Notation Cset sig := (is_omega_cocont_BindingSigToSignatureHSET sig).
 
   (** The initial model of the algebraic signature *)
-  Lemma alg_initialR (sig : BindingSig) : (rep_disp SET) [{binding_to_one_sigHSET sig}].
-  Proof.
-    use tpair.
-    - apply (BindingSigToMonadHSET sig).
-    - apply τ_lmodule_mor.
-  Defined.
+  Definition alg_initialR (sig : BindingSig) : (rep_disp SET) [{binding_to_one_sigHSET sig}] :=
+    hss_initial_model (Cset sig).
 
-  Definition alg_initial_arrow_mon {sig : BindingSig} 
-    (b : model (binding_to_one_sigHSET sig)) :
-      Monad_Mor  (pr1 (alg_initialR sig)) b.
-  Proof.
-    apply j_mon.
-    apply (model_τ b).
-  Defined.
-
-  (* j_mon is a morphism of model *)
-  Definition alg_initial_arrow_law {sig : BindingSig} 
-    (b : model (binding_to_one_sigHSET sig)) :
-    model_mor_law (alg_initialR sig) b (signature_Mor_id (binding_to_one_sigHSET sig))
-      (alg_initial_arrow_mon b).
-  Proof.
-    intro c.
-    apply j_mor_rep.
-  Qed.
-
-  Definition alg_initial_arrow {sig : BindingSig} 
-    (b : model (hss_to_ar (C := SET)(toSig sig))) :
-    (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧
-    := alg_initial_arrow_mon b,, alg_initial_arrow_law b.
-
-  Local Notation EndAlg sig :=
-    (FunctorAlg (Id_H HSET hom_SET BinCoproductsHSET (toSig sig))
-          (functor_category_has_homsets HSET HSET hom_SET)).
-
-  Local Notation M_alg := (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET).
-  (* Local Lemma omega_cont_to_sig CocontFunctors.is_omega_cocont (toSig sig) *)
-
-  Local Notation iniHSS sig   := (InitialHSS SET (homset_property SET) BinCoproductsHSET InitialHSET
-                                        (ColimsHSET_of_shape nat_graph)
-                                        (toSig sig)
-                                        (is_omega_cocont_BindingSigToSignatureHSET sig)).
-
-
-
-
-
-  Lemma rep_mor_to_alg_is_alg_mor {sig : BindingSig}
-             (b : model (binding_to_one_sigHSET sig))
-             (t : (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧) :
-    is_algebra_mor (Id_H HSET hom_SET BinCoproductsHSET (toSig sig))
-                   (pr1 (pr1 (iniHSS sig)))
-                   (M_alg (toSig sig) b (model_τ b))
-                   (pr1 (pr1 t)).
-  Proof.
-    red.
-    apply nat_trans_eq; [apply (homset_property SET)|].
-    intro X.
-    apply funextfun.
-    intro x.
-    (* x is in a coproduct. We check both cases *)
-    destruct x as [x|x].
-    - assert (ht := Monad_Mor_η (pr1 ( t)) X).
-      apply toforallpaths in ht.
-      specialize (ht x).
-      apply ht.
-    - assert (ht := model_mor_ax t X).
-      apply toforallpaths in ht.
-      specialize (ht x).
-      apply ht.
-  Qed.
-
-    
-    
-  
-  Definition rep_mor_to_alg_mor {sig : BindingSig}
-             (b : model (binding_to_one_sigHSET sig))
-             (t : (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧) :
-    EndAlg sig ⟦ (pr1 (pr1 (iniHSS sig))) , M_alg (toSig sig) b (model_τ b) ⟧.
-  Proof.
-    use tpair.
-    - apply t.
-    - apply (rep_mor_to_alg_is_alg_mor b t).
-  Defined.
-
-
-
-  Lemma alg_initial_arrow_unique  {sig : BindingSig} 
-    (b : model (binding_to_one_sigHSET sig)) :
-    ∏ t : (rep_disp SET) [{(binding_to_one_sigHSET sig)}] ⟦ alg_initialR sig, b ⟧,
-          t = alg_initial_arrow b.
-  Proof.
-    intro t.
-
-    (* TODO : mettre ce lemme d'unicité qui vient de la définition de j avec sa définition
- dans ModulesFromSignatures *)
-    assert (h := (InitialArrowUnique
-     (colimAlgInitial (functor_category_has_homsets HSET HSET hom_SET)
-        (Initial_functor_precat HSET HSET InitialHSET hom_SET)
-        (is_omega_cocont_Id_H HSET hom_SET BinCoproductsHSET (toSig sig)
-           (is_omega_cocont_BindingSigToSignature hom_SET BinProductsHSET BinCoproductsHSET
-              TerminalHSET (ColimsHSET_of_shape nat_graph)
-              (λ F : hset_precategory_data ⟶ hset_precategory_data,
-               is_omega_cocont_constprod_functor1
-                 (binproducts.BinProducts_functor_precat HSET HSET BinProductsHSET hom_SET)
-                 BindingSigToMonad.has_homsets_HSET2 (Exponentials_functor_HSET  HSET hom_SET) F)
-              sig (CoproductsHSET (BindingSigIndex sig) (BindingSigIsaset sig))))
-        (colimits.ColimsFunctorCategory_of_shape nat_graph 
-           HSET HSET hom_SET (ColimsHSET_of_shape nat_graph)
-           (initChain (Initial_functor_precat HSET HSET InitialHSET hom_SET)
-              (Id_H HSET hom_SET BinCoproductsHSET (toSig sig)))))
-     (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET (toSig sig) b (model_τ b)))).
-    specialize (h (rep_mor_to_alg_mor b t)).
-    apply model_mor_mor_equiv.
-    apply algebra_mor_eq in h; [|apply (homset_property EndSet)].
-    intro c.
-    eapply nat_trans_eq_pointwise in h.
-    apply h.
-  Qed.
-       
        
 
   Theorem algebraic_sig_representable (sig : BindingSig)
     : isInitial _ (alg_initialR sig).
   Proof.
-    intro b.
-    cbn in b.
-    unshelve eapply iscontrpair.
-    - apply alg_initial_arrow.
-    - apply alg_initial_arrow_unique.
+    use hss_sig_representable.
   Qed.
 
 

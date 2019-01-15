@@ -5,6 +5,7 @@ SignaturesColims.v
 EpiArePointwise.v
 EpiSigRepresentability.v
 HssToSignature.v
+HssInitialModel.v
 BindingSig.v
 PreservesEpi.v
 PresentableSignature.v
