@@ -29,7 +29,7 @@ To compile (coq 8.8, UniMath library): `$ make`
 - Modularity in the specific context of signatures and their models : `Signatures/Modularity`
           
 The fact that algebraic signatures are representable is already proved in
-a different setting in the Heterogeneous Substitution System package of UniMaths.
+a different setting in the Heterogeneous Substitution System package of UniMath.
 The adaptation to our setting is carried out in the files : `Signatures/SigWithStrengthToSignature`,
 `Signatures/HssInitialModel` and `Signatures/BindingSig`.
 
