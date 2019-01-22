@@ -54,7 +54,7 @@ Section EpiSignatureSig.
                                         (hsig : is_omega_cocont sig)).
 
   (** The initial model of the hss signature *)
-  Lemma hss_initial_model {sig : Sig}(hsig : is_omega_cocont sig) : (rep_disp SET) [{ (hss_to_ar sig)}].
+  Lemma hss_initial_model {sig : Sig}(hsig : is_omega_cocont sig) : (rep_disp SET) [{ (sigWithStrength_to_sig sig)}].
   Proof.
     use tpair.
     - exact (Monad_from_hss _ hom_SET  BinCoproductsHSET sig(InitialObject (iniHSS sig hsig))).
@@ -62,7 +62,7 @@ Section EpiSignatureSig.
   Defined.
 
   Definition hss_initial_arrow_mon {sig : Sig} (hsig : is_omega_cocont sig)
-    (b : model (hss_to_ar sig)) :
+    (b : model (sigWithStrength_to_sig sig)) :
       Monad_Mor  (pr1 (hss_initial_model hsig)) b.
   Proof.
     apply j_mon.
@@ -71,8 +71,8 @@ Section EpiSignatureSig.
 
   (* j_mon is a morphism of model *)
   Definition hss_initial_arrow_law {sig : Sig} (hsig : is_omega_cocont sig)
-    (b : model (hss_to_ar sig)) :
-    model_mor_law (hss_initial_model hsig) b (signature_Mor_id (hss_to_ar sig))
+    (b : model (sigWithStrength_to_sig sig)) :
+    model_mor_law (hss_initial_model hsig) b (signature_Mor_id (sigWithStrength_to_sig sig))
       (hss_initial_arrow_mon hsig b).
   Proof.
     intro c.
@@ -80,8 +80,8 @@ Section EpiSignatureSig.
   Qed.
 
   Definition hss_initial_arrow {sig : Sig}(hsig : is_omega_cocont sig) 
-    (b : model (hss_to_ar (C := SET)( sig))) :
-    (rep_disp SET) [{(hss_to_ar sig)}] ⟦ hss_initial_model hsig, b ⟧
+    (b : model (sigWithStrength_to_sig (C := SET)( sig))) :
+    (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧
     := hss_initial_arrow_mon hsig b,, hss_initial_arrow_law hsig b.
 
   Local Notation EndAlg sig :=
@@ -93,8 +93,8 @@ Section EpiSignatureSig.
 
   Lemma rep_mor_to_alg_is_alg_mor {sig : Sig}
         (hsig : is_omega_cocont sig)
-             (b : model (hss_to_ar sig))
-             (t : (rep_disp SET) [{(hss_to_ar sig)}] ⟦ hss_initial_model hsig, b ⟧) :
+             (b : model (sigWithStrength_to_sig sig))
+             (t : (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧) :
     is_algebra_mor (Id_H HSET hom_SET BinCoproductsHSET ( sig))
                    (pr1 (pr1 (iniHSS sig hsig)))
                    (M_alg sig b (model_τ b))
@@ -122,8 +122,8 @@ Section EpiSignatureSig.
   
   Definition rep_mor_to_alg_mor {sig : Sig}
              (hsig : is_omega_cocont sig)
-             (b : model (hss_to_ar sig))
-             (t : (rep_disp SET) [{(hss_to_ar sig)}] ⟦ hss_initial_model hsig, b ⟧) :
+             (b : model (sigWithStrength_to_sig sig))
+             (t : (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧) :
     EndAlg sig ⟦ (pr1 (pr1 (iniHSS sig hsig))) , M_alg sig b (model_τ b) ⟧.
   Proof.
     use tpair.
@@ -135,8 +135,8 @@ Section EpiSignatureSig.
 
   Lemma hss_initial_arrow_unique  {sig : Sig} 
         (hsig : is_omega_cocont sig)
-    (b : model (hss_to_ar sig)) :
-    ∏ t : (rep_disp SET) [{(hss_to_ar sig)}] ⟦ hss_initial_model hsig, b ⟧,
+    (b : model (sigWithStrength_to_sig sig)) :
+    ∏ t : (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧,
           t = hss_initial_arrow hsig b.
   Proof.
     intro t.
@@ -178,7 +178,7 @@ Section EpiSignatureSig.
 
 
   Definition hss_sig_initial {sig : Sig} (hsig : is_omega_cocont sig)
-    : Initial (rep_disp SET)[{hss_to_ar sig}]  := mk_Initial _ (hss_sig_representable hsig).
+    : Initial (rep_disp SET)[{sigWithStrength_to_sig sig}]  := mk_Initial _ (hss_sig_representable hsig).
 
 
 End EpiSignatureSig.

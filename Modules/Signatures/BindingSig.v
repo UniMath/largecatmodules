@@ -58,24 +58,24 @@ Open Scope cat.
   (** Turn a binding signature into an algebraic 1-signature *)
 Definition binding_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC
            (cpC : ∏ X, isaset X -> Coproducts X C ) TC S : signature C :=
-  (hss_to_ar (C := C) (BindingSigToSignature hsC bpC bcpC TC
+  (sigWithStrength_to_sig (C := C) (BindingSigToSignature hsC bpC bcpC TC
                                               S (cpC _ (BindingSigIsaset S)))).
 
   (** Turn an arity of a binding signature (i.e. a list of natural numbers
 specifying an operation in the syntax) into an elementary 1-signature *)
 Definition arity_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC  TC S : signature C :=
-  (hss_to_ar (C := C) (Arity_to_Signature hsC bpC bcpC TC S )).
+  (sigWithStrength_to_sig (C := C) (Arity_to_Signature hsC bpC bcpC TC S )).
 
 (** specific definition for the hSet category *)
 Definition binding_to_one_sigHSET S :=
-  (hss_to_ar (C := SET)
+  (sigWithStrength_to_sig (C := SET)
      (BindingSigToSignatureHSET S)). 
 
 Definition Arity_to_SignatureHSET := 
   Arity_to_Signature (homset_property SET) BinProductsHSET BinCoproductsHSET TerminalHSET.
 
 Definition arity_to_one_sigHSET S :=
-  (hss_to_ar (C := SET) (Arity_to_SignatureHSET  S )).
+  (sigWithStrength_to_sig (C := SET) (Arity_to_SignatureHSET  S )).
 
 Section EpiSignatureSig.
 

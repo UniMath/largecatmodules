@@ -197,7 +197,7 @@ Definition lift_pb_LModule
   morphism_from_iso _ _ _ (lift_pb_LModule_iso f).
 
 
-Definition hss_to_ar_data : @signature_data C.
+Definition sigWithStrength_to_sig_data : @signature_data C.
 Proof.
   use tpair.
   + intro R.
@@ -217,7 +217,7 @@ Proof.
     * apply lift_pb_LModule.
 Defined.
 
-Lemma hss_to_ar_is_signature : is_signature hss_to_ar_data.
+Lemma sigWithStrength_to_sig_is_signature : is_signature sigWithStrength_to_sig_data.
 Proof.
   split.
   - intros R X.
@@ -239,7 +239,7 @@ Proof.
     apply functor_comp_pw.
 Qed.
 
-Definition hss_to_ar : signature C := hss_to_ar_data ,, hss_to_ar_is_signature.
+Definition sigWithStrength_to_sig : signature C := sigWithStrength_to_sig_data ,, sigWithStrength_to_sig_is_signature.
 
 End SigWithStrengthToSignature.
 
@@ -247,7 +247,7 @@ Section SigWithStrengthToSignatureMor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
-  Local Notation F := hss_to_ar.
+  Local Notation F := sigWithStrength_to_sig.
 
   Context {A B : Sig}.
   Variable (f : Sig ⟦ A, B⟧).
@@ -258,7 +258,7 @@ Section SigWithStrengthToSignatureMor.
   (*   (θ_nat_1_pointwise _ _ _ _ H (theta H)). *)
   Local Notation "'p' T" := (ptd_from_mon (homset_property C) T) (at level 3).
 
-  Lemma hss_to_ar_mod_mor_laws (R : Monad C) :
+  Lemma sigWithStrength_to_sig_mod_mor_laws (R : Monad C) :
   @LModule_Mor_laws C R C (F A R) (F B R)
     ( (# (SignatureForgetfulFunctor C C) f : nat_trans _ _) ( R : functor _ _ )).
   Proof.
@@ -317,11 +317,11 @@ And as f is a signature morphism, we have
     apply hf'.
   Qed.
 
-  Definition hss_to_ar_mod_mor (R : Monad C) :
+  Definition sigWithStrength_to_sig_mod_mor (R : Monad C) :
     LModule_Mor  R  (F A R) (F B R) :=
-    _ ,, hss_to_ar_mod_mor_laws R.
+    _ ,, sigWithStrength_to_sig_mod_mor_laws R.
 
-  Lemma hss_to_ar_is_signature_Mor : is_signature_Mor (F A) (F B) hss_to_ar_mod_mor.
+  Lemma sigWithStrength_to_sig_is_signature_Mor : is_signature_Mor (F A) (F B) sigWithStrength_to_sig_mod_mor.
   Proof.
     intros R S g.
     change ((#(A : Signature _ _ _ _) (g : nat_trans _ _))· identity _ · (pr1 f (S : functor _ _)) =
@@ -329,20 +329,20 @@ And as f is a signature morphism, we have
     do 2 rewrite id_right.
     apply nat_trans_ax.
   Qed.
-  Definition hss_to_ar_mor   : signature_Mor (F A) (F B) :=
-    _ ,, hss_to_ar_is_signature_Mor.
+  Definition sigWithStrength_to_sig_mor   : signature_Mor (F A) (F B) :=
+    _ ,, sigWithStrength_to_sig_is_signature_Mor.
 End SigWithStrengthToSignatureMor.
 
 Section SigWithStrengthToSignatureFunctor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
-  Local Notation F := hss_to_ar.
+  Local Notation F := sigWithStrength_to_sig.
 
-  Definition hss_to_ar_functor_data : functor_data Sig (signature_precategory (C := C)) :=
-    mk_functor_data (C' := signature_precategory) _ (@hss_to_ar_mor C).
+  Definition sigWithStrength_to_sig_functor_data : functor_data Sig (signature_precategory (C := C)) :=
+    mk_functor_data (C' := signature_precategory) _ (@sigWithStrength_to_sig_mor C).
 
-  Lemma hss_to_ar_is_functor : is_functor hss_to_ar_functor_data.
+  Lemma sigWithStrength_to_sig_is_functor : is_functor sigWithStrength_to_sig_functor_data.
   Proof.
     split.
     - intro S.
@@ -357,6 +357,6 @@ Section SigWithStrengthToSignatureFunctor.
       apply idpath.
   Defined.
 
-  Definition hss_to_ar_functor : functor Sig (signature_precategory (C := C)) :=
-    mk_functor _ hss_to_ar_is_functor.
+  Definition sigWithStrength_to_sig_functor : functor Sig (signature_precategory (C := C)) :=
+    mk_functor _ sigWithStrength_to_sig_is_functor.
 End SigWithStrengthToSignatureFunctor.

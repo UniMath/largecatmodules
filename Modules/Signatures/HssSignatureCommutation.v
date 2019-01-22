@@ -148,14 +148,14 @@ Section commuteBinProdSig.
 
   Variable (a b : Signature C (homset_property C) C (homset_property C) ).
 
-  Let ar_a :=  hss_to_ar a.
-  Let ar_b :=  hss_to_ar b.
+  Let ar_a :=  sigWithStrength_to_sig a.
+  Let ar_b :=  sigWithStrength_to_sig b.
   Local Notation BPO := (BinProductObject _ ).
 
   (**  to get this statment, I first tried to use LModule_M1_M2_iso  
   Lemma  binprod_sigs_har_mod_iso R :
     iso (C := precategory_LModule R _)
-        ( hss_to_ar (BPO (hss_bpSig a b)) R)
+        ( sigWithStrength_to_sig (BPO (hss_bpSig a b)) R)
         ( (BPO (bpSig ar_a ar_b) : signature _ ) R).
   Proof.
     apply LModule_M1_M2_iso.
@@ -192,7 +192,7 @@ Section commuteBinProdSig.
 
 
   Definition binprod_sigs_har_iso : iso (C := signature_precategory) 
-                                        ( hss_to_ar (BPO (hss_bpSig a b)) )
+                                        ( sigWithStrength_to_sig (BPO (hss_bpSig a b)) )
                                         ( (BPO (bpSig ar_a ar_b) : signature _ ) ).
   Proof.
     use signature_S1_S2_iso.
@@ -214,7 +214,7 @@ Section CoprodAr.
   Let cpSig := signature_Coproducts (C := C) cpC.
 
   Variable (sigs : I -> SIG).
-  Let ars : I -> signature C := fun i => hss_to_ar (sigs i).
+  Let ars : I -> signature C := fun i => sigWithStrength_to_sig (sigs i).
   Local Notation CPO := (CoproductObject _ _).
 
   Lemma coprod_sigs_har_mod_eq_mult R c  :
@@ -248,7 +248,7 @@ Section CoprodAr.
     rewrite id_right.
     reflexivity.
   Qed.
-  Definition coprod_sigs_har_iso : iso (C := signature_precategory) (hss_to_ar (CPO (hss_cpSig sigs)))
+  Definition coprod_sigs_har_iso : iso (C := signature_precategory) (sigWithStrength_to_sig (CPO (hss_cpSig sigs)))
                                        (CPO (cpSig ars)).
     use signature_S1_S2_iso.
     - cbn.  use coprod_sigs_har_mod_eq_mult.
@@ -260,7 +260,7 @@ End CoprodAr.
 Section TautologicalPreserve.
   Context {C : category}.
   Local Notation SIG := (Signature_precategory C C).
-  Let a := (hss_to_ar (IdSignature C (homset_property C))).
+  Let a := (sigWithStrength_to_sig (IdSignature C (homset_property C))).
   Let b := (tautological_signature (C:=C)).
 
   Definition tauto_sigs_har_iso : iso (C := signature_precategory) a
@@ -291,16 +291,16 @@ Section DerivationPreserve.
 
   Lemma  deriv_sigs_har_mod_iso R :
     iso (C := precategory_LModule R _)
-        ( hss_to_ar (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
+        ( sigWithStrength_to_sig (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
         ( (signature_deriv bc T
-                           (hss_to_ar
+                           (sigWithStrength_to_sig
                                (precomp_option_iter_Signature (homset_property C) bc T n)  )
           )  R).
     (*
     iso (C := precategory_LModule R _)
-        ( hss_to_ar (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
+        ( sigWithStrength_to_sig (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
         ( (signature_deriv bc T
-                           (hss_to_ar
+                           (sigWithStrength_to_sig
                                (precomp_option_iter_Signature (homset_property C) bc T n)  )
           )  R).
 *)

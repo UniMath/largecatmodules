@@ -49,7 +49,7 @@ Let toSig sig  :=
 
 
 Definition isPresentable (a : signature C) :=
-  ∑ (S : BindingSig) (F : signature_Mor (hss_to_ar (C := C) (toSig S)) a),
+  ∑ (S : BindingSig) (F : signature_Mor (sigWithStrength_to_sig (C := C) (toSig S)) a),
                             ∏ (R : Monad C), (isEpi (C := [_, _]) (pr1 (F R))).
 
 End PresentableDefinition.
@@ -65,7 +65,7 @@ Definition p_sig   : BindingSig := pr1 p.
 Let toSig sig  :=
   (BindingSigToSignature (homset_property C) bp bcp T  sig (cp (BindingSigIndexhSet sig))).
 Definition p_alg_ar   : signature C :=
-  hss_to_ar (C := C) (toSig p_sig).
+  sigWithStrength_to_sig (C := C) (toSig p_sig).
 
 Definition p_mor : signature_Mor (p_alg_ar ) a := pr1 (pr2 p).
 Definition epi_p_mor   : 

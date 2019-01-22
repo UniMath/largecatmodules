@@ -244,7 +244,7 @@ Hypothesis
   Let I : hSet := BindingSigIndexhSet Ba.
   Let Sa' : I -> list nat := BindingSigMap Ba.
 
-  Let Fa :  signature_Mor (hss_to_ar (C:= C) (toSig Ba)) a := p_mor pres_a.
+  Let Fa :  signature_Mor (sigWithStrength_to_sig (C:= C) (toSig Ba)) a := p_mor pres_a.
   Let epiFa : ∏ (R : Monad C), (isEpi (C := [_, _]) (pr1 (Fa R))) :=
     epi_p_mor pres_a.
 
@@ -262,7 +262,7 @@ becomes
     mkBindingSig (BindingSigIsaset (p_sig pres_a))
                  (λ i : BindingSigIndex (p_sig pres_a), cons 0 (BindingSigMap (p_sig pres_a) i)).
 
-  Let p_alg_ar' := hss_to_ar (C:=C) (toSig har_binprodR_p_sig).
+  Let p_alg_ar' := sigWithStrength_to_sig (C:=C) (toSig har_binprodR_p_sig).
 
 
   Let FuncCP :=
@@ -346,7 +346,7 @@ becomes
 
 Definition har_binprodR_commute_mor_mod 
   :  iso (C := signature_category)  (p_alg_ar' )
-                ((PO (Sig_bp (hss_to_ar (C := C) (toSig Ba)) tautological_signature) : signature C)
+                ((PO (Sig_bp (sigWithStrength_to_sig (C := C) (toSig Ba)) tautological_signature) : signature C)
                 ) .
 Proof.
   unfold p_alg_ar'.
@@ -360,7 +360,7 @@ Proof.
       intro o.
       eapply iso_comp.
       {
-        eapply (functor_on_iso (hss_to_ar_functor)).
+        eapply (functor_on_iso (sigWithStrength_to_sig_functor)).
         apply Signature_to_signature_cons_iso.
       }
       eapply (iso_comp (C := signature_category)).
@@ -379,7 +379,7 @@ Proof.
   apply BinProduct_pw_iso.
   - apply iso_inv_from_iso.
     (* eapply iso_comp. *)
-    (* + eapply (functor_on_iso hss_to_ar_functor). *)
+    (* + eapply (functor_on_iso sigWithStrength_to_sig_functor). *)
     (*   apply Signature_to_signature_fold_iso. *)
     apply coprod_sigs_har_iso.
   - apply tauto_sigs_har_iso.

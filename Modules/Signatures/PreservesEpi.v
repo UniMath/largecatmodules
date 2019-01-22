@@ -72,7 +72,7 @@ Qed.
 
 (** Proof that an epiSig preserves natural epimorphicity *)
 Lemma epiSig_NatEpi {C : category} (S : Signature C (homset_property C) C (homset_property C))
-      (epiS : preserves_Epi (S : functor _ _)) : sig_preservesNatEpiMonad (hss_to_ar S).
+      (epiS : preserves_Epi (S : functor _ _)) : sig_preservesNatEpiMonad (sigWithStrength_to_sig S).
 Proof.
     intros M N f.
     intro epif.
@@ -88,7 +88,7 @@ Qed.
 (** An algebraic signature preserves natural epimorphicity *)
 Corollary  algSig_NatEpi (S : BindingSig)
   : sig_preservesNatEpiMonad
-      (hss_to_ar (C := SET)
+      (sigWithStrength_to_sig (C := SET)
                  (BindingSigToSignature (homset_property SET)
                                         BinProductsHSET
                                         BinCoproductsHSET TerminalHSET

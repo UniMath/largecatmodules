@@ -58,12 +58,12 @@ Section CoprodPresentable.
   Let cpSig := signature_Coproducts (C := C) (cp O).
 
   Definition coprod_ρ_mor :
-    signature_precategory ⟦(hss_to_ar( C:=C) (toSig (coprod_BindingSig bind_α))),
+    signature_precategory ⟦(sigWithStrength_to_sig( C:=C) (toSig (coprod_BindingSig bind_α))),
                        (CPO (cpSig α) : signature _)⟧.
   Proof.
     eapply compose.
     {
-      eapply (# hss_to_ar_functor).
+      eapply (# sigWithStrength_to_sig_functor).
       eapply morphism_from_iso.
       use (binding_Sig_iso bp bcp T (fun x y => cp (hSetpair _ y))).
     }
