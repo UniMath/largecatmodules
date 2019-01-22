@@ -21,6 +21,8 @@ Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules. 
 
+Require Import UniMath.CategoryTheory.categories.HSET.All.
+
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.LModulesColims.
 Require Import Modules.Signatures.SignaturesColims.
@@ -94,4 +96,24 @@ Section pwEpiAr.
     }
     exact ( maponpaths (fun (Z : signature_Mor _ _) => (Z R X) ) HHH).
   Qed.
+
 End pwEpiAr.
+
+(** The specific case when the base category is Set *)
+Lemma epiSig_equiv_pwEpi_SET {A B : signature SET}
+      (F : signature_Mor A B) :
+      isEpi (C := signature_category) F <->
+      (∏ R : Monad SET, isEpi (C := [SET, SET]) (F R : A R ⟹ B R)).
+Proof.
+  split.
+  - apply epiSig_is_pwEpi.
+    apply ColimsHSET_of_shape.
+  - intro epiF.
+    intros x f g eqf.
+    cbn in f,g.
+    apply signature_Mor_eq.
+    intro R.
+    apply LModule_Mor_equiv; [apply homset_property|].
+    apply epiF.
+    exact (maponpaths (T1 := signature_Mor _ _) (fun h => pr1 (h R)) eqf).
+Qed.
