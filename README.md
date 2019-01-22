@@ -83,5 +83,5 @@ By folder
 - `SigWithStrengthToSignature` : Functor between signatures with strength
        and our  signatures.
 - `HssSignatureCommutation` : Somme commutation rules between colimits/limits and the 
-       functor between signature in the sense of heterogeneous substitution systems and our
+       functor between signatures with strength and our
        signatures
