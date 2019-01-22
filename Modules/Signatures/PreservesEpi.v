@@ -33,7 +33,7 @@ Require Import Modules.Prelims.EpiComplements.
 Require Import Modules.Signatures.Signature.
 Require Import UniMath.SubstitutionSystems.Signatures.
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
-Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.SigWithStrengthToSignature.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.SignatureDerivation.
 Require Import Modules.Signatures.SignatureBinproducts.

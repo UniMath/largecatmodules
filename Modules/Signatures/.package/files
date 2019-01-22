@@ -4,7 +4,7 @@ ModelCat.v
 SignaturesColims.v
 EpiArePointwise.v
 EpiSigRepresentability.v
-HssToSignature.v
+SigWithStrengthToSignature.v
 HssInitialModel.v
 BindingSig.v
 PreservesEpi.v

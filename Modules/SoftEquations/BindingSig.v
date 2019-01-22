@@ -31,7 +31,7 @@ Require Import Modules.Signatures.SignatureBinproducts.
 Require Import Modules.Signatures.SignatureCoproduct.
 Require Import Modules.Signatures.SignatureDerivation.
 
-Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.SigWithStrengthToSignature.
 Require Import Modules.Signatures.HssSignatureCommutation.
 Require Import Modules.Prelims.deriveadj.
 Require Import Modules.SoftEquations.SignatureOver.

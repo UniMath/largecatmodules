@@ -33,7 +33,7 @@ Require Import Modules.Prelims.lib.
 
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import Modules.Signatures.Signature.
-Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.SigWithStrengthToSignature.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.PresentableSignature.
 Require Import Modules.Signatures.SignatureBinproducts.

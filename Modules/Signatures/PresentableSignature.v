@@ -18,7 +18,7 @@ Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Signatures.Signature.
-Require Import Modules.Signatures.HssToSignature.
+Require Import Modules.Signatures.SigWithStrengthToSignature.
 Require Import Modules.Signatures.BindingSig.
 Require Import Modules.Signatures.EpiSigRepresentability.
 Require Import Modules.Signatures.PreservesEpi.

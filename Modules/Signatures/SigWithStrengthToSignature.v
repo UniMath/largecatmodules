@@ -111,7 +111,7 @@ Definition lift_lmodule_mor {M N : LModule T C} (f : LModule_Mor T M N) :
 
 End LiftLModuleMor.
 
-Section HssToSignature.
+Section SigWithStrengthToSignature.
 
 Context {C : category}.
 
@@ -241,9 +241,9 @@ Qed.
 
 Definition hss_to_ar : signature C := hss_to_ar_data ,, hss_to_ar_is_signature.
 
-End HssToSignature.
+End SigWithStrengthToSignature.
 
-Section HssToSignatureMor.
+Section SigWithStrengthToSignatureMor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
@@ -331,9 +331,9 @@ And as f is a signature morphism, we have
   Qed.
   Definition hss_to_ar_mor   : signature_Mor (F A) (F B) :=
     _ ,, hss_to_ar_is_signature_Mor.
-End HssToSignatureMor.
+End SigWithStrengthToSignatureMor.
 
-Section HssToSignatureFunctor.
+Section SigWithStrengthToSignatureFunctor.
   Context {C  : category}.
 
   Let Sig := Signature_precategory C C.
@@ -359,4 +359,4 @@ Section HssToSignatureFunctor.
 
   Definition hss_to_ar_functor : functor Sig (signature_precategory (C := C)) :=
     mk_functor _ hss_to_ar_is_functor.
-End HssToSignatureFunctor.
+End SigWithStrengthToSignatureFunctor.
