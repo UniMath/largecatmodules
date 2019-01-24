@@ -1,11 +1,13 @@
 # largecatmodules
-Large category of modules over monads on top of UniMath
+Large category of modules over monads on top of UniMath.
 Signatures and signatures for higher order syntax.
 
 Preliminaries are in the subfolder Modules/Prelims
 Signature and Signature related proofs are in the subfolder Modules/Signatures
 
-To compile (coq 8.8, UniMath library): `$ make`
+Requirement: the UniMath library (installed with `$ make install`)
+
+To compile (Coq 8.8): `$ make`
 
 
 
