@@ -431,7 +431,7 @@ the forgetful functor from 2-models to 1-models has a left adjoint *)
 Check (@forget_2model_is_right_adjoint :
          ∏ 
            (Sig : SIGNATURE)
-           (** S is an epi-signature *)
+           (** (1) S is an epi-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
            (** A family of equations *)
            (O : UU) (eq : O → soft_equation epiSig ),
@@ -447,9 +447,10 @@ Note that an epimorphic monad morphism may not be epimorphic as a natural transf
 
 A natural transformation is epimorphic if and only if it is pointwise epimorphic.
 Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
-any epimorphism has a section). Hypothesis (1) does not seem (at least trivially) implied
-by the axiom of choice because one would need that the retract is a monad morphism (and even
-I don't know how to use the axiom of choice to yield a natural transformation retration).
+any epimorphism has a section). Hypothesis (1) does not seem to be implied
+by the axiom of choice. Note that even with the axiom of choice, they are some
+epimorphic natural transformations which don't have a retract
+(consider the epimorphism between the yoneda functors Hom(1, _) -> Hom(0, _)).
 
 Where are the hypotheses (1), (2), (3) used in the proof of the theorem above:
 
