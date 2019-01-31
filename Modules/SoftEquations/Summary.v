@@ -448,7 +448,7 @@ Note that an epimorphic monad morphism may not be epimorphic as a natural transf
 A natural transformation is epimorphic if and only if it is pointwise epimorphic.
 Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
 any epimorphism has a section). Hypothesis (1) does not seem to be implied
-by the axiom of choice. Note that even with the axiom of choice, they are some
+by the axiom of choice. Note that even with the axiom of choice, there are some
 epimorphic natural transformations which don't have a retract
 (consider the epimorphism between the yoneda functors Hom(1, _) -> Hom(0, _)).
 
