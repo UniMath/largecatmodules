@@ -6,7 +6,7 @@
     - Definition of the category Sig-modules (signature_over_category]
     - The action of 1-models yield signature over morphism [action_sig_over_mor]
     - Functor between 1-signatures and Σ-modules [sig_to_sig_over_functor]
-    - starting from a 1-signature morphism f : S1 -> S2, a signature over f can be pushed out to
+    - starting from a 1-signature morphism f : S1 -> S2, a signature over S1 can be pushed out to
       a signature over S2. This actually induces a functor f* (and thus an opfibration)
 
 
