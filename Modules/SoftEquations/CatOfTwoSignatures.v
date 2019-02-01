@@ -6,6 +6,10 @@
 - the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSignature_To_One_right_adjoint]
 - The fibration of 2-models over 2-signatures  [two_mod_cleaving]
 - the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_To_One_right_adjoint]
+- isomorphism between the fiber category of models of a 2-signature and the full subcategory
+   of 1-models (based on the alternative direct definition rather than derived from the
+   displayed category) [catiso_modelcat_eq].
+   The counterpart of this theorem for 1-signatures only can be found in Signatures/ModelCat
  *)
 
 
@@ -32,6 +36,9 @@ Require Import Modules.Signatures.ModelCat.
 Require Import Modules.SoftEquations.SignatureOver.
 Require Import Modules.SoftEquations.Equation.
 
+Require Import UniMath.CategoryTheory.Subcategory.Core.
+Require Import UniMath.CategoryTheory.Subcategory.Full.
+Require Import UniMath.CategoryTheory.catiso.
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
@@ -496,6 +503,54 @@ Proof.
   intro.
   apply identity_is_iso.
 Defined.
+
+(**
+Isomorphism of category between the direct definition of category of
+2-models of a signature, and the defined as the fiber category of the
+ displayed category on the same signature.
+ *)
+Local Notation MODEL_CAT S := (precategory_model_equations (TwoSignature_eqs S)).
+Local Notation FIBER_CAT S := (two_model_disp [{S}]).
+
+Definition fib_to_dir_mor_weq {S : TwoSignature} (R R' : two_model S) :
+  FIBER_CAT S ⟦ R , R' ⟧ ≃ MODEL_CAT S  ⟦  R ,  R' ⟧.
+Proof.
+  eapply weqcomp.
+  - exact (fib_to_dir_mor_weq S (R : model _) (R' : model _)).
+  - apply invweq.
+    assert (h' :=  (fully_faithful_sub_precategory_inclusion
+              (rep_fiber_category S)
+              (satisfies_all_equations_hp (TwoSignature_eqs S)))).
+    eapply  weq_from_fully_faithful in h'.
+    exact h'.
+Defined.
+
+Local Notation FSmor := (fib_to_dir_mor_weq ).
+
+Definition fib_to_dir_functor_data S : functor_data (FIBER_CAT S) (MODEL_CAT S) :=
+  functor_data_constr (FIBER_CAT S)(MODEL_CAT S) (idfun _)  FSmor.
+
+Lemma fib_to_dir_is_functor S : is_functor (fib_to_dir_functor_data S).
+Proof.
+    split.
+    - intro R.
+      eapply isweqonpathsincl.
+      apply faithful_sub_precategory_inclusion.
+      use rep_fiber_mor_eq_nt.
+      apply idpath.
+    - intros R R' T f g.
+      eapply isweqonpathsincl.
+      apply faithful_sub_precategory_inclusion.
+      apply rep_fiber_mor_eq_nt.
+      cbn.
+      set (e := id_right _).
+      induction e.
+      apply idpath.
+  Defined.
+
+Definition catiso_modelcat_eq (S : TwoSignature) : 
+  catiso (two_model_disp [{S}]) (precategory_model_equations (TwoSignature_eqs S)) :=
+   (mk_functor _ (fib_to_dir_is_functor S) ,, (λ x y : (FIBER_CAT S), weqproperty (FSmor x y)),, idisweq _).
      
 End TwoSig.
 
