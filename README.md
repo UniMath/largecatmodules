@@ -1,9 +1,10 @@
 # largecatmodules
 Large category of modules over monads on top of UniMath.
-Signatures and signatures for higher order syntax.
+Signatures for higher order syntax.
 
 Preliminaries are in the subfolder Modules/Prelims
-Signature and Signature related proofs are in the subfolder Modules/Signatures
+1-Signature related proofs are in the subfolder Modules/Signatures
+2-Signature related proofs are in the subfolder Modules/SoftEquations
 
 Requirement: the UniMath library (installed with `$ make install`)
 
@@ -12,6 +13,11 @@ To compile (Coq 8.8): `$ make`
 
 
 # List of some important formalized propositions and definitions
+
+The file `SoftEquations/Summary` gives a summary of main formalized propositions and definitions
+for 2-signatures and elementary equations.
+
+For the rest:
 
 - Definition of signatures and their actions : `Signatures/Signature`
 - Representability of presentable signatures : `Signatures/PresentableSignature`
@@ -61,6 +67,8 @@ By folder
   `LModulesComplements`, `SetCatComplements`, `lib` : various complements
 
 ## Signatures
+Everything here is about 1-signatures
+
 - `Signature` : definition of signatures and the displayed category of models 
 - `ModelCat` : direct definition of the category of models of a signature
 - `EpiSigRepresentability` : proof of the technical lemma : epimorphisms of signatures preserves
@@ -87,3 +95,23 @@ By folder
 - `HssSignatureCommutation` : Somme commutation rules between colimits/limits and the 
        functor between signatures with strength and our
        signatures
+       
+## SoftEquations
+This folder is about 2-signatures and elementary equations
+
+- `Summary` : summary of main propositions and definitions
+
+- `SignatureOver` : category of Σ-modules
+- `CatOfTwoSignatures` : category of 2-signatures, fibration of 2-models over it
+- `Equation` : equations, and category of models satisfying those equations
+- `quotientequation` : quotient model satisfying the equations
+- `quotientrepslice` : more general quotient model construction
+- `AdjunctionEquationRep` : algebraic 2-signatures are representable and related proofs
+- `Modularity` : modularity in the specific context of 2-signatures and their models
+
+- `Examples/LCBetaEta` : example of the lambda calculus modulo beta eta
+- `SignatureOverAsFiber` : (unused) alternative definition of Σ-modules as a displayed category
+        over the category of 1-signatures
+- `SignatureOverBinproducts` : binary products of Σ-modules
+- `SignatureOverDerivation` : derivative of a Σ-module
+- `BindingSig` : complements about algebraic 1-signatures
