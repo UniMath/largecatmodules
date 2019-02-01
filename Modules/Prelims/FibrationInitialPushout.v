@@ -27,6 +27,7 @@ such that
    (this implies that gg1 and gg2 are uniquely determined : see [disp_InitialArrowUnique])
 
 Then the previous diagram is a pushout in the total category [pushout_total].
+We also prove a simplified statment when d0 is initial [pushout_total_initial].
 
 
 As an auxiliary lemma, we show [disp_InitialArrowUnique] that if xx is initial
@@ -99,25 +100,23 @@ If there is a morphism f : x → y  in C, then there is a unique morphism over f
           {g1 : C ⟦ c1, c' ⟧}{g2 : C ⟦ c2, c' ⟧}
 
           {d0 :  dC c0} {d1 : dC c1} {d2 : dC c2} {d' : dC c'}
-          (ff1 : d0 -->[f1] d1)(ff2 : d0 -->[f2] d2)
-          (gg1 : d1 -->[g1] d')(gg2 : d2 -->[g2] d')
 
           (init_d1 : isInitial  (fiber_category _ _) d1)
           (init_d2 : isInitial  (fiber_category _ _) d2)
-          (init_d' : isInitial  (fiber_category _ _) d') 
-
-           (* Require commuting diagram in the total category *)
-          {eq_ff : TT ff1 · TT gg1 = TT ff2 · TT gg2}.
-
-  Let heq :  f1 · g1 = f2 · g2 := base_paths _ _ eq_ff.
-
-  Context (poC : isPushout f1 f2 g1 g2 heq).
-
-  Let PO := mk_Pushout _ _ _ _ _ _ poC.
+          (init_d' : isInitial  (fiber_category _ _) d') .
 
 
-  Lemma pushout_total : isPushout (TT ff1)(TT ff2)(TT gg1)(TT gg2) eq_ff.
+
+  Lemma pushout_total
+          (ff1 : d0 -->[f1] d1)(ff2 : d0 -->[f2] d2)
+          (gg1 := disp_InitialArrow (yy := d') init_d1 g1)
+          (gg2 := disp_InitialArrow init_d2 g2)
+         (* Require commuting diagram in the total category *)
+        {eq_ff : TT ff1 · TT gg1 = TT ff2 · TT gg2}
+        (poC : isPushout f1 f2 g1 g2 (base_paths _ _ eq_ff))
+     : isPushout  (TT ff1)(TT ff2)(TT gg1)(TT gg2) eq_ff.
   Proof.
+    set (PO := mk_Pushout _ _ _ _ _ _ poC).
     use mk_isPushout.
     intros [x xx] [h1 hh1] [h2 hh2] heq_hh.
     cbn in h1, hh1, h2, hh2.
@@ -150,5 +149,33 @@ If there is a morphism f : x → y  in C, then there is a unique morphism over f
          apply pathsinv0.
          apply (disp_InitialArrowUnique init_d').
   Qed.
+
+  (** If d0 is initial, then the requirements are fulfilled *)
+  Context (init_d0 : isInitial  (fiber_category _ _) d0).
+  Local Notation "##" := (disp_InitialArrow ).
+  Let ff1 : d0 -->[f1] d1 :=  ## init_d0 f1.
+  Let ff2 : d0 -->[f2] d2 :=  ## init_d0 f2.
+  Let gg1 : d1 -->[g1] d' :=  ## init_d1 g1.
+  Let gg2 : d2 -->[g2] d' :=  ## init_d2 g2.
+
+  Context {heq :  f1 · g1 = f2 · g2}.
+
+  Lemma initial_cl_lift_square_eq : TT ff1 · TT gg1 = TT ff2 · TT gg2.
+  Proof.
+    use total2_paths2_b.
+    - exact heq.
+    - etrans; [ apply (disp_InitialArrowUnique init_d0) | ].
+      apply pathsinv0.
+      apply (disp_InitialArrowUnique init_d0).
+  Qed.
+
+  Lemma pushout_total_initial
+      (poC : isPushout f1 f2 g1 g2 heq)
+     : isPushout (TT ff1)(TT ff2)(TT gg1)(TT gg2) initial_cl_lift_square_eq.
+  Proof.
+    apply pushout_total.
+    exact poC.
+  Qed.
+
 End pr.
 

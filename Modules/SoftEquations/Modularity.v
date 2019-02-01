@@ -1,7 +1,7 @@
-(** * Modularity for signatures
+(** * Modularity for 2-signatures
 
 
-Suppose we have the following pushout diagram in the category of signatures:
+Suppose we have the following pushout diagram in the category of 2-signatures:
 <<<
                 f1
        a0 ------------>  a1 
@@ -51,26 +51,26 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
-Require Import Modules.Signatures.Signature.
+Require Import Modules.SoftEquations.CatOfTwoSignatures.
 Require Import Modules.Prelims.FibrationInitialPushout.
 
 Local Open Scope cat.
-Local Notation TT := (disp_mor_to_total_mor (rep_disp _)).
+Local Notation TT := (disp_mor_to_total_mor two_model_disp ).
 
-Local Notation ι := (disp_InitialArrow (rep_disp _) (rep_cleaving _) _ ).
+Local Notation ι := (disp_InitialArrow two_model_disp  two_mod_cleaving _ ).
 
 Definition pushout_in_big_rep
            {C : category}
-           {a0 a1 a2 a' : @signature_category C}
-           {f1 : signature_category ⟦ a0, a1 ⟧}{f2 : signature_category ⟦ a0, a2 ⟧}
-           {g1 : signature_category ⟦ a1, a' ⟧}{g2 : signature_category ⟦ a2, a' ⟧}
+           {a0 a1 a2 a' : @TwoSignature_category C}
+           {f1 : TwoSignature_category ⟦ a0, a1 ⟧}{f2 : TwoSignature_category ⟦ a0, a2 ⟧}
+           {g1 : TwoSignature_category ⟦ a1, a' ⟧}{g2 : TwoSignature_category ⟦ a2, a' ⟧}
 
            {heq :  f1 · g1 = f2 · g2}
            (** If we have a pushout of signatures *)
            (poC : isPushout f1 f2 g1 g2 heq)
 
            (** and syntaxes for each of the signatures *)
-           {R0 : rep_disp _ a0} {R1 : rep_disp _ a1} {R2 : rep_disp _ a2} {R' : rep_disp _ a'}
+           {R0 : two_model_disp a0} {R1 : two_model_disp a1} {R2 : two_model_disp a2} {R' : two_model_disp a'}
            (repr_R0 : isInitial  (fiber_category _ _) R0)  
            (repr_R1 : isInitial  (fiber_category _ _) R1)
            (repr_R2 : isInitial  (fiber_category _ _) R2)
@@ -81,4 +81,4 @@ Definition pushout_in_big_rep
                (TT (ι g1))
                (TT (ι g2))
                _ :=
-  pushout_total_initial (rep_disp C) (rep_cleaving _)  repr_R1 repr_R2 repr_R' repr_R0 poC.
+  pushout_total_initial _ two_mod_cleaving  repr_R1 repr_R2 repr_R' repr_R0 poC.
