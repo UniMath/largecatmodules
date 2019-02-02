@@ -1,0 +1,25 @@
+language:       generic
+sudo:           required
+dist:           trusty
+git:
+  submodules:   false
+
+before_install: 
+  - sudo apt-get update -qq
+install:
+  - sudo add-apt-repository -y ppa:avsm
+  - sudo apt-get update
+  - sudo apt-get install -y opam aspcud time libgtk2.0-dev libgtksourceview2.0-dev emacs
+  - opam init --yes --no-setup
+  - eval $(opam config env)
+  - opam install lablgtk camlp5 num --yes --verbose
+before_script:
+  - WPATH=$PWD
+  - cd ..        
+  - git clone https://github.com/UniMath/UniMath
+  - cd UniMath && git show && make PACKAGES="Foundations MoreFoundations Combinatorics Algebra NumberSystems CategoryTheory SubstitutionSystems" install
+  - export PATH=$PATH:$PWD/sub/coq/bin/
+  - cd $WPATH
+script:
+  - make 
+
