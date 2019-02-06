@@ -3,6 +3,8 @@
 Definition of finitary functor F: it is such that FX is the union of the image by F
 of the finite subsets of X.
 
+The goal is to show that if F -> G is en epimorphism and F is finitary, then G also is finitary
+
 The category of finite subsets of X is defined as the comma category restricted to
 monomorphisms n → X, which I denote by I ↓ X,  where I : FinSet -> Set. Of course, X is the colimit of the
 diagram (J : I ↓ X  → Set).
@@ -17,7 +19,9 @@ any set X and any functor, the canonical morphism colim (F ∘ J) -> F (colim J)
 The pain is that not much is formalized in UniMath about finite sets.
 
 Therefore I suggest an alternative definition (not yet implemented) : it is the same but I
-do not enforce the subsets of X to be finite in the slice category.
+do not enforce the subsets of X to be finite in the slice category. The difficulty is thus
+reported to the proof that ∐_n∈N F(n) Xⁿ → F(X) is epimorphic for any finitary functor F, but
+if we don't need this it is ok.
 
 How to define binary coproducts in the category of subsets of X:
 let p : m → X and q : n → X be two subsets of X (i.e., p and q are mono).
