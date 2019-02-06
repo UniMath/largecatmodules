@@ -518,9 +518,7 @@ Proof.
   eapply weqcomp.
   - exact (fib_to_dir_mor_weq S (R : model _) (R' : model _)).
   - apply invweq.
-    assert (h' :=  (fully_faithful_sub_precategory_inclusion
-              (rep_fiber_category S)
-              (satisfies_all_equations_hp (TwoSignature_eqs S)))).
+    assert (h' := forget_2model_fully_faithful (TwoSignature_eqs S)).
     eapply  weq_from_fully_faithful in h'.
     exact h'.
 Defined.
