@@ -100,6 +100,10 @@ Section Equation.
     functor (precategory_model_equations e) (rep_fiber_category Sig) :=
     sub_precategory_inclusion _ _.
 
+  Definition forget_2model_fully_faithful {O} (e : O -> equation) :
+    fully_faithful (forget_2model e) :=
+    fully_faithful_sub_precategory_inclusion _ _.
+
 
 End Equation.
 
