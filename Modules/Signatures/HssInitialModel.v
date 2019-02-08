@@ -164,7 +164,7 @@ Section EpiSignatureSig.
        
        
 
-  Theorem hss_sig_representable {sig : Sig}(hsig : is_omega_cocont sig)
+  Theorem hss_sig_effective {sig : Sig}(hsig : is_omega_cocont sig)
     : isInitial _ (hss_initial_model hsig).
   Proof.
     intro b.
@@ -178,7 +178,7 @@ Section EpiSignatureSig.
 
 
   Definition hss_sig_initial {sig : Sig} (hsig : is_omega_cocont sig)
-    : Initial (rep_disp SET)[{sigWithStrength_to_sig sig}]  := mk_Initial _ (hss_sig_representable hsig).
+    : Initial (rep_disp SET)[{sigWithStrength_to_sig sig}]  := mk_Initial _ (hss_sig_effective hsig).
 
 
 End EpiSignatureSig.

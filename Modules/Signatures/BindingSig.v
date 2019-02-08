@@ -92,17 +92,17 @@ Section EpiSignatureSig.
 
        
 
-  Theorem algebraic_sig_representable (sig : BindingSig)
+  Theorem algebraic_sig_effective (sig : BindingSig)
     : isInitial _ (alg_initialR sig).
   Proof.
-    use hss_sig_representable.
+    use hss_sig_effective.
   Qed.
 
 
 
 
   Definition algebraic_sig_initial (sig : BindingSig)
-    : Initial (rep_disp SET)[{binding_to_one_sigHSET sig}]  := mk_Initial _ (algebraic_sig_representable sig).
+    : Initial (rep_disp SET)[{binding_to_one_sigHSET sig}]  := mk_Initial _ (algebraic_sig_effective sig).
 
 
   Let isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
