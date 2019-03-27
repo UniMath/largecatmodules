@@ -397,7 +397,7 @@ Defined.
         (R : Monad C) : isEpi (C := [_,_])
                                                      (har_binprodR_p_mor R : nat_trans _ _).
   Proof.
-    apply (isEpi_comp ([C,C]) ((morphism_from_iso _ _ _ har_binprodR_commute_mor_mod
+    apply (isEpi_comp ([C,C]) ((morphism_from_iso har_binprodR_commute_mor_mod
                         : signature_Mor _ _) R : nat_trans _ _)).
     - apply is_iso_isEpi.
       apply is_z_iso_from_is_iso.

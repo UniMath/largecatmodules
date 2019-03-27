@@ -194,7 +194,7 @@ Definition lift_pb_LModule
   (f : Monad_Mor R S) :
   LModule_Mor R (liftlmodule R (pb_LModule f (tautological_LModule S)))
               (pb_LModule f (liftlmodule S (tautological_LModule S))) :=
-  morphism_from_iso _ _ _ (lift_pb_LModule_iso f).
+  morphism_from_iso (lift_pb_LModule_iso f).
 
 
 Definition sigWithStrength_to_sig_data : @signature_data C.
