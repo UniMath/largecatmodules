@@ -36,7 +36,7 @@ For the rest:
 - Modularity in the context of a fibration : `Prelims/FibrationInitialPushout`
 - Modularity in the specific context of signatures and their models : `Signatures/Modularity`
           
-The fact that algebraic signatures are representable is already proved in
+The fact that algebraic signatures are effective is already proved in
 a different setting in the Heterogeneous Substitution System package of UniMath.
 The adaptation to our setting is carried out in the files : `Signatures/SigWithStrengthToSignature`,
 `Signatures/HssInitialModel` and `Signatures/BindingSig`.
@@ -73,7 +73,7 @@ Everything here is about 1-signatures
 - `ModelCat` : direct definition of the category of models of a signature
 - `EpiSigRepresentability` : proof of the technical lemma : epimorphisms of signatures preserves
        representability
-- `PresentableSignatures` : presentable signatures are representable.
+- `PresentableSignatures` : presentable signatures are effective.
 - `Modularity` : Modularity in the specific context of signatures and their models
 - `quotientrep` : quotient model construction
 
@@ -106,7 +106,7 @@ This folder is about 2-signatures and elementary equations
 - `Equation` : equations, and category of models satisfying those equations
 - `quotientequation` : quotient model satisfying the equations
 - `quotientrepslice` : more general quotient model construction
-- `AdjunctionEquationRep` : algebraic 2-signatures are representable and related proofs
+- `AdjunctionEquationRep` : algebraic 2-signatures are effective and related proofs
 - `Modularity` : modularity in the specific context of 2-signatures and their models
 
 - `Examples/LCBetaEta` : example of the lambda calculus modulo beta eta
