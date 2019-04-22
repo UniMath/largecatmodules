@@ -8,7 +8,7 @@ Preliminaries are in the subfolder Modules/Prelims
 
 Requirement: the UniMath library (installed with `$ make install`)
 
-To compile (Coq 8.8): `$ make`
+To compile (Coq 8.9.0): `$ make`
 
 
 
