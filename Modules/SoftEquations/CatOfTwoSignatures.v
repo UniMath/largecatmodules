@@ -3,9 +3,9 @@
 - proof that 2-signatures have coequalizers [TwoSignature_Coequalizers] if the base category has
 - coproducts of 2-signatures [TwoSignature_Coproducts]
 - pushouts of 2-signatures [TwoSignature_Pushouts]
-- the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSig_To_One_is_right_adjoint]
+- the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSig_OneSig_is_right_adjoint]
 - The fibration of 2-models over 2-signatures  [TwoMod_cleaving]
-- the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_To_One_right_adjoint]
+- the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_OneMod_is_right_adjoint]
 - isomorphism between the fiber category of models of a 2-signature and the full subcategory
    of 1-models (based on the alternative direct definition rather than derived from the
    displayed category) [catiso_modelcat_eq].
@@ -310,12 +310,12 @@ Proof.
     apply pathsinv0, id_left.
 Defined.
 
-Definition TwoSig_To_OneSig_is_right_adjoint
+Definition TwoSig_OneSig_is_right_adjoint
   : is_right_adjoint (pr1_category two_signature_disp)
   := right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
-Lemma OneSig_to_TwoSig_fully_faithful
-  : fully_faithful (left_adjoint TwoSig_To_OneSig_is_right_adjoint : _ ⟶  TwoSig_category).
+Lemma OneSig_TwoSig_fully_faithful
+  : fully_faithful (left_adjoint TwoSig_OneSig_is_right_adjoint : _ ⟶  TwoSig_category).
 Proof.
   use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
@@ -443,26 +443,26 @@ Local Notation MOD1 := (total_category (rep_disp C)).
 Local Notation MOD2 := (total_category two_model_disp).
 
 
-Definition Two_to_OneMod_functor_data : functor_data MOD2 MOD1 :=
+Definition TwoMod_OneMod_functor_data : functor_data MOD2 MOD1 :=
   mk_functor_data (C := MOD2) (C' := MOD1)
     (fun M => (pr1 (pr1 M) ,, ((pr2 M : model_equations  _) : model _)))
     (fun a b f => (pr1 (pr1 f) ,, pr2 f)).
 
 
-Definition Two_to_OneMod_is_functor : is_functor Two_to_OneMod_functor_data :=
+Definition TwoMod_OneMod_is_functor : is_functor TwoMod_OneMod_functor_data :=
   (fun x => idpath _)  ,, (fun a b c f g => idpath _).
 
 
-Definition Two_to_OneMod_functor : functor MOD2 MOD1 :=
-   mk_functor Two_to_OneMod_functor_data Two_to_OneMod_is_functor.
+Definition TwoMod_OneMod_functor : functor MOD2 MOD1 :=
+   mk_functor TwoMod_OneMod_functor_data TwoMod_OneMod_is_functor.
 
 (** A 1-model S induces a 2-model consisting of no equation *)
-Definition OneMod_to_TwoMod (M : MOD1) : MOD2 :=
+Definition OneMod_TwoMod (M : MOD1) : MOD2 :=
   OneSig_to_TwoSig (pr1 M) ,, pr2 M ,, empty_rect _.
 
 (** This induces a left adjoint to the forgetful functor *)
-Lemma universal_OneMod_to_TwoMod (M : MOD1) :
-  is_universal_arrow_to Two_to_OneMod_functor M  (OneMod_to_TwoMod M ) (identity _).
+Lemma universal_OneMod_TwoMod (M : MOD1) :
+  is_universal_arrow_to TwoMod_OneMod_functor M  (OneMod_TwoMod M ) (identity _).
 Proof.
   intros TT f.
   unshelve eapply unique_exists.
@@ -491,10 +491,10 @@ Proof.
 Defined.
       
 
-Definition TwoMod_To_One_right_adjoint : is_right_adjoint Two_to_OneMod_functor :=
-  right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_to_TwoMod.
+Definition TwoMod_OneMod_is_right_adjoint : is_right_adjoint TwoMod_OneMod_functor :=
+  right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_TwoMod.
 
-Lemma OneMod_to_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_To_One_right_adjoint).
+Lemma OneMod_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_OneMod_is_right_adjoint).
 Proof.
   use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
@@ -518,7 +518,7 @@ Proof.
   eapply weqcomp.
   - exact (fib_to_dir_mor_weq S (R : model _) (R' : model _)).
   - apply invweq.
-    assert (h' := forget_2model_fully_faithful (TwoSignature_eqs S)).
+    assert (h' := ModEq_Mod_fully_faithful (TwoSignature_eqs S)).
     eapply  weq_from_fully_faithful in h'.
     exact h'.
 Defined.
