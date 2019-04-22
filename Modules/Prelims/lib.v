@@ -69,7 +69,7 @@ Proof.
   - apply (iscontrpr1 unif).
   - intro g.
     cbn.
-    apply limits.path_to_ctr.
+    apply path_to_ctr.
     apply InitialArrowUnique.
 Qed.
 

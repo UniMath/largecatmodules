@@ -57,13 +57,13 @@ Require Import Modules.Prelims.FibrationInitialPushout.
 Local Open Scope cat.
 Local Notation TT := (disp_mor_to_total_mor two_model_disp ).
 
-Local Notation ι := (disp_InitialArrow two_model_disp  two_mod_cleaving _ ).
+Local Notation ι := (disp_InitialArrow two_model_disp  TwoMod_cleaving _ ).
 
 Definition pushout_in_big_rep
            {C : category}
-           {a0 a1 a2 a' : @TwoSignature_category C}
-           {f1 : TwoSignature_category ⟦ a0, a1 ⟧}{f2 : TwoSignature_category ⟦ a0, a2 ⟧}
-           {g1 : TwoSignature_category ⟦ a1, a' ⟧}{g2 : TwoSignature_category ⟦ a2, a' ⟧}
+           {a0 a1 a2 a' : @TwoSig_category C}
+           {f1 : TwoSig_category ⟦ a0, a1 ⟧}{f2 : TwoSig_category ⟦ a0, a2 ⟧}
+           {g1 : TwoSig_category ⟦ a1, a' ⟧}{g2 : TwoSig_category ⟦ a2, a' ⟧}
 
            {heq :  f1 · g1 = f2 · g2}
            (** If we have a pushout of signatures *)
@@ -81,4 +81,4 @@ Definition pushout_in_big_rep
                (TT (ι g1))
                (TT (ι g2))
                _ :=
-  pushout_total_initial _ two_mod_cleaving  repr_R1 repr_R2 repr_R' repr_R0 poC.
+  pushout_total_initial _ TwoMod_cleaving  repr_R1 repr_R2 repr_R' repr_R0 poC.

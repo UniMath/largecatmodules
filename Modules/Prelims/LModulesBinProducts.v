@@ -217,6 +217,6 @@ Section pullback_binprod.
     LModule_same_func_iso _ _ binprod_pbm_to_pbm_eq_mult (homset_property _).
 
   Definition binprod_pbm_to_pbm_binprod : LModule_Mor  _ binprod_pbm pbm_binprod :=
-    morphism_from_iso _ _ _ binprod_pbm_to_pbm_iso.
+    morphism_from_iso binprod_pbm_to_pbm_iso.
 
 End pullback_binprod.
