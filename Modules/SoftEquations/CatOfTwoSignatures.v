@@ -5,7 +5,7 @@
 - pushouts of 2-signatures [TwoSignature_Pushouts]
 - the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSig_To_One_is_right_adjoint]
 - The fibration of 2-models over 2-signatures  [TwoMod_cleaving]
-- the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_To_One_right_adjoint]
+- the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_To_OneMod_is_right_adjoint]
 - isomorphism between the fiber category of models of a 2-signature and the full subcategory
    of 1-models (based on the alternative direct definition rather than derived from the
    displayed category) [catiso_modelcat_eq].
@@ -491,10 +491,10 @@ Proof.
 Defined.
       
 
-Definition TwoMod_To_One_right_adjoint : is_right_adjoint Two_to_OneMod_functor :=
+Definition TwoMod_To_OneMod_is_right_adjoint : is_right_adjoint Two_to_OneMod_functor :=
   right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_to_TwoMod.
 
-Lemma OneMod_to_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_To_One_right_adjoint).
+Lemma OneMod_to_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_To_OneMod_is_right_adjoint).
 Proof.
   use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
