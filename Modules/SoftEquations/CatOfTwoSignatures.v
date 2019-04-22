@@ -3,7 +3,7 @@
 - proof that 2-signatures have coequalizers [TwoSignature_Coequalizers] if the base category has
 - coproducts of 2-signatures [TwoSignature_Coproducts]
 - pushouts of 2-signatures [TwoSignature_Pushouts]
-- the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSignature_To_One_right_adjoint]
+- the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSig_To_One_is_right_adjoint]
 - The fibration of 2-models over 2-signatures  [two_mod_cleaving]
 - the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_To_One_right_adjoint]
 - isomorphism between the fiber category of models of a 2-signature and the full subcategory
@@ -150,10 +150,10 @@ Proof.
 Defined.
 
 
-Definition TwoSignature_category : category :=  total_category two_signature_disp.
+Definition TwoSig_category : category :=  total_category two_signature_disp.
 
-Definition TwoSignature := ob TwoSignature_category.
-Definition TwoSignature_Mor (S1 S2 : TwoSignature) := TwoSignature_category ⟦S1 , S2⟧.
+Definition TwoSignature := ob TwoSig_category.
+Definition TwoSignature_Mor (S1 S2 : TwoSignature) := TwoSig_category ⟦S1 , S2⟧.
 
 Coercion OneSig_from_TwoSig (S : TwoSignature) : signature C := pr1 S.
 
@@ -165,7 +165,7 @@ Definition TwoSignature_eqs (S : TwoSignature) : TwoSignature_index S -> equatio
 (** If thebase category has coequalizers, then the total two-sig category also *)
 Lemma TwoSignature_Coequalizers
       (coeq : colimits.Colims_of_shape Coequalizer_graph  C)
-  : Coequalizers TwoSignature_category.
+  : Coequalizers TwoSig_category.
 Proof.
   red.
   intros S1 S2 f g.
@@ -179,7 +179,7 @@ Defined.
 Definition two_signature_coproduct
   {O : UU}
   (c : Coproducts O C)
-  (sigs : O → TwoSignature_category) : TwoSignature.
+  (sigs : O → TwoSig_category) : TwoSignature.
 Proof.
   use tpair.
   + apply (signature_Coproduct (cpC := c) ).
@@ -195,9 +195,9 @@ Defined.
 Definition two_signature_coproduct_in
   {O : UU}
   (c : Coproducts O C)
-  (sigs : O → TwoSignature_category) 
+  (sigs : O → TwoSig_category) 
   (i : O) : 
-  TwoSignature_category ⟦ sigs i, two_signature_coproduct c sigs ⟧.
+  TwoSig_category ⟦ sigs i, two_signature_coproduct c sigs ⟧.
 Proof.
   use tpair.
   + exact ( CoproductIn  _ _ (signature_Coproduct (cpC := c) _) i).
@@ -209,8 +209,8 @@ Defined.
 Lemma two_signature_is_coproduct 
   {O : UU}
   (c : Coproducts O C)
-  (sigs : O → TwoSignature_category)  :
-  isCoproduct O TwoSignature_category sigs (two_signature_coproduct c sigs) (two_signature_coproduct_in c sigs).
+  (sigs : O → TwoSig_category)  :
+  isCoproduct O TwoSig_category sigs (two_signature_coproduct c sigs) (two_signature_coproduct_in c sigs).
 Proof.
   intros S fS.
   use unique_exists.
@@ -251,7 +251,7 @@ Defined.
 
 Lemma TwoSignature_Coproducts {O : UU}
       (c : Coproducts O C)
-  : Coproducts O TwoSignature_category.
+  : Coproducts O TwoSig_category.
 Proof.
   intros sigs.
   use mk_Coproduct.
@@ -263,7 +263,7 @@ Defined.
 Lemma TwoSignature_Pushouts 
       (b : BinCoproducts C)
     (coeq : colimits.Colims_of_shape Coequalizer_graph  C)
-  : Pushouts  TwoSignature_category.
+  : Pushouts  TwoSig_category.
 Proof.
   apply pushouts_from_coeq_bincoprod; revgoals.
   - apply TwoSignature_Coequalizers.
@@ -315,7 +315,7 @@ Definition TwoSig_To_OneSig_right_adjoint
   := right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
 Lemma OneSig_to_TwoSig_fully_faithful
-  : fully_faithful (left_adjoint TwoSig_To_OneSig_right_adjoint : _ ⟶  TwoSignature_category).
+  : fully_faithful (left_adjoint TwoSig_To_OneSig_right_adjoint : _ ⟶  TwoSig_category).
 Proof.
   use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
@@ -360,13 +360,13 @@ Identity Coercion  two_model_to_model_equations  : two_model  >-> model_equation
 
 (* Let rep_ar_mor_mor (a b : SIGNATURE) (M : rep_ar a) (N : rep_ar b) f := *)
 
-Definition two_model_disp_ob_mor : disp_cat_ob_mor TwoSignature_category.
+Definition two_model_disp_ob_mor : disp_cat_ob_mor TwoSig_category.
   exists two_model.
   refine ( fun (a b : TwoSignature) M N (f : a →→ b) => model_mor_mor a b M N f).
 Defined.
 
 
-Definition two_mod_data : disp_cat_data TwoSignature_category.
+Definition two_mod_data : disp_cat_data TwoSig_category.
   exists two_model_disp_ob_mor.
   split.
   + intros; apply rep_id.
@@ -555,11 +555,11 @@ End TwoSig.
 
 (** Colimits in the specific case of SET.
 In fact, from coequalizers and coproducts, we could construct any colimits *)
-Definition TwoSignature_CoequalizersSET : Coequalizers (TwoSignature_category (C := SET)) :=
+Definition TwoSignature_CoequalizersSET : Coequalizers (TwoSig_category (C := SET)) :=
   TwoSignature_Coequalizers (C := SET) (ColimsHSET_of_shape _).
 
-Definition TwoSignature_CoproductsSET (O : hSet) : Coproducts O (TwoSignature_category (C := SET)) :=
+Definition TwoSignature_CoproductsSET (O : hSet) : Coproducts O (TwoSig_category (C := SET)) :=
   TwoSignature_Coproducts (C := SET) (CoproductsHSET _ (setproperty O)).
 
-Definition TwoSignature_PushoutsSET : Pushouts (TwoSignature_category (C := SET)) :=
+Definition TwoSig_PushoutsSET : Pushouts (TwoSig_category (C := SET)) :=
   TwoSignature_Pushouts (C := SET) BinCoproductsHSET (ColimsHSET_of_shape _).

@@ -61,9 +61,9 @@ Local Notation ι := (disp_InitialArrow two_model_disp  two_mod_cleaving _ ).
 
 Definition pushout_in_big_rep
            {C : category}
-           {a0 a1 a2 a' : @TwoSignature_category C}
-           {f1 : TwoSignature_category ⟦ a0, a1 ⟧}{f2 : TwoSignature_category ⟦ a0, a2 ⟧}
-           {g1 : TwoSignature_category ⟦ a1, a' ⟧}{g2 : TwoSignature_category ⟦ a2, a' ⟧}
+           {a0 a1 a2 a' : @TwoSig_category C}
+           {f1 : TwoSig_category ⟦ a0, a1 ⟧}{f2 : TwoSig_category ⟦ a0, a2 ⟧}
+           {g1 : TwoSig_category ⟦ a1, a' ⟧}{g2 : TwoSig_category ⟦ a2, a' ⟧}
 
            {heq :  f1 · g1 = f2 · g2}
            (** If we have a pushout of signatures *)
