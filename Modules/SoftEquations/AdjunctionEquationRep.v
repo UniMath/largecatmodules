@@ -88,7 +88,7 @@ Section QuotientRep.
   Context {O : UU} (eq : O -> soft_equation epiSig ) .
 
   Local Notation REP_EQ := (model_equations eq ).
-  Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
+  Local Notation REP_EQ_PRECAT := (category_model_equations eq).
 
   (* Local Notation R_epi := (modelEpi _). *)
 
@@ -174,7 +174,7 @@ Section QuotientRepInit.
 (** implied by the axiom of choice *)
       (preserves_Epi (InitialObject  R : model _)) ->
       (preserves_Epi (Sig (InitialObject  R : model _))) ->
-      Initial (precategory_model_equations eq).
+      Initial (category_model_equations eq).
   Proof.
     intros init R_epi SigR_epi.
     eapply mk_Initial.
@@ -191,7 +191,7 @@ Section QuotientRepInit.
     : ∏ (R : Initial (rep_fiber_category Sig)) ,
       (preserves_Epi (InitialObject  R : model _)) ->
       preserves_Epi (Sig (InitialObject R : model _)) ->
-      Initial (precategory_model_equations eq').
+      Initial (category_model_equations eq').
   Proof.
     apply soft_equations_preserve_initiality.
   Qed.
@@ -210,7 +210,7 @@ Definition elementary_equations_on_alg_preserve_initiality
            (** A family of equations *)
            (eq' := fun o => soft_equation_from_elementary_equation epiSig  (eq o)) :
         (** .. then the category of 2-models has an initial object *)
-  Initial (precategory_model_equations eq')
+  Initial (category_model_equations eq')
           :=
   elementary_equations_preserve_initiality  epiSig eq R iniEpi (SR_epi _ iniEpi).
 
@@ -228,7 +228,7 @@ Lemma soft_equations_preserve_initiality_choice
          (** If the category of 1-models has an initial object, .. *)
          Initial (rep_fiber_category Sig) ->
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations (λ x : O, eq x)).
+         Initial (category_model_equations (λ x : O, eq x)).
   intros; use soft_equations_preserve_initiality; try assumption.
   - apply preserves_to_HSET_isEpi; assumption.
   - apply preserves_to_HSET_isEpi; assumption.
@@ -251,7 +251,7 @@ Lemma elementary_equations_preserve_initiality_choice
          (** If the category of 1-models has an initial object, .. *)
          Initial (rep_fiber_category Sig) ->
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations
+         Initial (category_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
                          epiSig 

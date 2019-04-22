@@ -509,7 +509,7 @@ Isomorphism of category between the direct definition of category of
 2-models of a signature, and the defined as the fiber category of the
  displayed category on the same signature.
  *)
-Local Notation MODEL_CAT S := (precategory_model_equations (TwoSignature_eqs S)).
+Local Notation MODEL_CAT S := (category_model_equations (TwoSignature_eqs S)).
 Local Notation FIBER_CAT S := (two_model_disp [{S}]).
 
 Definition fib_to_dir_mor_weq {S : TwoSignature} (R R' : two_model S) :
@@ -547,7 +547,7 @@ Proof.
   Defined.
 
 Definition catiso_modelcat_eq (S : TwoSignature) : 
-  catiso (two_model_disp [{S}]) (precategory_model_equations (TwoSignature_eqs S)) :=
+  catiso (two_model_disp [{S}]) (category_model_equations (TwoSignature_eqs S)) :=
    (mk_functor _ (fib_to_dir_is_functor S) ,, (λ x y : (FIBER_CAT S), weqproperty (FSmor x y)),, idisweq _).
      
 End TwoSig.

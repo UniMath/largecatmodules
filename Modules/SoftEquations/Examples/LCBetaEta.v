@@ -309,7 +309,7 @@ Definition beta_eta_equations (b : bool) : elementary_equation :=
 
 (** The lambda calculus modulo beta eta *)
 Definition LCBetaEta : Initial
-  (precategory_model_equations
+  (category_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
                          LamOneSigHSET_epiSig 

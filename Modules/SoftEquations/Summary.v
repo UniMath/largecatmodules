@@ -362,7 +362,7 @@ Check (∏ (S : SIGNATURE)
          (** a family of equations indexed by O *)
          O (e : O -> equation S),
 
-   precategory_model_equations e ::=
+   category_model_equations e ::=
     full_sub_precategory (C := rep_fiber_precategory S)
                          (satisfies_all_equations_hp e)).
 
@@ -388,7 +388,7 @@ Check (@soft_equations_preserve_initiality :
          preserves_Epi (Sig (InitialObject R : model Sig)) ->
          
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations eq)).
+         Initial (category_model_equations eq)).
 
 
 
@@ -408,7 +408,7 @@ Check (@elementary_equations_preserve_initiality :
          preserves_Epi (InitialObject R : model Sig) ->
          preserves_Epi (Sig (InitialObject R : model Sig)) ->
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations
+         Initial (category_model_equations
                       (fun o => soft_equation_from_elementary_equation epiSig (eq o)))).
 
 (** As a corrolary, the case of an algebraic signature with elementary equations
@@ -419,7 +419,7 @@ Check (@elementary_equations_on_alg_preserve_initiality
            (S : BindingSig) (Sig := binding_to_one_sigHSET S)
            (O : UU) (eq : O → elementary_equation (Sig := Sig)) ,
          (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations
+         Initial (category_model_equations
                     ( fun o => soft_equation_from_elementary_equation
                            (algSig_NatEpi S)
                            (eq o))

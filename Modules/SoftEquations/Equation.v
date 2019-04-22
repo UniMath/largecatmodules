@@ -4,7 +4,7 @@
 - Definition of an equation [equation]
 - The satisfyability predicate for 1-model [satisfies_equation]
 - Definition of 2-model [model_equations]
-- Precategory of 2-model [precategory_model_equations]
+- Precategory of 2-model [category_model_equations]
 - Forgetful functor from 2-models to 1-models [forget_2model]
 - A 1-signature morphism : S1 -> S2 induce a map between equations on S1 and equations
    on S2
@@ -91,13 +91,13 @@ Section Equation.
     satisfies_all_equations_hp e  R := pr2 R.
 
   (** The category of 2-model as the full subcategory of 1-models satisfying the required family of equations *)
-  Definition precategory_model_equations {O} (e : O -> equation) : precategory :=
-    full_sub_precategory (C := rep_fiber_category Sig)
-                         (satisfies_all_equations_hp e).
+  Definition category_model_equations {O} (e : O -> equation) : precategory :=
+    subcategory _ (full_sub_precategory (C := rep_fiber_category Sig)
+                         (satisfies_all_equations_hp e)).
 
   (** Forgetful functor from 2-models to 1-models *)
   Definition forget_2model {O} (e : O -> equation) :
-    functor (precategory_model_equations e) (rep_fiber_category Sig) :=
+    functor (category_model_equations e) (rep_fiber_category Sig) :=
     sub_precategory_inclusion _ _.
 
   Definition forget_2model_fully_faithful {O} (e : O -> equation) :
