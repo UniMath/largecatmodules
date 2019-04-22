@@ -443,18 +443,18 @@ Local Notation MOD1 := (total_category (rep_disp C)).
 Local Notation MOD2 := (total_category two_model_disp).
 
 
-Definition Two_to_OneMod_functor_data : functor_data MOD2 MOD1 :=
+Definition TwoMod_OneMod_functor_data : functor_data MOD2 MOD1 :=
   mk_functor_data (C := MOD2) (C' := MOD1)
     (fun M => (pr1 (pr1 M) ,, ((pr2 M : model_equations  _) : model _)))
     (fun a b f => (pr1 (pr1 f) ,, pr2 f)).
 
 
-Definition Two_to_OneMod_is_functor : is_functor Two_to_OneMod_functor_data :=
+Definition TwoMod_OneMod_is_functor : is_functor TwoMod_OneMod_functor_data :=
   (fun x => idpath _)  ,, (fun a b c f g => idpath _).
 
 
-Definition Two_to_OneMod_functor : functor MOD2 MOD1 :=
-   mk_functor Two_to_OneMod_functor_data Two_to_OneMod_is_functor.
+Definition TwoMod_OneMod_functor : functor MOD2 MOD1 :=
+   mk_functor TwoMod_OneMod_functor_data TwoMod_OneMod_is_functor.
 
 (** A 1-model S induces a 2-model consisting of no equation *)
 Definition OneMod_TwoMod (M : MOD1) : MOD2 :=
@@ -462,7 +462,7 @@ Definition OneMod_TwoMod (M : MOD1) : MOD2 :=
 
 (** This induces a left adjoint to the forgetful functor *)
 Lemma universal_OneMod_TwoMod (M : MOD1) :
-  is_universal_arrow_to Two_to_OneMod_functor M  (OneMod_TwoMod M ) (identity _).
+  is_universal_arrow_to TwoMod_OneMod_functor M  (OneMod_TwoMod M ) (identity _).
 Proof.
   intros TT f.
   unshelve eapply unique_exists.
@@ -491,7 +491,7 @@ Proof.
 Defined.
       
 
-Definition TwoMod_OneMod_is_right_adjoint : is_right_adjoint Two_to_OneMod_functor :=
+Definition TwoMod_OneMod_is_right_adjoint : is_right_adjoint TwoMod_OneMod_functor :=
   right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_TwoMod.
 
 Lemma OneMod_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_OneMod_is_right_adjoint).
@@ -518,7 +518,7 @@ Proof.
   eapply weqcomp.
   - exact (fib_to_dir_mor_weq S (R : model _) (R' : model _)).
   - apply invweq.
-    assert (h' := TwoMod_OneMod_fully_faithful (TwoSignature_eqs S)).
+    assert (h' := ModEq_Mod_fully_faithful (TwoSignature_eqs S)).
     eapply  weq_from_fully_faithful in h'.
     exact h'.
 Defined.
