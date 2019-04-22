@@ -4,7 +4,7 @@
 - coproducts of 2-signatures [TwoSignature_Coproducts]
 - pushouts of 2-signatures [TwoSignature_Pushouts]
 - the forgetful functor from 2-signature to 1-signature  has a left adjoint [TwoSig_To_One_is_right_adjoint]
-- The fibration of 2-models over 2-signatures  [two_mod_cleaving]
+- The fibration of 2-models over 2-signatures  [TwoMod_cleaving]
 - the forgetful functor from 2-models to 1-models  has a left adjoint [TwoMod_To_One_right_adjoint]
 - isomorphism between the fiber category of models of a 2-signature and the full subcategory
    of 1-models (based on the alternative direct definition rather than derived from the
@@ -420,7 +420,7 @@ Definition two_model_disp : disp_cat _ := two_mod_data ,, two_mod_axioms.
 
 (** ** Now the cleaving *)
 
-Lemma two_mod_cleaving : cleaving two_model_disp.
+Lemma TwoMod_cleaving : cleaving two_model_disp.
 Proof.
   intros a a' f R.
   red.

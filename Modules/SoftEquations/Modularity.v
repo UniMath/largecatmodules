@@ -57,7 +57,7 @@ Require Import Modules.Prelims.FibrationInitialPushout.
 Local Open Scope cat.
 Local Notation TT := (disp_mor_to_total_mor two_model_disp ).
 
-Local Notation ι := (disp_InitialArrow two_model_disp  two_mod_cleaving _ ).
+Local Notation ι := (disp_InitialArrow two_model_disp  TwoMod_cleaving _ ).
 
 Definition pushout_in_big_rep
            {C : category}
@@ -81,4 +81,4 @@ Definition pushout_in_big_rep
                (TT (ι g1))
                (TT (ι g2))
                _ :=
-  pushout_total_initial _ two_mod_cleaving  repr_R1 repr_R2 repr_R' repr_R0 poC.
+  pushout_total_initial _ TwoMod_cleaving  repr_R1 repr_R2 repr_R' repr_R0 poC.
