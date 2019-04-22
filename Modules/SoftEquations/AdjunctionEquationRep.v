@@ -12,7 +12,7 @@ following relation on R(X):
 See [push_initiality].
 
 More generally, the forgetful functor from 2-models to 1-models has a left adjoint
-[forget_2model_is_right_adjoint]
+[TwoMod_OneMod_is_right_adjoint]
 
 
 
@@ -115,7 +115,7 @@ Section QuotientRep.
     := projR_rep Sig epiSig R_epi SigR_epi  d ff.
 
   Lemma u_rep_universal (R : model _) (R_epi: preserves_Epi R) (SigR_epi : preserves_Epi (Sig R))
-    : is_universal_arrow_to (forget_2model eq) R (R' R_epi SigR_epi) (projR_rep R R_epi SigR_epi).
+    : is_universal_arrow_to (TwoMod_OneMod_functor eq) R (R' R_epi SigR_epi) (projR_rep R R_epi SigR_epi).
   Proof.
     intros S f.
     set (j := tpair (fun (x : model_equations _) => R →→ x) (S : model_equations _)  f).
@@ -134,11 +134,11 @@ Section QuotientRep.
 
   (** If all models preserve epis, and their image by the signature
       preserve epis, then we have an adjunctions *)
-  Definition forget_2model_is_right_adjoint
+  Definition TwoMod_OneMod_is_right_adjoint
              (modepis : ∏ (R : model Sig), preserves_Epi R)
              (SigR_epis : ∏ (R : model Sig) , preserves_Epi (Sig R))
-    : is_right_adjoint (forget_2model eq) :=
-    right_adjoint_left_from_partial (forget_2model (λ x : O, eq x))
+    : is_right_adjoint (TwoMod_OneMod_functor eq) :=
+    right_adjoint_left_from_partial (TwoMod_OneMod_functor (λ x : O, eq x))
                                     (fun R => R' (modepis R) (SigR_epis R ))
                                     (fun R => projR_rep R (modepis R)(SigR_epis R ))
                                     (fun R => u_rep_universal R (modepis R)(SigR_epis R )).
@@ -150,7 +150,7 @@ Section QuotientRep.
              (R_epi : preserves_Epi (InitialObject R : model _))
              (SigR_epi : preserves_Epi (Sig (InitialObject R : model _)))
     : isInitial REP_EQ_PRECAT (R' R_epi SigR_epi) :=
-  initial_universal_to_lift_initial (forget_2model (λ x : O, eq x)) R (u_rep_universal _ R_epi SigR_epi).
+  initial_universal_to_lift_initial (TwoMod_OneMod_functor (λ x : O, eq x)) R (u_rep_universal _ R_epi SigR_epi).
 
 End QuotientRep.
 

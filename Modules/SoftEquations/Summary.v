@@ -428,7 +428,7 @@ Check (@elementary_equations_on_alg_preserve_initiality
 (** With the stronger assumption (implied by the axiom of choice) that
 any model preserves epis, , we can prove that
 the forgetful functor from 2-models to 1-models has a left adjoint *)
-Check (@forget_2model_is_right_adjoint :
+Check (@TwoMod_OneMod_is_right_adjoint :
          ∏ 
            (Sig : SIGNATURE)
            (** (1) S is an epi-signature *)
@@ -438,7 +438,7 @@ Check (@forget_2model_is_right_adjoint :
          (** The stronger assumption is that any 1-model of Sig preserve epis (implied by the axiom of choice) *)
          (∏ R : model Sig, preserves_Epi R) ->
          (∏ R : model Sig, preserves_Epi (Sig R)) ->
-         is_right_adjoint (forget_2model eq)).
+         is_right_adjoint (TwoMod_OneMod_functor eq)).
 
 (**
 
