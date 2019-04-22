@@ -310,12 +310,12 @@ Proof.
     apply pathsinv0, id_left.
 Defined.
 
-Definition TwoSig_To_OneSig_right_adjoint
+Definition TwoSig_To_OneSig_is_right_adjoint
   : is_right_adjoint (pr1_category two_signature_disp)
   := right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
 
 Lemma OneSig_to_TwoSig_fully_faithful
-  : fully_faithful (left_adjoint TwoSig_To_OneSig_right_adjoint : _ ⟶  TwoSig_category).
+  : fully_faithful (left_adjoint TwoSig_To_OneSig_is_right_adjoint : _ ⟶  TwoSig_category).
 Proof.
   use isounit_coreflection.
   apply is_left_adjoint_left_adjoint.
