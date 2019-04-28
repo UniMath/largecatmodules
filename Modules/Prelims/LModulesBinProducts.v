@@ -113,7 +113,7 @@ Local Notation σ := (lm_mult _).
   Definition LModule_binproductPr2  : LModule_Mor _ LModule_binproduct N :=
     _ ,, LModule_binproductPr2_laws.
 
-  Local Notation LMOD :=(precategory_LModule R (category_pair _ hsC)).
+  Local Notation LMOD :=(precategory_LModule R (make_category _ hsC)).
 
   Definition LModule_BinProductArrow_laws (S : LModule _ _)
              (f : LModule_Mor _ S M ) (g : LModule_Mor _ S N ) :
@@ -168,7 +168,7 @@ Local Notation σ := (lm_mult _).
       +  exact ((LModule_Mor_equiv _ hsC _ _ ) h2).
   Defined.
   Definition LModule_ProductCone : BinProduct LMOD M N  :=
-    mk_BinProduct LMOD M N LModule_binproduct
+    make_BinProduct LMOD M N LModule_binproduct
                       LModule_binproductPr1 LModule_binproductPr2
                       LModule_isBinProductCone.
 
@@ -180,7 +180,7 @@ Section BinProductsLModule.
           (bpC : BinProducts C)
           (hsB : has_homsets B)
           (hsC : has_homsets C).
-  Local Notation LMOD :=(precategory_LModule R (category_pair _ hsC)).
+  Local Notation LMOD :=(precategory_LModule R (make_category _ hsC)).
 
   Definition LModule_BinProducts : BinProducts LMOD := LModule_ProductCone bpC hsC.
 End BinProductsLModule.

@@ -222,7 +222,7 @@ Proof.
   apply idpath.
 Qed.
 
-Definition signature_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
+Definition signature_precategory_ob_mor  : precategory_ob_mor := make_precategory_ob_mor
    signature (fun F F' => signature_Mor F F').
 
 Lemma is_signature_Mor_id (F : signature_data) : is_signature_Mor F F
@@ -242,7 +242,7 @@ Definition signature_Mor_comp {F G H : signature} (a : signature_Mor F G) (b : s
 
 Definition signature_precategory_data : precategory_data.
 Proof.
-  apply (precategory_data_pair (signature_precategory_ob_mor )).
+  apply (make_precategory_data (signature_precategory_ob_mor )).
   + intro a; simpl.
     apply (signature_Mor_id (pr1 a)).
   + intros a b c f g.
@@ -252,7 +252,7 @@ Defined.
 Lemma is_precategory_signature_precategory_data :
    is_precategory signature_precategory_data.
 Proof.
-  apply mk_is_precategory_one_assoc; simpl; intros.
+  apply make_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
     apply signature_Mor_eq. 
@@ -299,7 +299,7 @@ Section ForgetSigFunctor.
   Local Notation HAR := (signature_precategory (C:=C)).
 
   Definition forget_Sig_data : functor_data HAR MOD :=
-    mk_functor_data (C := HAR) (C' := MOD)
+    make_functor_data (C := HAR) (C' := MOD)
                     (fun X => ((X : signature C) R))
                     (fun a b f => ((f : signature_Mor _ _ ) R)).
 
@@ -308,7 +308,7 @@ Section ForgetSigFunctor.
       ,, ((fun a b c f g => idpath _) : functor_compax forget_Sig_data).
 
   Definition forget_Sig: functor HAR MOD  :=
-    mk_functor forget_Sig_data forget_Sig_is_functor.
+    make_functor forget_Sig_data forget_Sig_is_functor.
 End ForgetSigFunctor.
 
 (* large category of model defined as a display category
