@@ -221,10 +221,9 @@ Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
       : preserves_Epi G.
 Proof.
   intros a b f epif.
-  apply split_epi_is_epi. 
-  apply functor_preserves_split_epi.
-  set (T:= SplitEpis_HSET). unfold epis_are_split in T.
-  apply SplitEpis_HSET. [|apply epif].
+  apply merely_split_epi_is_epi; [ apply homset_property |].
+  apply functor_preserves_merely_split_epi.
+  apply SplitEpis_HSET; [|apply epif].
   apply ax_choice.
 Qed.
 

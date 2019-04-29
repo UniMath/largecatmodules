@@ -446,10 +446,10 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
 
 
   Definition LModule_colim_cocone : cocone d LModule_colim :=
-    mk_cocone LModule_coconeIn LModule_coconeIn_commutes.
+    make_cocone LModule_coconeIn LModule_coconeIn_commutes.
 
   Definition LModule_lim_cone : cone d LModule_lim :=
-    mk_cone LModule_coneOut LModule_coneOut_commutes.
+    make_cone LModule_coneOut LModule_coneOut_commutes.
 
   Definition LModule_colimArrow_laws {M : LModule R C} (cc : cocone d M) :
     LModule_Mor_laws
@@ -548,10 +548,10 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
   Defined.
 
   Definition LModule_ColimCocone : ColimCocone d :=
-    mk_ColimCocone  _ _ _  LModule_isColimCocone.
+    make_ColimCocone  _ _ _  LModule_isColimCocone.
 
   Definition LModule_LimCone : LimCone d :=
-    mk_LimCone  _ _ _  LModule_isLimCone.
+    make_LimCone  _ _ _  LModule_isLimCone.
 
 End ColimsModule.
 

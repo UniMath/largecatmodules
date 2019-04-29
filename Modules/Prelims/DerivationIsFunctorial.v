@@ -79,10 +79,10 @@ MR(X+o)) --------->  NR(X+o)
   Definition LModule_deriv_Mor {M N : LModule T D} (f : LModule_Mor _ M N) :
     LModule_Mor _ ( M ') (N ') := _ ,, LModule_deriv_Mor_laws f.
 
-  Local Notation LMOD :=(precategory_LModule T (category_pair _ hsD)).
+  Local Notation LMOD :=(precategory_LModule T (make_category _ hsD)).
 
   Definition LModule_deriv_functor_data  : functor_data LMOD LMOD
-    := mk_functor_data (C := LMOD)(C' := LMOD)(LModule_deriv o bcpC) (@LModule_deriv_Mor).
+    := make_functor_data (C := LMOD)(C' := LMOD)(LModule_deriv o bcpC) (@LModule_deriv_Mor).
 
   Lemma LModule_deriv_is_functor : is_functor LModule_deriv_functor_data.
   Proof.
@@ -97,7 +97,7 @@ MR(X+o)) --------->  NR(X+o)
       exact hsD.
   Qed.
 
-  Definition LModule_deriv_functor  : functor LMOD LMOD := mk_functor _ LModule_deriv_is_functor. 
+  Definition LModule_deriv_functor  : functor LMOD LMOD := make_functor _ LModule_deriv_is_functor. 
 
   Local Notation "∂" := LModule_deriv_functor.
 

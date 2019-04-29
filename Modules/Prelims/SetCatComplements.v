@@ -41,10 +41,10 @@ Lemma hset_category_isDistributive (I : hSet)  :
 Proof.
   intros f X.
   eapply is_iso_from_is_z_iso.
-  use mk_is_z_isomorphism.
+  use make_is_z_isomorphism.
   - intros [[i a] b].
     exact (i ,, (a ,, b)).
-  - use mk_is_inverse_in_precat; apply idpath.
+  - use make_is_inverse_in_precat; apply idpath.
 Defined.
 
 Lemma isEpiBinProdHSET {X X' Y Y' : hSet} (f : X -> Y)(g : X' -> Y') :
@@ -67,7 +67,7 @@ Proof.
   generalize (epig y').
   apply hinhfun2.
   intros  [x' hx'][x hx].
-  use hfiberpair.
+  use make_hfiber.
   - exact (x,,x').
   - cbn.
     apply dirprodeq; apply hx' || apply hx.
