@@ -76,7 +76,7 @@ Proof.
 Defined.
 
 Definition two_signature_disp_ob_mor : disp_cat_ob_mor (signature_category (C := C)) :=
-  mk_disp_cat_ob_mor
+  make_disp_cat_ob_mor
     signature_category
     (fun (S : signature C) => ∑ (O : UU), O -> equation S)
     (fun (S1 S2 : signature C) SS1 SS2 (f : signature_Mor S1 S2) =>
@@ -254,7 +254,7 @@ Lemma TwoSignature_Coproducts {O : UU}
   : Coproducts O TwoSig_category.
 Proof.
   intros sigs.
-  use mk_Coproduct.
+  use make_Coproduct.
   - exact (two_signature_coproduct c sigs).
   - exact (two_signature_coproduct_in c sigs).
   - apply two_signature_is_coproduct.
@@ -444,7 +444,7 @@ Local Notation MOD2 := (total_category two_model_disp).
 
 
 Definition Two_to_OneMod_functor_data : functor_data MOD2 MOD1 :=
-  mk_functor_data (C := MOD2) (C' := MOD1)
+  make_functor_data (C := MOD2) (C' := MOD1)
     (fun M => (pr1 (pr1 M) ,, ((pr2 M : model_equations  _) : model _)))
     (fun a b f => (pr1 (pr1 f) ,, pr2 f)).
 
@@ -454,7 +454,7 @@ Definition Two_to_OneMod_is_functor : is_functor Two_to_OneMod_functor_data :=
 
 
 Definition Two_to_OneMod_functor : functor MOD2 MOD1 :=
-   mk_functor Two_to_OneMod_functor_data Two_to_OneMod_is_functor.
+   make_functor Two_to_OneMod_functor_data Two_to_OneMod_is_functor.
 
 (** A 1-model S induces a 2-model consisting of no equation *)
 Definition OneMod_to_TwoMod (M : MOD1) : MOD2 :=
@@ -548,7 +548,7 @@ Proof.
 
 Definition catiso_modelcat_eq (S : TwoSignature) : 
   catiso (two_model_disp [{S}]) (category_model_equations (TwoSignature_eqs S)) :=
-   (mk_functor _ (fib_to_dir_is_functor S) ,, (λ x y : (FIBER_CAT S), weqproperty (FSmor x y)),, idisweq _).
+   (make_functor _ (fib_to_dir_is_functor S) ,, (λ x y : (FIBER_CAT S), weqproperty (FSmor x y)),, idisweq _).
      
 End TwoSig.
 

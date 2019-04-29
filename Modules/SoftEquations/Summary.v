@@ -155,9 +155,9 @@ Local Notation  "R →→ S" := (rep_fiber_mor  R S) (at level 6).
 (** The category of 1-models *)
 Check (∏ (S : SIGNATURE),
        rep_fiber_precategory S ::=
-         (precategory_data_pair
+         (make_precategory_data
             (** the object and morphisms of the category *)
-            (precategory_ob_mor_pair (model S) rep_fiber_mor)
+            (make_precategory_ob_mor (model S) rep_fiber_mor)
             (** the identity morphism *)
             (λ R, rep_fiber_id R)
             (** Composition *)

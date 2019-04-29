@@ -65,7 +65,7 @@ Section CoprodPresentable.
     {
       eapply (# sigWithStrength_to_sig_functor).
       eapply morphism_from_iso.
-      use (binding_Sig_iso bp bcp T (fun x y => cp (hSetpair _ y))).
+      use (binding_Sig_iso bp bcp T (fun x y => cp (make_hSet _ y))).
     }
     eapply compose.
     {
@@ -89,7 +89,7 @@ Section CoprodPresentable.
       apply is_iso_isEpi.
       apply is_z_iso_from_is_iso.
       apply is_functor_iso_pointwise_if_iso.
-      set (F := SignatureForgetfulFunctor _ _).
+      set (F := SignatureForgetfulFunctor _ _ _).
       set (f := binding_Sig_iso _ _ _ _ _).
       apply is_iso_from_is_z_iso.
       use (functor_on_is_z_isomorphism F (f := f)).
