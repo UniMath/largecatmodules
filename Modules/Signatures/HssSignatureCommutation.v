@@ -118,7 +118,7 @@ Section GenericStrat.
     is_inverse_in_precat (C := signature_category)
                          signature_S1_S2 signature_S2_S1.
   Proof.
-    use mk_is_inverse_in_precat.
+    use make_is_inverse_in_precat.
     - apply signature_Mor_eq.
       intro X.
       use (iso_inv_after_iso (S1_S2_R_iso X)).
@@ -128,25 +128,25 @@ Section GenericStrat.
   Qed.
 
   Definition signature_S1_S2_iso : iso (C := signature_category) S1 S2 :=
-    isopair _ (
+    make_iso _ (
               is_iso_from_is_z_iso
                 _
-                (mk_is_z_isomorphism _ _ signature_S1_S2_is_inverse)).
+                (make_is_z_isomorphism _ _ signature_S1_S2_is_inverse)).
 
 
 End GenericStrat.
 
 Section commuteBinProdSig.
   Context {C : category}  .
-  Local Notation SIG := (Signature_precategory C C).
+  Local Notation SIG := (Signature_precategory C C C).
   Context {I : UU}
           (bpC :  BinProducts C).
   Let hss_bpSig  : BinProducts  SIG
-    := BinProducts_Signature_precategory C C bpC.
+    := BinProducts_Signature_precategory C C bpC C.
 
   Let bpSig := signature_BinProducts (C := C) bpC.
 
-  Variable (a b : Signature C (homset_property C) C (homset_property C) ).
+  Variable (a b : Signature C (homset_property C) C (homset_property C) C (homset_property C)).
 
   Let ar_a :=  sigWithStrength_to_sig a.
   Let ar_b :=  sigWithStrength_to_sig b.
@@ -206,11 +206,11 @@ End commuteBinProdSig.
 
 Section CoprodAr.
   Context {C : category}  .
-  Local Notation SIG := (Signature_precategory C C).
+  Local Notation SIG := (Signature_precategory C C C).
   Context {I : UU}
           (cpC :  Coproducts I C).
   Let hss_cpSig  : Coproducts I SIG
-    := Coproducts_Signature_precategory _ C _ cpC.
+    := Coproducts_Signature_precategory _ C _ _ cpC.
   Let cpSig := signature_Coproducts (C := C) cpC.
 
   Variable (sigs : I -> SIG).
@@ -260,7 +260,7 @@ End CoprodAr.
 Section TautologicalPreserve.
   Context {C : category}.
   Local Notation SIG := (Signature_precategory C C).
-  Let a := (sigWithStrength_to_sig (IdSignature C (homset_property C))).
+  Let a := (sigWithStrength_to_sig (IdSignature C (homset_property C) C (homset_property C))).
   Let b := (tautological_signature (C:=C)).
 
   Definition tauto_sigs_har_iso : iso (C := signature_precategory) a

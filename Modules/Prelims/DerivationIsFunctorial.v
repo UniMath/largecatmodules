@@ -22,6 +22,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.UnitorsAndAssociatorsForEndofunctors.
 
 Require Import Modules.Prelims.lib.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
@@ -106,7 +107,7 @@ MR(X+o)) --------->  NR(X+o)
   (*
 M ---> M Id ---> M ∂
 *)
-    eapply (compose (C := [C,D , hsD]) ); [apply EndofunctorsMonoidal.λ_functor_inv|].
+    eapply (compose (C := [C,D , hsD]) ); [apply λ_functor_inv|].
     apply post_whisker.
     apply coproduct_nat_trans_in2.
   Defined.
@@ -163,5 +164,5 @@ f := η ∘ in₁
   Qed.
 
   Definition LModule_to_deriv_functor : (functor_identity _) ⟹ ∂ :=
-    mk_nat_trans _ _ _ LModule_to_deriv_is_nt.
+    make_nat_trans _ _ _ LModule_to_deriv_is_nt.
 End DerivFunctor.

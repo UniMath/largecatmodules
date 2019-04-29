@@ -71,7 +71,9 @@ Proof.
 Qed.
 
 (** Proof that an epiSig preserves natural epimorphicity *)
-Lemma epiSig_NatEpi {C : category} (S : Signature C (homset_property C) C (homset_property C))
+Lemma epiSig_NatEpi {C : category} (S : Signature C (homset_property C)
+                                                  C (homset_property C)
+                                                  C (homset_property C))
       (epiS : preserves_Epi (S : functor _ _)) : sig_preservesNatEpiMonad (sigWithStrength_to_sig S).
 Proof.
     intros M N f.
