@@ -26,7 +26,7 @@ Open Scope cat.
 
 Definition Coproducts_Unit {D : category}  : Coproducts unit D .
   intro f.
-  use mk_Coproduct.
+  use make_Coproduct.
   - exact (f tt).
   - induction i.
     exact (identity _).
@@ -53,7 +53,7 @@ Section WEQ.
   Variable (a : I -> C).
 
   Definition from_Coproducts_weq c : (∏ i, C ⟦ a i , c ⟧) ≃ C ⟦ CoproductObject _ _ (cpC a) , c ⟧.
-    use weqpair.
+    use make_weq.
     - intro f.
       apply CoproductArrow.
       exact f.
@@ -137,7 +137,7 @@ Defined.
 
 Definition iso_from_Coproduct_to_Coproduct (CC CC' : Coproduct I C a)
   : iso (CoproductObject _ _ CC) (CoproductObject _ _ CC')
-  := isopair _ (is_iso_from_Coproduct_to_Coproduct CC CC').
+  := make_iso _ (is_iso_from_Coproduct_to_Coproduct CC CC').
 End coproduct_unique.
 
    (* (∐ (o : O) ∐ (i : A o), B i) ≅ (∐ (oi : ∑ (o : O), A o) , B (pr2 oi)) *)
@@ -195,7 +195,7 @@ Section CoprodSigma.
       apply assoc.
   Defined.
 
-  Definition sigma_Coproduct := mk_Coproduct _ _ _ _ _ sigma_coprod_isCoproduct.
+  Definition sigma_Coproduct := make_Coproduct _ _ _ _ _ sigma_coprod_isCoproduct.
 
   Definition sigma_coprod_iso : iso (CoproductObject _ _ cpF) (CoproductObject _ _ cp2) :=
     iso_from_Coproduct_to_Coproduct _ cpF sigma_Coproduct.
@@ -263,7 +263,7 @@ Definition iso_from_isDistributive  {C : precategory} {I : UU}
            (bp : BinProducts C) (cp : Coproducts I C) 
            (h :  bp_coprod_isDistributive bp cp) B X :
   iso _ _ :=
-  isopair (bp_coprod_mor (cp B) (fun o => bp _ X) (bp _ _) (cp _) )
+  make_iso (bp_coprod_mor (cp B) (fun o => bp _ X) (bp _ _) (cp _) )
       (h  B X).
 
 Section CoprodPwIso.
@@ -310,7 +310,7 @@ Section CoprodPwIso.
       apply id_left.
   Defined.
 
-  Let cpB'2 := mk_Coproduct _ _ _ _ _ coprod_pw_iso_isCoproduct.
+  Let cpB'2 := make_Coproduct _ _ _ _ _ coprod_pw_iso_isCoproduct.
 
   Definition coprod_pw_iso : iso (CPO cpB) (CPO cpB') :=
     (iso_from_Coproduct_to_Coproduct _ cpB cpB'2).

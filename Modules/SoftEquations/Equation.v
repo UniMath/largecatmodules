@@ -72,7 +72,7 @@ Section Equation.
     homset_property (category_LModule  _ _ ) _ _ _ _.
 
   Definition satisfies_equation_hp (e : equation) (R : REP) : hProp  :=
-    hProppair _ (satisfies_equation_isaprop e R). 
+    make_hProp _ (satisfies_equation_isaprop e R). 
 
   (** The proposition that a 1-model satisfies a family of equations: it must satisfy
       each of them *)

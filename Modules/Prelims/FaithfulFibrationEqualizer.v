@@ -53,7 +53,7 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
         ( eq  : Equalizer _ (# (pr1_category D) f)%cat (# (pr1_category D) g))
         : Equalizer _ f g.
   Proof.
-    use mk_Equalizer.
+    use make_Equalizer.
     - refine (EqualizerObject _ eq ,, _).
       eapply (cleaving_ob cl ).
       + apply EqualizerArrow.
@@ -63,7 +63,7 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
     - apply faithful_reformulated.
       cbn.
       apply EqualizerArrowEq.
-    - use mk_isEqualizer.
+    - use make_isEqualizer.
       + apply homset_property.
       + intros e h' eqh'.
         assert (h := EqualizerArrowComm _ eq _ _ (base_paths _ _ eqh')).
@@ -116,7 +116,7 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
         ( eq  : Coequalizer _ (# (pr1_category D) f)%cat (# (pr1_category D) g))
         : Coequalizer _ f g.
   Proof.
-    use mk_Coequalizer.
+    use make_Coequalizer.
     - refine (CoequalizerObject _ eq ,, _).
       eapply (opcleaving_ob cl ).
       + apply CoequalizerArrow.
@@ -126,7 +126,7 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
     - apply faithful_reformulated.
       cbn.
       apply CoequalizerArrowEq.
-    - use mk_isCoequalizer.
+    - use make_isCoequalizer.
       + apply homset_property.
       + intros e h' eqh'.
         assert (h := CoequalizerArrowComm _ eq _ _ (base_paths _ _ eqh')).

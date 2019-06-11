@@ -318,10 +318,10 @@ Section ColimsSig.
 
 
   Definition Sig_colim_cocone : cocone d Sig_colim :=
-    mk_cocone Sig_coconeIn Sig_coconeIn_commutes.
+    make_cocone Sig_coconeIn Sig_coconeIn_commutes.
 
   Definition Sig_lim_cone : cone d Sig_lim :=
-    mk_cone Sig_coneOut Sig_coneOut_commutes.
+    make_cone Sig_coneOut Sig_coneOut_commutes.
 
   Lemma Sig_colimArrow_laws {M : signature C} (cc : cocone d M) :
     is_signature_Mor
@@ -444,10 +444,10 @@ Section ColimsSig.
 
 
   Definition Sig_ColimCocone : ColimCocone d :=
-    mk_ColimCocone  _ _ _  Sig_isColimCocone.
+    make_ColimCocone  _ _ _  Sig_isColimCocone.
 
   Definition Sig_LimCone : LimCone d :=
-    mk_LimCone  _ _ _  Sig_isLimCone.
+    make_LimCone  _ _ _  Sig_isLimCone.
 
 End ColimsSig.
 

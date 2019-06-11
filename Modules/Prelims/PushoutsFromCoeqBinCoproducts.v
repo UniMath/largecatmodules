@@ -42,7 +42,7 @@ Section d.
 
   Definition pushouts_from_coeq_bincoprod : Pushouts C.
     intros a b c u v.
-    use mk_Pushout.
+    use make_Pushout.
     - unshelve eapply CoequalizerObject; revgoals.
       + red in coeq.
         specialize (coeq a (bc b c)).

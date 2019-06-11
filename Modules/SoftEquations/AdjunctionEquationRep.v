@@ -177,7 +177,7 @@ Section QuotientRepInit.
       Initial (category_model_equations eq).
   Proof.
     intros init R_epi SigR_epi.
-    eapply mk_Initial.
+    eapply make_Initial.
     use push_initiality.
     - exact init.
     - assumption.

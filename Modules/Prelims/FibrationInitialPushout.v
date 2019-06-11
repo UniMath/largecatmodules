@@ -116,8 +116,8 @@ If there is a morphism f : x → y  in C, then there is a unique morphism over f
         (poC : isPushout f1 f2 g1 g2 (base_paths _ _ eq_ff))
      : isPushout  (TT ff1)(TT ff2)(TT gg1)(TT gg2) eq_ff.
   Proof.
-    set (PO := mk_Pushout _ _ _ _ _ _ poC).
-    use mk_isPushout.
+    set (PO := make_Pushout _ _ _ _ _ _ poC).
+    use make_isPushout.
     intros [x xx] [h1 hh1] [h2 hh2] heq_hh.
     cbn in h1, hh1, h2, hh2.
     use unique_exists.

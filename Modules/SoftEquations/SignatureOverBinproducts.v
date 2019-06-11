@@ -223,7 +223,7 @@ Section Binprod.
   Defined.
 
   Definition signature_over_BinProduct : BinProduct (signature_over_precategory _) a b :=
-    mk_BinProduct  _ _ _ _ _ _ signature_over_isBinProduct.
+    make_BinProduct  _ _ _ _ _ _ signature_over_isBinProduct.
 
 
 End Binprod.
@@ -274,7 +274,7 @@ Section GenericStrat.
     is_inverse_in_precat (C := signature_over_category Sig)
                          signature_over_S1_S2 signature_over_S2_S1.
   Proof.
-    use mk_is_inverse_in_precat.
+    use make_is_inverse_in_precat.
     - apply signature_over_Mor_eq.
       intro R.
       cbn.
@@ -286,10 +286,10 @@ Section GenericStrat.
   Defined.
 
   Definition signature_over_S1_S2_iso : iso (C := signature_over_category Sig) S1 S2 :=
-    isopair _ (
+    make_iso _ (
               is_iso_from_is_z_iso
                 _
-                (mk_is_z_isomorphism _ _ signature_over_S1_S2_is_inverse)).
+                (make_is_z_isomorphism _ _ signature_over_S1_S2_is_inverse)).
 
 
 End GenericStrat.

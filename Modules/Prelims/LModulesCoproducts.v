@@ -172,7 +172,7 @@ Section ColimsModule.
 
 
   Definition LModule_Coproduct : Coproduct _ _ d :=
-    mk_Coproduct  _ _ _ _ _ LModule_isCoproduct.
+    make_Coproduct  _ _ _ _ _ LModule_isCoproduct.
 
 
 End ColimsModule.

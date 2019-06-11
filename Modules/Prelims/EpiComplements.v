@@ -26,6 +26,7 @@ Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
+Require Import UniMath.CategoryTheory.SplitMonicsAndEpis.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.limits.binproducts.
 Require Import UniMath.CategoryTheory.limits.bincoproducts.
@@ -80,7 +81,7 @@ Proof.
     revert epif epig.
     apply hinhfun2.
     intros y y'.
-    use (hfiberpair fg ).
+    use (make_hfiber fg ).
     + exact (hfiberpr1 _ _ y ,, hfiberpr1 _ _ y').
     + apply total2_paths2; use hfiberpr2.
 Qed.
@@ -220,8 +221,8 @@ Lemma preserves_to_HSET_isEpi (ax_choice : AxiomOfChoice.AxiomOfChoice_surj)
       : preserves_Epi G.
 Proof.
   intros a b f epif.
-  apply isSplitEpi_isEpi; [ apply homset_property|].
-  apply preserves_isSplitEpi.
+  apply merely_split_epi_is_epi; [ apply homset_property |].
+  apply functor_preserves_merely_split_epi.
   apply SplitEpis_HSET; [|apply epif].
   apply ax_choice.
 Qed.
