@@ -454,7 +454,7 @@ Definition TwoMod_OneMod_is_functor : is_functor TwoMod_OneMod_functor_data :=
 
 
 Definition TwoMod_OneMod_functor : functor MOD2 MOD1 :=
-   make_functor Two_to_OneMod_functor_data Two_to_OneMod_is_functor.
+   make_functor TwoMod_OneMod_functor_data TwoMod_OneMod_is_functor.
 
 (** A 1-model S induces a 2-model consisting of no equation *)
 Definition OneMod_TwoMod (M : MOD1) : MOD2 :=
