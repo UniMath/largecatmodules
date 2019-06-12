@@ -155,9 +155,9 @@ Local Notation  "R →→ S" := (rep_fiber_mor  R S) (at level 6).
 (** The category of 1-models *)
 Check (∏ (S : SIGNATURE),
        rep_fiber_precategory S ::=
-         (precategory_data_pair
+         (make_precategory_data
             (** the object and morphisms of the category *)
-            (precategory_ob_mor_pair (model S) rep_fiber_mor)
+            (make_precategory_ob_mor (model S) rep_fiber_mor)
             (** the identity morphism *)
             (λ R, rep_fiber_id R)
             (** Composition *)
@@ -362,7 +362,7 @@ Check (∏ (S : SIGNATURE)
          (** a family of equations indexed by O *)
          O (e : O -> equation S),
 
-   precategory_model_equations e ::=
+   category_model_equations e ::=
     full_sub_precategory (C := rep_fiber_precategory S)
                          (satisfies_all_equations_hp e)).
 
@@ -388,7 +388,7 @@ Check (@soft_equations_preserve_initiality :
          preserves_Epi (Sig (InitialObject R : model Sig)) ->
          
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations eq)).
+         Initial (category_model_equations eq)).
 
 
 
@@ -408,7 +408,7 @@ Check (@elementary_equations_preserve_initiality :
          preserves_Epi (InitialObject R : model Sig) ->
          preserves_Epi (Sig (InitialObject R : model Sig)) ->
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations
+         Initial (category_model_equations
                       (fun o => soft_equation_from_elementary_equation epiSig (eq o)))).
 
 (** As a corrolary, the case of an algebraic signature with elementary equations
@@ -419,7 +419,7 @@ Check (@elementary_equations_on_alg_preserve_initiality
            (S : BindingSig) (Sig := binding_to_one_sigHSET S)
            (O : UU) (eq : O → elementary_equation (Sig := Sig)) ,
          (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations
+         Initial (category_model_equations
                     ( fun o => soft_equation_from_elementary_equation
                            (algSig_NatEpi S)
                            (eq o))
@@ -427,18 +427,19 @@ Check (@elementary_equations_on_alg_preserve_initiality
 
 (** With the stronger assumption (implied by the axiom of choice) that
 any model preserves epis, , we can prove that
-the forgetful functor from 2-models to 1-models has a left adjoint *)
-Check (@forget_2model_is_right_adjoint :
+the forgetful functor from 2-models (of a fixed 2-signature)
+   to 1-models has a left adjoint *)
+Check (@ModEq_Mod_is_right_adjoint :
          ∏ 
            (Sig : SIGNATURE)
-           (** S is an epi-signature *)
+           (** (1) S is an epi-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
            (** A family of equations *)
            (O : UU) (eq : O → soft_equation epiSig ),
          (** The stronger assumption is that any 1-model of Sig preserve epis (implied by the axiom of choice) *)
          (∏ R : model Sig, preserves_Epi R) ->
          (∏ R : model Sig, preserves_Epi (Sig R)) ->
-         is_right_adjoint (forget_2model eq)).
+         is_right_adjoint (ModEq_Mod_functor eq)).
 
 (**
 
@@ -447,9 +448,10 @@ Note that an epimorphic monad morphism may not be epimorphic as a natural transf
 
 A natural transformation is epimorphic if and only if it is pointwise epimorphic.
 Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
-any epimorphism has a section). Hypothesis (1) does not seem (at least trivially) implied
-by the axiom of choice because one would need that the retract is a monad morphism (and even
-I don't know how to use the axiom of choice to yield a natural transformation retration).
+any epimorphism has a section). Hypothesis (1) does not seem to be implied
+by the axiom of choice. Note that even with the axiom of choice, there are some
+epimorphic natural transformations which don't have a retract
+(consider the epimorphism between the yoneda functors Hom(1, _) -> Hom(0, _)).
 
 Where are the hypotheses (1), (2), (3) used in the proof of the theorem above:
 

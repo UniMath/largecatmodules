@@ -667,7 +667,7 @@ Proof.
   unshelve eapply push_initiality_weaker; (try apply preserves_to_HSET_isEpi); try assumption.
   - apply ii1; apply preserves_to_HSET_isEpi; assumption.
   - apply ii1.
-    apply dirprodpair.
+    apply make_dirprod.
     + apply epiSig_is_pwEpi .
       * apply ColimsHSET_of_shape.
       * apply epi_F.

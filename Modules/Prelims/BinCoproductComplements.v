@@ -21,11 +21,11 @@ Open Scope cat.
 Definition BinCoproducts_from_CoproductsBool {C : category} (bc : Coproducts bool C) : BinCoproducts C.
   intros a b.
   set (CC := bc (fun x => if x then b else a)).
-  use mk_BinCoproduct.
+  use make_BinCoproduct.
   - exact (CoproductObject _ _ CC).
   - apply (CoproductIn _ _ CC false) .
   - apply (CoproductIn _ _ CC true) .
-  - use mk_isBinCoproduct;[apply homset_property|].
+  - use make_isBinCoproduct;[apply homset_property|].
     intros c f g.
     use unique_exists; simpl.
     + apply CoproductArrow.

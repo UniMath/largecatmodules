@@ -4,7 +4,7 @@
     Content:
     - Definition of a signature (aka soft Σ-module) over the category of another signature Σ
 
-I am faced with a dilemna. Mathematically, a soft Σ-module is a functor from the category
+Mathematically, a soft Σ-module is a functor from the category
 of models of Σ to the total category of modules, preserving the underlying monad.
 The source category is the fiber over Σ of the displayed category of representations.
 Morphisms are displayed morphism over the identity signature morphism. Hence composition
@@ -12,6 +12,8 @@ does not work well, because the composition of two morphisms  x ->[id] y and y -
 yield a morphism x ->[id ; id] z
 
 Inspired by Signature.v
+
+This file is not used. Shall we remove it ?
 *)
 (* =================================================================================== *)
 

@@ -49,7 +49,7 @@ Proof.
     apply pb_LModule_id_iso.
   - intros x y z f g xx yy zz ff gg.
     set (pbm_g := pb_LModule_Mor f gg).
-    set (pbm_gf := (LModule_composition _ pbm_g (morphism_from_iso _ _ _(pb_LModule_comp_iso f g _ _)))).
+    set (pbm_gf := (LModule_composition _ pbm_g (morphism_from_iso (pb_LModule_comp_iso f g _ _)))).
     simpl in ff.
     exact (compose (C:=category_LModule _ _ ) ff pbm_gf).
 Defined.

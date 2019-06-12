@@ -32,7 +32,7 @@ Require Import UniMath.CategoryTheory.limits.bincoproducts.
 Require Import UniMath.CategoryTheory.limits.terminal.
 Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
 Require Import UniMath.CategoryTheory.whiskering.
-
+Require Import UniMath.CategoryTheory.UnitorsAndAssociatorsForEndofunctors.
 Require Import UniMath.CategoryTheory.categories.HSET.All.
 
 
@@ -410,7 +410,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
     (TerminalObject (Terminal_functor_precat C C T hsC) : functor _ _)
       ⟹ constant_functor C C T  .
   Proof.
-    use mk_nat_trans.
+    use make_nat_trans.
     exact (fun x => identity T).
     abstract(
         intros x y f;
@@ -426,7 +426,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
     eapply (compose (C := [C,C]) (b := functor_composite F (functor_identity C))); revgoals.
     - apply pre_whisker.
       exact (η R).
-    - eapply compose; [|apply EndofunctorsMonoidal.ρ_functor_inv].
+    - eapply compose; [|apply ρ_functor_inv].
       eapply compose; [|apply coproduct_nat_trans_in1].
       eapply compose;[apply (TerminalArrow  (Terminal_functor_precat C _ T hsC)) |].
       apply Terminal_EndC_constant_terminal.
@@ -593,7 +593,7 @@ Section derivadj.
       induction x as [x t].
       cbn -[isasetcoprod].
       unfold prodtofuntoprod; cbn -[isasetcoprod].
-      unfold dirprodpair; cbn -[isasetcoprod].
+      unfold make_dirprod; cbn -[isasetcoprod].
       apply dirprod_paths; cbn -[isasetcoprod].
       + do 2 rewrite comp_cat_comp.
         revert x.
@@ -662,7 +662,7 @@ Section derivadj.
 
   Lemma deriv_adj : are_adjoints  ×ℜ ∂.
   Proof.
-    use mk_are_adjoints.
+    use make_are_adjoints.
   - use deriv_counit.
   - apply substitution_nat_trans.
   - exact counit_subst_adjunction.
@@ -805,7 +805,7 @@ Local Lemma adj_law2 :
                             pb_LModule_deriv_iso
                               TerminalHSET BinCoproductsHSET f0) R
                              S f B) =
-   BinProductOfArrows (precategory_LModule R (category_pair SET (homset_property SET)))
+   BinProductOfArrows (precategory_LModule R (make_category SET (homset_property SET)))
      ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET (homset_property SET)) R
         (pb_LModule f A) (pb_LModule f (tautological_LModule S)))
      ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET (homset_property SET)) R M

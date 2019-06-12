@@ -33,13 +33,13 @@ Set Automatic Introduction.
 
 Section LiftLModuleMor.
 
-Context {C D : category} (H : Signature C (homset_property C) D (homset_property D))
+Context {C D : category} (H : Signature C (homset_property C) D (homset_property D) C (homset_property C))
           (T : Monad C).
 
 
 
-Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ _ H (theta H)).
-Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ _ H (theta H) ).
+Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ _ _ _ H (theta H)).
+Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ _ _ _ H (theta H) ).
 Local Notation "'p' T" := (ptd_from_mon (homset_property C) T) (at level 3).
 
 (* Has this been already defined somewhere ?? *)
@@ -121,11 +121,11 @@ Local Notation PRE_MONAD := (category_Monad C).
 Local Notation hsC := (homset_property C).
 
 
-Context (H : Signature C hsC C hsC).
+Context (H : Signature C hsC C hsC C hsC).
 Local Notation liftlmodule := (ModulesFromSignatures.lift_lmodule H ).
 
-Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ _ H (theta H)).
-Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ _ H (theta H) ).
+Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ _ _ _ H (theta H)).
+Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ _ _ _ H (theta H) ).
 (** commutation pullback module/liftlmodule *)
 (**
 It is almost the same diagram than for liftlmodule_mor, but now we exploit
@@ -194,7 +194,7 @@ Definition lift_pb_LModule
   (f : Monad_Mor R S) :
   LModule_Mor R (liftlmodule R (pb_LModule f (tautological_LModule S)))
               (pb_LModule f (liftlmodule S (tautological_LModule S))) :=
-  morphism_from_iso _ _ _ (lift_pb_LModule_iso f).
+  morphism_from_iso (lift_pb_LModule_iso f).
 
 
 Definition sigWithStrength_to_sig_data : @signature_data C.
@@ -246,7 +246,7 @@ End SigWithStrengthToSignature.
 Section SigWithStrengthToSignatureMor.
   Context {C  : category}.
 
-  Let Sig := Signature_precategory C C.
+  Let Sig := Signature_precategory C C C.
   Local Notation F := sigWithStrength_to_sig.
 
   Context {A B : Sig}.
@@ -260,7 +260,7 @@ Section SigWithStrengthToSignatureMor.
 
   Lemma sigWithStrength_to_sig_mod_mor_laws (R : Monad C) :
   @LModule_Mor_laws C R C (F A R) (F B R)
-    ( (# (SignatureForgetfulFunctor C C) f : nat_trans _ _) ( R : functor _ _ )).
+    ( (# (SignatureForgetfulFunctor C C C) f : nat_trans _ _) ( R : functor _ _ )).
   Proof.
     (*
 <<<
@@ -324,8 +324,8 @@ And as f is a signature morphism, we have
   Lemma sigWithStrength_to_sig_is_signature_Mor : is_signature_Mor (F A) (F B) sigWithStrength_to_sig_mod_mor.
   Proof.
     intros R S g.
-    change ((#(A : Signature _ _ _ _) (g : nat_trans _ _))· identity _ · (pr1 f (S : functor _ _)) =
-            (pr1 f (R : functor _ _)) · (# (B : Signature _ _ _ _) (g : nat_trans _ _) · identity _)).
+    change ((#(A : Signature _ _ _ _ _ _ ) (g : nat_trans _ _))· identity _ · (pr1 f (S : functor _ _)) =
+            (pr1 f (R : functor _ _)) · (# (B : Signature _ _ _ _ _ _ ) (g : nat_trans _ _) · identity _)).
     do 2 rewrite id_right.
     apply nat_trans_ax.
   Qed.
@@ -336,11 +336,11 @@ End SigWithStrengthToSignatureMor.
 Section SigWithStrengthToSignatureFunctor.
   Context {C  : category}.
 
-  Let Sig := Signature_precategory C C.
+  Let Sig := Signature_precategory C C C.
   Local Notation F := sigWithStrength_to_sig.
 
   Definition sigWithStrength_to_sig_functor_data : functor_data Sig (signature_precategory (C := C)) :=
-    mk_functor_data (C' := signature_precategory) _ (@sigWithStrength_to_sig_mor C).
+    make_functor_data (C' := signature_precategory) _ (@sigWithStrength_to_sig_mor C).
 
   Lemma sigWithStrength_to_sig_is_functor : is_functor sigWithStrength_to_sig_functor_data.
   Proof.
@@ -358,5 +358,5 @@ Section SigWithStrengthToSignatureFunctor.
   Defined.
 
   Definition sigWithStrength_to_sig_functor : functor Sig (signature_precategory (C := C)) :=
-    mk_functor _ sigWithStrength_to_sig_is_functor.
+    make_functor _ sigWithStrength_to_sig_is_functor.
 End SigWithStrengthToSignatureFunctor.

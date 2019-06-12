@@ -158,11 +158,11 @@ Definition rep_fiber_comp {a : SIG} {M N O: model a}
 
 (** Intermediate data to build the category of 1-models of a 1-signature [a] *)
 Definition rep_fiber_precategory_ob_mor (a : SIG) : precategory_ob_mor :=
-  precategory_ob_mor_pair _ (rep_fiber_mor (a := a) ).
+  make_precategory_ob_mor _ (rep_fiber_mor (a := a) ).
 
 Definition rep_fiber_precategory_data (a : SIG) : precategory_data.
 Proof.
-  apply (precategory_data_pair (rep_fiber_precategory_ob_mor a)).
+  apply (make_precategory_data (rep_fiber_precategory_ob_mor a)).
   + intro x; simpl in x.
     apply (rep_fiber_id ).
   + intros M N O.
@@ -176,7 +176,7 @@ Defined.
 Lemma is_precategory_rep_fiber_precategory_data (S : SIG) :
    is_precategory (rep_fiber_precategory_data S).
 Proof.
-  apply mk_is_precategory_one_assoc; simpl; intros.
+  apply make_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
     apply rep_fiber_mor_eq. 

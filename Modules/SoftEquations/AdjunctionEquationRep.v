@@ -12,7 +12,7 @@ following relation on R(X):
 See [push_initiality].
 
 More generally, the forgetful functor from 2-models to 1-models has a left adjoint
-[forget_2model_is_right_adjoint]
+[ModEq_Mod_is_right_adjoint]
 
 
 
@@ -88,7 +88,7 @@ Section QuotientRep.
   Context {O : UU} (eq : O -> soft_equation epiSig ) .
 
   Local Notation REP_EQ := (model_equations eq ).
-  Local Notation REP_EQ_PRECAT := (precategory_model_equations eq).
+  Local Notation REP_EQ_PRECAT := (category_model_equations eq).
 
   (* Local Notation R_epi := (modelEpi _). *)
 
@@ -115,7 +115,7 @@ Section QuotientRep.
     := projR_rep Sig epiSig R_epi SigR_epi  d ff.
 
   Lemma u_rep_universal (R : model _) (R_epi: preserves_Epi R) (SigR_epi : preserves_Epi (Sig R))
-    : is_universal_arrow_to (forget_2model eq) R (R' R_epi SigR_epi) (projR_rep R R_epi SigR_epi).
+    : is_universal_arrow_to (ModEq_Mod_functor eq) R (R' R_epi SigR_epi) (projR_rep R R_epi SigR_epi).
   Proof.
     intros S f.
     set (j := tpair (fun (x : model_equations _) => R →→ x) (S : model_equations _)  f).
@@ -134,11 +134,11 @@ Section QuotientRep.
 
   (** If all models preserve epis, and their image by the signature
       preserve epis, then we have an adjunctions *)
-  Definition forget_2model_is_right_adjoint
+  Definition ModEq_Mod_is_right_adjoint
              (modepis : ∏ (R : model Sig), preserves_Epi R)
              (SigR_epis : ∏ (R : model Sig) , preserves_Epi (Sig R))
-    : is_right_adjoint (forget_2model eq) :=
-    right_adjoint_left_from_partial (forget_2model (λ x : O, eq x))
+    : is_right_adjoint (ModEq_Mod_functor eq) :=
+    right_adjoint_left_from_partial (ModEq_Mod_functor (λ x : O, eq x))
                                     (fun R => R' (modepis R) (SigR_epis R ))
                                     (fun R => projR_rep R (modepis R)(SigR_epis R ))
                                     (fun R => u_rep_universal R (modepis R)(SigR_epis R )).
@@ -150,7 +150,7 @@ Section QuotientRep.
              (R_epi : preserves_Epi (InitialObject R : model _))
              (SigR_epi : preserves_Epi (Sig (InitialObject R : model _)))
     : isInitial REP_EQ_PRECAT (R' R_epi SigR_epi) :=
-  initial_universal_to_lift_initial (forget_2model (λ x : O, eq x)) R (u_rep_universal _ R_epi SigR_epi).
+  initial_universal_to_lift_initial (ModEq_Mod_functor (λ x : O, eq x)) R (u_rep_universal _ R_epi SigR_epi).
 
 End QuotientRep.
 
@@ -174,10 +174,10 @@ Section QuotientRepInit.
 (** implied by the axiom of choice *)
       (preserves_Epi (InitialObject  R : model _)) ->
       (preserves_Epi (Sig (InitialObject  R : model _))) ->
-      Initial (precategory_model_equations eq).
+      Initial (category_model_equations eq).
   Proof.
     intros init R_epi SigR_epi.
-    eapply mk_Initial.
+    eapply make_Initial.
     use push_initiality.
     - exact init.
     - assumption.
@@ -191,7 +191,7 @@ Section QuotientRepInit.
     : ∏ (R : Initial (rep_fiber_category Sig)) ,
       (preserves_Epi (InitialObject  R : model _)) ->
       preserves_Epi (Sig (InitialObject R : model _)) ->
-      Initial (precategory_model_equations eq').
+      Initial (category_model_equations eq').
   Proof.
     apply soft_equations_preserve_initiality.
   Qed.
@@ -210,7 +210,7 @@ Definition elementary_equations_on_alg_preserve_initiality
            (** A family of equations *)
            (eq' := fun o => soft_equation_from_elementary_equation epiSig  (eq o)) :
         (** .. then the category of 2-models has an initial object *)
-  Initial (precategory_model_equations eq')
+  Initial (category_model_equations eq')
           :=
   elementary_equations_preserve_initiality  epiSig eq R iniEpi (SR_epi _ iniEpi).
 
@@ -228,7 +228,7 @@ Lemma soft_equations_preserve_initiality_choice
          (** If the category of 1-models has an initial object, .. *)
          Initial (rep_fiber_category Sig) ->
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations (λ x : O, eq x)).
+         Initial (category_model_equations (λ x : O, eq x)).
   intros; use soft_equations_preserve_initiality; try assumption.
   - apply preserves_to_HSET_isEpi; assumption.
   - apply preserves_to_HSET_isEpi; assumption.
@@ -251,7 +251,7 @@ Lemma elementary_equations_preserve_initiality_choice
          (** If the category of 1-models has an initial object, .. *)
          Initial (rep_fiber_category Sig) ->
         (** .. then the category of 2-models has an initial object *)
-         Initial (precategory_model_equations
+         Initial (category_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
                          epiSig 

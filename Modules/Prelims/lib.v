@@ -44,9 +44,9 @@ Open Scope cat.
 Lemma catiso_initial {C D : precategory} (w : catiso C D) (ini : Initial C) : Initial D.
 Proof.
   set (obweq := catiso_ob_weq w).
-  use mk_Initial.
+  use make_Initial.
   - exact (w ini).
-  - use mk_isInitial.
+  - use make_isInitial.
     intro b.
     assert (h := homotweqinvweq obweq b).
     rewrite <- h.
@@ -65,11 +65,11 @@ Lemma initial_universal_to_lift_initial {D C : precategory}
 Proof.
   intro d.
   specialize (unif d (InitialArrow _ _)).
-  use iscontrpair.
+  use make_iscontr.
   - apply (iscontrpr1 unif).
   - intro g.
     cbn.
-    apply limits.path_to_ctr.
+    apply path_to_ctr.
     apply InitialArrowUnique.
 Qed.
 

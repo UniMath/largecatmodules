@@ -5,8 +5,8 @@
     - Definition of a signature (aka Σ-module) over the category of another signature Σ [signature_over]
     - Definition of the category Sig-modules (signature_over_category]
     - The action of 1-models yield signature over morphism [action_sig_over_mor]
-    - 1-signature morphisms  yield signature over morphism [sig_sig_over_mor]
-    - starting from a 1-signature morphism f : S1 -> S2, a signature over f can be pushed out to
+    - Functor between 1-signatures and Σ-modules [sig_to_sig_over_functor]
+    - starting from a 1-signature morphism f : S1 -> S2, a signature over S1 can be pushed out to
       a signature over S2. This actually induces a functor f* (and thus an opfibration)
 
 
@@ -269,7 +269,7 @@ Qed.
 
 
 (** Intermediate data to build the category of Sig-modules *)
-Definition signature_over_precategory_ob_mor  : precategory_ob_mor := precategory_ob_mor_pair
+Definition signature_over_precategory_ob_mor  : precategory_ob_mor := make_precategory_ob_mor
    signature_over (fun F F' => signature_over_Mor F F').
 
 (** The identity family of module morphisms yields a Sig-module morphism *)
@@ -310,7 +310,7 @@ Definition signature_over_Mor_comp {F G H : signature_over} (a : signature_over_
 (** Intermediate data to build the category of Sig-modules *)
 Definition signature_over_precategory_data : precategory_data.
 Proof.
-  apply (precategory_data_pair (signature_over_precategory_ob_mor )).
+  apply (make_precategory_data (signature_over_precategory_ob_mor )).
   + intro a; simpl.
     apply (signature_over_Mor_id (pr1 a)).
   + intros a b c f g.
@@ -323,7 +323,7 @@ Defined.
 Lemma is_precategory_signature_over_precategory_data :
    is_precategory signature_over_precategory_data.
 Proof.
-  apply mk_is_precategory_one_assoc; simpl; intros.
+  apply make_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
     apply signature_over_Mor_eq. 
@@ -378,6 +378,21 @@ Definition sig_sig_over_mor {S1 S2 : SIG} (f : signature_Mor S1 S2) : ι S1  →
   @mkSignature_over_Mor (ι S1) (ι S2) (λ R : REP, f R)
                         (λ (R S : REP) (g : R →→ S), signature_Mor_ax f g).
 
+Lemma sig_to_sig_over_is_functor :
+  is_functor (make_functor_data (C := signature_category (C := C))(C' := signature_over_category)
+                              ι (@sig_sig_over_mor)).
+Proof.
+  split.
+  - intro S.
+    use signature_over_Mor_eq.
+    intro ; apply idpath.
+  - intros S1 S2 S3 f1 f2.
+    use signature_over_Mor_eq.
+    intro ; apply idpath.
+Qed.
+
+Definition sig_to_sig_over_functor : functor (signature_category (C := C)) signature_over_category :=
+  make_functor _ sig_to_sig_over_is_functor.
 
 End OverSignatures.
 

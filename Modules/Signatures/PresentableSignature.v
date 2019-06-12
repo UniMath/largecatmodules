@@ -88,7 +88,7 @@ Local Notation toSig sig :=
 
 
 
-Lemma PresentableisRepresentable 
+Lemma PresentableisEffective 
       {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
                                              (fun i => CoproductsHSET _ (setproperty i)) a)
   :
@@ -101,6 +101,6 @@ Proof.
   - apply algSig_NatEpi.
   - apply pwEpiSig_isEpi.
     apply epi_p_mor.
-  - apply algebraic_sig_representable.
+  - apply algebraic_sig_effective.
 Qed.
 

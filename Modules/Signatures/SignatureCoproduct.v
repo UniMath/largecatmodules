@@ -180,7 +180,7 @@ Section Coprod.
   Defined.
 
   Definition signature_Coproduct : Coproduct _ signature_precategory α :=
-    mk_Coproduct  _ _ _ _ _ signature_isCoproduct.
+    make_Coproduct  _ _ _ _ _ signature_isCoproduct.
 
 
 End Coprod.

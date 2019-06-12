@@ -47,9 +47,9 @@ Section BinProdComplements.
   Definition BinProduct_commutative_iso {a b : C} (bpab : BinProduct _ a b)
              (bpba : BinProduct _ b a)
     : iso (BinProductObject _ bpab) (BinProductObject _ bpba ).
-    eapply isopair.
+    eapply make_iso.
     use is_iso_from_is_z_iso.
-    eapply mk_is_z_isomorphism.
+    eapply make_is_z_isomorphism.
     split; apply BinProduct_commutative_id_commute.
   Defined.
   Local Notation BPO := (BinProductObject _).
@@ -79,7 +79,7 @@ Section BinProdComplements.
       is_inverse_in_precat (BinProduct_pw_iso_mor bp_ab bp_ab' isoa isob)
     (BinProduct_pw_iso_mor bp_ab' bp_ab (iso_inv_from_iso isoa) (iso_inv_from_iso isob)).
   Proof.
-    - use mk_is_inverse_in_precat.
+    - use make_is_inverse_in_precat.
       + apply BinProduct_pw_eq_id.
       + 
         etrans.
@@ -93,16 +93,16 @@ Section BinProdComplements.
              (bp_ab' : BinProduct _ a' b') (isoa : iso a a') (isob : iso b b') :
     iso (BPO bp_ab) (BPO bp_ab').
   Proof.
-    eapply isopair.
+    eapply make_iso.
     eapply is_iso_from_is_z_iso.
-    eapply mk_is_z_isomorphism.
+    eapply make_is_z_isomorphism.
     unshelve apply BinProduct_pw_iso_is_inverse; assumption.
   Defined.
 
   Lemma BinProductWith1_is_inverse (T : Terminal C) {a} (bp : BinProduct _ a (TerminalObject T)) :
     is_inverse_in_precat (BinProductPr1 _ bp) (BinProductArrow _ bp (identity _) (TerminalArrow _ _)).
   Proof.
-    use mk_is_inverse_in_precat.
+    use make_is_inverse_in_precat.
     + apply pathsinv0.
       apply BinProduct_endo_is_identity.
       * rewrite <- assoc.
@@ -117,9 +117,9 @@ Section BinProdComplements.
   Definition BinProductWith1_iso (T : Terminal C) {a} (bp : BinProduct _ a (TerminalObject T))  :
     iso (BPO bp) a.
   Proof.
-    eapply isopair.
+    eapply make_iso.
     eapply is_iso_from_is_z_iso.
-    eapply mk_is_z_isomorphism.
+    eapply make_is_z_isomorphism.
     apply BinProductWith1_is_inverse.
   Defined.
 

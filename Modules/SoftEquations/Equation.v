@@ -4,8 +4,8 @@
 - Definition of an equation [equation]
 - The satisfyability predicate for 1-model [satisfies_equation]
 - Definition of 2-model [model_equations]
-- Precategory of 2-model [precategory_model_equations]
-- Forgetful functor from 2-models to 1-models [forget_2model]
+- Precategory of 2-model [category_model_equations]
+- Forgetful functor from 2-models to 1-models [ModEq_Mod_functor]
 - A 1-signature morphism : S1 -> S2 induce a map between equations on S1 and equations
    on S2
 
@@ -72,7 +72,7 @@ Section Equation.
     homset_property (category_LModule  _ _ ) _ _ _ _.
 
   Definition satisfies_equation_hp (e : equation) (R : REP) : hProp  :=
-    hProppair _ (satisfies_equation_isaprop e R). 
+    make_hProp _ (satisfies_equation_isaprop e R). 
 
   (** The proposition that a 1-model satisfies a family of equations: it must satisfy
       each of them *)
@@ -91,14 +91,18 @@ Section Equation.
     satisfies_all_equations_hp e  R := pr2 R.
 
   (** The category of 2-model as the full subcategory of 1-models satisfying the required family of equations *)
-  Definition precategory_model_equations {O} (e : O -> equation) : precategory :=
-    full_sub_precategory (C := rep_fiber_category Sig)
-                         (satisfies_all_equations_hp e).
+  Definition category_model_equations {O} (e : O -> equation) : precategory :=
+    subcategory _ (full_sub_precategory (C := rep_fiber_category Sig)
+                         (satisfies_all_equations_hp e)).
 
-  (** Forgetful functor from 2-models to 1-models *)
-  Definition forget_2model {O} (e : O -> equation) :
-    functor (precategory_model_equations e) (rep_fiber_category Sig) :=
+  (** Forgetful functor from 2-models (of a fixed 2-signature) to 1-models *)
+  Definition ModEq_Mod_functor {O} (e : O -> equation) :
+    functor (category_model_equations e) (rep_fiber_category Sig) :=
     sub_precategory_inclusion _ _.
+
+  Definition ModEq_Mod_fully_faithful {O} (e : O -> equation) :
+    fully_faithful (ModEq_Mod_functor e) :=
+    fully_faithful_sub_precategory_inclusion _ _.
 
 
 End Equation.

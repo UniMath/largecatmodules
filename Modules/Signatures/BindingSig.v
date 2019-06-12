@@ -81,7 +81,9 @@ Section EpiSignatureSig.
 
   (* Local Notation H_SET := hset_category. *)
   Local Notation hom_SET := has_homsets_HSET.
-  Local Notation Sig := (Signature SET has_homsets_HSET hset_precategory has_homsets_HSET).
+  Local Notation Sig := (Signature SET has_homsets_HSET 
+                                   hset_precategory has_homsets_HSET
+                                   hset_precategory has_homsets_HSET).
   Local Notation EndSet := [hset_category, hset_category].
   Local Notation toSig := BindingSigToSignatureHSET .
   Local Notation Cset sig := (is_omega_cocont_BindingSigToSignatureHSET sig).
@@ -92,24 +94,24 @@ Section EpiSignatureSig.
 
        
 
-  Theorem algebraic_sig_representable (sig : BindingSig)
+  Theorem algebraic_sig_effective (sig : BindingSig)
     : isInitial _ (alg_initialR sig).
   Proof.
-    use hss_sig_representable.
+    use hss_sig_effective.
   Qed.
 
 
 
 
   Definition algebraic_sig_initial (sig : BindingSig)
-    : Initial (rep_disp SET)[{binding_to_one_sigHSET sig}]  := mk_Initial _ (algebraic_sig_representable sig).
+    : Initial (rep_disp SET)[{binding_to_one_sigHSET sig}]  := make_Initial _ (algebraic_sig_effective sig).
 
 
   Let isEpiSig (S : Sig) := preserves_Epi (S : functor _ _).
   Let isEpiEpiFunc (S : functor [SET,SET] [SET,SET]) := ∏ R, preserves_Epi R -> preserves_Epi (S R).
 
 
-  Local Notation ArToSig  := Arity_to_SignatureHSET.
+  Local Notation ArToSig := Arity_to_SignatureHSET.
 
   Local Notation sumSig I Ihset  :=
       (SumOfSignatures.Sum_of_Signatures I HSET hom_SET HSET hom_SET
@@ -128,7 +130,9 @@ Section EpiSignatureSig.
   (* BinProductsHSET BinCoproductsHSET TerminalHSET ar. *)
   Local Notation binProdSig :=
     (BinProductOfSignatures.BinProduct_of_Signatures HSET hom_SET
-                                                     HSET hom_SET BinProductsHSET).
+                                                     HSET hom_SET
+                                                     HSET hom_SET
+                                                     BinProductsHSET).
 
   Local Notation binProdFunc := 
       (binproducts.BinProduct_of_functors [HSET, HSET, hom_SET] [HSET, HSET, hom_SET]
@@ -273,7 +277,7 @@ Section EpiSignatureSig.
 End EpiSignatureSig.
 
 Definition BindingSigIndexhSet : BindingSig -> hSet :=
-  fun S => hSetpair _ (BindingSigIsaset S).
+  fun S => make_hSet _ (BindingSigIsaset S).
 
 Section CoprodBindingSig.
 
@@ -295,10 +299,10 @@ Section CoprodBindingSig.
   Let toSig sig :=
     (BindingSigToSignature (homset_property C) bpC
                            bcpC TC sig (cpC _ (BindingSigIsaset sig))).
-  Local Notation SIG := (Signature_precategory C C).
-  Let hsSig := has_homsets_Signature_precategory C C.
+  Local Notation SIG := (Signature_precategory C C C).
+  Let hsSig := has_homsets_Signature_precategory C C C.
   Let cpSig (I : hSet) : Coproducts (pr1 I) SIG
-    := Coproducts_Signature_precategory _ C _ (cpC _ (setproperty I)).
+    := Coproducts_Signature_precategory _ C _ _ (cpC _ (setproperty I)).
   Let ArToSig := Arity_to_Signature (homset_property C) bpC bcpC TC.
   Let CP_from_BindingSig (S : BindingSig) := (cpSig  _ (fun (o : BindingSigIndexhSet S)
                                                         => ArToSig (BindingSigMap _ o))).
@@ -312,7 +316,7 @@ Section CoprodBindingSig.
     set (CC' := CP_from_BindingSig cpSigs).
     set (cp1 := fun o =>
                   CP_from_BindingSig (binds o)).
-    apply (sigma_coprod_iso (C := SIG ,, hsSig)
+    apply (sigma_coprod_iso (C := make_category SIG hsSig)
                             (B := fun o a => ArToSig (BindingSigMap (binds o) a)) CC' cp1).
   Defined.
 End CoprodBindingSig.

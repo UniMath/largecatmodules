@@ -44,7 +44,7 @@ Section EpiSignatureSig.
 
   (* Local Notation H_SET := hset_category. *)
   Local Notation hom_SET := has_homsets_HSET.
-  Local Notation Sig := (Signature SET has_homsets_HSET hset_precategory has_homsets_HSET).
+  Local Notation Sig := (Signature SET has_homsets_HSET hset_precategory has_homsets_HSET hset_precategory has_homsets_HSET).
   Local Notation EndSet := [hset_category, hset_category].
   (* Local Notation toSig := SigToSignatureHSET . *)
   
@@ -164,12 +164,12 @@ Section EpiSignatureSig.
        
        
 
-  Theorem hss_sig_representable {sig : Sig}(hsig : is_omega_cocont sig)
+  Theorem hss_sig_effective {sig : Sig}(hsig : is_omega_cocont sig)
     : isInitial _ (hss_initial_model hsig).
   Proof.
     intro b.
     cbn in b.
-    unshelve eapply iscontrpair.
+    unshelve eapply make_iscontr.
     - apply hss_initial_arrow.
     - apply hss_initial_arrow_unique.
   Qed.
@@ -178,7 +178,7 @@ Section EpiSignatureSig.
 
 
   Definition hss_sig_initial {sig : Sig} (hsig : is_omega_cocont sig)
-    : Initial (rep_disp SET)[{sigWithStrength_to_sig sig}]  := mk_Initial _ (hss_sig_representable hsig).
+    : Initial (rep_disp SET)[{sigWithStrength_to_sig sig}]  := make_Initial _ (hss_sig_effective hsig).
 
 
 End EpiSignatureSig.

@@ -215,7 +215,7 @@ Section Binprod.
   Defined.
 
   Definition signature_BinProduct : BinProduct signature_precategory a b :=
-    mk_BinProduct  _ _ _ _ _ _ signature_isBinProduct.
+    make_BinProduct  _ _ _ _ _ _ signature_isBinProduct.
 
 
 End Binprod.

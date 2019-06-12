@@ -249,7 +249,7 @@ Hypothesis
     epi_p_mor pres_a.
 
 
-  Local Notation SIG := (Signature_precategory C C).
+  Local Notation SIG := (Signature_precategory C C C).
 
 
   (**
@@ -278,20 +278,20 @@ becomes
 
 
   Let cpSig  : Coproducts I SIG
-    := Coproducts_Signature_precategory _ C _ (cp I).
+    := Coproducts_Signature_precategory _ C _ _ (cp I).
   Let bpSig  : BinProducts  SIG
-    := BinProducts_Signature_precategory _ C  bp.
+    := BinProducts_Signature_precategory _ C  bp _.
 
   (* TODO : move this somewhere else *)
-  Lemma Const1Sig_isTerminal : isTerminal SIG (SignatureExamples.ConstConstSignature C C T).
+  Lemma Const1Sig_isTerminal : isTerminal SIG (SignatureExamples.ConstConstSignature C C _ T).
   Proof.
     intro S.
-    use iscontrpair.
+    use make_iscontr.
     - use tpair.
       {
-      use mk_nat_trans.
+      use make_nat_trans.
       + intro x.
-        use mk_nat_trans.
+        use make_nat_trans.
         * intro c.
           apply TerminalArrow.
         * intros z z' f.
@@ -315,7 +315,7 @@ becomes
       apply TerminalArrowUnique.
   Defined.
 
-  Definition TerminalSignature : Terminal SIG := mk_Terminal _ Const1Sig_isTerminal.
+  Definition TerminalSignature : Terminal SIG := make_Terminal _ Const1Sig_isTerminal.
 
 
 
@@ -397,7 +397,7 @@ Defined.
         (R : Monad C) : isEpi (C := [_,_])
                                                      (har_binprodR_p_mor R : nat_trans _ _).
   Proof.
-    apply (isEpi_comp ([C,C]) ((morphism_from_iso _ _ _ har_binprodR_commute_mor_mod
+    apply (isEpi_comp ([C,C]) ((morphism_from_iso har_binprodR_commute_mor_mod
                         : signature_Mor _ _) R : nat_trans _ _)).
     - apply is_iso_isEpi.
       apply is_z_iso_from_is_iso.
