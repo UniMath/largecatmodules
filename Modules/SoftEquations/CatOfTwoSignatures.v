@@ -234,7 +234,7 @@ Proof.
         apply idpath.
       * exact(  pr2 (fS (pr1 oo)) R (pr2 oo)).
   - intro i.
-    apply subtypeEquality_prop.
+    apply subtypePath_prop.
     apply (CoproductInCommutes _ _ _  (signature_Coproduct (cpC := c) _) _ (fun i => pr1 (fS i))).
   - cbn beta .
     intro.
@@ -242,7 +242,7 @@ Proof.
     intro.
     apply homset_property.
   - intros y hi.
-    apply subtypeEquality_prop.
+    apply subtypePath_prop.
     apply (CoproductArrowUnique _ _ _  (signature_Coproduct (cpC := c) _) _ (fun i => pr1 (fS i))).
     intro i.
     specialize (hi i).
@@ -284,7 +284,7 @@ Lemma TwoSignature_Mor_eq (F F' : TwoSignature)(a a' : TwoSignature_Mor F F'):
   (∏ x, a x = a' x) -> a = a'.
 Proof.
   intro h.
-  apply subtypeEquality_prop.
+  apply subtypePath_prop.
   apply signature_Mor_eq.
   exact h.
 Qed.
@@ -305,7 +305,7 @@ Proof.
   - intro.
     apply homset_property.
   - intros y eqy.
-    apply subtypeEquality_prop.
+    apply subtypePath_prop.
     etrans;[|exact eqy].
     apply pathsinv0, id_left.
 Defined.
