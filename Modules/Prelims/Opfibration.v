@@ -307,7 +307,7 @@ Proof.
   use total2_paths_f.
   { apply (isotoid_disp D_cat (idpath _)); cbn.
     apply cocartesian_lifts_iso. }
-  apply subtypeEquality.
+  apply subtypePath.
   { intros ff. repeat (apply impred; intro).
     apply isapropiscontr. }
   etrans.
@@ -418,7 +418,7 @@ Proof.
       intros gg XR1 XR0.
       apply iscontraprop1.
       * apply invproofirrelevance.
-        intros x x'. apply subtypeEquality.
+        intros x x'. apply subtypePath.
         { intro. apply homsets_disp. }
         apply disp_mor_unique_disc_opfib.
       * exists gg.
