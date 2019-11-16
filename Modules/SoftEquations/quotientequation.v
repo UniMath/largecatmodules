@@ -42,13 +42,16 @@ Require Import Modules.Signatures.ModelCat.
 
 
 Require Import Modules.SoftEquations.quotientrepslice.
-Require Import Modules.SoftEquations.SignatureOver.
+(* Require Import Modules.SoftEquations.SignatureOver. *)
 Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.SignatureOverDerivation.
 
 (** Notation for 1-model morphism *)
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
+Delimit Scope signature_over_scope with sigo.
+(** Notation for the map 1-model morphism -> module morphism *)
+Notation "# F" := (fun x => (# (F : functor _ _) x ) : nat_trans _ _) (at level 3) : signature_over_scope.
 
 Section QuotientRep.
 
@@ -87,7 +90,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   Definition isSoft (OSig : signature_over Sig) :=
     ∏ (R : model Sig) (R_epi : preserves_Epi R)(SigR_epi : preserves_Epi (Sig R))
       (J : UU)(d : J -> (model Sig))(f : ∏ j, R →→ (d j))
-      X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig  R_epi SigR_epi d f),
+      X (x y :( (OSig R : functor _ _)) X : hSet) (pi := projR_rep Sig epiSig  R_epi SigR_epi d f),
     (∏ j, (# OSig (f j))%sigo X x  = (# OSig (f j))%sigo X y )
       -> (# OSig pi X x)%sigo = 
         (# OSig pi X y)%sigo  .
@@ -97,37 +100,37 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   (** Some examples of soft Sig-modules: the tautological soft module assigning
       a 1-model to itsefl.
     *)
-  Lemma isSoft_tauto : isSoft (tautological_signature_over Sig).
-  Proof.
-    red; cbn.
-    intros.
-    apply rel_eq_projR.
-    assumption.
-  Defined.
+  (* Lemma isSoft_tauto : isSoft (tautological_signature_over Sig). *)
+  (* Proof. *)
+  (*   red; cbn. *)
+  (*   intros. *)
+  (*   apply rel_eq_projR. *)
+  (*   assumption. *)
+  (* Defined. *)
 
   Local Notation BC := BinCoproductsHSET.
   Local Notation T := TerminalHSET.
 
-  (** Derivative of a soft Sig-module is soft *)
-  Lemma isSoft_derivative {OSig} (soft : isSoft OSig)
-    : isSoft (signature_over_deriv (C := SET) BC T OSig).
-  Proof.
-    red; cbn.
-    intros R J d f X x y h.
-    use soft.
-    (* use h. *)
-  Defined.
+  (* (** Derivative of a soft Sig-module is soft *) *)
+  (* Lemma isSoft_derivative {OSig} (soft : isSoft OSig) *)
+  (*   : isSoft (signature_over_deriv (C := SET) BC T OSig). *)
+  (* Proof. *)
+  (*   red; cbn. *)
+  (*   intros R J d f X x y h. *)
+  (*   use soft. *)
+  (*   (* use h. *) *)
+  (* Defined. *)
 
 
   (** Any finite derivative of the tautological soft Sig-module is soft *)
-  Corollary isSoft_finite_deriv_tauto n :
-    isSoft (signature_over_deriv_n Sig BC T (tautological_signature_over Sig) n).
-  Proof.
-    induction n.
-    - apply isSoft_tauto.
-    - apply isSoft_derivative.
-      apply IHn.
-  Qed.
+  (* Corollary isSoft_finite_deriv_tauto n : *)
+  (*   isSoft (signature_over_deriv_n Sig BC T (tautological_signature_over Sig) n). *)
+  (* Proof. *)
+  (*   induction n. *)
+  (*   - apply isSoft_tauto. *)
+  (*   - apply isSoft_derivative. *)
+  (*     apply IHn. *)
+  (* Qed. *)
 
   Local Notation σ := source_equation.
   Local Notation τ := target_equation.
@@ -139,8 +142,8 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
                    isEpi (C := [SET, SET]) (f : nat_trans _ _) ->
                    isEpi (C := [SET, SET]) (# M f : nat_trans _ _)%sigo.
 
-  Definition isEpi_sig_isEpi_overSig (S : signature _) (h : sig_preservesNatEpiMonad S) :
-    isEpi_overSig (sig_over_from_sig _ S) := h.
+  (* Definition isEpi_sig_isEpi_overSig (S : signature _) (h : sig_preservesNatEpiMonad S) : *)
+  (*   isEpi_overSig (sig_over_from_sig _ S) := h. *)
 
   (** An equation is soft if the source is an epi Sig-module
       and the target is soft *)
@@ -191,7 +194,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
     : satisfies_equation e  R'.
   Proof.
     red.
-    apply LModule_Mor_equiv; [apply homset_property|].
+    (* apply LModule_Mor_equiv; [apply homset_property|]. *)
     apply (soft_equation_isEpi e _ _ projR).
     {  apply isEpi_projR. }
     etrans ; [apply signature_over_Mor_ax  |].
@@ -230,14 +233,15 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
   (** ** Definition of elementary equations
    *)
-  Local Notation θ := (tautological_signature_over Sig).
-  Local Notation "M ^( n )" := (signature_over_deriv_n Sig BC T M n) (at level 6).
+  (* Local Notation θ := (tautological_signature_over Sig). *)
+  (* Local Notation "M ^( n )" := (signature_over_deriv_n Sig BC T M n) (at level 6). *)
 
   (** An elementary equation
 
 The source is an epi-Sig-module and the target a finite derivative of the tautological signature 
 
    *)
+  (*
   Definition elementary_equation : UU :=
     ∑ (S1 : signature_over Sig)(n : nat), isEpi_overSig S1 × half_equation S1 (θ ^(n)) × half_equation S1 (θ ^(n)). 
 
@@ -270,9 +274,11 @@ The source is an epi-Sig-module and the target a finite derivative of the tautol
     mk_soft_equation (half_elem_eqs e)  (source_elem_epiSig e)
                      (isSoft_finite_deriv_tauto (target_elem_eq e)).
 
+*)
 
 End QuotientRep.
 
+(*
 Definition soft_equation_choice (choice : AxiomOfChoice.AxiomOfChoice_surj) (S : signature SET) 
             (** S preserves epimorphisms of monads *)
            (isEpi_sig : sig_preservesNatEpiMonad S)
@@ -280,3 +286,4 @@ Definition soft_equation_choice (choice : AxiomOfChoice.AxiomOfChoice_surj) (S :
   soft_equation isEpi_sig.
 
 Identity Coercion forget_choice : soft_equation_choice >-> soft_equation.
+*)

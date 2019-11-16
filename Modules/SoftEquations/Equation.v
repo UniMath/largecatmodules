@@ -24,16 +24,50 @@ Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.ModelCat.
-Require Import Modules.SoftEquations.SignatureOver.
+(* Require Import Modules.SoftEquations.SignatureOver. *)
 
 (** Notation for 1-model morphisms *)
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
+Local Notation REP_CAT := (rep_fiber_category ).
+
+Section OverSignatures.
+
+
+(** We work in an arbitrary category [C] *)
+Context {C : category}.
+
+(* Local Notation MONAD := (Monad C). *)
+(* Local Notation PRE_MONAD := (category_Monad C). *)
+(* Local Notation BMOD := (bmod_disp C C). *)
+Local Notation SIG := (signature C).
+
+(** The 1-signature [Sig] is fixed in the following.
+We will then consider Sig-modules in the following
+ *)
+Context (Sig : SIG).
+Local Notation REP := (model Sig).
+Local Notation REP_CAT := (rep_fiber_category Sig).
+Definition signature_over  := functor (REP_CAT ) ([C, C])%cat.
+Identity Coercion functor_from_signature_over : signature_over >-> functor.
+
+(** A Sig-module morphism is a naturaly family of module morphisms *)
+Definition signature_over_Mor  (F F' : signature_over) : UU := nat_trans F F'.
+Identity Coercion nat_trans_from_signature_over_Mor : signature_over_Mor >-> nat_trans.
+
+(** A Sig-module morphism is natural *)
+Definition signature_over_Mor_ax {F F' : signature_over} (a : signature_over_Mor F F') :=
+  @nat_trans_ax  _ _ _ _ a.
+(* (** The tautological Sig-module mapping a 1-model to the underlying monad *) *)
+(* Definition tautological_signature_over : signature_over := ∙ *)
+(*   sig_over_from_sig tautological_signature. *)
+End OverSignatures.
 
 Section Equation.
   (** We fix a 1-signature [Sig] in a category [C] *)
   Context  {C : category} {Sig : signature C}.
   Local Notation REP := (model Sig).
+
 
   (** A half-equation between [S1] and [S2] is just a Sig-module morphism between them *)
   Definition half_equation (S1 S2 : signature_over Sig) := signature_over_Mor Sig S1 S2.
@@ -69,7 +103,7 @@ Section Equation.
   (** This statment is hProp *)
   Definition satisfies_equation_isaprop (e : equation) (R : REP)  :
      isaprop (satisfies_equation e R) :=
-    homset_property (category_LModule  _ _ ) _ _ _ _.
+    homset_property ([C , C])%cat _ _ _ _.
 
   Definition satisfies_equation_hp (e : equation) (R : REP) : hProp  :=
     make_hProp _ (satisfies_equation_isaprop e R). 
@@ -110,6 +144,7 @@ End Equation.
 Arguments equation [_] _.
 
 
+(*
 
 Definition po_equation
            {C : category} {S1 S2 : signature C} (f : signature_Mor S1 S2)
@@ -127,4 +162,5 @@ Definition po_satisfies_equation
            (hR : satisfies_equation (po_equation f e) R) :
   satisfies_equation e (pb_rep f R) := hR.
 
+*)
 

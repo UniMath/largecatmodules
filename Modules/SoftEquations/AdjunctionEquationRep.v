@@ -48,13 +48,13 @@ Require Import Modules.Signatures.ModelCat.
 
 
 Require Import Modules.SoftEquations.quotientrepslice.
-Require Import Modules.SoftEquations.SignatureOver.
+(* Require Import Modules.SoftEquations.SignatureOver. *)
 Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
-Require Import Modules.SoftEquations.SignatureOverDerivation.
+(* Require Import Modules.SoftEquations.SignatureOverDerivation. *)
 Require Import Modules.Signatures.BindingSig.
-Require Import Modules.SoftEquations.BindingSig.
+(* Require Import Modules.SoftEquations.BindingSig. *)
 
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.limits.initial.
@@ -184,6 +184,7 @@ Section QuotientRepInit.
     - assumption.
   Qed.
 
+  (*
   Corollary elementary_equations_preserve_initiality
             (* (epiSigpw : ∏ (R : Monad _), preserves_Epi R -> preserves_Epi (Sig R)) *)
         {O : UU}(eq : O -> elementary_equation (Sig := Sig))
@@ -195,8 +196,10 @@ Section QuotientRepInit.
   Proof.
     apply soft_equations_preserve_initiality.
   Qed.
+*)
 
 End QuotientRepInit.
+(*
 
 (** As a corrolary, the case of an algebraic signature *)
 Definition elementary_equations_on_alg_preserve_initiality 
@@ -259,3 +262,4 @@ Lemma elementary_equations_preserve_initiality_choice
                  ).
   intros; use soft_equations_preserve_initiality_choice;  assumption.
 Qed.
+*)
