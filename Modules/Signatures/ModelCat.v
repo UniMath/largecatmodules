@@ -723,7 +723,7 @@ Proof.
         etrans.
         {
               eassert (h :=  signature_comp Sig _ _).
-              apply (maponpaths (T1 := LModule_Mor _ _ _) (fun m => m c)) in h.
+              apply (maponpaths (T1 := LModule_Mor R _ _) (fun m => m c)) in h.
               simpl in h.
               rewrite id_right in h.
               apply pathsinv0.
