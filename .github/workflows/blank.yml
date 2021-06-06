@@ -39,7 +39,7 @@ jobs:
           pwd
           git checkout master
           git show
-	  make build-coq
+          make build-coq
           make -j2 PACKAGES="Foundations MoreFoundations Combinatorics Algebra NumberSystems CategoryTheory SubstitutionSystems" install
           export PATH=$PATH:$PWD/sub/coq/bin/
           echo $PATH
