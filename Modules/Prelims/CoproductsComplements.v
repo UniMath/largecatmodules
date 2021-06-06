@@ -24,6 +24,19 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 
 Open Scope cat.
 
+Definition CoproductOfArrows_eq
+           (I : UU)
+           (C : precategory)
+           (CC : Coproducts I C)
+           (a c : I -> C)
+           (f f' : ∏ i, a i --> c i)
+  : f = f' ->
+  CoproductOfArrows _ _ _ _ f = CoproductOfArrows _ _ (CC _) (CC _) f'.
+Proof.
+now induction 1.
+Qed.
+
+
 Definition Coproducts_Unit {D : category}  : Coproducts unit D .
   intro f.
   use make_Coproduct.

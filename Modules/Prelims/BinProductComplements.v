@@ -28,6 +28,17 @@ Open Scope cat.
 
 Section BinProdComplements.
   Context {C : precategory}.
+  
+  Definition BinProductOfArrows_eq (CC : BinProducts C) a b c d (f f' : a --> c) (g g' : b --> d)
+    : f = f' → g = g' →
+      BinProductOfArrows _ _ _ f g = BinProductOfArrows _ (CC _ _) (CC _ _) f' g'.
+  Proof.
+    induction 1.
+    induction 1.
+    apply idpath.
+  Qed.
+  
+  
   Definition BinProduct_commutative {a b : C} (bpab : BinProduct _ a b) (bpba : BinProduct _ b a)
     : C ⟦BinProductObject _ bpab, BinProductObject _ bpba ⟧
    := BinProductArrow C bpba (BinProductPr2 C bpab) (BinProductPr1 C bpab).

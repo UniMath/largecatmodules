@@ -20,7 +20,7 @@ Require Import UniMath.CategoryTheory.limits.coproducts.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 
 Require Import Modules.Prelims.lib.
-
+Require Import Modules.Prelims.CoproductsComplements.
 
 Require Import Modules.Prelims.LModulesCoproducts.
 Require Import Modules.Signatures.Signature.

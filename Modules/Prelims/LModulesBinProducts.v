@@ -18,6 +18,7 @@ Then it induces a morphism
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
+Require Import UniMath.MoreFoundations.PartA.
 Require Import UniMath.MoreFoundations.Tactics.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
@@ -63,7 +64,7 @@ Local Notation σ := (lm_mult _).
     cbn.
     etrans; [apply BinProductOfArrows_comp|].
     etrans; [ | eapply pathsinv0; apply BinProductOfArrows_comp].
-    apply BinProductOfArrows_eq.
+    apply maponpaths_12.
     - apply (nat_trans_ax (σ M)).
     - apply (nat_trans_ax (σ N)).
   Qed.
@@ -82,12 +83,13 @@ Local Notation σ := (lm_mult _).
       cbn.
       etrans; [apply BinProductOfArrows_comp|].
       etrans; [|apply (functor_id BP (M x ,, N x))].
-      apply BinProductOfArrows_eq; apply LModule_law1.
+      cbn.
+      apply maponpaths_12; apply LModule_law1.
     - intro x.
       cbn.
       etrans; [apply BinProductOfArrows_comp|].
       etrans; [ | eapply pathsinv0; apply BinProductOfArrows_comp].
-      apply BinProductOfArrows_eq; apply LModule_law2.
+      apply maponpaths_12; apply LModule_law2.
   Qed.
 
   Definition LModule_binproduct : LModule R C := (_ ,, LModule_binproduct_laws).

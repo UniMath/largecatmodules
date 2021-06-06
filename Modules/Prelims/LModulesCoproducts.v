@@ -49,19 +49,12 @@ Section ColimsModule.
   Lemma LModule_coproduct_mult_is_nat_trans : is_nat_trans _ _  LModule_coproduct_mult_data.
   Proof.
     intros x y f.
-    cbn.
-    unfold LModule_coproduct_mult_data.
-    cbn.
-    (* par unicité de la colimite *)
-
     etrans; [use CoproductOfArrows_comp|].
     apply pathsinv0.
     etrans; [use CoproductOfArrows_comp|].
-    cbn.
-    use CoproductOfArrows_eq.
+    use maponpaths.
     apply funextsec.
     intro i.
-    cbn.
     apply pathsinv0.
     apply (nat_trans_ax (lm_mult R _)).
   Qed.
@@ -93,11 +86,9 @@ Section ColimsModule.
       etrans; [use CoproductOfArrows_comp|].
       apply pathsinv0.
       etrans; [use CoproductOfArrows_comp|].
-      cbn.
-      use CoproductOfArrows_eq.
+      use maponpaths.
       apply funextsec.
       intro i.
-      cbn.
       apply pathsinv0.
       apply LModule_law2.
   Qed.
