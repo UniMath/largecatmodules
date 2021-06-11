@@ -174,9 +174,9 @@ Proof.
                                           ((X R : LModule _ _) : functor _ _)
                  )).
     apply pathsinv0.
-  apply (iso_inv_on_right  _ _ _ _ (h R)).
+  apply (iso_inv_on_right _ _ _ (h R)).
   rewrite assoc.
-  apply (iso_inv_on_left _ _ _ _ _ (h S)).
+  apply (iso_inv_on_left _ _ _ _ (h S)).
   set  (i :=   bp_coprod_mor (Sig_cp _ B)
                             (fun o => Sig_bp _ _) (Sig_bp _ X) (Sig_cp  _ _)).
   apply pathsinv0.
