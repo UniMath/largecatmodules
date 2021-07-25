@@ -5,6 +5,7 @@ HSS Signature to Signature functor
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
+Require Import UniMath.MoreFoundations.Notations.
 (* Require Import UniMath.SubstitutionSystems.FromBindingSigsToMonads_Summary. *)
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import UniMath.SubstitutionSystems.Signatures.
@@ -324,8 +325,8 @@ And as f is a signature morphism, we have
   Lemma sigWithStrength_to_sig_is_signature_Mor : is_signature_Mor (F A) (F B) sigWithStrength_to_sig_mod_mor.
   Proof.
     intros R S g.
-    change ((#(A : Signature _ _ _ _ _ _ ) (g : nat_trans _ _))· identity _ · (pr1 f (S : functor _ _)) =
-            (pr1 f (R : functor _ _)) · (# (B : Signature _ _ _ _ _ _ ) (g : nat_trans _ _) · identity _)).
+    change ((#(A : Signature _ _ _ _ _ _ ) (g : nat_trans _ _))· identity _ · (pr11 f (S : functor _ _)) =
+            (pr11 f (R : functor _ _)) · (# (B : Signature _ _ _ _ _ _ ) (g : nat_trans _ _) · identity _)).
     do 2 rewrite id_right.
     apply nat_trans_ax.
   Qed.
