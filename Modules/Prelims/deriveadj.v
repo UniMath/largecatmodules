@@ -426,7 +426,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
     eapply (compose (C := [C,C]) (b := functor_composite F (functor_identity C))); revgoals.
     - apply pre_whisker.
       exact (η R).
-    - eapply compose; [|apply ρ_functor_inv].
+    - eapply compose; [|apply ρ_functors_inv].
       eapply compose; [|apply coproduct_nat_trans_in1].
       eapply compose;[apply (TerminalArrow  (Terminal_functor_precat C _ T hsC)) |].
       apply Terminal_EndC_constant_terminal.
