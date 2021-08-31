@@ -107,7 +107,7 @@ MR(X+o)) --------->  NR(X+o)
   (*
 M ---> M Id ---> M ∂
 *)
-    eapply (compose (C := [C,D , hsD]) ); [apply λ_functor_inv|].
+    eapply (compose (C := [C,D , hsD]) ); [apply λ_functors_inv|].
     apply post_whisker.
     apply coproduct_nat_trans_in2.
   Defined.
