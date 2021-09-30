@@ -316,6 +316,7 @@ Legend of the diagram :
     (* Fifth equality *)
     etrans.
     { cbn -[projR compose].
+      try (unfold horcomp_data; cbn -[projR compose]).
       rewrite (assoc (C:=SET)).
       apply (cancel_postcomposition (C:=SET)).
       symmetry.

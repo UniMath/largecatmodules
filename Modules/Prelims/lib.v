@@ -129,6 +129,7 @@ Lemma horcomp_assoc
 Proof.
   intros.
   cbn.
+  try (do 2 (unfold horcomp_data; cbn)).
   symmetry.
   rewrite functor_comp,assoc. apply idpath.
 Qed.
