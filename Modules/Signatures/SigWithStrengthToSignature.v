@@ -101,7 +101,7 @@ Proof.
   apply functor_cancel_pw.
   apply (nat_trans_eq (homset_property _)).
   intro x.
-  cbn.
+  cbn. unfold HorizontalComposition.horcomp_data; cbn.
   rewrite functor_id, id_right.
   apply LModule_Mor_σ.
 Qed.
@@ -174,7 +174,7 @@ Proof.
   apply nat_trans_eq.
   - apply homset_property.
   - intro x.
-    cbn.
+    cbn. unfold HorizontalComposition.horcomp_data; cbn.
     rewrite id_left.
     apply idpath.
 Qed.
@@ -301,7 +301,7 @@ And as f is a signature morphism, we have
 *)
     intro c.
     assert (hf := nat_trans_eq_pointwise (pr2 f (R : functor _ _) (p R)) c).
-    cbn in hf.
+    cbn in hf. unfold HorizontalComposition.horcomp_data in hf; cbn in hf.
     rewrite functor_id,id_right in hf.
     cbn.
     etrans.

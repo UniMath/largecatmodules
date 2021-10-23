@@ -194,7 +194,7 @@ Lemma isEpi_horcomp_pw2 (B : precategory)(C D : category)
 Proof.
   intros epif epif'.
   intro x.
-  cbn.
+  cbn. unfold horcomp_data; cbn.
   rewrite <- (nat_trans_ax f').
   apply isEpi_comp.
   - apply epif'.
