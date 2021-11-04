@@ -295,8 +295,8 @@ Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
 
 Section ForgetSigFunctor.
   Context {C : category} (R : Monad C) .
-  Local Notation MOD := (precategory_LModule R C).
-  Local Notation HAR := (signature_precategory (C:=C)).
+  Local Notation MOD := (category_LModule R C).
+  Local Notation HAR := (signature_category (C:=C)).
 
   Definition forget_Sig_data : functor_data HAR MOD :=
     make_functor_data (C := HAR) (C' := MOD)
@@ -341,7 +341,7 @@ Local Notation BMOD := (bmod_disp C C).
   
 
 (* Signatures are display functors over the identity *)
-Local Notation PRECAT_SIGNATURE  := (@signature_precategory C).
+Local Notation PRECAT_SIGNATURE  := (@signature_category C).
 
 Notation signature  := (@signature C).
 Local Notation SIGNATURE := signature.
@@ -455,7 +455,6 @@ Proof.
   - intro g.
     apply isaprop_model_mor_law.
   - use (invmap (Monad_Mor_equiv _ _  _  )).  
-     +  apply homset_property.
      +  apply nat_trans_eq.
         apply homset_property.
         assumption.

@@ -30,15 +30,13 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 
 Local Open Scope cat.
 Section ProductModule.
-  Context {B:precategory} {R:Monad B}
-          {C : precategory}
+  Context {B:category} {R:Monad B}
+          {C : category}
           (bpC : BinProducts C)
-          (hsB : has_homsets B)
-          (hsC : has_homsets C)
           ( M N : LModule R C).
 
   Local Notation bpFunct :=
-    (BinProducts_functor_precat B C bpC hsC (M : functor _ _) (N : functor _ _)).
+    (BinProducts_functor_precat B C bpC (M : functor _ _) (N : functor _ _)).
 
   Definition LModule_binproduct_functor : functor _ _ :=
     BinProductObject  _ bpFunct.
@@ -115,7 +113,7 @@ Local Notation σ := (lm_mult _).
   Definition LModule_binproductPr2  : LModule_Mor _ LModule_binproduct N :=
     _ ,, LModule_binproductPr2_laws.
 
-  Local Notation LMOD :=(precategory_LModule R (make_category _ hsC)).
+  Local Notation LMOD :=(category_LModule R C).
 
   Definition LModule_BinProductArrow_laws (S : LModule _ _)
              (f : LModule_Mor _ S M ) (g : LModule_Mor _ S N ) :
@@ -139,14 +137,14 @@ Local Notation σ := (lm_mult _).
         (g : LMOD ⟦ S, N ⟧) :
     (LModule_BinProductArrow S f g : LMOD ⟦_ , _⟧) · LModule_binproductPr1 = f.
   Proof.
-    apply LModule_Mor_equiv; [exact hsC |].
+    apply LModule_Mor_equiv; [exact C |].
     apply (BinProductPr1Commutes _ _ _ bpFunct).
   Qed.
   Lemma LModule_BinProductPr2Commutes (S : LMOD) (f : LMOD ⟦ S, M ⟧)
         (g : LMOD ⟦ S, N ⟧) :
     (LModule_BinProductArrow S f g : LMOD ⟦_ , _⟧) · LModule_binproductPr2 = g.
   Proof.
-    apply LModule_Mor_equiv; [exact hsC |].
+    apply LModule_Mor_equiv; [exact C |].
     apply (BinProductPr2Commutes _ _ _ bpFunct).
   Qed.
 
@@ -164,10 +162,10 @@ Local Notation σ := (lm_mult _).
     - intro y.
       apply isapropdirprod; apply has_homsets_LModule.
     - intros y [h1 h2].
-      apply LModule_Mor_equiv; [exact hsC |].
+      apply LModule_Mor_equiv; [exact C |].
       apply (BinProductArrowUnique _ _ _ bpFunct).
-      +  exact ((LModule_Mor_equiv _ hsC _ _ ) h1).
-      +  exact ((LModule_Mor_equiv _ hsC _ _ ) h2).
+      +  exact ((LModule_Mor_equiv _ C _ _ ) h1).
+      +  exact ((LModule_Mor_equiv _ C _ _ ) h2).
   Defined.
   Definition LModule_ProductCone : BinProduct LMOD M N  :=
     make_BinProduct LMOD M N LModule_binproduct
@@ -177,24 +175,22 @@ Local Notation σ := (lm_mult _).
 End ProductModule.
 
 Section BinProductsLModule.
-  Context {B:precategory} (R:Monad B)
-          {C : precategory}
-          (bpC : BinProducts C)
-          (hsB : has_homsets B)
-          (hsC : has_homsets C).
-  Local Notation LMOD :=(precategory_LModule R (make_category _ hsC)).
+  Context {B:category} (R:Monad B)
+          {C : category}
+          (bpC : BinProducts C).
+  Local Notation LMOD :=(category_LModule R C).
 
-  Definition LModule_BinProducts : BinProducts LMOD := LModule_ProductCone bpC hsC.
+  Definition LModule_BinProducts : BinProducts LMOD := LModule_ProductCone bpC.
 End BinProductsLModule.
 
 Section pullback_binprod.
-  Context {C : category} {B : precategory}.
+  Context {C : category} {B : category}.
   Context {R : Monad B}{S : Monad B} (f : Monad_Mor R S).
 
   Context {cpC : BinProducts C}.
 
-  Let cpLM (X : Monad B) := LModule_BinProducts   X cpC (homset_property C).
-  Let cpFunc := BinProducts_functor_precat  C _ cpC (homset_property C) .
+  Let cpLM (X : Monad B) := LModule_BinProducts   X cpC.
+  Let cpFunc := BinProducts_functor_precat  C _ cpC .
 
   Context (a b : LModule S C ).
 
@@ -208,7 +204,7 @@ Section pullback_binprod.
 
 
   Lemma binprod_pbm_to_pbm_eq_mult (c : B) :
-  (LModule_binproduct_mult cpC (homset_property C) (pb_LModule f a) (pb_LModule f b)) c =
+  (LModule_binproduct_mult cpC (pb_LModule f a) (pb_LModule f b)) c =
   (pb_LModule_σ f (BPO (cpLM S a b))) c.
   Proof.
     apply pathsinv0.

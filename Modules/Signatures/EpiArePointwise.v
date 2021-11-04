@@ -53,7 +53,7 @@ Section pwEpiAr.
 
   Lemma PO_eqdiag (R : Monad C) X : 
     eq_diag
-  (diagram_pointwise (homset_property C)
+  (diagram_pointwise 
                      (mapdiagram (LModule_forget_functor R C) (mapdiagram (forget_Sig R) (pushout_diagram SIG F F))) X)
    (pushout_diagram C (F R X) (F R X) ).
   Proof.
@@ -71,9 +71,8 @@ Section pwEpiAr.
       _ (PO_eqdiag R X)
       (pos
          (diagram_pointwise
-            (homset_property C)
             (mapdiagram (LModule_forget_functor R C)
-                        (mapdiagram (forget_Sig R) (pushout_diagram signature_precategory F F))) X)).
+                        (mapdiagram (forget_Sig R) (pushout_diagram signature_category F F))) X)).
     
 
   Lemma epiSig_is_pwEpi (R : Monad C) : isEpi (C := [C,C] ) (F R:nat_trans _ _).

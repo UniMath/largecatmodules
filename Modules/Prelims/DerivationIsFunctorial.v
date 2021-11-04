@@ -28,11 +28,10 @@ Require Import Modules.Prelims.lib.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 
 Section DerivFunctor.
-  Context {C : precategory}
+  Context {C : category}
           (o : C) (* derivation X ↦ X + o *)
           (bcpC : limits.bincoproducts.BinCoproducts C )
-          {D : precategory}
-          (hsD : has_homsets D)
+          {D : category}
           (T : Monad C).
 
   Local Notation "M '" := (LModule_deriv o bcpC M) (at level 30).
@@ -80,7 +79,7 @@ MR(X+o)) --------->  NR(X+o)
   Definition LModule_deriv_Mor {M N : LModule T D} (f : LModule_Mor _ M N) :
     LModule_Mor _ ( M ') (N ') := _ ,, LModule_deriv_Mor_laws f.
 
-  Local Notation LMOD :=(precategory_LModule T (make_category _ hsD)).
+  Local Notation LMOD :=(category_LModule T D).
 
   Definition LModule_deriv_functor_data  : functor_data LMOD LMOD
     := make_functor_data (C := LMOD)(C' := LMOD)(LModule_deriv o bcpC) (@LModule_deriv_Mor).
@@ -89,13 +88,11 @@ MR(X+o)) --------->  NR(X+o)
   Proof.
     split.
     - intro M.
-      apply LModule_Mor_equiv;[exact hsD|].
+      apply LModule_Mor_equiv;[exact D|].
       apply pre_whisker_identity.
-      exact hsD.
     - intros M N O f g.
-      apply LModule_Mor_equiv;[exact hsD|].
+      apply LModule_Mor_equiv;[exact D|].
       apply pre_whisker_composition.
-      exact hsD.
   Qed.
 
   Definition LModule_deriv_functor  : functor LMOD LMOD := make_functor _ LModule_deriv_is_functor. 
@@ -107,7 +104,7 @@ MR(X+o)) --------->  NR(X+o)
   (*
 M ---> M Id ---> M ∂
 *)
-    eapply (compose (C := [C,D , hsD]) ); [apply λ_functors_inv|].
+    eapply (compose (C := [C,D ]) ); [apply λ_functors_inv|].
     apply post_whisker.
     apply coproduct_nat_trans_in2.
   Defined.
@@ -153,8 +150,8 @@ f := η ∘ in₁
   Lemma LModule_to_deriv_is_nt : is_nat_trans (functor_identity _) ∂ LModule_to_deriv.
   Proof.
     intros M N f.
-    apply (LModule_Mor_equiv _ hsD).
-    apply (nat_trans_eq hsD).
+    apply (LModule_Mor_equiv _ D).
+    apply (nat_trans_eq D).
     intro c.
     cbn.
     unfold coproduct_nat_trans_in2_data; cbn.

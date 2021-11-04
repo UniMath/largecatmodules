@@ -64,7 +64,6 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
       cbn.
       apply EqualizerArrowEq.
     - use make_isEqualizer.
-      + apply homset_property.
       + intros e h' eqh'.
         assert (h := EqualizerArrowComm _ eq _ _ (base_paths _ _ eqh')).
         set (ar_base := EqualizerIn  _ eq _ _ (base_paths _ _ eqh')) in h.
@@ -127,7 +126,6 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
       cbn.
       apply CoequalizerArrowEq.
     - use make_isCoequalizer.
-      + apply homset_property.
       + intros e h' eqh'.
         assert (h := CoequalizerArrowComm _ eq _ _ (base_paths _ _ eqh')).
         set (ar_base := CoequalizerOut  _ eq _ _ (base_paths _ _ eqh')) in h.

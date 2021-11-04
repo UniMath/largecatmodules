@@ -34,14 +34,14 @@ Set Automatic Introduction.
 
 Section LiftLModuleMor.
 
-Context {C D : category} (H : Signature C (homset_property C) D (homset_property D) C (homset_property C))
+Context {C D : category} (H : Signature C D C)
           (T : Monad C).
 
 
 
-Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ _ _ _ H (theta H)).
-Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ _ _ _ H (theta H) ).
-Local Notation "'p' T" := (ptd_from_mon (homset_property C) T) (at level 3).
+Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ H (theta H)).
+Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ H (theta H) ).
+Local Notation "'p' T" := (ptd_from_mon  T) (at level 3).
 
 (* Has this been already defined somewhere ?? *)
 Definition ptd_mor_from_Monad_mor {M N : Monad C} (f : Monad_Mor M N)
@@ -122,11 +122,11 @@ Local Notation PRE_MONAD := (category_Monad C).
 Local Notation hsC := (homset_property C).
 
 
-Context (H : Signature C hsC C hsC C hsC).
+Context (H : Signature C C C).
 Local Notation liftlmodule := (ModulesFromSignatures.lift_lmodule H ).
 
-Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ _ _ _ H (theta H)).
-Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ _ _ _ H (theta H) ).
+Local Notation θ_nat_2_pw := (θ_nat_2_pointwise _ _ _ H (theta H)).
+Local Notation θ_nat_1_pw := (θ_nat_1_pointwise _ _ _ H (theta H) ).
 (** commutation pullback module/liftlmodule *)
 (**
 It is almost the same diagram than for liftlmodule_mor, but now we exploit
@@ -247,7 +247,7 @@ End SigWithStrengthToSignature.
 Section SigWithStrengthToSignatureMor.
   Context {C  : category}.
 
-  Let Sig := Signature_precategory C C C.
+  Let Sig := Signature_category C C C.
   Local Notation F := sigWithStrength_to_sig.
 
   Context {A B : Sig}.
@@ -257,7 +257,7 @@ Section SigWithStrengthToSignatureMor.
   (*   (θ_nat_2_pointwise _ _ _ _ H (theta H)). *)
   (* Let θ_nat_1_pw (H : Signature C (homset_property C) C (homset_property C)) := *)
   (*   (θ_nat_1_pointwise _ _ _ _ H (theta H)). *)
-  Local Notation "'p' T" := (ptd_from_mon (homset_property C) T) (at level 3).
+  Local Notation "'p' T" := (ptd_from_mon T) (at level 3).
 
   Lemma sigWithStrength_to_sig_mod_mor_laws (R : Monad C) :
   @LModule_Mor_laws C R C (F A R) (F B R)
@@ -325,8 +325,8 @@ And as f is a signature morphism, we have
   Lemma sigWithStrength_to_sig_is_signature_Mor : is_signature_Mor (F A) (F B) sigWithStrength_to_sig_mod_mor.
   Proof.
     intros R S g.
-    change ((#(A : Signature _ _ _ _ _ _ ) (g : nat_trans _ _))· identity _ · (pr11 f (S : functor _ _)) =
-            (pr11 f (R : functor _ _)) · (# (B : Signature _ _ _ _ _ _ ) (g : nat_trans _ _) · identity _)).
+    change ((#(A : Signature _ _ _ ) (g : nat_trans _ _))· identity _ · (pr11 f (S : functor _ _)) =
+            (pr11 f (R : functor _ _)) · (# (B : Signature _ _ _ ) (g : nat_trans _ _) · identity _)).
     do 2 rewrite id_right.
     apply nat_trans_ax.
   Qed.

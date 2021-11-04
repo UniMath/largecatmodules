@@ -91,26 +91,24 @@ Lemma compColimOfArrows
 
 Section ColimsModule.
   Context 
-          {C : precategory}
+          {C : category}
           {g : graph} (colims_g : Colims_of_shape g C)
           (lims_g : Lims_of_shape g C)
-          {B:precategory} {R:Monad B}
-          (* (hsB : has_homsets B) *)
-          (hsC : has_homsets C).
-  Local Notation coFunc := (ColimsFunctorCategory_of_shape _ B _ hsC colims_g).
-  Local Notation limFunc := (LimsFunctorCategory_of_shape _ B _ hsC lims_g).
+          {B:category} {R:Monad B}.
+  Local Notation coFunc := (ColimsFunctorCategory_of_shape _ B _  colims_g).
+  Local Notation limFunc := (LimsFunctorCategory_of_shape _ B _ lims_g).
   (* Local Notation bpFunct := *)
   (*   (BinProducts_functor_precat B C bpC hsC (M : functor _ _) (N : functor _ _)). *)
 
   (* Definition LModule_colim_functor : functor _ _ := *)
   (*   BinProductObject  _ bpFunct. *)
-  Local Notation MOD := (precategory_LModule R (C ,, hsC)).
+  Local Notation MOD := (category_LModule R C).
   Variable (d : diagram g MOD).
   (* TODO generalize this kind of construction : composition of a diagram and a functor
 (here the forget ful functor MOD --> [B , C])
    *)
-  Local Notation FORGET := (LModule_forget_functor R (C ,, hsC)).
-  Local Notation d' := (  mapdiagram FORGET d : diagram g [B , C , hsC] ).
+  Local Notation FORGET := (LModule_forget_functor R C).
+  Local Notation d' := (  mapdiagram FORGET d : diagram g [B , C ] ).
   (* The natural candidate *)
   Local Notation F := (colim (coFunc d') : functor _ _).
   Local Notation F' := (lim (limFunc d') : functor _ _).
@@ -433,14 +431,14 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     dmor d e · LModule_coconeIn v = LModule_coconeIn u.
   Proof.
     apply LModule_Mor_equiv.
-    - exact hsC.
+    - exact C.
     - apply (coconeInCommutes (colimCocone (coFunc d'))).
   Defined.
   Lemma LModule_coneOut_commutes (u v : vertex g) (e : edge u v) :
       LModule_coneOut u · dmor d e = LModule_coneOut v.
   Proof.
     apply LModule_Mor_equiv.
-    - exact hsC.
+    - exact C.
     - apply (coneOutCommutes (limCone (limFunc d'))).
   Defined.
 
@@ -479,7 +477,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
   Definition LModule_limArrow_laws {M : LModule R C} (cc : cone d M) :
     LModule_Mor_laws
       _ (T := M)(T' := LModule_lim) 
-      (limArrow  (limFunc d') (M : functor _ _) (mapcone FORGET d cc) : nat_trans _ _ ).
+      (limArrow  (limFunc d') (M : functor _ _) (@mapcone (category_LModule R C) _ FORGET _ d _ cc) : nat_trans _ _ ).
   Proof.
     intro c.
     cbn.
@@ -512,7 +510,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     use unique_exists.
     - exact (LModule_colimArrow cc).
     - intro v.
-      apply LModule_Mor_equiv;[exact hsC|].
+      apply LModule_Mor_equiv;[exact C|].
       apply (colimArrowCommutes (coFunc d')).
     - intro y.
       cbn -[isaprop].
@@ -521,7 +519,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       use has_homsets_LModule.
     - cbn.
       intros y h.
-      apply LModule_Mor_equiv;[exact hsC|].
+      apply LModule_Mor_equiv;[exact C|].
       apply (colimArrowUnique (coFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).
@@ -532,7 +530,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     use unique_exists.
     - exact (LModule_limArrow cc).
     - intro v.
-      apply LModule_Mor_equiv;[exact hsC|].
+      apply LModule_Mor_equiv;[exact C|].
       apply (limArrowCommutes (limFunc d')).
     - intro y.
       cbn -[isaprop].
@@ -541,7 +539,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       use has_homsets_LModule.
     - cbn.
       intros y h.
-      apply LModule_Mor_equiv;[exact hsC|].
+      apply LModule_Mor_equiv;[exact C|].
       apply (limArrowUnique (limFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).
@@ -555,19 +553,21 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
 
 End ColimsModule.
 
-Definition LModule_Colims_of_shape (C : category) {B : precategory}
+Definition LModule_Colims_of_shape (C : category) {B : category}
            (R : Monad B)
            (g : graph)
            (colims_g : Colims_of_shape g C)
-            : Colims_of_shape g (precategory_LModule R C) :=
-   LModule_ColimCocone  colims_g (homset_property C).
+           (d : diagram g (category_LModule R C))
+  : ColimCocone d :=
+   LModule_ColimCocone   colims_g d.
 
-Definition LModule_Lims_of_shape (C : category) {B : precategory}
+Definition LModule_Lims_of_shape (C : category) {B : category}
            (R : Monad B)
            (g : graph)
            (lims_g : Lims_of_shape g C)
-            : Lims_of_shape g (precategory_LModule R C) :=
-   LModule_LimCone  lims_g (homset_property C).
+           (d : diagram g (category_LModule R C))
+            : LimCone d :=
+  LModule_LimCone  lims_g d.
                                          
 
 
@@ -596,7 +596,7 @@ Section pullback_lims.
   Let lR :=   lim (lMod R dR).
 
   Lemma pb_colims_eq_mult (c : C) :
-    (LModule_colim_mult colims_g (homset_property D) dR) c = (pb_LModule_σ f cS) c.
+    (LModule_colim_mult colims_g  dR) c = (pb_LModule_σ f cS) c.
   Proof.
     simpl.
     unfold ColimFunctor_mor, LModule_colim_mult_data.
@@ -609,7 +609,7 @@ Section pullback_lims.
     apply assoc.
   Qed.
   Lemma pb_lims_eq_mult (c : C) :
-    (LModule_lim_mult lims_g (homset_property D) dR) c = (pb_LModule_σ f lS) c.
+    (LModule_lim_mult lims_g dR) c = (pb_LModule_σ f lS) c.
   Proof.
     simpl.
     unfold LimFunctor_mor, LModule_lim_mult_data.

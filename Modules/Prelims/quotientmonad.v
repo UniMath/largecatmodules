@@ -481,7 +481,7 @@ Local Definition u_monad : Monad_Mor (R'_monad) S
 
 Local Lemma u_monad_def : m = (projR_monad : category_Monad SET ⟦_,_⟧) · u_monad .
 Proof.
-  apply Monad_Mor_equiv; [ apply homset_property|].
+  apply Monad_Mor_equiv.
   apply nat_trans_eq; [ apply homset_property|].
   apply u_def.
 Qed.
