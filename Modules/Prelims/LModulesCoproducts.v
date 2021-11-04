@@ -19,13 +19,11 @@ Local Open Scope cat.
 
 Section ColimsModule.
   Context
-          {C : precategory}
+          {C : category}
           {O : UU} (cpC : Coproducts O C)
-          {B:precategory} {R:Monad B}
-          (* (hsB : has_homsets B) *)
-          (hsC : has_homsets C).
-  Local Notation cpFunc := (Coproducts_functor_precat _ B _ cpC hsC).
-  Local Notation MOD := (precategory_LModule R (C ,, hsC)).
+          {B : category} {R:Monad B}.
+  Local Notation cpFunc := (Coproducts_functor_precat _ B _ cpC).
+  Local Notation MOD := (category_LModule R C).
   Variable (d : O -> MOD).
   (* Local Notation FORGET := (forget_LMod R (C ,, hsC)). *)
   Local Notation d'  := ( fun x => (d x : LModule _ _) : functor _ _).
@@ -146,7 +144,7 @@ Section ColimsModule.
     use unique_exists.
     - exact (LModule_coproductArrow cc).
     - intro v.
-      apply LModule_Mor_equiv;[exact hsC|].
+      apply LModule_Mor_equiv;[exact C|].
       apply (CoproductInCommutes _ _ _ (cpFunc d')).
     - intro y.
       cbn -[isaprop].
@@ -155,7 +153,7 @@ Section ColimsModule.
       use has_homsets_LModule.
     - cbn.
       intros y h.
-      apply LModule_Mor_equiv;[exact hsC|].
+      apply LModule_Mor_equiv;[exact C|].
       apply (CoproductArrowUnique _ _ _ (cpFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).
@@ -168,23 +166,24 @@ Section ColimsModule.
 
 End ColimsModule.
 
-Definition LModule_Coproducts (C : category) {B : precategory}
+Definition LModule_Coproducts (C : category) {B : category}
            {O : UU}
            (R : Monad B)
            (cpC : Coproducts O C)
-           (* (colims_g : Colims_of_shape g C) *)
-            : Coproducts O (precategory_LModule R C) :=
-   LModule_Coproduct  cpC (homset_property C).
+  (* (colims_g : Colims_of_shape g C) *)
+           (d : O → category_LModule R C)
+            : Coproduct O (category_LModule R C) d :=
+   LModule_Coproduct  cpC d.
 
 Section pullback_coprod.
-  Context {C : category} {B : precategory}.
+  Context {C : category} {B : category}.
   Context {R : Monad B}{S : Monad B} (f : Monad_Mor R S).
 
   Context {O : UU}.
   Context {cpC : Coproducts O C}.
 
   Let cpLM (X : Monad B) := LModule_Coproducts C  X cpC.
-  Let cpFunc := Coproducts_functor_precat _ B _ cpC (homset_property C).
+  Let cpFunc := Coproducts_functor_precat _ B _ cpC .
 
   Context (α : O -> LModule S C ).
 
@@ -196,8 +195,8 @@ Section pullback_coprod.
 
   Lemma coprod_pbm_to_pbm_coprod_aux :
     ∏ c : B,
-          (LModule_coproduct_mult cpC (homset_property C) pbm_α) c =
-          (pb_LModule_σ f (CoproductObject O (precategory_LModule S C) (cpLM S α))) c.
+          (LModule_coproduct_mult cpC pbm_α) c =
+          (pb_LModule_σ f (CoproductObject O (category_LModule S C) (cpLM S α))) c.
   Proof.
     intro b.
     apply pathsinv0.
