@@ -363,7 +363,7 @@ Check (∏ (S : SIGNATURE)
          O (e : O -> equation S),
 
    category_model_equations e ::=
-    full_sub_precategory (C := rep_fiber_precategory S)
+    full_sub_precategory (C := rep_fiber_category S)
                          (satisfies_all_equations_hp e)).
 
 

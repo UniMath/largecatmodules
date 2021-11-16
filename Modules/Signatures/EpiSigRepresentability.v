@@ -225,7 +225,6 @@ Lemma Rep_mor_is_composition
   : pr1 m = compose (C:=category_Monad _) projR (u m) .
 Proof.
   use (invmap (Monad_Mor_equiv _ _ _)).
-  { apply (homset_property SET). }
   apply nat_trans_eq.
   - apply (homset_property SET).
   - intro X'.
@@ -514,7 +513,7 @@ Proof.
   etrans.
   apply (cancel_ar_on _ (compose (C:=category_Monad _) projR (u m))).
   use (invmap (Monad_Mor_equiv _ _ _)).
-  { apply homset_property. }
+  (* { apply homset_property. } *)
   { apply nat_trans_eq.
     apply homset_property.
     apply (u_def m).

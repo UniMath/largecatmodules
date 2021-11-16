@@ -45,7 +45,7 @@ Context {C : category} (bp : BinProducts C) (bcp : BinCoproducts C) (T : Termina
           (cp : ∏ (I : hSet), Coproducts I C).
 
 Let toSig sig  :=
-  (BindingSigToSignature (homset_property C) bp bcp T  sig (cp (BindingSigIndexhSet sig))).
+  (BindingSigToSignature bp bcp T  sig (cp (BindingSigIndexhSet sig))).
 
 
 Definition isPresentable (a : signature C) :=
@@ -63,7 +63,7 @@ Section PresentableProjections.
   Context {a : signature C} (p : isPresentable bp bcp T cp a).
 Definition p_sig   : BindingSig := pr1 p.
 Let toSig sig  :=
-  (BindingSigToSignature (homset_property C) bp bcp T  sig (cp (BindingSigIndexhSet sig))).
+  (BindingSigToSignature bp bcp T  sig (cp (BindingSigIndexhSet sig))).
 Definition p_alg_ar   : signature C :=
   sigWithStrength_to_sig (C := C) (toSig p_sig).
 
