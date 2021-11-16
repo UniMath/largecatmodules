@@ -82,7 +82,7 @@ Section GenericStrat.
   Let S2 : signature C := _ ,, isS2.
 
   Let S1_S2_R_iso (R : Monad C) : 
-    iso (C := precategory_LModule R _)
+    iso (C := category_LModule R _)
         (S1 R)
         ( S2 R) :=
     LModule_same_func_iso _ _ (m12_eq _) _.
@@ -138,15 +138,15 @@ End GenericStrat.
 
 Section commuteBinProdSig.
   Context {C : category}  .
-  Local Notation SIG := (Signature_precategory C C C).
+  Local Notation SIG := (Signature_category C C C).
   Context {I : UU}
           (bpC :  BinProducts C).
   Let hss_bpSig  : BinProducts  SIG
-    := BinProducts_Signature_precategory C C bpC C.
+    := BinProducts_Signature_category C C bpC C.
 
   Let bpSig := signature_BinProducts (C := C) bpC.
 
-  Variable (a b : Signature C (homset_property C) C (homset_property C) C (homset_property C)).
+  Variable (a b : Signature C C C).
 
   Let ar_a :=  sigWithStrength_to_sig a.
   Let ar_b :=  sigWithStrength_to_sig b.
@@ -154,7 +154,7 @@ Section commuteBinProdSig.
 
   (**  to get this statment, I first tried to use LModule_M1_M2_iso  
   Lemma  binprod_sigs_har_mod_iso R :
-    iso (C := precategory_LModule R _)
+    iso (C := category_LModule R _)
         ( sigWithStrength_to_sig (BPO (hss_bpSig a b)) R)
         ( (BPO (bpSig ar_a ar_b) : signature _ ) R).
   Proof.
@@ -163,7 +163,7 @@ Section commuteBinProdSig.
   Lemma binprod_sigs_har_mod_eq_mult R c  :
 
     (ModulesFromSignatures.lift_lm_mult (BPO (hss_bpSig a b)) R (tautological_LModule R) : nat_trans _ _) c =
-    (LModulesBinProducts.LModule_binproduct_mult bpC (homset_property C) (ar_a R) (ar_b R) c).
+    (LModulesBinProducts.LModule_binproduct_mult bpC (ar_a R) (ar_b R) c).
   Proof.
     cbn.
     unfold BinProductOfSignatures.θ_ob_fun.
@@ -191,7 +191,7 @@ Section commuteBinProdSig.
     
 
 
-  Definition binprod_sigs_har_iso : iso (C := signature_precategory) 
+  Definition binprod_sigs_har_iso : iso (C := signature_category) 
                                         ( sigWithStrength_to_sig (BPO (hss_bpSig a b)) )
                                         ( (BPO (bpSig ar_a ar_b) : signature _ ) ).
   Proof.
@@ -206,7 +206,7 @@ End commuteBinProdSig.
 
 Section CoprodAr.
   Context {C : category}  .
-  Local Notation SIG := (Signature_precategory C C C).
+  Local Notation SIG := (Signature_category C C C).
   Context {I : UU}
           (cpC :  Coproducts I C).
   Let hss_cpSig  : Coproducts I SIG
@@ -219,7 +219,7 @@ Section CoprodAr.
 
   Lemma coprod_sigs_har_mod_eq_mult R c  :
     (ModulesFromSignatures.lift_lm_mult (CPO (hss_cpSig sigs)) R (tautological_LModule R) : nat_trans _ _) c =
-    (LModulesCoproducts.LModule_coproduct_mult cpC (homset_property C) (λ o : I, (ars o) R)) c.
+    (LModulesCoproducts.LModule_coproduct_mult cpC (λ o : I, (ars o) R)) c.
   Proof.
     cbn.
     unfold SumOfSignatures.θ_ob_fun.
@@ -248,7 +248,7 @@ Section CoprodAr.
     rewrite id_right.
     reflexivity.
   Qed.
-  Definition coprod_sigs_har_iso : iso (C := signature_precategory) (sigWithStrength_to_sig (CPO (hss_cpSig sigs)))
+  Definition coprod_sigs_har_iso : iso (C := signature_category) (sigWithStrength_to_sig (CPO (hss_cpSig sigs)))
                                        (CPO (cpSig ars)).
     use signature_S1_S2_iso.
     - cbn.  use coprod_sigs_har_mod_eq_mult.
@@ -259,11 +259,11 @@ Section CoprodAr.
 End CoprodAr.
 Section TautologicalPreserve.
   Context {C : category}.
-  Local Notation SIG := (Signature_precategory C C).
-  Let a := (sigWithStrength_to_sig (IdSignature C (homset_property C) C (homset_property C))).
+  Local Notation SIG := (Signature_category C C).
+  Let a := (sigWithStrength_to_sig (IdSignature C C)).
   Let b := (tautological_signature (C:=C)).
 
-  Definition tauto_sigs_har_iso : iso (C := signature_precategory) a
+  Definition tauto_sigs_har_iso : iso (C := signature_category) a
                                        b.
   Proof.
     use signature_S1_S2_iso.
@@ -290,14 +290,14 @@ Section DerivationPreserve.
   Let a := precomp_option_iter_Signature (homset_property C) bc T n.
 
   Lemma  deriv_sigs_har_mod_iso R :
-    iso (C := precategory_LModule R _)
+    iso (C := category_LModule R _)
         ( sigWithStrength_to_sig (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
         ( (signature_deriv bc T
                            (sigWithStrength_to_sig
                                (precomp_option_iter_Signature (homset_property C) bc T n)  )
           )  R).
     (*
-    iso (C := precategory_LModule R _)
+    iso (C := category_LModule R _)
         ( sigWithStrength_to_sig (precomp_option_iter_Signature (homset_property C) bc T (S n))  R)
         ( (signature_deriv bc T
                            (sigWithStrength_to_sig

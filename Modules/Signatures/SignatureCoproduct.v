@@ -36,10 +36,10 @@ Section Coprod.
 
 
   Local Notation Signature := (signature C).
-  Local Notation MOD R := (precategory_LModule R C).
+  Local Notation MOD R := (category_LModule R C).
 
   Let cpLM (X : Monad C) := LModule_Coproducts C  X cpC.
-  Let cpFunc := Coproducts_functor_precat _ C _ cpC (homset_property C).
+  Let cpFunc := Coproducts_functor_precat _ C _ cpC .
 
 
   (* Local Notation SIGNATURE := (signature C). *)
@@ -154,7 +154,7 @@ Section Coprod.
   Definition signature_coproductArrow {b : Signature} (cc : ∏ o, signature_Mor (α o) b ) :
     signature_Mor signature_coprod b := _ ,, signature_coproductArrow_laws cc.
 
-  Lemma signature_isCoproduct : isCoproduct _ signature_precategory   _ _ signature_coproductIn.
+  Lemma signature_isCoproduct : isCoproduct _ signature_category   _ _ signature_coproductIn.
   Proof.
     intros b cc.
     use unique_exists.
@@ -179,7 +179,7 @@ Section Coprod.
       apply idpath.
   Defined.
 
-  Definition signature_Coproduct : Coproduct _ signature_precategory α :=
+  Definition signature_Coproduct : Coproduct _ signature_category α :=
     make_Coproduct  _ _ _ _ _ signature_isCoproduct.
 
 
@@ -188,5 +188,5 @@ End Coprod.
 Definition signature_Coproducts {C : category}
            {O : UU}
            (cpC : Coproducts O C)
-            : Coproducts O (signature_precategory (C := C)) :=
+            : Coproducts O (signature_category (C := C)) :=
    signature_Coproduct (cpC := cpC).

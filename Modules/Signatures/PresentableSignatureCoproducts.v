@@ -46,7 +46,7 @@ Section CoprodPresentable.
 
   
   Let toSig sig :=
-    (BindingSigToSignature (homset_property _) bp bcp T
+    (BindingSigToSignature bp bcp T
                            sig (cp (BindingSigIndexhSet sig))).
 
 
@@ -72,7 +72,7 @@ Section CoprodPresentable.
       eapply morphism_from_iso.
       use coprod_sigs_har_iso.
     }
-    apply CoproductOfArrows.
+    apply (CoproductOfArrows _ signature_category).
     intro o.
     use (p_mor (pres_α o)).
   Defined.

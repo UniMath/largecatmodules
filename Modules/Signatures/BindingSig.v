@@ -259,8 +259,7 @@ Section EpiSignatureSig.
       eapply (transportf (@isEpi SET _ _) (x := fun z => z) ).
       apply (InitialArrowEq (O := InitialHSET)).
       apply identity_isEpi.
-    - cbn -[functor_composite].
-      use preserveEpi_binCoprodFunc. ; [apply id_preserves_Epi|].
+    - use preserveEpi_binCoprodFunc ; [apply id_preserves_Epi|].
       apply BindingSigAreEpiEpiSig.
       apply IHi.
   Qed.
@@ -295,13 +294,13 @@ Section CoprodBindingSig.
           (cpC : ∏ (X : UU) (setX : isaset X), Coproducts X C).
 
   Let toSig sig :=
-    (BindingSigToSignature (homset_property C) bpC
+    (BindingSigToSignature  bpC
                            bcpC TC sig (cpC _ (BindingSigIsaset sig))).
-  Local Notation SIG := (Signature_precategory C C C).
+  Local Notation SIG := (Signature_category C C C).
   Let hsSig := has_homsets_Signature_precategory C C C.
   Let cpSig (I : hSet) : Coproducts (pr1 I) SIG
     := Coproducts_Signature_precategory _ C _ _ (cpC _ (setproperty I)).
-  Let ArToSig := Arity_to_Signature (homset_property C) bpC bcpC TC.
+  Let ArToSig := Arity_to_Signature bpC bcpC TC.
   Let CP_from_BindingSig (S : BindingSig) := (cpSig  _ (fun (o : BindingSigIndexhSet S)
                                                         => ArToSig (BindingSigMap _ o))).
 

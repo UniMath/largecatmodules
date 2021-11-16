@@ -35,10 +35,10 @@ Section DAr.
           (bcpC : limits.bincoproducts.BinCoproducts C)
           (CT : limits.terminal.Terminal C).
 Local Notation "∂" := (LModule_deriv_functor (TerminalObject CT) bcpC
-                                             (homset_property _) _).
+                                             _).
 
 Local Notation Signature := (signature C).
-Local Notation MOD R := (precategory_LModule R C).
+Local Notation MOD R := (category_LModule R C).
 
 Context { Sig : signature C}.
 Local Notation MODEL := (model Sig).
