@@ -122,7 +122,7 @@ Qed.
 
 (** Associativity of horizontal composition of natural transformations *)
 Lemma horcomp_assoc 
-  : ∏ {B C D E : precategory} {H H' : functor B C}
+  : ∏ {B C D E : category} {H H' : functor B C}
       {F F' : functor C D} {G G' : functor D E} 
       (a : nat_trans H H') (b : nat_trans F F') (c : nat_trans G G') x,
     ((c ∙∙ b) ∙∙ a) x = (c ∙∙( b ∙∙ a)) x.

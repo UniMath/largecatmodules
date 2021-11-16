@@ -101,7 +101,6 @@ Proof.
   - intro g.
     apply isaprop_rep_fiber_mor_law.
   - use (invmap (Monad_Mor_equiv _ _  _  )).  
-     +  apply homset_property.
      +  assumption.
 Qed.
 
@@ -321,8 +320,8 @@ Section InitAlg.
 
   Context {R : Monad C} (M : LModule R C) (m : LModule_Mor R M (Θ R)).
 
-  Local Notation BC F := (BinCoproducts_functor_precat C C bc (homset_property C) (F : functor _ _)).
-  Local Notation bcO := (BinCoproductObject _).
+  Local Notation BC F := (BinCoproducts_functor_precat C C bc (F : functor _ _)).
+  Local Notation bcO := (BinCoproductObject).
 
   (** M + Id functor *)
   Definition mod_id_functor  : functor C C :=
@@ -333,17 +332,17 @@ Section InitAlg.
 
   (** [m, η] : M + Id -> R will be the monad morphism *)
   Definition mod_id_nt : nat_trans IdM R.
-    apply (BinCoproductArrow _ (BC _ _)).
+    apply (BinCoproductArrow  (BC _  _)).
     exact (m : nat_trans _ _).
     apply η.
   Defined.
 
   (** ι₂ : Id -> M + Id  will be the unit of the monad *)
   Definition mod_id_η : nat_trans (functor_identity _) IdM :=
-    BinCoproductIn2 [C,C] (BC _ _).
+    BinCoproductIn2 (*[C,C]*) (BC _ _).
 
   Definition mod_M_idM : nat_trans M IdM :=
-    BinCoproductIn1 [C,C] (BC _ _).
+    BinCoproductIn1 (*[C,C]*) (BC _ _).
 
   (** The (M + Id)-multiplication for M:
 <<
@@ -413,10 +412,10 @@ M (M + Id) ---------> M R --------> M
     ((IdM ,, mod_id_μ) ,, mod_id_η).
 
   Local Infix "++f" := (BinCoproductOfArrows _ _ _) (at level 6).
-  Local Notation "[[ f , g ]]" := (BinCoproductArrow _ _ f g).
+  Local Notation "[[ f , g ]]" := (BinCoproductArrow _ f g).
   Local Notation ID := (identity _).
-  Local Notation ι1 :=  (BinCoproductIn1  _ (bc  _ _)).
-  Local Notation ι2 :=  (BinCoproductIn2  _ (bc  _ _)).
+  Local Notation ι1 :=  (BinCoproductIn1  (bc  _ _)).
+  Local Notation ι2 :=  (BinCoproductIn2  (bc  _ _)).
 
 
   Local Lemma helper (c : C) f :

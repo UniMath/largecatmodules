@@ -26,7 +26,7 @@ Open Scope cat.
 
 Definition CoproductOfArrows_eq
            (I : UU)
-           (C : precategory)
+           (C : category)
            (CC : Coproducts I C)
            (a c : I -> C)
            (f f' : ∏ i, a i --> c i)
@@ -249,7 +249,7 @@ Section CoprodBinprod.
   Local Notation BPO := (BinProductObject  _).
   Local Notation CPO := (CoproductObject _ _).
 
-  Context {C : precategory} {O : UU} .
+  Context {C : category} {O : UU} .
   Context {B : ∏ (o : O) , C} (cpB : Coproduct O _ B).
   Context {X : C} (bpBX : ∏ o, BinProduct _ (B o) X)
           (bpCX : BinProduct  _ (CPO cpB) X)
@@ -267,12 +267,12 @@ Section CoprodBinprod.
 
 End CoprodBinprod.
 
-Definition bp_coprod_isDistributive {C : precategory} {I : UU}
+Definition bp_coprod_isDistributive {C : category} {I : UU}
            (bp : BinProducts C) (cp : Coproducts I C) 
   : UU :=
   ∏ B X, is_iso (bp_coprod_mor (cp B) (fun o => bp _ X) (bp _ _) (cp _) ).
 
-Definition iso_from_isDistributive  {C : precategory} {I : UU}
+Definition iso_from_isDistributive  {C : category} {I : UU}
            (bp : BinProducts C) (cp : Coproducts I C) 
            (h :  bp_coprod_isDistributive bp cp) B X :
   iso _ _ :=

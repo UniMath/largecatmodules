@@ -146,7 +146,7 @@ Defined.
 Definition arity_abs := arity_to_one_sig bpC bcpC TC (BindingSigMap LamSig absIdx).
 
 Lemma arity_abs_mod_eq_mult R c : 
-  (ModulesFromSignatures.lift_lm_mult (Arity_to_Signature hsC bpC bcpC TC (BindingSigMap LamSig absIdx)) R (τ R) :
+  (ModulesFromSignatures.lift_lm_mult (Arity_to_Signature bpC bcpC TC (BindingSigMap LamSig absIdx)) R (τ R) :
   nat_trans _ _) c =
   (nat_trans_comp (whiskering.post_whisker (Derivative.deriv_dist TC bcpC R) (θ R))
      (whiskering.pre_whisker (Derivative.maybe_monad TC bcpC) (lm_mult R (θ R)))) c.
@@ -158,9 +158,9 @@ Qed.
 
 Lemma arity_abs_eq (R S : Monad C) (f : Monad_Mor R S) (c : C) :
   (signature_deriv_on_morphisms bcpC TC θ R S f) c =
-  ((lift_lmodule_mor (Arity_to_Signature hsC bpC bcpC TC (BindingSigMap LamSig absIdx)) R (monad_mor_to_lmodule f) c) · 
+  ((lift_lmodule_mor (Arity_to_Signature bpC bcpC TC (BindingSigMap LamSig absIdx)) R (monad_mor_to_lmodule f) c) · 
 
-   (lift_pb_LModule (Arity_to_Signature hsC bpC bcpC TC (BindingSigMap LamSig absIdx)) f) c).
+   (lift_pb_LModule (Arity_to_Signature bpC bcpC TC (BindingSigMap LamSig absIdx)) f) c).
 Proof.
   cbn.
   repeat rewrite id_right.

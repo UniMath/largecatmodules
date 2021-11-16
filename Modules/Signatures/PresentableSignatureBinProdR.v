@@ -62,17 +62,17 @@ Section CoprodAr.
           (T : Terminal C) (cp : ∏ (I:hSet), Coproducts I C).
 
   Local Notation PO := (BinProductObject _). Local Notation CPO := (CoproductObject _ _).
-  Let MOD R  := precategory_LModule (B:= C) R C.
+  Let MOD R  := category_LModule (B:= C) R C.
   Let Sig_bp := signature_BinProducts  bp.
   Let Sig_cp I := signature_Coproducts  (cp I).
 
   Let bpFunct :=
-    (BinProducts_functor_precat C C bp (homset_property C)).
+    (BinProducts_functor_precat C C bp).
   Let cpFunct (Z : hSet) :=
-    (Coproducts_functor_precat Z C C (cp Z) (homset_property C)).
+    (Coproducts_functor_precat Z C C (cp Z)).
 
   Let bpMOD (R : Monad C) :=
-    (LModule_BinProducts R bp (homset_property C)).
+    (LModule_BinProducts R bp).
 
   Let cpMOD (R : Monad C) (Z : hSet) :=
     (LModule_Coproducts C R (cp Z) ).
@@ -80,7 +80,7 @@ Section CoprodAr.
 
 
   Let toSig sig :=
-    (BindingSigToSignature (homset_property _) bp
+    (BindingSigToSignature bp
                            bcp T sig
                            (cp ((BindingSigIndexhSet sig)) )).
 
@@ -134,10 +134,10 @@ Definition LMod_isDistributive_inv (Z :hSet) (R : Monad C) B (X : LModule _ _) :
 Lemma LMod_isDistributive_is_inverse (Z : hSet) R B X :
   is_inverse_in_precat
     (bp_coprod_mor (LModule_Coproducts C R (cp Z) B)
-       (λ o : Z, LModule_BinProducts R bp (homset_property C) (B o) X)
-       (LModule_BinProducts R bp (homset_property C) (CPO (LModule_Coproducts C R (cp Z) B)) X)
+       (λ o : Z, LModule_BinProducts R bp (B o) X)
+       (LModule_BinProducts R bp (CPO (LModule_Coproducts C R (cp Z) B)) X)
        (LModule_Coproducts C R (cp Z)
-          (λ o : Z, PO (LModule_BinProducts R bp (homset_property C) (B o) X))))
+          (λ o : Z, PO (LModule_BinProducts R bp (B o) X))))
     (LMod_isDistributive_inv Z R B X).
 Proof.
     set (h := (iso_from_isDistributive _ _
@@ -153,7 +153,7 @@ Qed.
 Lemma LMod_isDistributive (Z : hSet) (R : Monad C) :
   bp_coprod_isDistributive
     (C :=  MOD R)
-    (LModule_BinProducts R bp (homset_property C))
+    (LModule_BinProducts R bp)
     (LModule_Coproducts C R (cp Z) )  .
 Proof.
   intros B X.
@@ -214,7 +214,7 @@ Qed.
 
 Lemma Sig_isDistributive (Z : hSet)  :
   bp_coprod_isDistributive
-    (C :=  signature_precategory )
+    (C :=  signature_category )
     Sig_bp
     (Sig_cp  Z).
 Proof.
@@ -249,7 +249,7 @@ Hypothesis
     epi_p_mor pres_a.
 
 
-  Local Notation SIG := (Signature_precategory C C C).
+  Local Notation SIG := (Signature_category C C C).
 
 
   (**
@@ -267,20 +267,17 @@ becomes
 
   Let FuncCP :=
     Coproducts_functor_precat  (BindingSigIndex (p_sig pres_a))
-                               C C (cp (BindingSigIndexhSet (p_sig pres_a)))
-                               (homset_property _).
+                               C C (cp (BindingSigIndexhSet (p_sig pres_a))) .
 
   Let FuncBP :=
-    BinProducts_functor_precat  
-                               C C bp
-                               (homset_property _).
+    BinProducts_functor_precat C C bp .
 
 
 
   Let cpSig  : Coproducts I SIG
     := Coproducts_Signature_precategory _ C _ _ (cp I).
   Let bpSig  : BinProducts  SIG
-    := BinProducts_Signature_precategory _ C  bp _.
+    := BinProducts_Signature_category _ C  bp _.
 
   (* TODO : move this somewhere else *)
   Lemma Const1Sig_isTerminal : isTerminal SIG (SignatureExamples.ConstConstSignature C C _ T).
@@ -321,10 +318,10 @@ becomes
 
 
   Lemma Signature_to_signature_cons_iso n ar :
-    iso (C := SIG) ( (Arity_to_Signature (homset_property C) bp bcp T (cons n ar)))
+    iso (C := SIG) ( (Arity_to_Signature bp bcp T (cons n ar)))
         (BinProductObject _ (bpSig 
-                               (precomp_option_iter_Signature (homset_property C) bcp T n)
-                               (Arity_to_Signature (homset_property C) bp bcp T ar)
+                               (precomp_option_iter_Signature bcp T n)
+                               (Arity_to_Signature bp bcp T ar)
         )).
   Proof.
     apply iso_inv_from_iso.
@@ -386,7 +383,7 @@ Proof.
 Defined.
 
   Definition har_binprodR_p_mor  : signature_Mor p_alg_ar' b.
-    eapply (compose (C := signature_precategory)).
+    eapply (compose (C := signature_category)).
     - apply har_binprodR_commute_mor_mod.
     - apply BinProductOfArrows.
       + apply Fa.

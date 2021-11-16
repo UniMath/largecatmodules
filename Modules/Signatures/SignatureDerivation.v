@@ -31,10 +31,10 @@ Section DAr.
           (bcpC : limits.bincoproducts.BinCoproducts C)
           (CT : limits.terminal.Terminal C).
 Local Notation "∂" := (LModule_deriv_functor (TerminalObject CT) bcpC
-                                             (homset_property _) _).
+                                              _).
 
 Local Notation Signature := (signature C).
-Local Notation MOD R := (precategory_LModule R C).
+Local Notation MOD R := (category_LModule R C).
 
 Variable (a : signature C).
 
@@ -84,7 +84,7 @@ Variable (a : signature C).
   Definition signature_deriv : Signature := _ ,, signature_deriv_is_signature.
 
   Lemma signature_to_deriv_laws : is_signature_Mor a signature_deriv
-                                                        (fun R => LModule_to_deriv CT bcpC (homset_property _) R (a R)).
+                                                        (fun R => LModule_to_deriv CT bcpC  R (a R)).
   Proof.
     intros R S f.
     apply (nat_trans_eq (homset_property _)).

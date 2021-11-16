@@ -270,7 +270,7 @@ Proof.
     apply coeq.
   - apply BinCoproducts_from_CoproductsBool.
     apply TwoSignature_Coproducts.
-    apply CoproductsBool;[apply homset_property|].
+    apply CoproductsBool.
     exact b.
 Defined.
 

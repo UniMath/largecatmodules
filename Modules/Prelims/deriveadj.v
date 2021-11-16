@@ -60,14 +60,14 @@ This is defined as M' x R -> MR -> M
   Local Notation bpS := BinProductsHSET.
   Local Notation bcpS := BinCoproductsHSET.
   Local Notation T := TerminalHSET.
-  Local Notation hsS := has_homsets_HSET.
+  Local Notation hsS := has_homsets_HSET. 
 Section substitution.
   Context {R : Monad SET}.
   Local Infix "+" := setcoprod : set_scope.
   Local Infix "×" := setdirprod : set_scope.
   Delimit Scope set_scope with set.
 
-  Local Notation bpFunc := (BinProducts_functor_precat _ _ bpS hsS).
+  Local Notation bpFunc := (BinProducts_functor_precat _ _ bpS).
   (* Local Notation bcpFunc := (BinCoproducts_functor_precat _ _ bpS hsS). *)
   Local Notation TFunc := (option_functor bcpS T).
 
@@ -152,8 +152,8 @@ and now we show the same diagram without the application of M
               ( R ∙ M) :=
     _ ,, (pre_subst_is_nat_trans M).
 
-  Local Notation LMOD_bp := (LModule_BinProducts R bpS hsS).
-  Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpS hsS R).
+  Local Notation LMOD_bp := (LModule_BinProducts R bpS).
+  Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpS R).
   Local Notation Θ := tautological_LModule.
   Local Notation "×ℜ" := (functor_fix_snd_arg _ _ _  (binproduct_functor  LMOD_bp)
                                               (Θ R)).
@@ -368,15 +368,15 @@ Section DerivCounit.
 
     
   (* functors that are in stake *)
-  Local Notation LMOD_bp := (LModule_BinProducts R bpC hsC).
-  Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpC hsC R).
+  Local Notation LMOD_bp := (LModule_BinProducts R bpC).
+  Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpC R).
   Local Notation Θ := tautological_LModule.
-  Local Infix "××" := (LModule_binproduct bpC hsC) (at level 3).
+  Local Infix "××" := (LModule_binproduct bpC) (at level 3).
   Local Notation "×ℜ" := (functor_fix_snd_arg _ _ _  (binproduct_functor  LMOD_bp)
                                               (Θ R)).
-  Local Notation LMOD := (precategory_LModule R C).
+  Local Notation LMOD := (category_LModule R C).
 
-  Local Notation bpCC := (BinProducts_functor_precat C C bpC hsC).
+  Local Notation bpCC := (BinProducts_functor_precat C C bpC).
 
   (**
 M X ----> M (X + T) x R(X + T)
@@ -407,7 +407,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
 
   (* These functors are actually equals, but this is life..*)
   Definition Terminal_EndC_constant_terminal :
-    (TerminalObject (Terminal_functor_precat C C T hsC) : functor _ _)
+    (TerminalObject (Terminal_functor_precat C C T) : functor _ _)
       ⟹ constant_functor C C T  .
   Proof.
     use make_nat_trans.
@@ -428,7 +428,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
       exact (η R).
     - eapply compose; [|apply ρ_functors_inv].
       eapply compose; [|apply coproduct_nat_trans_in1].
-      eapply compose;[apply (TerminalArrow  (Terminal_functor_precat C _ T hsC)) |].
+      eapply compose;[apply (TerminalArrow  (Terminal_functor_precat C _ T)) |].
       apply Terminal_EndC_constant_terminal.
   Defined.
 
@@ -569,8 +569,8 @@ Section derivadj.
   Local Infix "+" := setcoprod : set_scope.
   Local Infix "×" := setdirprod : set_scope.
   Delimit Scope set_scope with set.
-  Local Notation LMOD_bp := (LModule_BinProducts R bpS hsS).
-  Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpS hsS R).
+  Local Notation LMOD_bp := (LModule_BinProducts R bpS).
+  Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpS R).
   Local Notation Θ := tautological_LModule.
   Local Notation "×ℜ" := (functor_fix_snd_arg _ _ _  (binproduct_functor  LMOD_bp)
                                               (Θ R)).
@@ -759,11 +759,11 @@ Local Lemma adj_law1 : (∏ (R S : Monad SET) (f : Monad_Mor R S) (M N : LModule
      (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M,
      Derivative.LModule_deriv TerminalHSET BinCoproductsHSET N ⟧) · # (LModule_deriv_functor
                                                                          TerminalHSET BinCoproductsHSET
-                                                                         (homset_property SET) R) v) =
+                                                                          R) v) =
  ((adj1 R M N) u
   :
   (λ R0 : Monad SET, precategory_LModule R0 SET) R
-  ⟦ (λ R0 : Monad SET, LModule_binproduct BinProductsHSET (homset_property SET)) R M
+  ⟦ (λ R0 : Monad SET, LModule_binproduct BinProductsHSET ) R M
       (tautological_LModule R), N ⟧) · v).
 Proof.
   intros R S f M N A u v.
@@ -805,10 +805,10 @@ Local Lemma adj_law2 :
                             pb_LModule_deriv_iso
                               TerminalHSET BinCoproductsHSET f0) R
                              S f B) =
-   BinProductOfArrows (precategory_LModule R (make_category SET (homset_property SET)))
-     ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET (homset_property SET)) R
+   BinProductOfArrows (category_LModule R (make_category SET (homset_property SET)))
+     ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET ) R
         (pb_LModule f A) (pb_LModule f (tautological_LModule S)))
-     ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET (homset_property SET)) R M
+     ((λ R0 : Monad SET, LModule_BinProducts R0 BinProductsHSET ) R M
         (tautological_LModule R))
      (u : (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M, pb_LModule f A ⟧)
      (monad_mor_to_lmodule f

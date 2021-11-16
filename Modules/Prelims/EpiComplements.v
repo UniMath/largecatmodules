@@ -43,7 +43,7 @@ Definition epis_are_pointwise (B : precategory) (C : category) :=
 
 (** Epimorphic natural transformation between Set valued functors are pointwise epimorphic
  *)
-Lemma epi_nt_SET_pw (C : precategory) : epis_are_pointwise C SET.
+Lemma epi_nt_SET_pw (C : category) : epis_are_pointwise C SET.
 Proof.
   intros F F' α .
   apply Pushouts_pw_epi.
@@ -54,7 +54,7 @@ Qed.
           This is true of regular epis in a regular category such as Set.
             (e.g. in a topos, pullbacks of epis are epis)
        *)
-Definition products_preserves_Epis {C : precategory} (bpC : BinProducts C) :=
+Definition products_preserves_Epis {C : category} (bpC : BinProducts C) :=
   ∏ (a b : C)  (f : C ⟦a , b⟧) (a' b' : C)(f' : C ⟦a' , b'⟧),
     isEpi  f ->
   isEpi  f' ->
@@ -91,7 +91,7 @@ Lemma productEpisFunc {B C : category} bpC
       (pwEpi : epis_are_pointwise B C)
   :
   products_preserves_Epis
-    (BinProducts_functor_precat B C bpC (homset_property C) )
+    (BinProducts_functor_precat B C bpC)
                                                           .
 Proof.
   red.
@@ -134,7 +134,7 @@ Qed.
 (** A corrollary: Coproducts of epis are epis
 The proof is replayed with the direct defintion of coproducts
  *)
-Lemma coproduct_Epis {C : precategory} {I : UU}
+Lemma coproduct_Epis {C : category} {I : UU}
       {a b : I -> C} (f : ∏ i, C ⟦a i , b i⟧)(epif : ∏ i, isEpi (f i))
       (cpA : Coproduct I _ a) (cpB : Coproduct I _ b)
   :
@@ -154,9 +154,9 @@ Qed.
 
 
 (** Again, a corrollary, in principle *)
-Lemma bincoproduct_Epis {C : precategory} {a b a' b'}
-      (ab : BinCoproduct C a b) 
-      (a'b' : BinCoproduct C a' b')
+Lemma bincoproduct_Epis {C : category} {a b a' b'}
+      (ab : BinCoproduct a b) 
+      (a'b' : BinCoproduct a' b')
       (f : C ⟦a , a'⟧)(g : C ⟦b , b'⟧)
       (epif : isEpi f)(epig : isEpi g) :
   isEpi (BinCoproductOfArrows C ab a'b' f g).
@@ -171,7 +171,7 @@ Proof.
 Qed.
 
 
-Lemma isEpi_horcomp_pw (B : precategory)(C D : category)
+Lemma isEpi_horcomp_pw (B : category)(C D : category)
       (G H : functor B C) (G' H' : functor C D)
       (f : nat_trans G H) (f':nat_trans G' H')
   : (∏ x, isEpi  (f' x))
@@ -185,7 +185,7 @@ Proof.
   - apply epif.
 Qed.
 
-Lemma isEpi_horcomp_pw2 (B : precategory)(C D : category)
+Lemma isEpi_horcomp_pw2 (B : category)(C D : category)
       (G H : functor B C) (G' H' : functor C D)
       (f : nat_trans G H) (f':nat_trans G' H')
   : (∏ x, isEpi  (f' x))
@@ -257,7 +257,7 @@ Definition id_preserves_Epi (B : precategory) : preserves_Epi (functor_identity 
 Definition const_preserves_Epi {B C : precategory} (c : C) : preserves_Epi (constant_functor B C c) :=
   fun a b f h => identity_isEpi _.
 
-Lemma preserveEpi_binProdFunc {B C : precategory} {bpC}
+Lemma preserveEpi_binProdFunc {B C : category} {bpC}
       (product_epis : products_preserves_Epis bpC)
       (F F' : functor B C) :
   preserves_Epi F -> preserves_Epi F' -> preserves_Epi (BinProduct_of_functors _ _ bpC F F').
@@ -267,19 +267,19 @@ Proof.
   apply product_epis; [apply epiF|apply epiG]; exact epif.
 Qed.
 
-Definition preserveEpi_binProdFuncSET {B  : precategory} 
+Definition preserveEpi_binProdFuncSET {B  : category} 
       (F F' : functor B SET) :
   preserves_Epi F -> preserves_Epi F' -> preserves_Epi (BinProduct_of_functors _ _ _ F F') :=
   preserveEpi_binProdFunc productEpisSET F F'.
 
 (** A corrolary of colimOfArrows_Epi *)
-Lemma Colim_Functor_Preserves_Epi {C : precategory}{D : category}{g : graph}
+Lemma Colim_Functor_Preserves_Epi {C : category}{D : category}{g : graph}
       (F : diagram g [C,D])
       (F_presv_epi : ∏ i, preserves_Epi (dob F i))
       (cD : Colims_of_shape g D)
   : preserves_Epi
       (* (ColimsFunctorCategory_of_shape g C D (homset_property D) cD F : ob  ). *)
-      (colim (ColimFunctorCocone (homset_property D) F (fun a => cD  _ ))).
+      (colim (ColimFunctorCocone F (fun a => cD  _ ))).
 Proof.
     unfold preserves_Epi. intros X Y f Hf.
     apply colimOfArrows_Epi.
@@ -291,7 +291,7 @@ Qed.
 
 
 (** a corollary *)
-Lemma preserveEpi_sumFuncs {B C : precategory} {I : UU}(cp : Coproducts I C) 
+Lemma preserveEpi_sumFuncs {B C : category} {I : UU}(cp : Coproducts I C) 
       Fs (epiFs : ∏ i, preserves_Epi (Fs i)) :
     preserves_Epi (coproduct_of_functors  I B C cp Fs).
 Proof.
@@ -303,7 +303,7 @@ Proof.
 Qed.
 
 (** Corollary *)
-Lemma preserveEpi_binCoprodFunc {B C : precategory} (bcp : BinCoproducts C) 
+Lemma preserveEpi_binCoprodFunc {B C : category} (bcp : BinCoproducts C) 
       Fs Gs (epiFs : preserves_Epi Fs)(epiGs : preserves_Epi Gs) :
     preserves_Epi (BinCoproduct_of_functors B C bcp  Fs Gs).
 Proof.
@@ -311,10 +311,10 @@ Proof.
   apply bincoproduct_Epis; auto.
 Qed.
 
-Lemma preserveEpi_precomp {B : precategory} (C D : category) (F : functor B C)
+Lemma preserveEpi_precomp {B : category} (C D : category) (F : functor B C)
       (pwEpi : epis_are_pointwise C D)
   :
-  preserves_Epi (pre_composition_functor B C D (homset_property _)(homset_property _) F).
+  preserves_Epi (pre_composition_functor B C D F).
 Proof.
   intros M N f epif.
   apply is_nat_trans_epi_from_pointwise_epis.
@@ -324,7 +324,7 @@ Proof.
 Qed.
 
 (** The option functor preserves epis (same idea as coproduct_Epis *)
-Lemma preserves_Epi_option {B : precategory} (bcp : BinCoproducts B) (T : Terminal B) :
+Lemma preserves_Epi_option {B : category} (bcp : BinCoproducts B) (T : Terminal B) :
       preserves_Epi (option_functor bcp T).
 Proof.
   intros R S f epif.

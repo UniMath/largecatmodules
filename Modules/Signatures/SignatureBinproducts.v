@@ -36,10 +36,10 @@ Section Binprod.
 
 
   Local Notation Signature := (signature C).
-  Local Notation MOD R := (precategory_LModule R C).
+  Local Notation MOD R := (category_LModule R C).
 
-  Let cpLM (X : Monad C) := LModule_BinProducts   X cpC hsC.
-  Let cpFunc := BinProducts_functor_precat  C _ cpC hsC .
+  Let cpLM (X : Monad C) := LModule_BinProducts   X cpC .
+  Let cpFunc := BinProducts_functor_precat  C _ cpC  .
 
 
   (* Local Notation SIGNATURE := (signature C). *)
@@ -193,7 +193,7 @@ Section Binprod.
              (cb : signature_Mor c b) : 
     signature_Mor c signature_binProd  := _ ,, signature_binProductArrow_laws ca cb.
 
-  Lemma signature_isBinProduct : isBinProduct signature_precategory   _ _ _
+  Lemma signature_isBinProduct : isBinProduct signature_category   _ _ _
                                            signature_binProductPr1 signature_binProductPr2.
   Proof.
     intros c ca cb.
@@ -217,7 +217,7 @@ Section Binprod.
       + rewrite <- h2. apply idpath.
   Defined.
 
-  Definition signature_BinProduct : BinProduct signature_precategory a b :=
+  Definition signature_BinProduct : BinProduct signature_category a b :=
     make_BinProduct  _ _ _ _ _ _ signature_isBinProduct.
 
 
@@ -225,5 +225,5 @@ End Binprod.
 
 Definition signature_BinProducts {C : category}
            (cpC : BinProducts C)
-            : BinProducts (signature_precategory (C := C)) :=
+            : BinProducts (signature_category (C := C)) :=
    signature_BinProduct (cpC := cpC).

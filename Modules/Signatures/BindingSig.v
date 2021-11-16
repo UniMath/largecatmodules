@@ -56,15 +56,15 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Open Scope cat.
 
   (** Turn a binding signature into an algebraic 1-signature *)
-Definition binding_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC
+Definition binding_to_one_sig {C : category} bpC bcpC
            (cpC : ∏ X, isaset X -> Coproducts X C ) TC S : signature C :=
-  (sigWithStrength_to_sig (C := C) (BindingSigToSignature hsC bpC bcpC TC
+  (sigWithStrength_to_sig (C := C) (BindingSigToSignature bpC bcpC TC
                                               S (cpC _ (BindingSigIsaset S)))).
 
   (** Turn an arity of a binding signature (i.e. a list of natural numbers
 specifying an operation in the syntax) into an elementary 1-signature *)
-Definition arity_to_one_sig {C : category} (hsC := homset_property C) bpC bcpC  TC S : signature C :=
-  (sigWithStrength_to_sig (C := C) (Arity_to_Signature hsC bpC bcpC TC S )).
+Definition arity_to_one_sig {C : category} bpC bcpC  TC S : signature C :=
+  (sigWithStrength_to_sig (C := C) (Arity_to_Signature  bpC bcpC TC S )).
 
 (** specific definition for the hSet category *)
 Definition binding_to_one_sigHSET S :=
@@ -72,7 +72,7 @@ Definition binding_to_one_sigHSET S :=
      (BindingSigToSignatureHSET S)). 
 
 Definition Arity_to_SignatureHSET := 
-  Arity_to_Signature (homset_property SET) BinProductsHSET BinCoproductsHSET TerminalHSET.
+  Arity_to_Signature BinProductsHSET BinCoproductsHSET TerminalHSET.
 
 Definition arity_to_one_sigHSET S :=
   (sigWithStrength_to_sig (C := SET) (Arity_to_SignatureHSET  S )).
@@ -81,9 +81,7 @@ Section EpiSignatureSig.
 
   (* Local Notation H_SET := hset_category. *)
   Local Notation hom_SET := has_homsets_HSET.
-  Local Notation Sig := (Signature SET has_homsets_HSET 
-                                   hset_precategory has_homsets_HSET
-                                   hset_precategory has_homsets_HSET).
+  Local Notation Sig := (Signature SET SET SET).
   Local Notation EndSet := [hset_category, hset_category].
   Local Notation toSig := BindingSigToSignatureHSET .
   Local Notation Cset sig := (is_omega_cocont_BindingSigToSignatureHSET sig).
@@ -118,7 +116,7 @@ Section EpiSignatureSig.
        (CoproductsHSET I Ihset)).
 
   Local Notation precompToFunc n :=
-    (precomp_option_iter has_homsets_HSET BinCoproductsHSET  TerminalHSET n).
+    (precomp_option_iter BinCoproductsHSET  TerminalHSET n).
 
   Local Notation precompToSig n :=
     (precomp_option_iter_Signature has_homsets_HSET BinCoproductsHSET  TerminalHSET n ).
@@ -126,12 +124,12 @@ Section EpiSignatureSig.
   (* TODO: Si F préserve les épis, alors precomp_functor F aussi *)
   Local Notation precomp_functor  F :=
 
-        (pre_composition_functor SET SET SET hom_SET hom_SET F).
+        (pre_composition_functor SET SET SET F).
   (* BinProductsHSET BinCoproductsHSET TerminalHSET ar. *)
   Local Notation binProdSig :=
-    (BinProductOfSignatures.BinProduct_of_Signatures HSET hom_SET
-                                                     HSET hom_SET
-                                                     HSET hom_SET
+    (BinProductOfSignatures.BinProduct_of_Signatures HSET
+                                                     HSET
+                                                     HSET
                                                      BinProductsHSET).
 
   Local Notation binProdFunc := 
@@ -261,8 +259,7 @@ Section EpiSignatureSig.
       eapply (transportf (@isEpi SET _ _) (x := fun z => z) ).
       apply (InitialArrowEq (O := InitialHSET)).
       apply identity_isEpi.
-    - cbn -[functor_composite].
-      use preserveEpi_binCoprodFunc; [apply id_preserves_Epi|].
+    - use preserveEpi_binCoprodFunc ; [apply id_preserves_Epi|].
       apply BindingSigAreEpiEpiSig.
       apply IHi.
   Qed.
@@ -297,13 +294,13 @@ Section CoprodBindingSig.
           (cpC : ∏ (X : UU) (setX : isaset X), Coproducts X C).
 
   Let toSig sig :=
-    (BindingSigToSignature (homset_property C) bpC
+    (BindingSigToSignature  bpC
                            bcpC TC sig (cpC _ (BindingSigIsaset sig))).
-  Local Notation SIG := (Signature_precategory C C C).
+  Local Notation SIG := (Signature_category C C C).
   Let hsSig := has_homsets_Signature_precategory C C C.
   Let cpSig (I : hSet) : Coproducts (pr1 I) SIG
     := Coproducts_Signature_precategory _ C _ _ (cpC _ (setproperty I)).
-  Let ArToSig := Arity_to_Signature (homset_property C) bpC bcpC TC.
+  Let ArToSig := Arity_to_Signature bpC bcpC TC.
   Let CP_from_BindingSig (S : BindingSig) := (cpSig  _ (fun (o : BindingSigIndexhSet S)
                                                         => ArToSig (BindingSigMap _ o))).
 

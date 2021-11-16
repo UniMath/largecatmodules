@@ -454,7 +454,7 @@ End ColimsSig.
 Definition Sig_Colims_of_shape {C : category}
            (g : graph)
            (colims_g : Colims_of_shape g C)
-            : Colims_of_shape g (signature_precategory) :=
+            : Colims_of_shape g (signature_category) :=
    Sig_ColimCocone  (C:= C) (g := g) colims_g.
 Definition Sig_Lims_of_shape {C : category}
            (g : graph)

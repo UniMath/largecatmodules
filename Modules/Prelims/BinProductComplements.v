@@ -27,7 +27,7 @@ Require Import UniMath.CategoryTheory.EpiFacts.
 Open Scope cat.
 
 Section BinProdComplements.
-  Context {C : precategory}.
+  Context {C : category}.
   
   Definition BinProductOfArrows_eq (CC : BinProducts C) a b c d (f f' : a --> c) (g g' : b --> d)
     : f = f' → g = g' →

@@ -44,11 +44,11 @@ Section EpiSignatureSig.
 
   (* Local Notation H_SET := hset_category. *)
   Local Notation hom_SET := has_homsets_HSET.
-  Local Notation Sig := (Signature SET has_homsets_HSET hset_precategory has_homsets_HSET hset_precategory has_homsets_HSET).
+  Local Notation Sig := (Signature SET SET HSET).
   Local Notation EndSet := [hset_category, hset_category].
   (* Local Notation toSig := SigToSignatureHSET . *)
   
-  Local Notation iniHSS sig hsig  := (InitialHSS SET (homset_property SET) BinCoproductsHSET InitialHSET
+  Local Notation iniHSS sig hsig  := (InitialHSS SET BinCoproductsHSET InitialHSET
                                         (ColimsHSET_of_shape nat_graph)
                                         sig
                                         (hsig : is_omega_cocont sig)).
@@ -57,7 +57,7 @@ Section EpiSignatureSig.
   Lemma hss_initial_model {sig : Sig}(hsig : is_omega_cocont sig) : (rep_disp SET) [{ (sigWithStrength_to_sig sig)}].
   Proof.
     use tpair.
-    - exact (Monad_from_hss _ hom_SET  BinCoproductsHSET sig(InitialObject (iniHSS sig hsig))).
+    - exact (Monad_from_hss _  BinCoproductsHSET sig(InitialObject (iniHSS sig hsig))).
     - apply τ_lmodule_mor.
   Defined.
 
@@ -85,17 +85,16 @@ Section EpiSignatureSig.
     := hss_initial_arrow_mon hsig b,, hss_initial_arrow_law hsig b.
 
   Local Notation EndAlg sig :=
-    (FunctorAlg (Id_H HSET hom_SET BinCoproductsHSET ( sig))
-          (functor_category_has_homsets HSET HSET hom_SET)).
+    (FunctorAlg (Id_H HSET BinCoproductsHSET ( sig))).
 
-  Local Notation M_alg := (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET).
+  Local Notation M_alg := (ModulesFromSignatures.M_alg HSET BinCoproductsHSET).
 
 
   Lemma rep_mor_to_alg_is_alg_mor {sig : Sig}
         (hsig : is_omega_cocont sig)
              (b : model (sigWithStrength_to_sig sig))
              (t : (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧) :
-    is_algebra_mor (Id_H HSET hom_SET BinCoproductsHSET ( sig))
+    is_algebra_mor (Id_H HSET  BinCoproductsHSET ( sig))
                    (pr1 (pr1 (iniHSS sig hsig)))
                    (M_alg sig b (model_τ b))
                    (pr1 (pr1 t)).
@@ -144,19 +143,19 @@ Section EpiSignatureSig.
     (* TODO : mettre ce lemme d'unicité qui vient de la définition de j avec sa définition
  dans ModulesFromSignatures *)
     assert (h := (InitialArrowUnique
-     (colimAlgInitial (functor_category_has_homsets HSET HSET hom_SET)
-        (Initial_functor_precat HSET HSET InitialHSET hom_SET)
-        (is_omega_cocont_Id_H HSET hom_SET BinCoproductsHSET ( sig)
+     (colimAlgInitial 
+        (Initial_functor_precat HSET HSET InitialHSET)
+        (is_omega_cocont_Id_H HSET BinCoproductsHSET ( sig)
            hsig)
         (colimits.ColimsFunctorCategory_of_shape nat_graph 
-           HSET HSET hom_SET (ColimsHSET_of_shape nat_graph)
-           (initChain (Initial_functor_precat HSET HSET InitialHSET hom_SET)
-              (Id_H HSET hom_SET BinCoproductsHSET ( sig)))))
-     (ModulesFromSignatures.M_alg HSET hom_SET BinCoproductsHSET ( sig) b (model_τ b)))).
+           HSET HSET (ColimsHSET_of_shape nat_graph)
+           (initChain (Initial_functor_precat HSET HSET InitialHSET)
+              (Id_H HSET BinCoproductsHSET ( sig)))))
+     (ModulesFromSignatures.M_alg HSET BinCoproductsHSET ( sig) b (model_τ b)))).
    
     specialize (h (rep_mor_to_alg_mor hsig b t)).
     apply model_mor_mor_equiv.
-    apply algebra_mor_eq in h; [|apply (homset_property EndSet)].
+    apply algebra_mor_eq in h;
     intro c.
     eapply nat_trans_eq_pointwise in h.
     apply h.
