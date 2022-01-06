@@ -297,9 +297,8 @@ Section CoprodBindingSig.
     (BindingSigToSignature  bpC
                            bcpC TC sig (cpC _ (BindingSigIsaset sig))).
   Local Notation SIG := (Signature_category C C C).
-  Let hsSig := has_homsets_Signature_precategory C C C.
   Let cpSig (I : hSet) : Coproducts (pr1 I) SIG
-    := Coproducts_Signature_precategory _ C _ _ (cpC _ (setproperty I)).
+    := Coproducts_Signature_category _ C _ _ (cpC _ (setproperty I)).
   Let ArToSig := Arity_to_Signature bpC bcpC TC.
   Let CP_from_BindingSig (S : BindingSig) := (cpSig  _ (fun (o : BindingSigIndexhSet S)
                                                         => ArToSig (BindingSigMap _ o))).
@@ -313,7 +312,7 @@ Section CoprodBindingSig.
     set (CC' := CP_from_BindingSig cpSigs).
     set (cp1 := fun o =>
                   CP_from_BindingSig (binds o)).
-    apply (sigma_coprod_iso (C := make_category SIG hsSig)
+    apply (sigma_coprod_iso (C := SIG)
                             (B := fun o a => ArToSig (BindingSigMap (binds o) a)) CC' cp1).
   Defined.
 End CoprodBindingSig.

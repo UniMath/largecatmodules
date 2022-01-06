@@ -275,7 +275,7 @@ becomes
 
 
   Let cpSig  : Coproducts I SIG
-    := Coproducts_Signature_precategory _ C _ _ (cp I).
+    := Coproducts_Signature_category _ C _ _ (cp I).
   Let bpSig  : BinProducts  SIG
     := BinProducts_Signature_category _ C  bp _.
 

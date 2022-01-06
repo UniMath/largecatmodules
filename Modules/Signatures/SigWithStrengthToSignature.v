@@ -337,11 +337,11 @@ End SigWithStrengthToSignatureMor.
 Section SigWithStrengthToSignatureFunctor.
   Context {C  : category}.
 
-  Let Sig := Signature_precategory C C C.
+  Let Sig := Signature_category C C C.
   Local Notation F := sigWithStrength_to_sig.
 
-  Definition sigWithStrength_to_sig_functor_data : functor_data Sig (signature_precategory (C := C)) :=
-    make_functor_data (C' := signature_precategory) _ (@sigWithStrength_to_sig_mor C).
+  Definition sigWithStrength_to_sig_functor_data : functor_data Sig (signature_category (C := C)) :=
+    make_functor_data (C' := signature_category) _ (@sigWithStrength_to_sig_mor C).
 
   Lemma sigWithStrength_to_sig_is_functor : is_functor sigWithStrength_to_sig_functor_data.
   Proof.
@@ -358,6 +358,6 @@ Section SigWithStrengthToSignatureFunctor.
       apply idpath.
   Defined.
 
-  Definition sigWithStrength_to_sig_functor : functor Sig (signature_precategory (C := C)) :=
+  Definition sigWithStrength_to_sig_functor : functor Sig (signature_category (C := C)) :=
     make_functor _ sigWithStrength_to_sig_is_functor.
 End SigWithStrengthToSignatureFunctor.
