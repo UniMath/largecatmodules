@@ -210,7 +210,7 @@ Section CoprodAr.
   Context {I : UU}
           (cpC :  Coproducts I C).
   Let hss_cpSig  : Coproducts I SIG
-    := Coproducts_Signature_precategory _ C _ _ cpC.
+    := Coproducts_Signature_category _ C _ _ cpC.
   Let cpSig := signature_Coproducts (C := C) cpC.
 
   Variable (sigs : I -> SIG).
