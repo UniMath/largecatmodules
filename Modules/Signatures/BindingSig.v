@@ -37,7 +37,7 @@ Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import UniMath.CategoryTheory.limits.initial.
-Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
+Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
 Require Import Modules.Signatures.SigWithStrengthToSignature.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.HssInitialModel.

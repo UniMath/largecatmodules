@@ -41,7 +41,8 @@ Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.CategoryTheory.catiso.
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
-Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
+Require Import UniMath.CategoryTheory.DisplayedCats.Total.
+Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import Modules.Prelims.Opfibration.
