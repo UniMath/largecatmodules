@@ -146,16 +146,16 @@ Definition R'_η : (functor_identity SET) ⟹ R' := η R ;;; projR .
     of the unit of the monad.  *)
 
 Definition compat_μ_projR_def 
-  := ∏ (X : SET) (x y : pr1 ((pr1 (R □ R)) X)),
+  := ∏ (X : SET) (x y : pr1 ((pr1 (R ∙ R)) X)),
      (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
      (μ R;;; projR) X x = (μ R;;; projR) X y.
 
 Variable compat_μ_projR : compat_μ_projR_def.
   
-Definition R'_μ  : R' □  R' ⟹ R'.
+Definition R'_μ  : R' ∙  R' ⟹ R'.
 Proof.
-  apply (univ_surj_nt (A:= R □ R) (B:=functor_composite R' R')                    
-                      ( projR ∙∙ projR)
+  apply (univ_surj_nt (A:= R ∙ R) (B:= R'∙ R')
+                      (projR ∙∙ projR)
                       (μ  ( R) ;;; projR)).
   - apply compat_μ_projR.
   - apply isEpi_projR_projR.
@@ -226,7 +226,7 @@ Proof.
 Qed.
 
 Lemma assoc_ppprojR c 
-  : (projR ∙∙ projR) ( R c) · # (R' □ R') (projR c)
+  : (projR ∙∙ projR) ( R c) · # (R' ∙ R') (projR c)
     = 
     (projR ∙∙ (projR ∙∙ projR)) c.
 Proof.
