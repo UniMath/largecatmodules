@@ -31,7 +31,8 @@ Require Import UniMath.CategoryTheory.Adjunctions.Core.
 
 
 Local Notation "'SET'" := hset_category.
-Local Notation "G □ F" := (functor_composite F G) (at level 35).
+(* obsolete: Local Notation "G □ F" := (functor_composite F G) (at level 35).
+already loaded: Local Notation "F ∙ G" := (functor_composite F G) (at level 35).*)
 Local Notation "F ⟶ G" := (nat_trans F G) (at level 39).
 Local  Notation "α ∙∙ β" := (horcomp β α) (at level 20).
 

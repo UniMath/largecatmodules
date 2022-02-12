@@ -423,7 +423,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
   Local Definition toR' (M : functor _ _)  : nat_trans M (∂ (Θ R) : LModule _ _).
   Proof.
     set (F := (BinCoproduct_of_functors C C bcpC (constant_functor C C T) (functor_identity C))).
-    eapply (compose (C := [C,C]) (b := functor_composite F (functor_identity C))); revgoals.
+    eapply (compose (C := [C,C]) (b := F ∙ (functor_identity C))); revgoals.
     - apply pre_whisker.
       exact (η R).
     - eapply compose; [|apply ρ_functors_inv].
