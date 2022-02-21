@@ -25,7 +25,6 @@ Require Import UniMath.CategoryTheory.limits.pushouts.
 Require Import UniMath.CategoryTheory.limits.initial.
 
 
-Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.limits.graphs.colimits.
 Require Import UniMath.CategoryTheory.limits.graphs.limits.
