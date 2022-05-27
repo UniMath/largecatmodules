@@ -42,19 +42,19 @@ Proof.
   rewrite id_right_disp.
   apply pathsinv0, transportfbinv.
 Qed.
-Definition postcomp_with_iso_disp_is_inj
+Definition postcomp_with_z_iso_disp_is_inj
     {C : category} {D : disp_cat C}
-    {a b c : C} {i : iso c a} {f : b --> c}
-    {aa : D a} {bb} {cc} (ii : iso_disp i cc aa) {ff ff' : bb -->[f] cc}
+    {a b c : C} {i : z_iso c a} {f : b --> c}
+    {aa : D a} {bb} {cc} (ii : z_iso_disp i cc aa) {ff ff' : bb -->[f] cc}
   : ( ff ;; ii = ff' ;; ii) -> ff = ff'.
 Proof.
   intros e.
   use pathscomp0.
-  - use (transportf _ _ (ff ;; ( ii ;; iso_inv_from_iso_disp ii) )).
-    etrans; [ apply cancel_precomposition, iso_inv_after_iso | apply id_right ].
+  - use (transportf _ _ (ff ;; ( ii ;; z_iso_inv_from_z_iso_disp ii) )).
+    etrans; [ apply cancel_precomposition, z_iso_inv_after_z_iso | apply id_right ].
   - apply pathsinv0.
     etrans. eapply transportf_bind.
-      eapply cancel_precomposition_disp, (inv_mor_after_iso_disp ii).
+      eapply cancel_precomposition_disp, (inv_mor_after_z_iso_disp ii).
     rewrite id_right_disp.
     etrans. apply transport_f_f.
     use (@maponpaths_2 _ _ _ _ _ (idpath _)).
@@ -63,7 +63,7 @@ Proof.
     rewrite e.
     etrans. eapply transportf_bind, assoc_disp_var.
     etrans. eapply transportf_bind.
-      eapply cancel_precomposition_disp, (inv_mor_after_iso_disp ii).
+      eapply cancel_precomposition_disp, (inv_mor_after_z_iso_disp ii).
     rewrite id_right_disp.
     etrans. apply transport_f_f.
     use (@maponpaths_2 _ _ _ _ _ (idpath _)).
@@ -257,9 +257,9 @@ Proof.
   intro H; destruct e, e'; exact H.
 Defined.
 (* TODO: show that when [D] is _univalent_, cocartesian lifts are literally unique, and so any uncloven opfibration (isoopfibration, etc) is in fact cloven. *)
-Definition cocartesian_lifts_iso {C : category} {D : disp_cat C}
+Definition cocartesian_lifts_z_iso {C : category} {D : disp_cat C}
     {c'} {d' : D c'} {c : C} {f : c' --> c} (fd fd' : cocartesian_lift d' f)
-  : iso_disp (identity_iso c) fd fd'.
+  : z_iso_disp (identity_z_iso c) fd fd'.
 Proof.
   use (_,,(_,,_)).
   - exact (cocartesian_factorisation' fd (identity _) fd' (id_right _)).
@@ -289,9 +289,9 @@ Proof.
       apply maponpaths_2, homset_property.
 Defined.
 
-Definition cocartesian_lifts_iso_commutes {C : category} {D : disp_cat C}
+Definition cocartesian_lifts_z_iso_commutes {C : category} {D : disp_cat C}
     {c'} {d' : D c'} {c : C} {f : c' --> c} (fd fd' : cocartesian_lift d' f)
-  : fd ;; (cocartesian_lifts_iso fd fd') 
+  : fd ;; (cocartesian_lifts_z_iso fd fd') 
   = transportb _ (id_right _) (fd' : _ -->[_] _).
 Proof.
   cbn. apply cocartesian_factorisation_commutes'.
@@ -307,7 +307,7 @@ Proof.
   apply invproofirrelevance; intros fd fd'.
   use total2_paths_f.
   { apply (isotoid_disp D_cat (idpath _)); cbn.
-    apply cocartesian_lifts_iso. }
+    apply cocartesian_lifts_z_iso. }
   apply subtypePath.
   { intros ff. repeat (apply impred; intro).
     apply isapropiscontr. }
@@ -316,14 +316,14 @@ Proof.
   cbn. etrans. apply transportf_postcompose_disp.
   rewrite idtoiso_isotoid_disp.
   use (pathscomp0 (maponpaths _ _) (transportfbinv _ _ _)).
-  apply (postcomp_with_iso_disp_is_inj (iso_inv_from_iso_disp (cocartesian_lifts_iso fd fd'))).
+  apply (postcomp_with_z_iso_disp_is_inj (z_iso_inv_from_z_iso_disp (cocartesian_lifts_z_iso fd fd'))).
   etrans. apply assoc_disp_var.
   etrans. eapply transportf_bind, cancel_precomposition_disp.
-    use (inv_mor_after_iso_disp (pr2 (cocartesian_lifts_iso fd fd')))  .
+    use (inv_mor_after_z_iso_disp (pr2 (cocartesian_lifts_z_iso fd fd')))  .
   etrans. eapply transportf_bind, id_right_disp.
   apply pathsinv0.
   etrans. apply mor_disp_transportf_postwhisker.
-  etrans. eapply transportf_bind, cocartesian_lifts_iso_commutes.
+  etrans. eapply transportf_bind, cocartesian_lifts_z_iso_commutes.
   apply maponpaths_2, homset_property.
 Defined.
 
