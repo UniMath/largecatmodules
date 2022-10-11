@@ -155,9 +155,10 @@ Section EpiSignatureSig.
    
     specialize (h (rep_mor_to_alg_mor hsig b t)).
     apply model_mor_mor_equiv.
-    apply algebra_mor_eq in h;
     intro c.
-    eapply nat_trans_eq_pointwise in h.
+    apply (maponpaths pr1) in h.
+    apply (maponpaths pr1) in h.
+    apply toforallpaths in h.
     apply h.
   Qed.
        
