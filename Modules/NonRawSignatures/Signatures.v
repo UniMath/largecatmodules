@@ -150,7 +150,7 @@ Definition rep_sig_precat_data {C} (S: signature C) : precategory_data :=
 Lemma rep_sig_is_precat {C} (S : signature C)  : is_precategory
                                                    (rep_sig_precat_data S).
 Proof.
-  use mk_is_precategory.
+  use make_is_precategory_one_assoc.
   - intros a b f.
 (*  We don't need the pointwise version actually but who cares *)
     apply rep_sig_mor_mor_equiv.
@@ -167,5 +167,5 @@ Proof.
 Qed.
 
 Definition precategory_rep_sig {C} (S : signature C) :=
-  mk_precategory _ (rep_sig_is_precat S).
+  make_precategory _ (rep_sig_is_precat S).
 

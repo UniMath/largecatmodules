@@ -265,7 +265,7 @@ Defined.
 Lemma BinCoproducts_FinSubsets (X : hSet) : BinCoproducts (FinSubsets_precategory X).
 Proof.
   intros A B.
-  use mk_BinCoproduct.
+  use make_BinCoproduct.
     use (bin_coproducts_in_full_subcategory
            (C := category_pair(SET / X) (has_homsets_slice_precat (homset_property SET) X ))
       (is_finite_subob X)).
