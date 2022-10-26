@@ -72,7 +72,7 @@ Lemma compColimOfArrows
 .fNat · colimOfArrows CC2 CC3 f2 fNat2 .
   colimOfArrows CC1 CC3 (fun 
   colimArrow CC1 x
-    (mk_cocone (λ u : vertex g, f u · coconeIn cc u)
+    (make_cocone (λ u : vertex g, f u · coconeIn cc u)
        (preCompWithColimOfArrows_subproof CC1 CC2 f fNat x cc)).
 *)
 (* forget ful functor from Modules to functors *)

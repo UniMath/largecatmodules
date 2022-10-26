@@ -259,7 +259,7 @@ becomes
 *)
   Let b : signature _ := PO (Sig_bp a tautological_signature).
   Definition har_binprodR_p_sig : BindingSig :=
-    mkBindingSig (BindingSigIsaset (p_sig pres_a))
+    make_BindingSig (BindingSigIsaset (p_sig pres_a))
                  (λ i : BindingSigIndex (p_sig pres_a), cons 0 (BindingSigMap (p_sig pres_a) i)).
 
   Let p_alg_ar' := sigWithStrength_to_sig (C:=C) (toSig har_binprodR_p_sig).

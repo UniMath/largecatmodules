@@ -284,7 +284,7 @@ Section CoprodBindingSig.
 
   Definition coprod_BindingSig {O : hSet} (sigs : O -> BindingSig) : BindingSig.
   Proof.
-    apply (mkBindingSig (I := BindingSigIndexhSet_coprod sigs)).
+    apply (make_BindingSig (I := BindingSigIndexhSet_coprod sigs)).
     - apply setproperty.
     - intro x.
       exact (BindingSigMap (sigs (pr1 x)) (pr2 x)).
