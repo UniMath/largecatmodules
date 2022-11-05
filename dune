@@ -1,0 +1,11 @@
+
+(include_subdirs qualified)
+
+(coq.theory
+ (name largecatmodules)
+ (flags -noinit
+        -indices-matter
+        -type-in-type -w none)
+ (theories UniMath))
+
+
