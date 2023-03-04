@@ -2,7 +2,7 @@
 Hom(M x R, N) -> Hom(M, N')
 [deriv_adj]
 
-The unit of the adjunction is the subtitution operation ([substitution]) M' x R -> M
+The unit of the adjunction is the substitution operation ([substitution]) M' x R -> M
 
  *)
 
