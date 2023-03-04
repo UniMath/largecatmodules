@@ -2,7 +2,7 @@
 Hom(M x R, N) -> Hom(M, N')
 [deriv_adj]
 
-The unit of the adjunction is the subtitution operation ([substitution]) M' x R -> M
+The unit of the adjunction is the substitution operation ([substitution]) M' x R -> M
 
  *)
 
@@ -402,23 +402,8 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
     _ ,, commutes_binproduct_derivation_laws M N.
 
 
-  (* Maybe we can do it in a smarter way but I don't want to bother (using the eta rule)*)
-
-  (* These functors are actually equals, but this is life..*)
-  Definition Terminal_EndC_constant_terminal :
-    (TerminalObject (Terminal_functor_precat C C T) : functor _ _)
-      ⟹ constant_functor C C T  .
-  Proof.
-    use make_nat_trans.
-    exact (fun x => identity T).
-    abstract(
-        intros x y f;
-        rewrite id_left, id_right;
-        apply pathsinv0, TerminalArrowUnique).
-  Defined.
-
   (* I have a transfo nat 1 -> 1 + X -> R (1 + X) *)
-  (* This morphism is independant from M *)
+  (* This morphism is independent from M *)
   Local Definition toR' (M : functor _ _)  : nat_trans M (∂ (Θ R) : LModule _ _).
   Proof.
     set (F := (BinCoproduct_of_functors C C bcpC (constant_functor C C T) (functor_identity C))).
@@ -427,8 +412,7 @@ Mais il ne sait pas que (MxR)' = M' x R' en temps que module, bien que
       exact (η R).
     - eapply compose; [|apply ρ_functors_inv].
       eapply compose; [|apply coproduct_nat_trans_in1].
-      eapply compose;[apply (TerminalArrow  (Terminal_functor_precat C _ T)) |].
-      apply Terminal_EndC_constant_terminal.
+      apply (TerminalArrow (Terminal_functor_precat C _ T)).
   Defined.
 
   (* Probably there is a smarter way to prove this by reusing
