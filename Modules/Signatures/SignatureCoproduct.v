@@ -79,25 +79,24 @@ Section Coprod.
       apply signature_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
-      + apply homset_property.
-      + apply nat_trans_eq.
-        apply homset_property.
-        intro x.
-        cbn  -[CoproductOfArrows ].
-        repeat  rewrite id_right.
-        apply pathsinv0.
-        etrans; [apply CoproductOfArrows_comp|].
-        apply CoproductOfArrows_eq.
-        apply funextsec.
-        intro i.
-        assert (h := signature_comp (α i) f g).
-        apply LModule_Mor_equiv in h;[|apply homset_property].
-        eapply nat_trans_eq_pointwise in h.
-        apply pathsinv0.
-        etrans;[eapply h|].
-        cbn.
-        rewrite id_right.
-        apply idpath.
+      apply nat_trans_eq.
+      apply homset_property.
+      intro x.
+      cbn  -[CoproductOfArrows ].
+      repeat  rewrite id_right.
+      apply pathsinv0.
+      etrans; [apply CoproductOfArrows_comp|].
+      apply CoproductOfArrows_eq.
+      apply funextsec.
+      intro i.
+      assert (h := signature_comp (α i) f g).
+      apply LModule_Mor_equiv in h.
+      eapply nat_trans_eq_pointwise in h.
+      apply pathsinv0.
+      etrans;[eapply h|].
+      cbn.
+      rewrite id_right.
+      apply idpath.
   Qed.
       
   Definition signature_coprod : Signature := _ ,, signature_coprod_is_signature.

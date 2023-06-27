@@ -231,7 +231,7 @@ Proof.
     apply (nat_trans_eq (homset_property _)).
     intro; apply idpath.
   - intros R S T f g.
-    apply LModule_Mor_equiv;[apply homset_property|].
+    apply LModule_Mor_equiv.
     apply nat_trans_eq;[apply homset_property|].
     intro x.
     cbn.
@@ -349,12 +349,12 @@ Section SigWithStrengthToSignatureFunctor.
     - intro S.
       apply signature_Mor_eq.
       intro X.
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply idpath.
     - intros R S T f g.
       apply signature_Mor_eq.
       intro X.
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply idpath.
   Defined.
 

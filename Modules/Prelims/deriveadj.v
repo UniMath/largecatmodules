@@ -324,7 +324,7 @@ et on utilise les 2 lois de monades
   Proof.
     intros M M' m.
     simpl in M,M',m.
-    apply LModule_Mor_equiv;[exact hsS|].
+    apply LModule_Mor_equiv.
     apply nat_trans_eq;[exact hsS|].
     intro X.
     apply funextfun.
@@ -495,7 +495,7 @@ R(T+RX) -------> RR(T+X)
                                                  deriv_counit_data.
   Proof.
     intros M N m.
-    apply LModule_Mor_equiv;[exact hsC|].
+    apply LModule_Mor_equiv.
     apply nat_trans_eq;[exact hsC|].
     intro x.
     unfold compose.
@@ -566,7 +566,7 @@ Section derivadj.
     split.
     - intro M.
       cbn in M.
-      apply LModule_Mor_equiv;[exact hsS|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[exact hsS|].
       intro X.
       cbn -[isasetcoprod].
@@ -603,7 +603,7 @@ Section derivadj.
         apply (Monad_law1  (T := R)).
     - intro M.
       cbn in M.
-      apply LModule_Mor_equiv;[exact hsS|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[exact hsS|].
       intro X.
       cbn -[isasetcoprod].
@@ -750,7 +750,7 @@ Local Lemma adj_law1 : (∏ (R S : Monad SET) (f : Monad_Mor R S) (M N : LModule
       (tautological_LModule R), N ⟧) · v).
 Proof.
   intros R S f M N A u v.
-  apply LModule_Mor_equiv;[apply (homset_property SET)|].
+  apply LModule_Mor_equiv.
   apply nat_trans_eq;[apply (homset_property SET)|].
   intros X.
   apply funextfun.
@@ -803,7 +803,7 @@ Local Lemma adj_law2 :
    pb_LModule_Mor f ((adj1 S A B) v)).
 Proof.
   intros.
-  apply LModule_Mor_equiv;[apply (homset_property SET)|].
+  apply LModule_Mor_equiv.
   apply nat_trans_eq;[apply (homset_property SET)|].
   intro X.
   cbn -[isasetcoprod].

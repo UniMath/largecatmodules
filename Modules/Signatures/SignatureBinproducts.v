@@ -85,7 +85,6 @@ Section Binprod.
         apply signature_id.
     - intros R S T f g.
       apply LModule_Mor_equiv.
-      { apply homset_property. }
       apply nat_trans_eq.
       apply homset_property.
       intro x.
@@ -95,7 +94,7 @@ Section Binprod.
       etrans; [apply BinProductOfArrows_comp|].
       apply BinProductOfArrows_eq.
       + assert (h := signature_comp a f g).
-        apply LModule_Mor_equiv in h;[|apply homset_property].
+        apply LModule_Mor_equiv in h.
         eapply nat_trans_eq_pointwise in h.
         apply pathsinv0.
         etrans;[eapply h|].
@@ -103,7 +102,7 @@ Section Binprod.
         rewrite id_right.
         apply idpath.
       + assert (h := signature_comp b f g).
-        apply LModule_Mor_equiv in h;[|apply homset_property].
+        apply LModule_Mor_equiv in h.
         eapply nat_trans_eq_pointwise in h.
         apply pathsinv0.
         etrans;[eapply h|].

@@ -121,7 +121,7 @@ Section ColimsSig.
   - intro u.
     exact ((#(dob d u : signature _))%ar f).
   - abstract (intros u v e;
-    apply LModule_Mor_equiv;[apply homset_property|];
+    apply LModule_Mor_equiv;
     apply pathsinv0;
     apply signature_Mor_ax).
   Defined.
@@ -134,7 +134,7 @@ Section ColimsSig.
   - intro u.
     exact ((#(dob d u : signature _))%ar f).
   - abstract(intros u v e;
-    apply LModule_Mor_equiv;[apply homset_property|];
+    apply LModule_Mor_equiv;
     apply signature_Mor_ax).
   Defined.
 
@@ -157,7 +157,7 @@ Section ColimsSig.
       apply cancel_postcomposition.
       apply signature_id.
     - intros U V W m n.
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[apply homset_property|].
       intro c.
       cbn.
@@ -189,7 +189,7 @@ Section ColimsSig.
       etrans.
       {
       assert (h := signature_comp (dob d u) m n).
-      eapply LModule_Mor_equiv in h; try apply homset_property.
+      eapply LModule_Mor_equiv in h.
       eapply nat_trans_eq_pointwise in h.
       apply h.
       }
@@ -212,7 +212,7 @@ Section ColimsSig.
       apply cancel_precomposition.
       apply signature_id.
     - intros U V W m n.
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[apply homset_property|].
       intro c.
       cbn.
@@ -245,7 +245,7 @@ Section ColimsSig.
       etrans.
       {
       assert (h := signature_comp (dob d u) m n).
-      eapply LModule_Mor_equiv in h; try apply homset_property.
+      eapply LModule_Mor_equiv in h.
       eapply nat_trans_eq_pointwise in h.
       apply h.
       }

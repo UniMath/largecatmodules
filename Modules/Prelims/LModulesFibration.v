@@ -48,7 +48,7 @@ Proof.
     apply pb_LModule_id_iso.
   - intros x y z f g xx yy zz ff gg.
     set (pbm_g := pb_LModule_Mor f gg).
-    set (pbm_gf := (LModule_composition _ pbm_g (morphism_from_iso (pb_LModule_comp_iso f g _ _)))).
+    set (pbm_gf := (LModule_composition _ pbm_g (morphism_from_iso (pb_LModule_comp_iso f g _)))).
     simpl in ff.
     exact (compose (C:=category_LModule _ _ ) ff pbm_gf).
 Defined.
@@ -75,7 +75,7 @@ Proof.
   repeat apply tpair; intros; try apply homset_property.
   - simpl.
     unfold id_disp; simpl.
-    apply (invmap ((@LModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+    apply (invmap ((@LModule_Mor_equiv _ x _ _ _ _ _))).
     apply nat_trans_eq; try apply homset_property.
     intros c; simpl.
     simpl.
@@ -84,7 +84,7 @@ Proof.
     etrans; [apply bmod_transport |].
     rewrite id_right,id_left; apply idpath.
   - set (heqf := id_right f).
-    apply (invmap ((@LModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+    apply (invmap ((@LModule_Mor_equiv _ x _ _ _ _ _))).
     apply nat_trans_eq; try apply homset_property.
     simpl.
     intros c.
@@ -94,7 +94,7 @@ Proof.
     intros; simpl.
     reflexivity.
   - set (heqf:= assoc f g h).
-    apply (invmap ((@LModule_Mor_equiv _ x _ (homset_property D) _ _ _ _  ))).
+    apply (invmap ((@LModule_Mor_equiv _ x _ _ _ _ _))).
     apply nat_trans_eq; try apply homset_property.
     intros c; simpl.
     apply pathsinv0.
@@ -118,9 +118,9 @@ Proof.
       cbn in *.
       use unique_exists.
       * use (LModule_composition R'' a). 
-        exact ( inv_from_iso (pb_LModule_comp_iso (C := D) f' f M _)).
+        exact ( inv_from_iso (pb_LModule_comp_iso (C := D) f' f M)).
       * hnf.
-        apply (invmap ((@LModule_Mor_equiv _ _  _ (homset_property D) _ _ _ _  ))).
+        apply (invmap ((@LModule_Mor_equiv _ _  _ _ _ _ _  ))).
         cbn.
         apply nat_trans_eq. { apply homset_property. }
         intro c. cbn. 
@@ -129,10 +129,10 @@ Proof.
         apply (has_homsets_LModule).
       * intros s Hs.
         hnf in Hs.
-        apply (invmap ((@LModule_Mor_equiv _ _  _ (homset_property D) _ _ _ _  ))).
+        apply (invmap ((@LModule_Mor_equiv _ _  _ _ _ _ _  ))).
         apply nat_trans_eq. { apply homset_property. }
         intro c. cbn.
-        apply (((@LModule_Mor_equiv _ _  _ (homset_property D) _ _ _ _  ))) in Hs.
+        apply (((@LModule_Mor_equiv _ _  _ _ _ _ _  ))) in Hs.
         set (XR := nat_trans_eq_pointwise Hs c). cbn in XR.
         repeat rewrite id_right in XR.
         repeat rewrite id_right.

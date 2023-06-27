@@ -11,7 +11,7 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 
 (** strangely enough, I didn't find the following lemma : 
  *) 
-Lemma monad_mor_to_lmodule_law {C : precategory} {R S : Monad C} 
+Lemma monad_mor_to_lmodule_law {C : category} {R S : Monad C} 
            (f : Monad_Mor R S) : 
   LModule_Mor_laws R (T := tautological_LModule R) 
                    (T' := pb_LModule f (tautological_LModule S)) f. 
@@ -24,6 +24,6 @@ Proof.
   apply Monad_Mor_μ. 
 Qed. 
  
-Definition monad_mor_to_lmodule {C : precategory} {R S : Monad C} 
+Definition monad_mor_to_lmodule {C : category} {R S : Monad C} 
   (f : Monad_Mor R S) : LModule_Mor R (tautological_LModule R) (pb_LModule f (tautological_LModule S)) 
   := (f : nat_trans _ _) ,, monad_mor_to_lmodule_law f. 

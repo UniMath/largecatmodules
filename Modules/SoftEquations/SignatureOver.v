@@ -424,7 +424,7 @@ Section PushoutOverSig.
       apply pb_rep_mor_id.
     - intros R S T u v.
       cbn -[compose].
-      apply LModule_Mor_equiv; [apply homset_property|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[apply homset_property|].
       intro x.
       etrans. {

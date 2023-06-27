@@ -43,7 +43,7 @@ Section pwEpiAr.
     intros x y z e.
     apply signature_Mor_eq.
     intro R.
-    apply LModule_Mor_equiv;[apply homset_property|].
+    apply LModule_Mor_equiv.
     apply hepi.
     exact (maponpaths (T1 := signature_Mor _ _) (fun z => (z R : nat_trans _ _)) e).
   Qed.
@@ -112,7 +112,7 @@ Proof.
     cbn in f,g.
     apply signature_Mor_eq.
     intro R.
-    apply LModule_Mor_equiv; [apply homset_property|].
+    apply LModule_Mor_equiv.
     apply epiF.
     exact (maponpaths (T1 := signature_Mor _ _) (fun h => pr1 (h R)) eqf).
 Qed.

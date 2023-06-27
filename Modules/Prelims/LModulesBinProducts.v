@@ -137,14 +137,14 @@ Local Notation σ := (lm_mult _).
         (g : LMOD ⟦ S, N ⟧) :
     (LModule_BinProductArrow S f g : LMOD ⟦_ , _⟧) · LModule_binproductPr1 = f.
   Proof.
-    apply LModule_Mor_equiv; [exact C |].
+    apply LModule_Mor_equiv.
     apply (BinProductPr1Commutes _ _ _ bpFunct).
   Qed.
   Lemma LModule_BinProductPr2Commutes (S : LMOD) (f : LMOD ⟦ S, M ⟧)
         (g : LMOD ⟦ S, N ⟧) :
     (LModule_BinProductArrow S f g : LMOD ⟦_ , _⟧) · LModule_binproductPr2 = g.
   Proof.
-    apply LModule_Mor_equiv; [exact C |].
+    apply LModule_Mor_equiv.
     apply (BinProductPr2Commutes _ _ _ bpFunct).
   Qed.
 
@@ -162,10 +162,10 @@ Local Notation σ := (lm_mult _).
     - intro y.
       apply isapropdirprod; apply has_homsets_LModule.
     - intros y [h1 h2].
-      apply LModule_Mor_equiv; [exact C |].
+      apply LModule_Mor_equiv.
       apply (BinProductArrowUnique _ _ _ bpFunct).
-      +  exact ((LModule_Mor_equiv _ C _ _ ) h1).
-      +  exact ((LModule_Mor_equiv _ C _ _ ) h2).
+      +  exact ((LModule_Mor_equiv _ _ _ ) h1).
+      +  exact ((LModule_Mor_equiv _ _ _ ) h2).
   Defined.
   Definition LModule_ProductCone : BinProduct LMOD M N  :=
     make_BinProduct LMOD M N LModule_binproduct
@@ -212,7 +212,7 @@ Section pullback_binprod.
   Defined.
 
   Definition binprod_pbm_to_pbm_iso : iso (C:= precategory_LModule _ _)  binprod_pbm pbm_binprod :=
-    LModule_same_func_iso _ _ binprod_pbm_to_pbm_eq_mult (homset_property _).
+    LModule_same_func_iso _ _ binprod_pbm_to_pbm_eq_mult.
 
   Definition binprod_pbm_to_pbm_binprod : LModule_Mor  _ binprod_pbm pbm_binprod :=
     morphism_from_iso binprod_pbm_to_pbm_iso.

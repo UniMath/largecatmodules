@@ -58,9 +58,9 @@ Variable (a : signature C).
       {
         set (f := ((#a)%ar _)).
         eapply (maponpaths  (fun (z : LModule_Mor _ _ _) => (# ∂ z : LModule_Mor _ _ _) c )(t1 := f)
-                            (t2 := morphism_from_iso (pb_LModule_id_iso _ ))
+                            (t2 := morphism_from_iso pb_LModule_id_iso)
                ).
-        apply LModule_Mor_equiv;[apply homset_property|].
+        apply LModule_Mor_equiv.
         apply nat_trans_eq;[apply homset_property|].
         apply signature_id.
       }
@@ -72,7 +72,7 @@ Variable (a : signature C).
       rewrite signature_comp.
       apply functor_comp.
       }
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[apply homset_property|].
       intro x.
       cbn.
