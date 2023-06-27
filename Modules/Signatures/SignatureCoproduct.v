@@ -31,9 +31,6 @@ Section Coprod.
   Context {O : UU}.
   Context {cpC : Coproducts O C}.
 
-  Local Notation hsC := (homset_property C).
-
-
   Local Notation Signature := (signature C).
   Local Notation MOD R := (category_LModule R C).
 
