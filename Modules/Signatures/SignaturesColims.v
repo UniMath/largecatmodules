@@ -80,6 +80,7 @@ Lemma compColimOfArrows
 (* TODO déplacer ça dans Signature.v *)
 
 Section ColimsSig.
+  
   Context 
           {C : category}
           {g : graph} (colims_g : Colims_of_shape g C)
@@ -196,6 +197,7 @@ Section ColimsSig.
       cbn.
       now rewrite id_right.
   Qed.
+  
   Lemma Sig_lim_is_signature : is_signature Sig_lim_signature_data.
   Proof.
     split.
@@ -278,6 +280,7 @@ Section ColimsSig.
     cbn.
     apply (colimArrowCommutes cc2).
   Qed.
+  
   Lemma Sig_coneOut_laws v : 
     is_signature_Mor 
                   Sig_lim    (dob d v : signature  _)  
@@ -357,6 +360,7 @@ Section ColimsSig.
     cbn.
     apply signature_Mor_ax_pw.
   Qed.
+  
   Lemma Sig_limArrow_laws {M : signature C} (cc : cone d M) :
     is_signature_Mor
       M  (  Sig_lim) 
@@ -421,6 +425,7 @@ Section ColimsSig.
       intro u.
       apply (  maponpaths (fun z => pr1 z R) (h u)).
   Defined.
+  
   Lemma Sig_isLimCone : isLimCone _ _ Sig_lim_cone.
     intros M cc.
     use unique_exists.
@@ -455,7 +460,8 @@ Definition Sig_Colims_of_shape {C : category}
            (g : graph)
            (colims_g : Colims_of_shape g C)
             : Colims_of_shape g (signature_category) :=
-   Sig_ColimCocone  (C:= C) (g := g) colims_g.
+  Sig_ColimCocone  (C:= C) (g := g) colims_g.
+
 Definition Sig_Lims_of_shape {C : category}
            (g : graph)
            (lims_g : Lims_of_shape g C)
