@@ -66,9 +66,9 @@ Variable (a : OSIG).
       {
         set (f := ((#a)%sigo _)).
         eapply (maponpaths  (fun (z : LModule_Mor _ _ _) => (# ∂ z : LModule_Mor _ _ _) c )(t1 := f)
-                            (t2 := morphism_from_iso (pb_LModule_id_iso _) )
+                            (t2 := morphism_from_iso pb_LModule_id_iso)
                ).
-        apply LModule_Mor_equiv;[apply homset_property|].
+        apply LModule_Mor_equiv.
         apply nat_trans_eq;[apply homset_property|].
         apply signature_over_id.
       }
@@ -80,7 +80,7 @@ Variable (a : OSIG).
       rewrite signature_over_comp.
       apply functor_comp.
       }
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[apply homset_property|].
       intro x.
       cbn.

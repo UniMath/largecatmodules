@@ -521,7 +521,6 @@ Proof.
   apply LModule_Mor_equiv in h.
   eapply nat_trans_eq_pointwise in h.
   apply h.
-  apply homset_property.
   etrans;revgoals.
   etrans;[|apply assoc].
   apply cancel_precomposition.

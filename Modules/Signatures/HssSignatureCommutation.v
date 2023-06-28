@@ -85,7 +85,7 @@ Section GenericStrat.
     iso (C := category_LModule R _)
         (S1 R)
         ( S2 R) :=
-    LModule_same_func_iso _ _ (m12_eq _) _.
+    LModule_same_func_iso _ _ (m12_eq _).
 
 
   Hypothesis (Sf12_eq : ∏ R S f c, (Sf2 R S f c)  = (Sf1 R S f c) ).

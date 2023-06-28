@@ -144,7 +144,7 @@ Section ColimsModule.
     use unique_exists.
     - exact (LModule_coproductArrow cc).
     - intro v.
-      apply LModule_Mor_equiv;[exact C|].
+      apply LModule_Mor_equiv.
       apply (CoproductInCommutes _ _ _ (cpFunc d')).
     - intro y.
       cbn -[isaprop].
@@ -153,7 +153,7 @@ Section ColimsModule.
       use has_homsets_LModule.
     - cbn.
       intros y h.
-      apply LModule_Mor_equiv;[exact C|].
+      apply LModule_Mor_equiv.
       apply (CoproductArrowUnique _ _ _ (cpFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).

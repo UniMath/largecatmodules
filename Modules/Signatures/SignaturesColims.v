@@ -80,6 +80,7 @@ Lemma compColimOfArrows
 (* TODO déplacer ça dans Signature.v *)
 
 Section ColimsSig.
+  
   Context 
           {C : category}
           {g : graph} (colims_g : Colims_of_shape g C)
@@ -121,7 +122,7 @@ Section ColimsSig.
   - intro u.
     exact ((#(dob d u : signature _))%ar f).
   - abstract (intros u v e;
-    apply LModule_Mor_equiv;[apply homset_property|];
+    apply LModule_Mor_equiv;
     apply pathsinv0;
     apply signature_Mor_ax).
   Defined.
@@ -134,7 +135,7 @@ Section ColimsSig.
   - intro u.
     exact ((#(dob d u : signature _))%ar f).
   - abstract(intros u v e;
-    apply LModule_Mor_equiv;[apply homset_property|];
+    apply LModule_Mor_equiv;
     apply signature_Mor_ax).
   Defined.
 
@@ -157,7 +158,7 @@ Section ColimsSig.
       apply cancel_postcomposition.
       apply signature_id.
     - intros U V W m n.
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[apply homset_property|].
       intro c.
       cbn.
@@ -189,13 +190,14 @@ Section ColimsSig.
       etrans.
       {
       assert (h := signature_comp (dob d u) m n).
-      eapply LModule_Mor_equiv in h; try apply homset_property.
+      eapply LModule_Mor_equiv in h.
       eapply nat_trans_eq_pointwise in h.
       apply h.
       }
       cbn.
       now rewrite id_right.
   Qed.
+  
   Lemma Sig_lim_is_signature : is_signature Sig_lim_signature_data.
   Proof.
     split.
@@ -212,7 +214,7 @@ Section ColimsSig.
       apply cancel_precomposition.
       apply signature_id.
     - intros U V W m n.
-      apply LModule_Mor_equiv;[apply homset_property|].
+      apply LModule_Mor_equiv.
       apply nat_trans_eq;[apply homset_property|].
       intro c.
       cbn.
@@ -245,7 +247,7 @@ Section ColimsSig.
       etrans.
       {
       assert (h := signature_comp (dob d u) m n).
-      eapply LModule_Mor_equiv in h; try apply homset_property.
+      eapply LModule_Mor_equiv in h.
       eapply nat_trans_eq_pointwise in h.
       apply h.
       }
@@ -278,6 +280,7 @@ Section ColimsSig.
     cbn.
     apply (colimArrowCommutes cc2).
   Qed.
+  
   Lemma Sig_coneOut_laws v : 
     is_signature_Mor 
                   Sig_lim    (dob d v : signature  _)  
@@ -357,6 +360,7 @@ Section ColimsSig.
     cbn.
     apply signature_Mor_ax_pw.
   Qed.
+  
   Lemma Sig_limArrow_laws {M : signature C} (cc : cone d M) :
     is_signature_Mor
       M  (  Sig_lim) 
@@ -421,6 +425,7 @@ Section ColimsSig.
       intro u.
       apply (  maponpaths (fun z => pr1 z R) (h u)).
   Defined.
+  
   Lemma Sig_isLimCone : isLimCone _ _ Sig_lim_cone.
     intros M cc.
     use unique_exists.
@@ -455,7 +460,8 @@ Definition Sig_Colims_of_shape {C : category}
            (g : graph)
            (colims_g : Colims_of_shape g C)
             : Colims_of_shape g (signature_category) :=
-   Sig_ColimCocone  (C:= C) (g := g) colims_g.
+  Sig_ColimCocone  (C:= C) (g := g) colims_g.
+
 Definition Sig_Lims_of_shape {C : category}
            (g : graph)
            (lims_g : Lims_of_shape g C)

@@ -111,13 +111,12 @@ Proof.
     apply idpath.
   - intros R S T f g.
     apply LModule_Mor_equiv.
-    + apply homset_property.
-    + apply nat_trans_eq.
-      * apply homset_property.
-      * intro x.
-        cbn.
-        rewrite id_right.
-        apply idpath.
+    apply nat_trans_eq.
+    * apply homset_property.
+    * intro x.
+      cbn.
+      rewrite id_right.
+      apply idpath.
 Qed.
 
 Definition tautological_signature : signature := _ ,, tautological_signature_is_signature.
@@ -494,7 +493,6 @@ Proof.
     apply LModule_Mor_equiv in h.
     eapply nat_trans_eq_pointwise in h.
     apply h.
-    apply homset_property.
   }
   cbn.
   rewrite id_right.

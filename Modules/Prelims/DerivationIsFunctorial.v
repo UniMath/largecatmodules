@@ -87,10 +87,10 @@ MR(X+o)) --------->  NR(X+o)
   Proof.
     split.
     - intro M.
-      apply LModule_Mor_equiv;[exact D|].
+      apply LModule_Mor_equiv.
       apply pre_whisker_identity.
     - intros M N O f g.
-      apply LModule_Mor_equiv;[exact D|].
+      apply LModule_Mor_equiv.
       apply pre_whisker_composition.
   Qed.
 
@@ -149,7 +149,7 @@ f := η ∘ in₁
   Lemma LModule_to_deriv_is_nt : is_nat_trans (functor_identity _) ∂ LModule_to_deriv.
   Proof.
     intros M N f.
-    apply (LModule_Mor_equiv _ D).
+    apply LModule_Mor_equiv.
     apply (nat_trans_eq D).
     intro c.
     cbn.

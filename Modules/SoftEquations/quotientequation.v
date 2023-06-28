@@ -191,7 +191,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
     : satisfies_equation e  R'.
   Proof.
     red.
-    apply LModule_Mor_equiv; [apply homset_property|].
+    apply LModule_Mor_equiv.
     apply (soft_equation_isEpi e _ _ projR).
     {  apply isEpi_projR. }
     etrans ; [apply signature_over_Mor_ax  |].

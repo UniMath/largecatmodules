@@ -431,15 +431,13 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     dmor d e · LModule_coconeIn v = LModule_coconeIn u.
   Proof.
     apply LModule_Mor_equiv.
-    - exact C.
-    - apply (coconeInCommutes (colimCocone (coFunc d'))).
+    apply (coconeInCommutes (colimCocone (coFunc d'))).
   Defined.
   Lemma LModule_coneOut_commutes (u v : vertex g) (e : edge u v) :
       LModule_coneOut u · dmor d e = LModule_coneOut v.
   Proof.
     apply LModule_Mor_equiv.
-    - exact C.
-    - apply (coneOutCommutes (limCone (limFunc d'))).
+    apply (coneOutCommutes (limCone (limFunc d'))).
   Defined.
 
 
@@ -510,7 +508,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     use unique_exists.
     - exact (LModule_colimArrow cc).
     - intro v.
-      apply LModule_Mor_equiv;[exact C|].
+      apply LModule_Mor_equiv.
       apply (colimArrowCommutes (coFunc d')).
     - intro y.
       cbn -[isaprop].
@@ -519,7 +517,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       use has_homsets_LModule.
     - cbn.
       intros y h.
-      apply LModule_Mor_equiv;[exact C|].
+      apply LModule_Mor_equiv.
       apply (colimArrowUnique (coFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).
@@ -530,7 +528,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     use unique_exists.
     - exact (LModule_limArrow cc).
     - intro v.
-      apply LModule_Mor_equiv;[exact C|].
+      apply LModule_Mor_equiv.
       apply (limArrowCommutes (limFunc d')).
     - intro y.
       cbn -[isaprop].
@@ -539,7 +537,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       use has_homsets_LModule.
     - cbn.
       intros y h.
-      apply LModule_Mor_equiv;[exact C|].
+      apply LModule_Mor_equiv.
       apply (limArrowUnique (limFunc d')).
       intro u.
       exact (  maponpaths pr1 (h u)).
@@ -622,8 +620,8 @@ Section pullback_lims.
   Qed.
 
   Definition pb_LModule_colim_iso : iso (C := MOD R) cR (pb_LModule f cS) :=
-    LModule_same_func_iso _ _ pb_colims_eq_mult (homset_property _).
+    LModule_same_func_iso _ _ pb_colims_eq_mult.
 
   Definition pb_LModule_lim_iso : iso (C := MOD R) lR (pb_LModule f lS) :=
-    LModule_same_func_iso _ _ pb_lims_eq_mult (homset_property _).
+    LModule_same_func_iso _ _ pb_lims_eq_mult.
 End pullback_lims.
