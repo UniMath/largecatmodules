@@ -88,7 +88,7 @@ Example EpiSignatureThetaTheta
 Proof.
   intro hepi.
   apply is_nat_trans_epi_from_pointwise_epis.
-  assert (hf : ∏ x, isEpi (pr1 f x)).
+  assert (hf : ∏ x, isEpi (pr1 (pr1 f) x)).
   {
     apply epi_nt_SET_pw.
     exact hepi.
@@ -196,7 +196,7 @@ Definition u {S : REP b} (m : R -->[ F] S)
   := u_monad R_epi dd ff (S ,, m) .
 
 (** The induced natural transformation makes a triangle commute *)
-Lemma u_def {S : REP b} (m : R -->[ F] S) : ∏ x, ## m x = projR x · u m x.
+Lemma u_def {S : REP b} (m : R -->[ F] S) : ∏ x, pr1 (## m) x = projR x · u m x.
 Proof.
   apply (u_def dd ff (S ,, m)).
 Qed.
@@ -223,7 +223,7 @@ Lemma Rep_mor_is_composition
       {S : REP b} (m : R -->[ F] S)
   : pr1 m = compose (C:=category_Monad _) projR (u m) .
 Proof.
-  use (invmap (Monad_Mor_equiv _ _ _)).
+  use (invmap (Monad_Mor_equiv _ _)).
   apply nat_trans_eq.
   - apply (homset_property SET).
   - intro X'.
@@ -248,7 +248,7 @@ Qed.
 
 Lemma eq_mr
       {S : REP b} (m : R -->[ F] S) (X : SET)
-  : model_τ R X · ## m X 
+  : model_τ R X · pr1 (## m) X 
     =
     pr1 (# a projR)%ar X · (F (R' ))%ar X 
         ·
@@ -511,7 +511,7 @@ Proof.
   apply cancel_postcomposition.
   etrans.
   apply (cancel_ar_on _ (compose (C:=category_Monad _) projR (u m))).
-  use (invmap (Monad_Mor_equiv _ _ _)).
+  use (invmap (Monad_Mor_equiv _ _)).
   (* { apply homset_property. } *)
   { apply nat_trans_eq.
     apply homset_property.
@@ -571,9 +571,9 @@ Lemma helper
       (S : model b)
   : ∏ (u' : Rep_b ⟦ rep_of_b_in_R' R R_epi epiab cond_F, S ⟧) x,
     projR R R_epi x · (u' : model_mor_mor _ _ _ _ _) x =
-    pr1 (pr1 (compose (C:=Rep_a) (b:=FF (rep_of_b_in_R' R R_epi epiab cond_F))
+    pr1 (compose (C:=Rep_a) (b:=FF (rep_of_b_in_R' R R_epi epiab cond_F))
                       (projR_rep R R_epi epiab cond_F : model_mor_mor _ _ _ _ _)
-                      (# FF u'))) x.
+                      (# FF u')) x.
 Proof.
   intros u' x.
   apply pathsinv0.

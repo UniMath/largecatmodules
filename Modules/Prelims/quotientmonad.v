@@ -70,7 +70,7 @@ is so slow when R' is definitely equal to quot_functor !
 ----
 *)
 
-Definition R': functor SET SET := quot_functor (pr1 (pr1 R)) _ congr_equivc.
+Definition R': functor SET SET := quot_functor (pr1 R) _ congr_equivc.
 
 Definition projR : (R:functor _ _) ⟹ R' := pr_quot_functor _ _ congr_equivc.
 
@@ -169,7 +169,7 @@ Proof.
   apply univ_surj_nt_ax_pw.
 Qed.
 
-Definition R'_Monad_data : Monad_data SET := ((R' ,, R'_μ) ,, R'_η).
+Definition R'_Monad_data : disp_Monad_data R' := (R'_μ ,, R'_η).
 
  
 
@@ -339,7 +339,7 @@ Legend of the diagram :
   apply assoc_ppprojR.
 Qed.
 
-Lemma R'_Monad_laws : Monad_laws R'_Monad_data.
+Lemma R'_Monad_laws : disp_Monad_laws R'_Monad_data.
 Proof.
   repeat split.
   -  apply R'_Monad_law_η1.
@@ -349,7 +349,7 @@ Qed.
 
 (* Le QED précédent prend énormément de temps.. pourquoi ? *)
 
-Definition R'_monad : Monad _ := _ ,, R'_Monad_laws.
+Definition R'_monad : Monad _ := _ ,, _ ,, R'_Monad_laws.
 
 (*
 FIN DE LA PREMIERE ETAPE

@@ -63,6 +63,8 @@ Section QuotientMonad.
 
   Context {R : Monad SET}.
 
+  Local Definition R0 : functor SET SET := R.
+
 (**
   R preserves epimorphisms.
     This is needed to prove the the horizontal composition of the
@@ -141,7 +143,7 @@ Let projR := projR  congr_equivc.
     of actions
 *)
 Lemma compat_slice (j : J) ( m := ff j)
-  : ∏ (X : SET) (x y : (pr1 R X : hSet)),
+  : ∏ (X : SET) (x y : (R0 X : hSet)),
     projR X x = projR X y → m X x =  m X y.
 Proof.
   intros X x y eqpr.
