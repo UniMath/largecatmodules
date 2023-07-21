@@ -385,7 +385,7 @@ Lemma isaset_model_mor_mor (a b : SIGNATURE) (M : model a) (N : model b) f :
 Proof.
   intros.
   apply isaset_total2 .
-  - apply has_homsets_Monad.
+  - apply isaset_Monad_Mor.
   - intros.
     apply isasetaprop.
     apply isaprop_model_mor_law.
@@ -404,7 +404,7 @@ Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_SIGNATURE :=
   (model,, model_mor_mor).
 
 Lemma rep_id_law (a : SIGNATURE) (RM : rep_disp_ob_mor a) :
-  model_mor_law RM RM (identity (C:=PRECAT_SIGNATURE) _) (Monad_identity _).
+  model_mor_law RM RM (identity (C:=PRECAT_SIGNATURE) _) (identity _).
 Proof.
   intro c.
   apply pathsinv0.
@@ -421,7 +421,7 @@ Definition rep_id  (a : SIGNATURE) (RM : rep_disp_ob_mor a) :
   RM -->[ identity (C:=PRECAT_SIGNATURE) a] RM.
 Proof.
   intros.
-  exists (Monad_identity _).
+  exists (identity _).
   apply rep_id_law.
 Defined.
 
@@ -432,8 +432,7 @@ Lemma transport_signature_mor (x y : SIGNATURE) (f g : signature_Mor x y)
       (xx : rep_disp_ob_mor x)
       (yy : rep_disp_ob_mor y)
       (ff : xx -->[ f] yy)
-      (c : C) :
-  pr1 (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 (pr1 ff) c.
+      (c : C) : pr1 (transportf (mor_disp xx yy) e ff) c = pr1 ff c.
 Proof.
   induction e.
   apply idpath.
@@ -446,13 +445,13 @@ Qed.
 Lemma model_mor_mor_equiv (a b : SIGNATURE) (R:rep_disp_ob_mor a)
       (S:rep_disp_ob_mor b) (f:signature_Mor a b)
       (u v: R -->[ f] S) :
-  (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
+  (∏ c, pr1 u c = pr1 v c) -> u = v.
 Proof.
   intros.
   use (invmap (subtypeInjectivity _ _ _ _  )). 
   - intro g.
     apply isaprop_model_mor_law.
-  - use (invmap (Monad_Mor_equiv _ _  _  )).  
+  - use (invmap (Monad_Mor_equiv _ _)).  
      +  apply nat_trans_eq.
         apply homset_property.
         assumption.
@@ -544,12 +543,12 @@ Proof.
   - set (heqf:= assoc f g h).
     apply model_mor_mor_equiv.
     intros c.
-    etrans. Focus 2.
-      symmetry.
-      apply transport_signature_mor.
-      cbn.
-      rewrite assoc.
-      apply idpath.
+    etrans.
+    2: { symmetry.
+         apply transport_signature_mor. }
+    cbn.
+    rewrite assoc.
+    apply idpath.
   - apply isaset_model_mor_mor.
 Qed.
 

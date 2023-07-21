@@ -380,7 +380,7 @@ Lemma transport_signature_mor (x y : TwoSignature) (f g :  x →→ y)
       (yy : two_model_disp_ob_mor y)
       (ff : xx -->[ f] yy)
       (c : C) :
-  pr1 (pr1 (transportf (mor_disp xx yy) e ff)) c = pr1 (pr1 ff) c.
+  pr1 (transportf (mor_disp xx yy) e ff) c = pr1 ff c.
 Proof.
   induction e.
   apply idpath.

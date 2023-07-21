@@ -73,7 +73,7 @@ Lemma isaset_rep_fiber_mor {a : SIG} (M N : model a)  :
 Proof.
   intros.
   apply isaset_total2 .
-  - apply has_homsets_Monad.
+  - apply isaset_Monad_Mor.
   - intros.
     apply isasetaprop.
     apply isaprop_rep_fiber_mor_law.
@@ -99,14 +99,14 @@ Proof.
   use (invmap (subtypeInjectivity _ _ _ _  )). 
   - intro g.
     apply isaprop_rep_fiber_mor_law.
-  - use (invmap (Monad_Mor_equiv _ _  _  )).  
+  - use (invmap (Monad_Mor_equiv _ _)).  
      +  assumption.
 Qed.
 
 (** If two 1-model morphisms are pointwise equal, then they are equal *)
 Lemma rep_fiber_mor_eq {a : SIG} (R S:model a)
       (u v: rep_fiber_mor R S) :
-  (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c) -> u = v.
+  (∏ c, pr1 u c = pr1 v c) -> u = v.
 Proof.
   intros.
   apply rep_fiber_mor_eq_nt.
@@ -407,8 +407,8 @@ M (M + Id) ---------> M R --------> M
   Defined.
 
   (** Data for the (M + Id) monad *)
-  Definition mod_id_monad_data : Monad_data C :=
-    ((IdM ,, mod_id_μ) ,, mod_id_η).
+  Definition mod_id_monad_data : disp_Monad_data IdM :=
+    (mod_id_μ ,, mod_id_η).
 
   Local Infix "++f" := (BinCoproductOfArrows _ _ _) (at level 6).
   Local Notation "[[ f , g ]]" := (BinCoproductArrow _ f g).
@@ -506,7 +506,7 @@ M (M + Id) ---------> M R --------> M
 
 
   (** Monad laws for (M + Id) *)
-  Lemma mod_id_monad_laws : Monad_laws mod_id_monad_data.
+  Lemma mod_id_monad_laws : disp_Monad_laws mod_id_monad_data.
   Proof.
     repeat split.
     - intro c.
@@ -584,7 +584,7 @@ M (M + Id) ---------> M R --------> M
   
 
   (** The M + Id monad *)
-  Definition mod_id_monad : Monad C := _ ,, mod_id_monad_laws.
+  Definition mod_id_monad : Monad C := _ ,, _ ,, mod_id_monad_laws.
 
   (** The morphism M + Id  --> R is a monad morphism *)
   Lemma mod_id_monad_mor_laws : Monad_Mor_laws (T := mod_id_monad) mod_id_nt.
