@@ -175,7 +175,7 @@ Lemma isEpi_horcomp_pw (B : category)(C D : category)
       (G H : functor B C) (G' H' : functor C D)
       (f : nat_trans G H) (f':nat_trans G' H')
   : (∏ x, isEpi  (f' x))
-    -> (∏ x, isEpi ((# H')%Cat (f x)))
+    -> (∏ x, isEpi ((# H') (f x)))
     -> ∏ x,  isEpi (horcomp f f' x).
 Proof.
   intros epif' epif.
@@ -189,7 +189,7 @@ Lemma isEpi_horcomp_pw2 (B : category)(C D : category)
       (G H : functor B C) (G' H' : functor C D)
       (f : nat_trans G H) (f':nat_trans G' H')
   : (∏ x, isEpi  (f' x))
-    -> (∏ x, isEpi ((# G')%Cat (f x)))
+    -> (∏ x, isEpi ((# G') (f x)))
     -> ∏ x,  isEpi (horcomp f f' x).
 Proof.
   intros epif epif'.
@@ -211,7 +211,7 @@ If the source category B is Set, then with the axiom of choice every epimorphism
 thus absolute (i.e. any functor preserves epis).
 *)
 Definition preserves_Epi {B C : precategory} (F : functor B C) : UU :=
-  ∏ a b (f : B ⟦a , b⟧), isEpi  f -> isEpi (# F f)%Cat.
+  ∏ a b (f : B ⟦a , b⟧), isEpi  f -> isEpi (# F f).
 
 (** Functor from Set preserves epimorphisms because thanks to the axiom of choice, any
     set epimorphism is absolute *)

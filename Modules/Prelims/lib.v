@@ -137,9 +137,9 @@ Qed.
 
 (** Same as [nat_trans_comp_pointwise], but with B = A · A' *)
 Definition nat_trans_comp_pointwise' :
-  ∏ (C : precategory) (C' : category)  (F G H : ([C, C' , _ ])%Cat)
-    (A : ([C, C' , _] ⟦ F, G ⟧)%Cat) (A' : ([C, C' , _] ⟦ G, H ⟧)%Cat) (a : C),
-  ((A  : nat_trans _ _) a ·  (A' : nat_trans _ _) a)%Cat =  (A · A' : nat_trans _ _)%Cat a
+  ∏ (C : precategory) (C' : category)  (F G H : ([C, C' , _ ]))
+    (A : ([C, C' , _] ⟦ F, G ⟧)) (A' : ([C, C' , _] ⟦ G, H ⟧)) (a : C),
+  ((A  : nat_trans _ _) a ·  (A' : nat_trans _ _) a) =  (A · A' : nat_trans _ _) a
   :=
   fun C C'  F G H A A' => @nat_trans_comp_pointwise C C' (homset_property C') F G H A A' _ (idpath _).
 
