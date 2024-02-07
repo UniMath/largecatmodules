@@ -16,8 +16,8 @@ Require Import UniMath.MoreFoundations.Tactics.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.ProductCategory.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
@@ -169,9 +169,9 @@ Section CoprodSigma.
   (* We show that cp2 is a coproduct *)
   Definition sigma_coprod_In o  : C ⟦ BS o , CPO cp2 ⟧ :=
     CoproductIn _ C (cp1 (pr1 o)) (pr2 o) · CoproductIn O C cp2 (pr1 o).
-    
+
   (** Is it possible to define it without using the homset property ? *)
-  Definition sigma_coprod_isCoproduct : isCoproduct _ _ _ _ sigma_coprod_In. 
+  Definition sigma_coprod_isCoproduct : isCoproduct _ _ _ _ sigma_coprod_In.
     intros c f.
     use unique_exists.
     -  apply CoproductArrow.
@@ -219,7 +219,7 @@ Section CoprodEpis.
           (cpa : Coproduct _ _ a)
           (cpb : Coproduct _ _ b).
 
-  Context {ff : ∏ i, C ⟦ a i, b i ⟧} (epif : ∏ i, isEpi (ff i)). 
+  Context {ff : ∏ i, C ⟦ a i, b i ⟧} (epif : ∏ i, isEpi (ff i)).
 
   Lemma CoproductOfArrows_isEpi : isEpi (CoproductOfArrows _ _ cpa cpb ff).
   Proof.
@@ -262,18 +262,18 @@ Section CoprodBinprod.
   Definition bp_coprod_mor  : C ⟦ CPO (cpBX) , BPO bpCX ⟧ :=
     CoproductArrow _ _ _ bp_coprod_In.
 
-    
+
 
 
 End CoprodBinprod.
 
 Definition bp_coprod_isDistributive {C : category} {I : UU}
-           (bp : BinProducts C) (cp : Coproducts I C) 
+           (bp : BinProducts C) (cp : Coproducts I C)
   : UU :=
   ∏ B X, is_iso (bp_coprod_mor (cp B) (fun o => bp _ X) (bp _ _) (cp _) ).
 
 Definition iso_from_isDistributive  {C : category} {I : UU}
-           (bp : BinProducts C) (cp : Coproducts I C) 
+           (bp : BinProducts C) (cp : Coproducts I C)
            (h :  bp_coprod_isDistributive bp cp) B X :
   iso _ _ :=
   make_iso (bp_coprod_mor (cp B) (fun o => bp _ X) (bp _ _) (cp _) )
@@ -317,7 +317,7 @@ Section CoprodPwIso.
       intro i.
       rewrite <- h.
       do 2 rewrite assoc.
-      rewrite iso_after_iso_inv. 
+      rewrite iso_after_iso_inv.
       apply cancel_postcomposition.
       apply pathsinv0.
       apply id_left.
@@ -328,10 +328,10 @@ Section CoprodPwIso.
   Definition coprod_pw_iso : iso (CPO cpB) (CPO cpB') :=
     (iso_from_Coproduct_to_Coproduct _ cpB cpB'2).
   End CoprodPwIso.
-    
 
 
 
 
 
-  
+
+

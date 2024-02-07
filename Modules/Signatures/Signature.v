@@ -13,7 +13,7 @@ Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
@@ -55,8 +55,8 @@ Definition signature_on_objects (a : signature_data) : ∏ R, LModule R C
 
 Coercion signature_on_objects : signature_data >-> Funclass.
 
-Definition signature_on_morphisms  (F : signature_data) {R S : MONAD} 
-  : ∏ (f: Monad_Mor R S), LModule_Mor _ (F R) (pb_LModule f (F S)) 
+Definition signature_on_morphisms  (F : signature_data) {R S : MONAD}
+  : ∏ (f: Monad_Mor R S), LModule_Mor _ (F R) (pb_LModule f (F S))
   := pr2 F R S.
 
 Notation "# F" := (signature_on_morphisms F) (at level 3) : signature_scope.
@@ -73,8 +73,8 @@ Definition signature_idax  (F : signature_data) :=
 
 Definition signature_compax  (F : signature_data) :=
   ∏ (R S T : MONAD) (f : PRE_MONAD ⟦R, S⟧) (g : PRE_MONAD ⟦S, T⟧),
-  (#F  (f · g))%ar 
-  = 
+  (#F  (f · g))%ar
+  =
   (((# F f)%ar :(F R : bmod_disp C C R) -->[f] F S) ;; (#F g)%ar)%mor_disp.
 
 Definition is_signature  (F : signature_data) : UU := signature_idax F × signature_compax F.
@@ -96,7 +96,7 @@ Coercion signature_data_from_signature : signature >-> signature_data.
 Notation Θ := tautological_LModule.
 
 Definition tautological_signature_on_objects : ∏ (R : Monad C), LModule R C := Θ.
-Definition tautological_signature_on_morphisms : 
+Definition tautological_signature_on_morphisms :
   ∏ (R S : Monad C) (f : Monad_Mor R S), LModule_Mor _ (Θ R) (pb_LModule f (Θ S)) :=
   @monad_mor_to_lmodule C.
 
@@ -127,20 +127,20 @@ Definition signature_id (F : signature) :
   := pr1 (pr2 F).
 (* ((# F (identity (C:= PRE_MONAD) R): LModule_Mor _ _ _ ))%ar x  = identity  _ *)
 
-Definition signature_comp (F : signature) {R S T : MONAD} 
-           (f : PRE_MONAD ⟦R,S⟧) (g : PRE_MONAD⟦S,T⟧) 
-  : (#F  (f · g))%ar 
-    = 
-    ((# F f : (F R : bmod_disp C C R) -->[f] F S) %ar ;; (#F g)%ar)%mor_disp 
+Definition signature_comp (F : signature) {R S T : MONAD}
+           (f : PRE_MONAD ⟦R,S⟧) (g : PRE_MONAD⟦S,T⟧)
+  : (#F  (f · g))%ar
+    =
+    ((# F f : (F R : bmod_disp C C R) -->[f] F S) %ar ;; (#F g)%ar)%mor_disp
   := pr2 (pr2 F) _ _ _ _ _ .
 
 (* Demander la version pointwise plutôt ? *)
 Definition is_signature_Mor (F F' : signature_data)
-           (t : ∏ R : MONAD, LModule_Mor R (F R)  (F' R)) 
+           (t : ∏ R : MONAD, LModule_Mor R (F R)  (F' R))
   :=
     ∏ (R S : MONAD)(f : Monad_Mor R S),
     (((# F)%ar f :   nat_trans _ _) : [_,_]⟦_,_⟧) ·
-                                                  (t S : nat_trans _ _) 
+                                                  (t S : nat_trans _ _)
     =
     ((t R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%ar f : nat_trans _ _).
 
@@ -156,7 +156,7 @@ Proof.
 Qed.
 
 Definition signature_Mor  (F F' : signature_data) : UU := ∑ X, is_signature_Mor F F' X.
-                            
+
 Local Notation "F ⟹ G" := (signature_Mor F G) (at level 39) : signature_scope.
 
 Lemma isaset_signature_Mor (F F' : signature) : isaset (signature_Mor F F').
@@ -171,18 +171,18 @@ Definition signature_Mor_data
  {F F' : signature_data}(a : signature_Mor F F') := pr1 a.
 Coercion signature_Mor_data : signature_Mor >-> Funclass.
 
-Definition signature_Mor_ax {F F' : signature} (a : signature_Mor F F') 
+Definition signature_Mor_ax {F F' : signature} (a : signature_Mor F F')
   : ∏ {R S : MONAD}(f : Monad_Mor R S),
     (((# F)%ar f :   nat_trans _ _) : [_,_]⟦_,_⟧) ·
-                                                  (a S : nat_trans _ _) 
+                                                  (a S : nat_trans _ _)
     =
     ((a R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%ar f : nat_trans _ _)
   := pr2 a.
 
-Lemma signature_Mor_ax_pw {F F' : signature} (a : signature_Mor F F') 
+Lemma signature_Mor_ax_pw {F F' : signature} (a : signature_Mor F F')
   : ∏ {R S : Monad C}(f : Monad_Mor R S) x,
     (((# F)%ar f :   nat_trans _ _) x) ·
-                                       ((a S : nat_trans _ _) x) 
+                                       ((a S : nat_trans _ _) x)
     =
     ((a R : nat_trans _ _)  x) · (((#F')%ar f : nat_trans _ _) x).
 Proof.
@@ -203,7 +203,7 @@ Proof.
   apply (total2_paths_f H'), proofirrelevance, isaprop_is_signature_Mor.
 Qed.
 
-Lemma is_signature_Mor_comp {F G H : signature} (a : signature_Mor F G) (b : signature_Mor G H) 
+Lemma is_signature_Mor_comp {F G H : signature} (a : signature_Mor F G) (b : signature_Mor G H)
   : is_signature_Mor F H (fun R  => (a R : category_LModule _ _ ⟦_,_⟧ ) · b R).
 Proof.
   intros ? ? ?.
@@ -235,7 +235,7 @@ Definition signature_Mor_id (F : signature_data) : signature_Mor F F :=
     tpair _ _ (is_signature_Mor_id F).
 
 Definition signature_Mor_comp {F G H : signature} (a : signature_Mor F G) (b : signature_Mor G H)
-  : signature_Mor F H 
+  : signature_Mor F H
   := tpair _ _ (is_signature_Mor_comp a b).
 
 Definition signature_precategory_data : precategory_data.
@@ -253,7 +253,7 @@ Proof.
   apply make_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
-    apply signature_Mor_eq. 
+    apply signature_Mor_eq.
     intro x; simpl.
     apply (id_left (C:=category_LModule _ _)).
   - apply signature_Mor_eq.
@@ -330,13 +330,13 @@ That's how the large category of models is built.
 
 
 Section LargeCatRep.
-  
+
 Context {C : category}.
-  
+
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
 Local Notation BMOD := (bmod_disp C C).
-  
+
 
 (* Signatures are display functors over the identity *)
 Local Notation PRECAT_SIGNATURE  := (@signature_category C).
@@ -365,11 +365,11 @@ Coercion Monad_from_rep_ar (ar : SIGNATURE) (X : model ar) : MONAD := pr1 X.
 Definition model_τ {ar : signature} (X : model ar) := pr2 X.
 
 Definition model_mor_law {a b : signature} (M : model a) (N : model b)
-           (f : signature_Mor a b) (g : Monad_Mor M N) 
+           (f : signature_Mor a b) (g : Monad_Mor M N)
   := ∏ c : C, model_τ M c · g c = ((#a g)%ar:nat_trans _ _) c · f N c · model_τ N c .
 
 Lemma isaprop_model_mor_law {a b : SIGNATURE} (M : model a) (N : model b)
-      (f : signature_Mor a b) (g : Monad_Mor M N) 
+      (f : signature_Mor a b) (g : Monad_Mor M N)
   : isaprop (model_mor_law M N f g).
 Proof.
   intros.
@@ -397,7 +397,7 @@ Coercion monad_morphism_from_model_mor_mor {a b : SIGNATURE} {M : model a} {N : 
 
 Definition model_mor_ax {a b : SIGNATURE} {M : model a} {N : model b}
            {f} (h:model_mor_mor a b M N f) :
-  ∏ c, model_τ M c · h c = (#a h)%ar c · f N c · model_τ N c 
+  ∏ c, model_τ M c · h c = (#a h)%ar c · f N c · model_τ N c
   := pr2 h.
 
 Definition rep_disp_ob_mor : disp_cat_ob_mor PRECAT_SIGNATURE :=
@@ -411,7 +411,7 @@ Proof.
   etrans.
     { apply cancel_postcomposition, id_right. }
   etrans.
-    { apply cancel_postcomposition, (signature_id a (pr1 RM) c). } 
+    { apply cancel_postcomposition, (signature_id a (pr1 RM) c). }
   etrans; [  apply id_left |].
   apply pathsinv0.
   apply id_right.
@@ -448,10 +448,10 @@ Lemma model_mor_mor_equiv (a b : SIGNATURE) (R:rep_disp_ob_mor a)
   (∏ c, pr1 u c = pr1 v c) -> u = v.
 Proof.
   intros.
-  use (invmap (subtypeInjectivity _ _ _ _  )). 
+  use (invmap (subtypeInjectivity _ _ _ _  )).
   - intro g.
     apply isaprop_model_mor_law.
-  - use (invmap (Monad_Mor_equiv _ _)).  
+  - use (invmap (Monad_Mor_equiv _ _)).
      +  apply nat_trans_eq.
         apply homset_property.
         assumption.
@@ -468,19 +468,19 @@ Lemma rep_comp_law  (a b c : SIGNATURE) (f : signature_Mor a b) (g : signature_M
                            ( monad_morphism_from_model_mor_mor  β))).
 Proof.
   intro x.
-  cbn.    
+  cbn.
   rewrite assoc.
   etrans.
   { apply cancel_postcomposition.
     use model_mor_ax. }
-    
+
   etrans.
   { rewrite <- assoc.
     apply cancel_precomposition.
     use model_mor_ax. }
-  
+
   (* Cf diagramme à ce point *)
-  
+
   symmetry.
   repeat rewrite assoc.
   apply cancel_postcomposition.
@@ -503,11 +503,11 @@ Proof.
 Qed.
 
 Definition rep_comp (a b c : SIGNATURE) f g
-           (RMa : rep_disp_ob_mor a) 
-           (RMb : rep_disp_ob_mor b)    
+           (RMa : rep_disp_ob_mor a)
+           (RMb : rep_disp_ob_mor b)
            (RMc : rep_disp_ob_mor c)
-           (mab : RMa -->[ f ] RMb) 
-           (mbc:RMb -->[g]  RMc) 
+           (mab : RMa -->[ f ] RMb)
+           (mbc:RMb -->[g]  RMc)
   : RMa -->[f·g] RMc.
 Proof.
   intros.
@@ -599,7 +599,7 @@ Proof.
     + apply hh.
     + apply rep_mor_law_pb.
 Defined.
-    
+
 Definition pb_rep_to_cartesian {a a'} (f : signature_category ⟦ a, a' ⟧)
            (R : model a') : is_cartesian ((pb_rep_to f R) :
                                              (pb_rep f R : rep_disp a) -->[_] R).
@@ -633,7 +633,7 @@ Proof.
   - apply pb_rep_to.
   - apply pb_rep_to_cartesian.
 Defined.
-     
+
 End LargeCatRep.
 
 Arguments rep_disp _ : clear implicits.
@@ -660,7 +660,7 @@ Lemma transport_disp_mor {C} {d:disp_cat C} {x y : C} {f g : C ⟦ x, y ⟧}
   (*
 Lemma rep_ar_mor_mor_equiv_inv {a b : SIGNATURE} {R:rep_disp_ob_mor a}
       {S:rep_disp_ob_mor b} {f:signature_Mor  a b}
-      (u v: R -->[ f] S) 
+      (u v: R -->[ f] S)
   : u = v -> (∏ c, pr1 (pr1 u) c = pr1 (pr1 v) c).
 Proof.
   intros.
@@ -669,7 +669,7 @@ Qed.
    *)
 
   (*
- Lemma transport_signature_mor' (x y : SIGNATURE) f g 
+ Lemma transport_signature_mor' (x y : SIGNATURE) f g
         (e : f = g)
         (ff : disp_nat_trans f x y)
         (R:MONAD)

@@ -16,14 +16,14 @@ Require Import UniMath.SubstitutionSystems.BinProductOfSignatures.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
@@ -48,7 +48,7 @@ Require Import Modules.Prelims.LModulesCoproducts.
 Require Import Modules.Prelims.BinProductComplements.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 (* Require Import Modules.Signatures.FullArToRaw. *)
 Open Scope cat.
@@ -222,7 +222,7 @@ Proof.
   eapply is_iso_qinv.
   apply Sig_isDistributive_is_inverse.
 Defined.
-  (** * The product of a presentable signature with the tautological signature is presentable 
+  (** * The product of a presentable signature with the tautological signature is presentable
 
 It requires that the base category is distributive and that bin products
 of epimorphisms are epimorphisms in the functor category.
@@ -294,20 +294,20 @@ becomes
         * intros z z' f.
           etrans;[apply TerminalArrowUnique|]; apply pathsinv0; apply TerminalArrowUnique.
       + intros c c' f.
-        apply nat_trans_eq; [  apply homset_property|]. 
+        apply nat_trans_eq; [  apply homset_property|].
         intro z.
           etrans;[apply TerminalArrowUnique|]; apply pathsinv0; apply TerminalArrowUnique.
       }
       cbn.
       intros X Y .
-      apply nat_trans_eq; [  apply homset_property|]. 
+      apply nat_trans_eq; [  apply homset_property|].
       intro z.
-      etrans;[apply TerminalArrowUnique|]; apply pathsinv0; apply TerminalArrowUnique. 
+      etrans;[apply TerminalArrowUnique|]; apply pathsinv0; apply TerminalArrowUnique.
     - intros f.
       apply SignatureMor_eq.
-      apply nat_trans_eq; [  apply (homset_property [C,C])|]. 
+      apply nat_trans_eq; [  apply (homset_property [C,C])|].
       intro z.
-      apply nat_trans_eq; [  apply homset_property|]. 
+      apply nat_trans_eq; [  apply homset_property|].
       intro z'.
       apply TerminalArrowUnique.
   Defined.
@@ -319,7 +319,7 @@ becomes
 
   Lemma Signature_to_signature_cons_iso n ar :
     iso (C := SIG) ( (Arity_to_Signature bp bcp T (cons n ar)))
-        (BinProductObject _ (bpSig 
+        (BinProductObject _ (bpSig
                                (precomp_option_iter_Signature bcp T n)
                                (Arity_to_Signature bp bcp T ar)
         )).
@@ -337,11 +337,11 @@ becomes
       apply identity_iso.
   Defined.
 
-  
 
 
 
-Definition har_binprodR_commute_mor_mod 
+
+Definition har_binprodR_commute_mor_mod
   :  iso (C := signature_category)  (p_alg_ar' )
                 ((PO (Sig_bp (sigWithStrength_to_sig (C := C) (toSig Ba)) tautological_signature) : signature C)
                 ) .

@@ -14,8 +14,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.Epis.
 
@@ -38,9 +38,9 @@ Require  Modules.Signatures.FullSignatures.
 Require Import Modules.Signatures.FullArToRaw.
 Require Import Modules.Signatures.SigEquivRep.
 Require Import Modules.Prelims.SetCatComplements.
-Require Import UniMath.CategoryTheory.categories.category_hset.
+Require Import UniMath.CategoryTheory.Categories.category_hset.
 
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.Categories.category_hset_structures.
 Module FAr := FullSignatures.
 
 Section RawSigRep.
@@ -63,17 +63,17 @@ Local Notation bpSET := BinProductsHSET.
     : hSet := pr1 S.
 Local Notation O := base_of_pres_sig.
 
-Definition ar_of_pres_sig 
+Definition ar_of_pres_sig
              {C} {bpC} {bcpC} {Tc} {cpC}
              (S : PresentableSignature (C:=C)bpC bcpC Tc cpC)
   : O S -> arity C := fun o => (pr1 (pr1 (pr2 S o))).
-Definition ar_of_pres_sig_isPresentable 
+Definition ar_of_pres_sig_isPresentable
              {C} {bpC} {bcpC} {Tc} {cpC}
              (S : PresentableSignature (C:=C)bpC bcpC Tc cpC)
   : ∏ o,   isPresentable bpC bcpC Tc cpC (ar_of_pres_sig S o):= fun o => (pr2 (pr1 (pr2 S o))).
 
 Local Notation α := ar_of_pres_sig.
-Definition nat_of_pres_sig 
+Definition nat_of_pres_sig
              {C} {bpC} {bcpC} {Tc} {cpC}
              (S : PresentableSignature (C:=C)bpC bcpC Tc cpC)
   : O S -> nat := fun o => ( (pr2 (pr2 S o))).
@@ -104,7 +104,7 @@ Import FullSignatures.
 
     (** This uses univalence to transform an isomorphism of category into an equality
        Another proof could be used without univalence though
- (@DeBind_HArity SET bpSET a n',, @tautological_harity SET)      
+ (@DeBind_HArity SET bpSET a n',, @tautological_harity SET)
 (@DeBind_HArity SET bpSET a n',, @tautological_harity SET)
      *)
 
@@ -160,14 +160,14 @@ Lemma initial_presentable_raw_sig sig (ax:  AxiomOfChoice.AxiomOfChoice_surj) :
              (PresentableSignature_to_signature (C:=SET) bp bcp T
                                                 (fun I => cp _ (setproperty I))  sig)).
 Proof.
-  set (sig' := PresentableSignature_to_signature _ _  _ _ sig). 
+  set (sig' := PresentableSignature_to_signature _ _  _ _ sig).
   eapply (transportb (fun X => Initial X)).
   apply catiso_to_precategory_path.
   - intros ? ? .
-    apply isaset_rep_a_sig_mor. 
+    apply isaset_rep_a_sig_mor.
   - exact (catiso_Presentable_Raw sig).
   - (* This is a presentable raw signature, so it is representable *)
-    set (rawS := 
+    set (rawS :=
            tpair (T := hSet) (fun z => z -> arity _)
                  (O sig)
                  (λ o : O sig, DeBind_HArity (C := SET) bpSET (α _ o) (nat_of_pres_sig _ o)) : rawSig).

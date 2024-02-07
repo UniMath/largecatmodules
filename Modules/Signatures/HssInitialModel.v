@@ -7,26 +7,26 @@ case.
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
 Require Import UniMath.SubstitutionSystems.Signatures.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
 Require Import Modules.Signatures.SigWithStrengthToSignature.
 Require Import Modules.Signatures.Signature.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.Chains.Chains.
 Require Import UniMath.CategoryTheory.Chains.Adamek.
 Require Import UniMath.CategoryTheory.Chains.OmegaCocontFunctors.
@@ -47,7 +47,7 @@ Section EpiSignatureSig.
   Local Notation Sig := (Signature SET SET HSET).
   Local Notation EndSet := [hset_category, hset_category].
   (* Local Notation toSig := SigToSignatureHSET . *)
-  
+
   Local Notation iniHSS sig hsig  := (InitialHSS SET BinCoproductsHSET InitialHSET
                                         (ColimsHSET_of_shape nat_graph)
                                         sig
@@ -79,7 +79,7 @@ Section EpiSignatureSig.
     apply j_mor_rep.
   Qed.
 
-  Definition hss_initial_arrow {sig : Sig}(hsig : is_omega_cocont sig) 
+  Definition hss_initial_arrow {sig : Sig}(hsig : is_omega_cocont sig)
     (b : model (sigWithStrength_to_sig (C := SET)( sig))) :
     (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧
     := hss_initial_arrow_mon hsig b,, hss_initial_arrow_law hsig b.
@@ -116,9 +116,9 @@ Section EpiSignatureSig.
       apply ht.
   Qed.
 
-    
-    
-  
+
+
+
   Definition rep_mor_to_alg_mor {sig : Sig}
              (hsig : is_omega_cocont sig)
              (b : model (sigWithStrength_to_sig sig))
@@ -132,7 +132,7 @@ Section EpiSignatureSig.
 
 
 
-  Lemma hss_initial_arrow_unique  {sig : Sig} 
+  Lemma hss_initial_arrow_unique  {sig : Sig}
         (hsig : is_omega_cocont sig)
     (b : model (sigWithStrength_to_sig sig)) :
     ∏ t : (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧,
@@ -143,16 +143,16 @@ Section EpiSignatureSig.
     (* TODO : mettre ce lemme d'unicité qui vient de la définition de j avec sa définition
  dans ModulesFromSignatures *)
     assert (h := (InitialArrowUnique
-     (colimAlgInitial 
+     (colimAlgInitial
         (Initial_functor_precat HSET HSET InitialHSET)
         (is_omega_cocont_Id_H HSET BinCoproductsHSET ( sig)
            hsig)
-        (colimits.ColimsFunctorCategory_of_shape nat_graph 
+        (Colimits.ColimsFunctorCategory_of_shape nat_graph
            HSET HSET (ColimsHSET_of_shape nat_graph)
            (initChain (Initial_functor_precat HSET HSET InitialHSET)
               (Id_H HSET BinCoproductsHSET ( sig)))))
      (ModulesFromSignatures.M_alg HSET BinCoproductsHSET ( sig) b (model_τ b)))).
-   
+
     specialize (h (rep_mor_to_alg_mor hsig b t)).
     apply model_mor_mor_equiv.
     intro c.
@@ -161,8 +161,8 @@ Section EpiSignatureSig.
     apply toforallpaths in h.
     apply h.
   Qed.
-       
-       
+
+
 
   Theorem hss_sig_effective {sig : Sig}(hsig : is_omega_cocont sig)
     : isInitial _ (hss_initial_model hsig).

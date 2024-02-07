@@ -15,17 +15,17 @@ Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
-Require Import UniMath.CategoryTheory.limits.pushouts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Pushouts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Total.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
-Require Import UniMath.CategoryTheory.limits.graphs.limits.
-Require Import UniMath.CategoryTheory.limits.graphs.equalizers.
-Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Limits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Equalizers.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Coequalizers.
 
 Require Import Modules.Prelims.Opfibration.
 
@@ -86,7 +86,7 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
         * cbn -[isaprop].
           intro y.
           apply (homset_property (total_category D)).
-        * 
+        *
           intros h'2 eqh'2.
           apply faithful_reformulated.
           cbn.
@@ -148,7 +148,7 @@ This can be reformulated as [faithful pr1_category) as in [faithful_pr1_category
         * cbn -[isaprop].
           intro y.
           apply (homset_property (total_category D)).
-        * 
+        *
           intros h'2 eqh'2.
           apply faithful_reformulated.
           cbn.

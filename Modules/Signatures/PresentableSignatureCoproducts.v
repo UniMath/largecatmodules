@@ -12,13 +12,13 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
@@ -34,7 +34,7 @@ Require Import Modules.Signatures.HssSignatureCommutation.
 
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Open Scope cat.
 
@@ -44,7 +44,7 @@ Section CoprodPresentable.
   Context {C : category} {bp : BinProducts C} {bcp : BinCoproducts C} {T : Terminal C}
           {cp : ∏ (I : hSet), Coproducts I C}.
 
-  
+
   Let toSig sig :=
     (BindingSigToSignature bp bcp T
                            sig (cp (BindingSigIndexhSet sig))).
@@ -82,7 +82,7 @@ Section CoprodPresentable.
   Proof.
     intro R.
     use isEpi_comp;[| use isEpi_comp].
-    - 
+    -
       unfold coprod_ρ_mor.
       (* TODO utiliser is_iso_pw *)
       (* use Pushouts_pw_epi. *)

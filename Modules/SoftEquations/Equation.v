@@ -16,7 +16,7 @@
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
@@ -72,7 +72,7 @@ Section Equation.
     homset_property (category_LModule  _ _ ) _ _ _ _.
 
   Definition satisfies_equation_hp (e : equation) (R : REP) : hProp  :=
-    make_hProp _ (satisfies_equation_isaprop e R). 
+    make_hProp _ (satisfies_equation_isaprop e R).
 
   (** The proposition that a 1-model satisfies a family of equations: it must satisfy
       each of them *)
@@ -120,9 +120,9 @@ Definition po_equation
                     po_signature_over_mor f (halfeq1 e)  ,,
                     po_signature_over_mor f (halfeq2 e).
 
-Definition po_satisfies_equation  
+Definition po_satisfies_equation
            {C : category} {S1 S2 : signature C} (f : signature_Mor S1 S2)
-           (e : equation S1) 
+           (e : equation S1)
            (R : model _)
            (hR : satisfies_equation (po_equation f e) R) :
   satisfies_equation e (pb_rep f R) := hR.

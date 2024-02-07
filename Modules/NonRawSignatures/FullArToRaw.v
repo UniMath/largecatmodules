@@ -35,13 +35,13 @@ Require Import Modules.Signatures.HArityDerivation.
 (* Require Import Modules.Signatures.CheckCorrespondanceAdjonction. *)
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 
-Require Import UniMath.CategoryTheory.categories.category_hset.
+Require Import UniMath.CategoryTheory.Categories.category_hset.
 
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 
 Require Import Modules.Prelims.deriveadj.
 
@@ -71,7 +71,7 @@ Section CoBindingArity.
 (** Content of this section:
     - translate a natural number into a half-arity
 *)
-  
+
 Fixpoint nat_deriv_HAr {C : category} bcp T (n :nat) : arity C :=
   match n with
     0 => tautological_harity
@@ -88,7 +88,7 @@ Definition nat_prod_HAr {C : category} (bp : BinProducts C) (n : nat) : arity C 
   iter_functor (prodHAr bp) n tautological_harity.
 
 Definition CoBinding_to_FullArity {C : category} bcp T ( a : HAr.arity C)
-           (n : nat) 
+           (n : nat)
   : FullArity C
   :=  a ,, nat_deriv_HAr bcp T n.
 
@@ -96,7 +96,7 @@ Context {C : category} .
 Hypothesis ( bp : BinProducts C).
 Let bpHAr := harity_BinProducts (C := C) bp.
 Local Notation BPO := (BinProductObject _).
-  
+
   (* Let prodHAr  := *)
   (*   (functor_fix_snd_arg _ _ _  (binproduct_functor  (harity_BinProducts bp )) *)
   (*                        (tautological_harity)). *)
@@ -105,7 +105,7 @@ Local Notation BPO := (BinProductObject _).
 (*   iter_functor prodHAr n a. *)
 
 (** Input: an arity [a] and a natural number
-    Output: [a × θ × θ × ... × θ] 
+    Output: [a × θ × θ × ... × θ]
 *)
 Fixpoint DeBind_HArity  (a : HAr.arity C) (n : nat) : HAr.arity C :=
   match n with
@@ -155,13 +155,13 @@ Section NoSetGenNat.
   (* Local Notation "×ℜ" :=  (bpM. *)
   Local Notation Θ :=  (tautological_LModule).
 
-  Let deriv_pb_iso {R S : Monad C} (f : Monad_Mor R S) 
+  Let deriv_pb_iso {R S : Monad C} (f : Monad_Mor R S)
       : ∏ M, iso (C := MOD R) (pb_LModule f (M ')) ((pb_LModule f M) ')
     :=
     pb_deriv_to_deriv_pb_iso Tset bcp (D := C) f.
 
-  Let bp_pb_iso {R S : Monad C} (f : Monad_Mor R S) 
-    : ∏ M N, iso (C := MOD R) 
+  Let bp_pb_iso {R S : Monad C} (f : Monad_Mor R S)
+    : ∏ M N, iso (C := MOD R)
                  (bpM _ (pb_LModule f M)(pb_LModule f N) )
                  (pb_LModule f (bpM _ M N))
     :=
@@ -240,7 +240,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
   Let c_n n : HalfArity := DeBind_HArity bp   a n.
   Let d_n n : FullArity C := c_n n ,, tautological_harity.
 
-  Definition equiv_is_rep_ar_one_to_raw (a' : HalfArity) n R : 
+  Definition equiv_is_rep_ar_one_to_raw (a' : HalfArity) n R :
                  LModule_Mor R (a' R)(nat_d_HAr (S n) R) ≃
                              LModule_Mor R (BPO (LMOD_bp R (a' R) (tautological_LModule R)))
                              (nat_d_HAr n R).
@@ -248,7 +248,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
     apply adj1.
   Defined.
 
-  Definition equiv_is_rep_ar_to_raw (a' : HalfArity) n R : 
+  Definition equiv_is_rep_ar_to_raw (a' : HalfArity) n R :
                  LModule_Mor R (a' R)( nat_d_HAr n R) ≃
                              LModule_Mor R ((DeBind_HArity bp a' n : HAr.arity _) R)
                              (tautological_LModule R).
@@ -357,7 +357,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
       apply (transport_arity_mor _ _ _ _ _ e xx yy ff).
   Defined.
 
-  
+
   Definition FAr_to_HAr_one_functor n : (rep_disp C)[{a_n (S n)}] ⟶ (rep_disp C)[{b_n n}] :=
     _ ,, FAr_to_HAr_one_is_functor n.
 
@@ -371,7 +371,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
 End NoSetGenNat.
 
 Section FAR_ToHAR_Rep.
-  
+
   Context {C : category}.
   Hypothesis ( bp : BinProducts C).
   Hypothesis ( bcp : BinCoproducts C).
@@ -401,13 +401,13 @@ Section FAR_ToHAR_Rep.
   (* Local Notation "×ℜ" :=  (bpM. *)
   Local Notation Θ :=  (tautological_LModule).
 
-  Let deriv_pb_iso {R S : Monad C} (f : Monad_Mor R S) 
+  Let deriv_pb_iso {R S : Monad C} (f : Monad_Mor R S)
       : ∏ M, iso (C := MOD R) (pb_LModule f (M ')) ((pb_LModule f M) ')
     :=
     pb_deriv_to_deriv_pb_iso Tset bcp (D := C) f.
 
-  Let bp_pb_iso {R S : Monad C} (f : Monad_Mor R S) 
-    : ∏ M N, iso (C := MOD R) 
+  Let bp_pb_iso {R S : Monad C} (f : Monad_Mor R S)
+    : ∏ M N, iso (C := MOD R)
                  (bpM _ (pb_LModule f M)(pb_LModule f N) )
                  (pb_LModule f (bpM _ M N))
     :=
@@ -438,7 +438,7 @@ Par l'adjonction ça doit devenir
 M x R ----> N --------> f*A
 
 *)
-  
+
   Hypothesis adj_law1 :
                 ∏ R S (f : Monad_Mor (C := C) R S)
                   (M N : LModule R _) (A : LModule S _)
@@ -520,7 +520,7 @@ Section NoSet.
   Lemma HAr_rep_ar_mor_law_nt {a b : HAr.arity _} (M : HAr.rep_ar _ a)
              (N : HAr.rep_ar _ b)
            (f : arity_Mor a b) (g : Monad_Mor M N) :
-  HAr.rep_ar_mor_law _ M N f g ≃ 
+  HAr.rep_ar_mor_law _ M N f g ≃
                      ((HAr.rep_τ _ M : (MOD _ ⟦_,_⟧))  · (monad_mor_to_lmodule g)  =
                       ((#a g)%ar : MOD _ ⟦_,_⟧)  ·
                                                  pb_LModule_Mor g
@@ -546,12 +546,12 @@ Section NoSet.
 
   (*inutile TODO suppriemr *)
 Definition FAr_rep_ar_mor_law_nt {a b : FullArity C} (M : rep_ar _ a) (N : rep_ar _ b)
-           (f : FullArity C ⟦ a,  b⟧) (g : Monad_Mor M N) : 
+           (f : FullArity C ⟦ a,  b⟧) (g : Monad_Mor M N) :
   rep_ar_mor_law C M N f g ≃ (
    (rep_τ _ M : MOD _ ⟦_ , _⟧)  · ((#(codom a) g)%ar)  =
             ((#(dom a) g)%ar : MOD _ ⟦_ , _⟧)  · pb_LModule_Mor g (dom_mor f N)  ·
                                                pb_LModule_Mor g (rep_τ _ N)  ·
-                                               pb_LModule_Mor g (codom_mor f N) 
+                                               pb_LModule_Mor g (codom_mor f N)
                    ).
 Proof.
     apply weqinvweq.
@@ -630,7 +630,7 @@ Defined.
   Local Notation BPO := (BinProductObject _).
   Let b n : HalfArity := BPO (bpHAr a (nat_p_HAr n)).
 
-  Definition equiv_is_rep_ar_to_raw R : 
+  Definition equiv_is_rep_ar_to_raw R :
                  LModule_Mor R (a R)(nat_d_HAr 1 R) ≃
                              LModule_Mor R (b 1 R)(tautological_LModule R).
   Proof.
@@ -664,13 +664,13 @@ Defined.
 (*   rep_ar_mor_law  M N f g ≃  (rep_τ M : nat_trans _ _) · ((#(codom a) g)%ar:nat_trans _ _)  = *)
 (*             ((#(dom a) g)%ar:nat_trans _ _)  · dom_mor f N  · *)
 (*                                             rep_τ N c · codom_mor f N c. *)
-  Let deriv_pb_iso {R S : Monad C} (f : Monad_Mor R S) 
+  Let deriv_pb_iso {R S : Monad C} (f : Monad_Mor R S)
       : ∏ M, iso (C := MOD R) (pb_LModule f (M ')) ((pb_LModule f M) ')
     :=
     pb_deriv_to_deriv_pb_iso Tset bcp (D := C) f.
 
-  Let bp_pb_iso {R S : Monad C} (f : Monad_Mor R S) 
-    : ∏ M N, iso (C := MOD R) 
+  Let bp_pb_iso {R S : Monad C} (f : Monad_Mor R S)
+    : ∏ M N, iso (C := MOD R)
                  (bpM _ (pb_LModule f M)(pb_LModule f N) )
                  (pb_LModule f (bpM _ M N))
     :=
@@ -720,7 +720,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
                                                       · pb_LModule_Mor f (adj1 _ _ _ v)
 
                 (* (# ×ℜ (dirprodpair (u : MOD R ⟦_,_⟧) (monad_mor_to_lmodule f : MOD R ⟦_,_⟧))) *)
-                
+
 
                 (* adj1 R  _ _  ((u : MOD R ⟦_,_⟧) · (pb_LModule_Mor f v) · deriv_pb_iso f _) *)
              ).
@@ -750,7 +750,7 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
     apply idweq.
   Qed.
 
-  Definition equiv_raw_ar_mor_law 
+  Definition equiv_raw_ar_mor_law
      {R S : rep_ar _ (a_n 1)} (f : Monad_Mor R S) :
                       rep_ar_mor_law _ R S (identity _) f ≃
                                      HAr.rep_ar_mor_law _ (Fob R) (Fob S)
@@ -811,6 +811,6 @@ M×R ---------> f* A x f* S ------> f*(A x S) -------> f* B
   Definition iso_FAr_HAr_rep : catiso _ _ :=
      FS,, (λ x y  , weqproperty (Fmor x y)),, weqproperty Fob.
 End NoSet.
-  
+
 
 *)

@@ -31,7 +31,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
@@ -74,7 +74,7 @@ Check ((fun a => idpath _):  ∏ a, (rep_ar C a) = (FAr.rep_ar C (toAr a))).
 
 
 (* useless *)
-Lemma half_arity_to_arity_is_rep_weq (a : HalfArity) (M N : rep_ar C a) f : 
+Lemma half_arity_to_arity_is_rep_weq (a : HalfArity) (M N : rep_ar C a) f :
   FAr.rep_ar_mor_law C (a := toAr a) (b:=toAr a) M N (identity _) f
                      ≃
   rep_ar_mor_law C (a :=  a) (b:= a) M N (identity (C := arity_category) _) f.
@@ -150,7 +150,7 @@ Definition sig_to_har_rep_on_mor_weq (R S : a_sig_rep) : a_sig_rep ⟦ R , S ⟧
     split.
     + intro  h .
       intro x.
-      
+
       cbn.
       unfold coproduct_nat_trans_data.
       repeat rewrite id_right.

@@ -4,10 +4,10 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
@@ -26,7 +26,7 @@ Local Notation "Z ∘ α" := (post_whisker α Z).
 
 Open Scope cat.
 
-    
+
 Set Automatic Introduction.
 
 Section QuotientMonad.
@@ -39,7 +39,7 @@ Context {R : Monad SET}
         (compat_μ_projR : compat_μ_projR_def congr_equivc).
 
 Let equivc {c:hSet} x y : hProp := eqrel_equivc c x y.
-  
+
 (* We define the quotient functor of R by these equivalence relations
 
 The following comment may be outdated
@@ -109,7 +109,7 @@ Context
         {h : LModule_Mor _ a (pb_LModule projR_monad b)}
         (* TODO : define the general type of compatability that is used everywhere to define
             a morphism out of an epimorphism (Cf quotient monad : compat_μ_def ..) *)
-        (compath : ∏ X (x y:(a X:hSet)), h X x = h X y -> 
+        (compath : ∏ X (x y:(a X:hSet)), h X x = h X y ->
                                          (τ X · projR_monad X) x = (τ X · projR_monad X) y)
         (* TODO : demander que ce soit pointwise epi plutôt *)
         (isEpih : isEpi (C:=[SET,SET]) (h:nat_trans _ _)).
@@ -123,7 +123,7 @@ Proof.
 Defined.
 
 Local Notation τ' := R'_model_τ.
-           
+
 Definition R'_model_τ_def : ∏ X, h X · τ' X = τ X · projR_monad X.
 Proof.
   apply (univ_surj_nt_ax_pw _
@@ -213,21 +213,21 @@ Lemma τ'_law_eq2 X : ((h∙∙projR_monad :[SET,SET]⟦_,_⟧)
 Proof.
   etrans.
   { apply cancel_postcomposition.
-    apply (LModule_Mor_σ R h). 
+    apply (LModule_Mor_σ R h).
   }
   repeat rewrite <- assoc.
   apply cancel_precomposition.
   apply R'_model_τ_def.
 Qed.
 
-Lemma R'_model_τ_module_laws 
-  : LModule_Mor_laws _ 
+Lemma R'_model_τ_module_laws
+  : LModule_Mor_laws _
                      (T:=b)
                      (T':= tautological_LModule R'_monad)
                      R'_model_τ.
 Proof.
   intro X.
-  
+
   (* En vrai, je n'ai pas besoin ici que ce soit un epi pointwise (me semble-t-il)*)
   assert (epi : isEpi (* (C:=functor_Precategory SET SET) *)
                   ((h ∙∙ projR) X)
@@ -242,9 +242,9 @@ Proof.
   etrans; [ apply τ'_law_eq1 |].
   apply pathsinv0.
   apply τ'_law_eq2.
-Qed.    
+Qed.
 
-Definition R'_model_τ_module : LModule_Mor _ b (tautological_LModule R'_monad) 
+Definition R'_model_τ_module : LModule_Mor _ b (tautological_LModule R'_monad)
   := _ ,, R'_model_τ_module_laws.
 
 (** Let S a monad, m : R -> S a monad morphism compatible with the equivalence relation
@@ -265,9 +265,9 @@ This induces a monad morphism u : R' -> S that makes the following diagram commu
 
 
 *)
-Context {S : Monad SET}  
+Context {S : Monad SET}
         {m : Monad_Mor R S}
-        (compatm : ∏ (X : SET) 
+        (compatm : ∏ (X : SET)
                      (x y : (R X : hSet)), projR X x = projR X y → m X x = m X y).
 
 Let u_monad := quotientmonad.u_monad R_epi compat_μ_projR _ compatm.
@@ -318,7 +318,7 @@ h ;; τ' ;; u =  τ ;; π ;; u (definition of τ')
 
 *)
 
-Context {c : LModule S SET} 
+Context {c : LModule S SET}
         {s : LModule_Mor _ c (Θ S)}
         {F : LModule_Mor _ b (pb_LModule u_monad c)}.
 
@@ -339,7 +339,7 @@ Proof.
   { rewrite assoc.
     apply cancel_postcomposition.
     apply R'_model_τ_def.
-  } 
+  }
   etrans.
   { rewrite <- assoc.
     apply cancel_precomposition.

@@ -15,9 +15,9 @@ Require Import UniMath.CategoryTheory.Monads.Derivative.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 
 Require Import Modules.Prelims.lib.
 
@@ -31,8 +31,8 @@ Require Import Modules.SoftEquations.SignatureOver.
 Section DAr.
 
   Context {C : category}
-          (bcpC : limits.bincoproducts.BinCoproducts C)
-          (CT : limits.terminal.Terminal C).
+          (bcpC : Limits.BinCoproducts.BinCoproducts C)
+          (CT : Limits.Terminal.Terminal C).
 Local Notation "∂" := (LModule_deriv_functor (TerminalObject CT) bcpC
                                              _).
 

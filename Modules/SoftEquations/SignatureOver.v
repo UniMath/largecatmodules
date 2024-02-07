@@ -22,7 +22,7 @@ Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
@@ -84,14 +84,14 @@ Definition signature_over_on_objects (a : signature_over_data) : ∏ (R : REP), 
 
 Coercion signature_over_on_objects : signature_over_data >-> Funclass.
 
-Definition signature_over_on_morphisms  (F : signature_over_data) {R S : REP} 
-  : ∏ (f:  R →→ S), LModule_Mor _ (F R) (pb_LModule f (F S)) 
+Definition signature_over_on_morphisms  (F : signature_over_data) {R S : REP}
+  : ∏ (f:  R →→ S), LModule_Mor _ (F R) (pb_LModule f (F S))
   := pr2 F R S.
 
 (** Notation for the map 1-model morphism -> module morphism *)
 Notation "# F" := (signature_over_on_morphisms F) (at level 3) : signature_over_scope.
 
-Definition signature_over_on_morphisms_cancel_pw (F : signature_over_data) {R S : REP} 
+Definition signature_over_on_morphisms_cancel_pw (F : signature_over_data) {R S : REP}
            {u v : R →→ S}  (e : u = v) x : (# F u)%sigo x = (#F v)%sigo x.
   induction e.
   apply idpath.
@@ -106,8 +106,8 @@ Definition signature_over_idax  (F : signature_over_data) :=
 (** Statment that the raw data preserves composition *)
 Definition signature_over_compax  (F : signature_over_data) :=
   ∏ R S T  (f : R →→ S) (g : S →→ T) ,
-    (#F  (f ;; g))%sigo 
-      = 
+    (#F  (f ;; g))%sigo
+      =
       (((# F f)%sigo :(F R : bmod_disp C C (R : Monad _)) -->[(f : Monad_Mor  _ _)] F S) ;; (#F g)%sigo)%mor_disp.
 
 (** Raw data yields a Sig-module if it satisfies the previous functoriality conditions *)
@@ -140,7 +140,7 @@ Defined.
 Local Notation OSig := sig_over_data_from_sig.
 
 (** Functoriality conditions for a Sig-module induced by a signatre *)
-Lemma is_sig_over_from_sig (sig : signature C) : is_signature_over (OSig sig). 
+Lemma is_sig_over_from_sig (sig : signature C) : is_signature_over (OSig sig).
   split.
   - use signature_id.
   - red.
@@ -162,11 +162,11 @@ Definition signature_over_id (F : signature_over) :
   := pr1 (pr2 F).
 
 (** A Sig-module preserves composition *)
-Definition signature_over_comp (F : signature_over) {R S T : REP} 
+Definition signature_over_comp (F : signature_over) {R S T : REP}
            (f : rep_fiber_mor R S) (g : rep_fiber_mor S T)
-  : 
-    (#F  (f ;; g))%sigo 
-      = 
+  :
+    (#F  (f ;; g))%sigo
+      =
       (((# F f)%sigo :(F R : bmod_disp C C (R : Monad _)) -->[(f : Monad_Mor  _ _)] F S) ;; (#F g)%sigo)%mor_disp
   := pr2 (pr2 F) _ _ _ _ _ .
 
@@ -192,11 +192,11 @@ t_R |               | t_S
 >>>
 *)
 Definition is_signature_over_Mor (F F' : signature_over_data)
-           (t : ∏ R : REP, LModule_Mor R (F R)  (F' R)) 
+           (t : ∏ R : REP, LModule_Mor R (F R)  (F' R))
   :=
     ∏ (R S : REP)(f : rep_fiber_mor R S),
     (((# F)%sigo f :   nat_trans _ _) : [_,_]⟦_,_⟧) ·
-                                                  (t S : nat_trans _ _) 
+                                                  (t S : nat_trans _ _)
     =
     ((t R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%sigo f : nat_trans _ _).
 
@@ -215,7 +215,7 @@ Definition signature_over_Mor  (F F' : signature_over_data) : UU := ∑ X, is_si
 Definition mkSignature_over_Mor {F F' : signature_over_data} X
            (hX : is_signature_over_Mor F F' X) : signature_over_Mor F F' :=
   X ,, hX.
-                            
+
 (** Notation for Sig-module morphisms *)
 Local Notation "F ⟹ G" := (signature_over_Mor F G) (at level 39) : signature_over_scope.
 
@@ -236,16 +236,16 @@ Coercion signature_over_Mor_data : signature_over_Mor >-> Funclass.
 Definition signature_over_Mor_ax {F F' : signature_over} (a : (F ⟹ F')%sigo)
   : ∏ {R S : REP}(f : rep_fiber_mor R S),
     (((# F)%sigo f :   nat_trans _ _) : [_,_]⟦_,_⟧) ·
-                                                  (a S : nat_trans _ _) 
+                                                  (a S : nat_trans _ _)
     =
     ((a R : nat_trans _ _) : [_,_]⟦_,_⟧) · ((#F')%sigo f : nat_trans _ _)
   := pr2 a.
 
 (** A Sig-module morphism is natural (pointwise version of the naturality diagram) *)
-Lemma signature_over_Mor_ax_pw {F F' : signature_over} (a : (F ⟹ F')%sigo) 
+Lemma signature_over_Mor_ax_pw {F F' : signature_over} (a : (F ⟹ F')%sigo)
   : ∏ {R S : REP}(f : rep_fiber_mor R S) x,
     (((# F)%sigo f :   nat_trans _ _) x) ·
-                                       ((a S : nat_trans _ _) x) 
+                                       ((a S : nat_trans _ _) x)
     =
     ((a R : nat_trans _ _)  x) · (((#F')%sigo f : nat_trans _ _) x).
 Proof.
@@ -285,7 +285,7 @@ Definition signature_over_Mor_id (F : signature_over_data) : signature_over_Mor 
     tpair _ _ (is_signature_over_Mor_id F).
 
 (** Composition of two Sig-module morphisms yields a Sig-module morphism *)
-Lemma is_signature_over_Mor_comp {F G H : signature_over} (a : signature_over_Mor F G) (b : signature_over_Mor G H) 
+Lemma is_signature_over_Mor_comp {F G H : signature_over} (a : signature_over_Mor F G) (b : signature_over_Mor G H)
   : is_signature_over_Mor F H (fun R  => (a R : category_LModule _ _ ⟦_,_⟧ ) · b R).
 Proof.
   intros ? ? ?.
@@ -303,7 +303,7 @@ Proof.
 Qed.
 (** Composition of Sig-module morphisms *)
 Definition signature_over_Mor_comp {F G H : signature_over} (a : signature_over_Mor F G) (b : signature_over_Mor G H)
-  : signature_over_Mor F H 
+  : signature_over_Mor F H
   := tpair _ _ (is_signature_over_Mor_comp a b).
 
 (** Intermediate data to build the category of Sig-modules *)
@@ -325,7 +325,7 @@ Proof.
   apply make_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
-    apply signature_over_Mor_eq. 
+    apply signature_over_Mor_eq.
     intro x; simpl.
     apply (id_left (C:=category_LModule _ _)).
   - apply signature_over_Mor_eq.
@@ -337,7 +337,7 @@ Proof.
 Qed.
 
 (** The precategory of Sig-modules *)
-Definition signature_over_precategory : precategory := 
+Definition signature_over_precategory : precategory :=
   tpair (fun C => is_precategory C)
         (signature_over_precategory_data)
         (is_precategory_signature_over_precategory_data).
@@ -412,7 +412,7 @@ Section PushoutOverSig.
       apply ((# SS1 (pb_rep_mor f g ))%sigo).
   Defined.
 
-  Lemma  po_is_signature_over 
+  Lemma  po_is_signature_over
         {C} {S1 S2 : signature C} (f : signature_Mor S1 S2) (SS1 : signature_over S1)
   : is_signature_over _ (po_signature_over_data f SS1).
   Proof.
@@ -435,14 +435,14 @@ Section PushoutOverSig.
       apply idpath.
   Defined.
 
-  Definition  po_signature_over 
+  Definition  po_signature_over
          {C} {S1 S2 : signature C} (f : signature_Mor S1 S2) (SS1 : signature_over S1) :
     signature_over S2 := _ ,, po_is_signature_over f SS1.
 
   Definition  po_signature_over_mor
               {C} {S1 S2 : signature C} (f : signature_Mor S1 S2) {SS1 SS1' : signature_over S1}
               (ff1 : signature_over_Mor _ SS1 SS1')
-    :  signature_over_Mor _ 
+    :  signature_over_Mor _
                              (po_signature_over f SS1)(po_signature_over f SS1')
      :=
      mkSignature_over_Mor _ (F := po_signature_over f SS1)

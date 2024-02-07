@@ -9,16 +9,16 @@ Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Categories.
-Require Import UniMath.CategoryTheory.categories.category_hset.
+Require Import UniMath.CategoryTheory.Categories.category_hset.
 
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.Categories.category_hset_structures.
 Require Import UniMath.CategoryTheory.functor_categories.
 
 Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
@@ -33,7 +33,7 @@ Require Import UniMath.CategoryTheory.catiso.
 
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Open Scope cat.
@@ -76,7 +76,7 @@ Section SigEquiv.
   Let Σ' : signature C := _ ,, α'.
 
   (* inspiré de rawsigtohar *)
-  Definition sig_to_sig_rep_weq : sig_rep Σ ≃ sig_rep Σ'. 
+  Definition sig_to_sig_rep_weq : sig_rep Σ ≃ sig_rep Σ'.
   Proof.
     apply weqfibtototal.
     intro R.
@@ -156,7 +156,7 @@ Section SigEquivRawSig.
 
 Local Notation toAr := half_arity_to_arity.
 (* bizarre qu'on en ait pas besoin avant *)
-Lemma half_arity_to_arity_is_rep_weq (a : HAr.arity _) (M N : HAr.rep_ar C a) f : 
+Lemma half_arity_to_arity_is_rep_weq (a : HAr.arity _) (M N : HAr.rep_ar C a) f :
   HAr.rep_ar_mor_law C (a := a) (b:= a) M N (identity (C := arity_category) _) f
                      ≃
   rep_ar_mor_law C (a := toAr a) (b:=toAr a) M N (identity _) f.
@@ -176,7 +176,7 @@ Defined.
 
   (* TODO : refaire la suite avec ce qu'il y a dasn RawSigToHAr *)
   (* inspiré de rawsigtohar *)
-  Definition sig_to_sig_rep_weq : sig_rep Σ ≃ sig_rep Σ'. 
+  Definition sig_to_sig_rep_weq : sig_rep Σ ≃ sig_rep Σ'.
   Proof.
     apply weqfibtototal.
     intro R.

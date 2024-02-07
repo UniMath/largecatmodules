@@ -1,6 +1,6 @@
 (** * Category of models of a signature
 
-- [rep_fiber_category]: Direct definition 
+- [rep_fiber_category]: Direct definition
 - [catiso_modelcat]: proof that this category is isomorphic to the definition as a fiber category
   of the fibration of the total 1-model category over the 1-signatures category,
   as defined in Signatures/Signature.v
@@ -15,7 +15,7 @@ Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.Monads.Monads.
@@ -25,8 +25,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 Require Import UniMath.CategoryTheory.whiskering.
 
 Require Import Modules.Prelims.lib.
@@ -46,14 +46,14 @@ Local Notation SIG := (signature C).
 (** This proposition states that the monad morphism [g] between two 1-models
     commutes with the action [model_τ].
  *)
-Definition rep_fiber_mor_law {a : SIG} (M N : model a) 
+Definition rep_fiber_mor_law {a : SIG} (M N : model a)
            (g : Monad_Mor M N)
   : UU
   := ∏ c : C, model_τ M c · g c = ((#a g)%ar:nat_trans _ _) c ·  model_τ N c .
 
 (** This statment is hProp *)
 Lemma isaprop_rep_fiber_mor_law {a  : SIG} (M N : model a)
-      (g : Monad_Mor M N) 
+      (g : Monad_Mor M N)
   : isaprop (rep_fiber_mor_law  M N  g).
 Proof.
   intros.
@@ -80,14 +80,14 @@ Proof.
 Qed.
 
 (** Coercion from 1-model morphism to monad morphisms *)
-Coercion monad_morphism_from_rep_fiber_mor {a : SIG} {M N : model a} 
+Coercion monad_morphism_from_rep_fiber_mor {a : SIG} {M N : model a}
           (h : rep_fiber_mor M N) : Monad_Mor M N
   := pr1 h.
 
 (** A model morphism commutes with the action *)
-Definition rep_fiber_mor_ax {a : SIG} {M N : model a} 
+Definition rep_fiber_mor_ax {a : SIG} {M N : model a}
             (h:rep_fiber_mor  M N ) :
-  ∏ c, model_τ M c · h c = (#a h)%ar c ·  model_τ N c 
+  ∏ c, model_τ M c · h c = (#a h)%ar c ·  model_τ N c
   := pr2 h.
 
 (** If two 1-model morphisms are equal as natural transformations, then they are equal *)
@@ -96,10 +96,10 @@ Lemma rep_fiber_mor_eq_nt {a : SIG} (R S:model a)
   (u : nat_trans _ _) = v -> u = v.
 Proof.
   intros.
-  use (invmap (subtypeInjectivity _ _ _ _  )). 
+  use (invmap (subtypeInjectivity _ _ _ _  )).
   - intro g.
     apply isaprop_rep_fiber_mor_law.
-  - use (invmap (Monad_Mor_equiv _ _)).  
+  - use (invmap (Monad_Mor_equiv _ _)).
      +  assumption.
 Qed.
 
@@ -177,13 +177,13 @@ Proof.
   apply make_is_precategory_one_assoc; simpl; intros.
   - unfold identity.
     simpl.
-    apply rep_fiber_mor_eq. 
+    apply rep_fiber_mor_eq.
     intro x; simpl.
     apply id_left.
-  - apply rep_fiber_mor_eq. 
+  - apply rep_fiber_mor_eq.
     intro x; simpl.
     apply id_right.
-  - apply rep_fiber_mor_eq. 
+  - apply rep_fiber_mor_eq.
     intro x; simpl.
     apply assoc.
 Qed.
@@ -359,7 +359,7 @@ M (M + Id) ---------> M R --------> M
 
 
   (** First law of (M + Id)-module for M *)
-  Lemma mod_id_M_mod_law1  : ∏ c, 
+  Lemma mod_id_M_mod_law1  : ∏ c,
        #M (mod_id_η c) · mod_id_M_mod c = identity _.
   Proof.
     intro c.
@@ -377,7 +377,7 @@ M (M + Id) ---------> M R --------> M
     (* De l'intérêt que les nat_trans sont définis entre functor_data ! En effet, ici
    les deux foncteurs ont le même functor_data. C'est la partie hProp qui diffère *)
   Definition postcomp_nt (F : functor C C) : nat_trans (F ∙ IdM)  (bcO (BC (F ∙ M) F): functor _ _) :=
-    nat_trans_id (F ∙ IdM) . 
+    nat_trans_id (F ∙ IdM) .
 
   (** Isomorphism between F (M + Id) and F M + F *)
   Lemma isoRIdM (F : functor C C) : iso (C := [C,C]) (F ∙ IdM)  ((BC (F ∙ M) F)).
@@ -390,7 +390,7 @@ M (M + Id) ---------> M R --------> M
   (** The multiplication for the monad M + Id:
 <<
 
-                                             M [ρ,η]                   
+                                             M [ρ,η]
  (M + Id) (M + Id) ~ M (M + Id) + (M + Id)  ---------> M R + (M + Id) ---> M + (M + Id) ----> M + Id
 >>
    *)
@@ -433,7 +433,7 @@ M (M + Id) ---------> M R --------> M
   Qed.
 
   (** Second (M + Id)-module law for M *)
-  Lemma mod_id_M_mod_law2  : ∏ c, 
+  Lemma mod_id_M_mod_law2  : ∏ c,
        #M (mod_id_μ _) · mod_id_M_mod c = mod_id_M_mod _ · mod_id_M_mod _.
   Proof.
     intro c.
@@ -581,7 +581,7 @@ M (M + Id) ---------> M R --------> M
         repeat rewrite id_left.
         reflexivity.
   Qed.
-  
+
 
   (** The M + Id monad *)
   Definition mod_id_monad : Monad C := _ ,, _ ,, mod_id_monad_laws.
@@ -597,7 +597,7 @@ M (M + Id) ---------> M R --------> M
               BinCoproduct_of_functors_mor
               ; cbn).
       rewrite id_left.
-      (etrans; [ apply BinCoproductArrowEta| apply pathsinv0; apply BinCoproductArrowUnique]); revgoals. 
+      (etrans; [ apply BinCoproductArrowEta| apply pathsinv0; apply BinCoproductArrowUnique]); revgoals.
       + repeat rewrite assoc.
         do 2 rewrite BinCoproductIn2Commutes.
         etrans;[|apply pathsinv0, id_left].
@@ -679,7 +679,7 @@ Definition mod_id_model {Sig : signature C} (R : model Sig) : model Sig :=
    mod_id_model_monad R ,, mod_id_model_action R.
 
 (** The monad morphism Sig(R) + Id -> R is a model morphism *)
-Definition mod_id_model_mor_laws {Sig : signature C} (R : model Sig) : 
+Definition mod_id_model_mor_laws {Sig : signature C} (R : model Sig) :
     rep_fiber_mor_law (mod_id_model R) R (mod_id_monad_mor bc (Sig  R) (model_τ R)).
 Proof.
   intro.
@@ -688,7 +688,7 @@ Proof.
   apply BinCoproductIn1Commutes.
 Qed.
 
-Definition mod_id_model_mor {Sig : signature C} (R : model Sig) : 
+Definition mod_id_model_mor {Sig : signature C} (R : model Sig) :
   rep_fiber_mor (mod_id_model R) R  :=
   _ ,, mod_id_model_mor_laws R.
 
@@ -728,7 +728,7 @@ Proof.
               exact h.
         }
         eapply (paths_rect _ _
-                (fun a eq => 
+                (fun a eq =>
                    (# Sig)%ar (Monad_composition fR (mod_id_monad_mor bc (Sig (pr1 R)) (model_τ R))) c
                    = (# Sig)%ar a c));
           [|exact (maponpaths  pr1 h1)].
@@ -740,4 +740,4 @@ Qed.
 
 End InitAlg2.
 
-                             
+

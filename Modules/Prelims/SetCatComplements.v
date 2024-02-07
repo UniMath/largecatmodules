@@ -25,15 +25,15 @@ Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.BinProductComplements.
 Require Import Modules.Prelims.CoproductsComplements.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Lemma hset_category_isDistributive (I : hSet)  :
    bp_coprod_isDistributive BinProductsHSET (CoproductsHSET  I (setproperty I)).
@@ -48,7 +48,7 @@ Defined.
 
 Lemma isEpiBinProdHSET {X X' Y Y' : hSet} (f : X -> Y)(g : X' -> Y') :
   isEpi (C := SET) f -> isEpi (C:=SET) g -> isEpi (C:=SET)
-                                                (BinProductOfArrows _ 
+                                                (BinProductOfArrows _
                                                                     (BinProductsHSET Y Y')
                                                                     (BinProductsHSET X X')
                                                             f g).

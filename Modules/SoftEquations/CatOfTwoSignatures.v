@@ -16,16 +16,16 @@
 Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
-Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Coequalizers.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.FaithfulFibrationEqualizer.
@@ -50,9 +50,9 @@ Require Import Modules.Prelims.BinCoproductComplements.
 Require Import Modules.Signatures.SignaturesColims.
 Require Import Modules.Signatures.SignatureCoproduct.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.pushouts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Pushouts.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
 
 Section TwoSig.
@@ -104,7 +104,7 @@ Proof.
   apply (model_equations_eq R o).
 Qed.
 
-Lemma two_signature_comp_Mor 
+Lemma two_signature_comp_Mor
   (x y z : signature_category) (f : signature_category ⟦ x, y ⟧) (g : signature_category ⟦ y, z ⟧)
   (xx : two_signature_disp_ob_mor x) (yy : two_signature_disp_ob_mor y) (zz : two_signature_disp_ob_mor z) :
   xx -->[ f] yy → yy -->[ g] zz → xx -->[ f · g] zz.
@@ -164,7 +164,7 @@ Definition TwoSignature_eqs (S : TwoSignature) : TwoSignature_index S -> equatio
 
 (** If thebase category has coequalizers, then the total two-sig category also *)
 Lemma TwoSignature_Coequalizers
-      (coeq : colimits.Colims_of_shape Coequalizer_graph  C)
+      (coeq : Colimits.Colims_of_shape Coequalizer_graph  C)
   : Coequalizers TwoSig_category.
 Proof.
   red.
@@ -195,8 +195,8 @@ Defined.
 Definition two_signature_coproduct_in
   {O : UU}
   (c : Coproducts O C)
-  (sigs : O → TwoSig_category) 
-  (i : O) : 
+  (sigs : O → TwoSig_category)
+  (i : O) :
   TwoSig_category ⟦ sigs i, two_signature_coproduct c sigs ⟧.
 Proof.
   use tpair.
@@ -206,7 +206,7 @@ Proof.
     apply (model_equations_eq R (i ,, o)).
 Defined.
 
-Lemma two_signature_is_coproduct 
+Lemma two_signature_is_coproduct
   {O : UU}
   (c : Coproducts O C)
   (sigs : O → TwoSig_category)  :
@@ -260,9 +260,9 @@ Proof.
   - apply two_signature_is_coproduct.
 Defined.
 
-Lemma TwoSignature_Pushouts 
+Lemma TwoSignature_Pushouts
       (b : BinCoproducts C)
-    (coeq : colimits.Colims_of_shape Coequalizer_graph  C)
+    (coeq : Colimits.Colims_of_shape Coequalizer_graph  C)
   : Pushouts  TwoSig_category.
 Proof.
   apply pushouts_from_coeq_bincoprod; revgoals.
@@ -291,7 +291,7 @@ Qed.
 
 (** A 1-signature S induces a 2-signature consisting of no equation *)
 Definition OneSig_to_TwoSig (S : signature C) : TwoSignature := (S ,, ∅ ,, empty_rect _).
-    
+
 (** This induces a left adjoint to the forgetful functor *)
 Lemma universal_OneSig_to_TwoSig (S : signature C) :
   is_universal_arrow_to (pr1_category two_signature_disp) S (OneSig_to_TwoSig S) (identity _).
@@ -336,7 +336,7 @@ Defined.
 Local Notation MONAD := (Monad C).
 Local Notation PRE_MONAD := (category_Monad C).
 (* Local Notation BMOD := (bmod_disp C C). *)
-  
+
 
 (* Signatures are display functors over the identity *)
 Local Notation PRECAT_SIGNATURE  := (@signature_precategory C).
@@ -489,7 +489,7 @@ Proof.
     (** reflexivity thanks to primitive projections *)
     apply idpath.
 Defined.
-      
+
 
 Definition TwoMod_OneMod_is_right_adjoint : is_right_adjoint TwoMod_OneMod_functor :=
   right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_TwoMod.
@@ -546,10 +546,10 @@ Proof.
       apply idpath.
   Defined.
 
-Definition catiso_modelcat_eq (S : TwoSignature) : 
+Definition catiso_modelcat_eq (S : TwoSignature) :
   catiso (two_model_disp [{S}]) (category_model_equations (TwoSignature_eqs S)) :=
    (make_functor _ (fib_to_dir_is_functor S) ,, (λ x y : (FIBER_CAT S), weqproperty (FSmor x y)),, idisweq _).
-     
+
 End TwoSig.
 
 

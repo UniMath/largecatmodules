@@ -13,15 +13,15 @@ Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
-Require Import UniMath.CategoryTheory.limits.graphs.pushouts.
-Require Import UniMath.CategoryTheory.limits.graphs.eqdiag.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Pushouts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.EqDiag.
 
-Require Import UniMath.CategoryTheory.limits.graphs.limits.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Limits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.LModulesColims.
@@ -33,8 +33,8 @@ Section pwEpiAr.
   Context {C : category}  .
   Local Notation MOD R := (category_LModule R C).
 
-  Context 
-          (pos : colimits.Colims_of_shape pushout_graph C)
+  Context
+          (pos : Colimits.Colims_of_shape pushout_graph C)
           {A B : signature C} (F : signature_Mor A  B).
 
   Lemma pwEpiSig_isEpi : (∏ (R : Monad C) , isEpi (C := [C,C] ) (F R:nat_trans _ _)) -> isEpi (C := SIG) F.
@@ -51,9 +51,9 @@ Section pwEpiAr.
   Context    (epiF : isEpi (C:=SIG) F).
 
 
-  Lemma PO_eqdiag (R : Monad C) X : 
+  Lemma PO_eqdiag (R : Monad C) X :
     eq_diag
-  (diagram_pointwise 
+  (diagram_pointwise
                      (mapdiagram (LModule_forget_functor R C) (mapdiagram (forget_Sig R) (pushout_diagram SIG F F))) X)
    (pushout_diagram C (F R X) (F R X) ).
   Proof.
@@ -73,7 +73,7 @@ Section pwEpiAr.
          (diagram_pointwise
             (mapdiagram (LModule_forget_functor R C)
                         (mapdiagram (forget_Sig R) (pushout_diagram signature_category F F))) X)).
-    
+
 
   Lemma epiSig_is_pwEpi (R : Monad C) : isEpi (C := [C,C] ) (F R:nat_trans _ _).
   Proof.

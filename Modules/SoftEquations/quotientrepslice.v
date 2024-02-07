@@ -22,13 +22,13 @@ complicate its use.
 Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
@@ -49,7 +49,7 @@ Open Scope cat.
 
 (** TODO : move this section in Prelims/..
 and use thees results to shorten quotienrep (or don't do that because we don't care about
-this old presentable stuff 
+this old presentable stuff
  *)
 Section univ_mod.
   Context {C  : category}{R : Monad C}.
@@ -95,7 +95,7 @@ completion of the diagram with an arrow from N to O
    *)
   Definition univ_surj_lmod_nt_epi epip : LModule_Mor R N O := _ ,, univ_surj_lmod_laws epip.
 
-      
+
 End univ_mod.
 
 (** Now we do the same when N and O are modules over another monad S
@@ -126,7 +126,7 @@ But here, we want a S-module morphism. Hence, we need an additional hypothesis, 
    m*O
 *)
 
-  Lemma univ_surj_pb_lmod_laws 
+  Lemma univ_surj_pb_lmod_laws
         (epip : isEpi (C := [C, SET]) (p : nat_trans M N)) :
           LModule_Mor_laws S (univ_surj_nt p f compat epip).
   Proof.
@@ -148,10 +148,10 @@ But here, we want a S-module morphism. Hence, we need an additional hypothesis, 
    *)
   Definition univ_surj_pb_lmod_nt_epi epip : LModule_Mor S N O := _ ,, univ_surj_pb_lmod_laws epip.
 
-      
+
 End univ_pb_mod.
 
-    
+
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
 
 Section QuotientRep.
@@ -191,7 +191,7 @@ Proof.
     apply isEpi_projR.
 Qed.
 
-  
+
 
 Local Notation π := projR.
 Local Notation Θ := tautological_LModule.
@@ -230,7 +230,7 @@ Qed.
      V                 V
      R ----------->    R'
            π
-          
+
 >>
  *)
 Definition R'_action : LModule_Mor R' (Sig R') (Θ R').
@@ -320,7 +320,7 @@ Proof.
   etrans; [apply rep_fiber_mor_ax|].
   rewrite assoc.
   apply cancel_postcomposition.
-  
+
   rewrite (u_monad_def R_epi  d ff).
   rewrite signature_comp.
   reflexivity.

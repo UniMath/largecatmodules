@@ -15,7 +15,7 @@ Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
@@ -29,7 +29,7 @@ Local Notation "'SET'" := hset_category.
 Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 
 Open Scope cat.
-    
+
 Set Automatic Introduction.
 
 (* TODO: move in lib.v *)
@@ -40,7 +40,7 @@ Section QuotientMonad.
 
 
 (** We start by just considering the quotient of the monad [R] as a functor.  Further
-    compatibility for the monad composition are assumed later. *) 
+    compatibility for the monad composition are assumed later. *)
   Context {R : Monad SET}.
 
 (**
@@ -52,13 +52,13 @@ Section QuotientMonad.
  *)
 Context (R_epi : preserves_Epi R).
 
-  Context 
+  Context
           {eqrel_equivc : ∏ c, eqrel (R c : hSet)}
         (congr_equivc : ∏ (x y : SET) (f : SET⟦x,y⟧),
                         iscomprelrelfun (eqrel_equivc x) (eqrel_equivc y) (# R f)).
 
 Let equivc {c:hSet} x y := eqrel_equivc c x y.
- 
+
 (** We define the quotient functor of R by these equivalence relations
 
 The following comment may be outdated
@@ -145,13 +145,13 @@ Definition R'_η : (functor_identity SET) ⟹ R' := η R ;;; projR .
     equivalence relation.  Note that, no condition are needed for the the compatibility
     of the unit of the monad.  *)
 
-Definition compat_μ_projR_def 
+Definition compat_μ_projR_def
   := ∏ (X : SET) (x y : pr1 ((pr1 (R ∙ R)) X)),
      (projR ∙∙ projR) X x = (projR ∙∙ projR) X y →
      (μ R;;; projR) X x = (μ R;;; projR) X y.
 
 Variable compat_μ_projR : compat_μ_projR_def.
-  
+
 Definition R'_μ  : R' ∙  R' ⟹ R'.
 Proof.
   apply (univ_surj_nt (A:= R ∙ R) (B:= R'∙ R')
@@ -171,7 +171,7 @@ Qed.
 
 Definition R'_Monad_data : disp_Monad_data R' := (R'_μ ,, R'_η).
 
- 
+
 
 Lemma R'_Monad_law_η1 : ∏ c : SET, R'_η (R' c) · R'_μ c = identity (R' c).
 Proof.
@@ -180,12 +180,12 @@ Proof.
   apply isEpi_projR.
   repeat rewrite assoc.
   etrans.
-  { apply cancel_postcomposition. 
+  { apply cancel_postcomposition.
     unfold R'_η.
     etrans;[apply assoc|].
     apply cancel_postcomposition.
     apply (nat_trans_ax (η  R)).
-  }  
+  }
   rewrite <- assoc.
   rewrite <- assoc.
   etrans.
@@ -204,7 +204,7 @@ Lemma R'_Monad_law_η2 : ∏ c : SET, # R' (R'_η c) · R'_μ c = identity (R' c
 Proof.
   intro c.
   etrans.
-  { apply cancel_postcomposition.    
+  { apply cancel_postcomposition.
     apply functor_comp. }
   use (is_pointwise_epi_from_set_nat_trans_epi _ _ _ projR isEpi_projR).
   repeat rewrite assoc.
@@ -225,9 +225,9 @@ Proof.
   rewrite id_left. apply idpath.
 Qed.
 
-Lemma assoc_ppprojR c 
+Lemma assoc_ppprojR c
   : (projR ∙∙ projR) ( R c) · # (R' ∙ R') (projR c)
-    = 
+    =
     (projR ∙∙ (projR ∙∙ projR)) c.
 Proof.
   apply (horcomp_assoc projR projR projR c).
@@ -237,15 +237,15 @@ Lemma isEpi_projR_projR_projR_pw c : isEpi ((projR ∙∙ (projR ∙∙ projR)) 
 Proof.
   apply isEpi_horcomp_pw2.
   - apply isEpi_projR_pw.
-  - apply isEpi_R_projR_projR_pw. 
+  - apply isEpi_R_projR_projR_pw.
 Defined.
 
 Lemma R'_Monad_law_μ : ∏ c : SET,
                              # R' (R'_μ  c) · R'_μ c = R'_μ (R' c) · R'_μ c.
 Proof.
   intro c.
- 
-      (* Note : 
+
+      (* Note :
 
 If I write instead :
   assert (epi :isEpi (horcomp projR (horcomp projR projR)  c)).
@@ -255,7 +255,7 @@ then 'apply epi' takes a huge amount of time for Coq !!
 This is due to the fact that Coq takes a long time to show that
    ((R' □ R') □ R') c = R' ((R' □ R') c)
 because it has a very bad computing strategy. He tries to evaluates R'
-which is bad idea. Probably because somewhere there is a Defined instead of 
+which is bad idea. Probably because somewhere there is a Defined instead of
 Qed for some proof, and I suspect somewhere in the section about
 quotients in basics/Sets.v
 
@@ -269,20 +269,20 @@ Legend of the diagram :
 - μ = μ R
 - ν = R'_μ
 - i = projR
-*)      
+*)
 
   etrans.
   (* First equality *)
   { etrans.
     apply (assoc (C:=SET)).
-    rewrite horcomp_pre_post.    
+    rewrite horcomp_pre_post.
     etrans.
-    { 
-      apply cancel_postcomposition.       
+    {
+      apply cancel_postcomposition.
       etrans. use (! assoc _ _ _ ).
       apply (cancel_precomposition SET).
       etrans; [ apply (!functor_comp R' _ _ ) | ].
-      apply maponpaths.      
+      apply maponpaths.
       apply R'_μ_def.
     }
     rewrite functor_comp,assoc.
@@ -290,29 +290,29 @@ Legend of the diagram :
     symmetry.
     apply cancel_postcomposition.
     apply (nat_trans_ax (projR)).
-  }  
+  }
   (* second equality *)
   etrans.
-  { 
+  {
     rewrite <- assoc.
     rewrite <- assoc.
-    apply (cancel_precomposition (SET)).     
+    apply (cancel_precomposition (SET)).
     apply (R'_μ_def c).
   }
   (* third equality *)
   etrans.
   { rewrite assoc.
     etrans. { apply cancel_postcomposition, (Monad_law3 (T:=R) c). }
-    
+
     (* Fourth equality *)
     rewrite <- assoc.
-  
+
     etrans.
     { apply cancel_precomposition. symmetry. apply R'_μ_def. }
-  
-    rewrite assoc.      
+
+    rewrite assoc.
     apply cancel_postcomposition.
-  
+
     (* Fifth equality *)
     etrans.
     { cbn -[projR compose].
@@ -322,19 +322,19 @@ Legend of the diagram :
       symmetry.
       apply R'_μ_def.
     }
-  
+
   (* Close to the end *)
     etrans.
     { rewrite <- assoc.
       apply (cancel_precomposition SET).
       symmetry.
-      apply (nat_trans_ax (R'_μ) ( R c)). 
+      apply (nat_trans_ax (R'_μ) ( R c)).
     }
     rewrite assoc.
     reflexivity.
   }
   etrans; [apply (!assoc _ _ _ ) |].
-  apply cancel_postcomposition.  
+  apply cancel_postcomposition.
   (* association of horcomposition *)
   apply assoc_ppprojR.
 Qed.
@@ -369,7 +369,7 @@ Definition projR_monad : Monad_Mor (R) (R'_monad) :=
   (_ ,, projR_monad_laws).
 
 Lemma isEpi_projR_monad : isEpi (C:=category_Monad _) projR_monad.
-Proof.    
+Proof.
   apply (faithful_reflects_epis (forgetfunctor_Monad _));
   [ apply forgetMonad_faithful|apply isEpi_projR].
 Qed.
@@ -384,9 +384,9 @@ Qed.
 
   (* FIN DE LA SECONDE ETAPE *)
 
-Variables (S : Monad SET) 
+Variables (S : Monad SET)
           (m : Monad_Mor R S)
-          (compatm : ∏ (X:SET) (x y : (R X : hSet)), 
+          (compatm : ∏ (X:SET) (x y : (R X : hSet)),
                      projR X x = projR X y → m X x = m X y).
 
 Local Definition u : nat_trans R' S.
@@ -402,13 +402,13 @@ Proof.
 Qed.
 
 (** not used here but nevermind *)
-Lemma u_def_nt :  (m : nat_trans _ _) = (compose (C := [SET,SET]) (projR : nat_trans _ _)  u)  . 
+Lemma u_def_nt :  (m : nat_trans _ _) = (compose (C := [SET,SET]) (projR : nat_trans _ _)  u)  .
 Proof.
   symmetry.
   apply univ_surj_nt_ax.
 Qed.
 
-Lemma u_monad_mor_law1 
+Lemma u_monad_mor_law1
   : ∏ a : SET, (μ R'_monad) a · u a = u (R'_monad a) · # S (u a) · (μ S) a.
 Proof.
   intro X.
@@ -418,27 +418,27 @@ Proof.
     apply isEpi_projR_projR.
   }
   apply epi.
-    
+
   (* Now the real work begins *)
   etrans.
   {  apply cancel_postcomposition.
     apply (nat_trans_ax (projR)).
   }
   etrans. (* use the monadicity of μ *)
-  { rewrite assoc.        
+  { rewrite assoc.
     apply cancel_postcomposition.
     symmetry.
     apply (Monad_Mor_μ (projR_monad)).
   }
-    
+
   (* definition of u *)
   etrans. { rewrite <- assoc. cpre _. symmetry. apply u_def. }
-    
+
   (* m is a morphism of monad *)
   etrans; [ apply (Monad_Mor_μ m) |].
-    
+
   (* Definition of u *)
-  etrans.  
+  etrans.
   { cpost _.
     etrans.
     { etrans. { cpost _.  apply u_def. }
@@ -446,8 +446,8 @@ Proof.
       etrans.
       { apply maponpaths. apply u_def. }
       apply functor_comp.
-    }    
-    (* il s'agit de rememmtre les termes dans l'ordre *)    
+    }
+    (* il s'agit de rememmtre les termes dans l'ordre *)
     rewrite assoc.
     cpost _.
     rewrite <- assoc.
@@ -492,7 +492,7 @@ Qed.
     uniqueness of the natural transformation for the underlying quotient functor. *)
 
 End QuotientMonad.
-  
+
 Arguments projR : simpl never.
 Arguments R' : simpl never.
 Arguments u_monad  [R] _ [ _ _]  _ [_] _ .

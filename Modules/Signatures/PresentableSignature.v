@@ -9,7 +9,7 @@ Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import UniMath.SubstitutionSystems.Signatures.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
@@ -25,12 +25,12 @@ Require Import Modules.Signatures.PreservesEpi.
 Require Import Modules.Signatures.EpiArePointwise.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
-Require Import UniMath.CategoryTheory.limits.initial.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Monads.LModules.
+Require Import UniMath.CategoryTheory.Limits.Initial.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
 Open Scope cat.
 
@@ -68,7 +68,7 @@ Definition p_alg_ar   : signature C :=
   sigWithStrength_to_sig (C := C) (toSig p_sig).
 
 Definition p_mor : signature_Mor (p_alg_ar ) a := pr1 (pr2 p).
-Definition epi_p_mor   : 
+Definition epi_p_mor   :
   ∏ (R : Monad C), (isEpi (C := [_, _]) (pr1 (p_mor  R)))
   := pr2 (pr2 p).
 
@@ -88,7 +88,7 @@ Local Notation toSig sig :=
 
 
 
-Lemma PresentableisEffective 
+Lemma PresentableisEffective
       {a : signature SET} (p : isPresentable (C := SET) BinProductsHSET BinCoproductsHSET TerminalHSET
                                              (fun i => CoproductsHSET _ (setproperty i)) a)
   :

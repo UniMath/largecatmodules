@@ -20,7 +20,7 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.whiskering.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
 Require Import UniMath.CategoryTheory.UnitorsAndAssociatorsForEndofunctors.
 
 Require Import Modules.Prelims.lib.
@@ -29,7 +29,7 @@ Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Section DerivFunctor.
   Context {C : category}
           (o : C) (* derivation X ↦ X + o *)
-          (bcpC : limits.bincoproducts.BinCoproducts C )
+          (bcpC : Limits.BinCoproducts.BinCoproducts C )
           {D : category}
           (T : Monad C).
 
@@ -94,7 +94,7 @@ MR(X+o)) --------->  NR(X+o)
       apply pre_whisker_composition.
   Qed.
 
-  Definition LModule_deriv_functor  : functor LMOD LMOD := make_functor _ LModule_deriv_is_functor. 
+  Definition LModule_deriv_functor  : functor LMOD LMOD := make_functor _ LModule_deriv_is_functor.
 
   Local Notation "∂" := LModule_deriv_functor.
 
