@@ -8,8 +8,8 @@ Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
 
 
 

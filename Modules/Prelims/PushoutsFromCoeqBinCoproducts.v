@@ -21,21 +21,21 @@ Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
-Require Import UniMath.CategoryTheory.limits.pushouts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Pushouts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
-Require Import UniMath.CategoryTheory.limits.graphs.limits.
-Require Import UniMath.CategoryTheory.limits.graphs.equalizers.
-Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.pushouts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Limits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Equalizers.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Coequalizers.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Pushouts.
 
 Local Open Scope cat.
 Section d.
-  Context {C : category} {g : graph} 
+  Context {C : category} {g : graph}
           (bc : BinCoproducts C)
           (coeq : Coequalizers C).
 

@@ -7,13 +7,13 @@
 Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
 Require Import UniMath.CategoryTheory.catiso.
 
 Require Import UniMath.Foundations.Sets.
@@ -40,10 +40,10 @@ Require Import Modules.SoftEquations.quotientequation.
 Require Import Modules.Prelims.BinProductComplements.
 Require Import Modules.Prelims.CoproductsComplements.
 
-Require Import UniMath.CategoryTheory.limits.initial.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Initial.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 
 Require Import Modules.SoftEquations.SignatureOverBinproducts.
 

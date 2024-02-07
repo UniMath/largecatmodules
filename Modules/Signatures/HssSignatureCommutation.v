@@ -20,14 +20,14 @@ Require Import UniMath.SubstitutionSystems.SignatureExamples.
 Require Import UniMath.SubstitutionSystems.BinProductOfSignatures.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
@@ -46,7 +46,7 @@ Require Import Modules.Signatures.SignatureDerivation.
 Require Import Modules.Prelims.BinProductComplements.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 Open Scope cat.
 
@@ -81,7 +81,7 @@ Section GenericStrat.
   Let S1 : signature C := _ ,, isS1.
   Let S2 : signature C := _ ,, isS2.
 
-  Let S1_S2_R_iso (R : Monad C) : 
+  Let S1_S2_R_iso (R : Monad C) :
     iso (C := category_LModule R _)
         (S1 R)
         ( S2 R) :=
@@ -152,7 +152,7 @@ Section commuteBinProdSig.
   Let ar_b :=  sigWithStrength_to_sig b.
   Local Notation BPO := (BinProductObject _ ).
 
-  (**  to get this statment, I first tried to use LModule_M1_M2_iso  
+  (**  to get this statment, I first tried to use LModule_M1_M2_iso
   Lemma  binprod_sigs_har_mod_iso R :
     iso (C := category_LModule R _)
         ( sigWithStrength_to_sig (BPO (hss_bpSig a b)) R)
@@ -174,9 +174,9 @@ Section commuteBinProdSig.
     apply idpath.
   Defined.
 
-  Lemma binprod_sigs_har_eq (R S : Monad C) (f : Monad_Mor R S) (c : C) : 
+  Lemma binprod_sigs_har_eq (R S : Monad C) (f : Monad_Mor R S) (c : C) :
     (signature_BinProduct_on_morphisms ar_a ar_b R S f) c =
-    (lift_lmodule_mor (BPO (hss_bpSig a b)) R (monad_mor_to_lmodule f) c) · (lift_pb_LModule 
+    (lift_lmodule_mor (BPO (hss_bpSig a b)) R (monad_mor_to_lmodule f) c) · (lift_pb_LModule
                                                                                  (BPO (hss_bpSig a b)) f) c.
   Proof.
     cbn.
@@ -188,10 +188,10 @@ Section commuteBinProdSig.
     reflexivity.
   Qed.
 
-    
 
 
-  Definition binprod_sigs_har_iso : iso (C := signature_category) 
+
+  Definition binprod_sigs_har_iso : iso (C := signature_category)
                                         ( sigWithStrength_to_sig (BPO (hss_bpSig a b)) )
                                         ( (BPO (bpSig ar_a ar_b) : signature _ ) ).
   Proof.
@@ -223,7 +223,7 @@ Section CoprodAr.
   Proof.
     cbn.
     unfold SumOfSignatures.θ_ob_fun.
-    unfold coproducts.coproduct_nat_trans_data.
+    unfold Coproducts.coproduct_nat_trans_data.
     etrans;[apply precompWithCoproductArrow|].
     unfold LModulesCoproducts.LModule_coproduct_mult_data.
     unfold CoproductOfArrows.

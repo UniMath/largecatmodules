@@ -21,13 +21,13 @@ sigs
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
 (* Require Import UniMath.SubstitutionSystems.FromBindingSigsToMonads_Summary. *)
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import UniMath.SubstitutionSystems.Signatures.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
@@ -36,16 +36,16 @@ Require Import UniMath.Combinatorics.Lists.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
 Require Import Modules.Signatures.SigWithStrengthToSignature.
 Require Import Modules.Signatures.Signature.
 Require Import Modules.Signatures.HssInitialModel.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.Chains.Chains.
 Require Import UniMath.CategoryTheory.Chains.Adamek.
 Require Import UniMath.CategoryTheory.Chains.OmegaCocontFunctors.
@@ -69,9 +69,9 @@ Definition arity_to_one_sig {C : category} bpC bcpC  TC S : signature C :=
 (** specific definition for the hSet category *)
 Definition binding_to_one_sigHSET S :=
   (sigWithStrength_to_sig (C := SET)
-     (BindingSigToSignatureHSET S)). 
+     (BindingSigToSignatureHSET S)).
 
-Definition Arity_to_SignatureHSET := 
+Definition Arity_to_SignatureHSET :=
   Arity_to_Signature BinProductsHSET BinCoproductsHSET TerminalHSET.
 
 Definition arity_to_one_sigHSET S :=
@@ -90,7 +90,7 @@ Section EpiSignatureSig.
   Definition alg_initialR (sig : BindingSig) : (rep_disp SET) [{binding_to_one_sigHSET sig}] :=
     hss_initial_model (Cset sig).
 
-       
+
 
   Theorem algebraic_sig_effective (sig : BindingSig)
     : isInitial _ (alg_initialR sig).
@@ -132,17 +132,17 @@ Section EpiSignatureSig.
                                                      HSET
                                                      BinProductsHSET).
 
-  Local Notation binProdFunc := 
-      (binproducts.BinProduct_of_functors [HSET, HSET, hom_SET] [HSET, HSET, hom_SET]
-       (binproducts.BinProducts_functor_precat HSET HSET BinProductsHSET hom_SET)).
+  Local Notation binProdFunc :=
+      (BinProducts.BinProduct_of_functors [HSET, HSET, hom_SET] [HSET, HSET, hom_SET]
+       (BinProducts.BinProducts_functor_precat HSET HSET BinProductsHSET hom_SET)).
 
   Local Notation sumFuncs I Ihset :=
-    (coproducts.coproduct_of_functors I [HSET, HSET, hom_SET] [HSET, HSET, hom_SET]
-       (coproducts.Coproducts_functor_precat I HSET HSET (CoproductsHSET I Ihset) hom_SET)
+    (Coproducts.coproduct_of_functors I [HSET, HSET, hom_SET] [HSET, HSET, hom_SET]
+       (Coproducts.Coproducts_functor_precat I HSET HSET (CoproductsHSET I Ihset) hom_SET)
        ).
 
 
-  
+
   Lemma isEpi_binProdSig S S' : isEpiSig S -> isEpiSig S' -> isEpiSig (binProdSig S S').
   Proof.
     use preserveEpi_binProdFunc.

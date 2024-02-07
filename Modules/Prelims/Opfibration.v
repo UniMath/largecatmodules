@@ -10,7 +10,7 @@ of this file)
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.MoreFoundations.PartA.
 Require Import UniMath.CategoryTheory.Core.Prelude.
-Require Import UniMath.CategoryTheory.limits.pullbacks.
+Require Import UniMath.CategoryTheory.Limits.Pullbacks.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.Equivalences.Core.
 Require Import UniMath.CategoryTheory.opp_precat.
@@ -22,8 +22,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Isos.
 Require Import UniMath.CategoryTheory.DisplayedCats.Univalence.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
-Require Import UniMath.CategoryTheory.limits.graphs.coequalizers.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Coequalizers.
 
 Local Open Scope cat.
 Local Open Scope type_scope.
@@ -291,7 +291,7 @@ Defined.
 
 Definition cocartesian_lifts_z_iso_commutes {C : category} {D : disp_cat C}
     {c'} {d' : D c'} {c : C} {f : c' --> c} (fd fd' : cocartesian_lift d' f)
-  : fd ;; (cocartesian_lifts_z_iso fd fd') 
+  : fd ;; (cocartesian_lifts_z_iso fd fd')
   = transportb _ (id_right _) (fd' : _ -->[_] _).
 Proof.
   cbn. apply cocartesian_factorisation_commutes'.

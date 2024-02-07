@@ -17,8 +17,8 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.BinProductComplements.
@@ -110,11 +110,11 @@ Section Binprod.
         rewrite id_right.
         apply idpath.
   Qed.
-      
+
   Definition signature_binProd : Signature := _ ,, signature_binProd_is_signature.
 
-  Lemma signature_binProductPr1_laws : 
-    is_signature_Mor signature_binProd a 
+  Lemma signature_binProductPr1_laws :
+    is_signature_Mor signature_binProd a
                  (fun R => BinProductPr1  _  (cpLM R (a R) (b R)   )).
   Proof.
     intros R S f.
@@ -128,8 +128,8 @@ Section Binprod.
     use (BinProductOfArrowsPr1 _  CC).
   Qed.
 
-  Lemma signature_binProductPr2_laws : 
-    is_signature_Mor signature_binProd b 
+  Lemma signature_binProductPr2_laws :
+    is_signature_Mor signature_binProd b
                  (fun R => BinProductPr2  _  (cpLM R (a R) (b R)   )).
   Proof.
     intros R S f.
@@ -143,10 +143,10 @@ Section Binprod.
     use (BinProductOfArrowsPr2 _  CC).
   Qed.
 
-  Definition signature_binProductPr1 : 
+  Definition signature_binProductPr1 :
     signature_Mor  signature_binProd a := _ ,, signature_binProductPr1_laws .
 
-  Definition signature_binProductPr2 : 
+  Definition signature_binProductPr2 :
     signature_Mor  signature_binProd b := _ ,, signature_binProductPr2_laws .
 
   (* TODO : move to Signature *)
@@ -154,7 +154,7 @@ Section Binprod.
              (cb : signature_Mor c b)
     :
     is_signature_Mor
-      c signature_binProd 
+      c signature_binProd
       (fun R => BinProductArrow  _  (cpLM R (a R) (b R)) (ca R) (cb R))  .
   Proof.
     intros R S f.
@@ -188,7 +188,7 @@ Section Binprod.
   Qed.
 
   Definition signature_binProductArrow {c : Signature} (ca :  signature_Mor c a )
-             (cb : signature_Mor c b) : 
+             (cb : signature_Mor c b) :
     signature_Mor c signature_binProd  := _ ,, signature_binProductArrow_laws ca cb.
 
   Lemma signature_isBinProduct : isBinProduct signature_category   _ _ _

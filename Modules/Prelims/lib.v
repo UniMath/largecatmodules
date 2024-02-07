@@ -20,11 +20,11 @@ Require Import UniMath.CategoryTheory.Epis.
 
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 Require Import UniMath.CategoryTheory.catiso.
 
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
@@ -103,8 +103,8 @@ Proof.
     apply id_right.
 Defined.
 
- 
-                 
+
+
 (** common generalization to [maponpaths] and [toforallpaths] *)
 
 Lemma changef_path   {T1 T2 : UU} (f g : T1 → T2) (t1 t2 : T1) :
@@ -122,9 +122,9 @@ Qed.
 
 
 (** Associativity of horizontal composition of natural transformations *)
-Lemma horcomp_assoc 
+Lemma horcomp_assoc
   : ∏ {B C D E : category} {H H' : functor B C}
-      {F F' : functor C D} {G G' : functor D E} 
+      {F F' : functor C D} {G G' : functor D E}
       (a : nat_trans H H') (b : nat_trans F F') (c : nat_trans G G') x,
     ((c ∙∙ b) ∙∙ a) x = (c ∙∙( b ∙∙ a)) x.
 Proof.
@@ -156,8 +156,8 @@ Qed.
 (*
 Lemma isEpi_pre_whisker (B C :precategory)(D : category)
       (G H : functor C D) (K : functor B C) (f : nat_trans G H)
-  : (∏ x, isEpi (f x)) 
-    -> 
+  : (∏ x, isEpi (f x))
+    ->
     isEpi (C:=functor_category B D )
           (x:= (G □ K)) (y:= (H □ K))
           (pre_whisker K f).
@@ -182,7 +182,7 @@ Lemma isEpi_post_whisker_pw (B :precategory)(C D : category)
   (KpreservesEpis : forall a b (g : (C ⟦ a, b⟧)%Cat), isEpi g -> isEpi ((#K g)%cat)) :
     (forall x, isEpi (C:=  _ ) (f x))
     -> ∏ b,
-    isEpi 
+    isEpi
             (post_whisker f K b).
 Proof.
   intros epif b.
@@ -209,7 +209,7 @@ Lemma isEpi_post_whisker_HSET (choice : AxiomOfChoice.AxiomOfChoice_surj)
       (B :precategory) (C:=hset_category) ( D : category)
       (G H : functor B C) (K : functor C D) (f : nat_trans G H) :
     (forall b, isEpi  (f b))
-    -> 
+    ->
     isEpi (C:=functor_category B D)
             (x:= (K □ G)) (y:= (K □ H))
             (post_whisker f K).
@@ -235,7 +235,7 @@ Proof.
   apply homset_property.
   intros;
     apply idpath.
-Qed.    
+Qed.
 *)
 
 
@@ -321,6 +321,6 @@ Lemma lock A x : x = locked x :> A.
 Proof.
   unfold locked.
   now destruct master_key.
-Qed.    
+Qed.
 
 *)

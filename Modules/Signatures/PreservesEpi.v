@@ -13,10 +13,10 @@ Require Import UniMath.Foundations.Sets.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
-Require Import UniMath.CategoryTheory.limits.binproducts.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
@@ -40,7 +40,7 @@ Require Import Modules.Signatures.SignatureBinproducts.
   (** An epi-signature preserves epimorphicity of natural
       transformations. Note that this is not implied by the axiom of choice
       because the retract may not be a monad morphism.
-      (see [algSig_NatEpi] in PresentableSignature for the example of algebraic signatures 
+      (see [algSig_NatEpi] in PresentableSignature for the example of algebraic signatures
    *)
 Definition sig_preservesNatEpiMonad {C : category} (c : signature C)
   : UU
@@ -70,8 +70,8 @@ Proof.
 Qed.
 
 (** Proof that an epiSig preserves natural epimorphicity *)
-Lemma epiSig_NatEpi {C : category} (S : Signature C 
-                                                  C 
+Lemma epiSig_NatEpi {C : category} (S : Signature C
+                                                  C
                                                   C)
       (epiS : preserves_Epi (S : functor _ _)) : sig_preservesNatEpiMonad (sigWithStrength_to_sig S).
 Proof.
@@ -90,7 +90,7 @@ Qed.
 Corollary  algSig_NatEpi (S : BindingSig)
   : sig_preservesNatEpiMonad
       (sigWithStrength_to_sig (C := SET)
-                 (BindingSigToSignature 
+                 (BindingSigToSignature
                                         BinProductsHSET
                                         BinCoproductsHSET TerminalHSET
                                         S
@@ -137,7 +137,7 @@ Proof.
   apply productEpis;[apply h1|apply h2]; exact epif.
 Defined.
 
-Definition binProd_epiSigSET 
+Definition binProd_epiSigSET
       (S1 S2 : signature SET)
       (h1 : sig_preservesNatEpiMonad_pw S1)
       (h2 : sig_preservesNatEpiMonad_pw S2)

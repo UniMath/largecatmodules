@@ -23,15 +23,15 @@ Require Import UniMath.CategoryTheory.Epis.
 
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import UniMath.CategoryTheory.SplitMonicsAndEpis.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
-Require Import UniMath.CategoryTheory.limits.coproducts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
 
 Require Import Modules.Prelims.lib.
 
@@ -96,15 +96,15 @@ Lemma productEpisFunc {B C : category} bpC
 Proof.
   red.
   intros a b f a' b' f' epif epif'.
-  apply is_nat_trans_epi_from_pointwise_epis. 
-  intro X. 
+  apply is_nat_trans_epi_from_pointwise_epis.
+  intro X.
   apply prEpi; apply pwEpi;[exact epif| exact epif'].
 Qed.
 
-                                                          
+
 (**
  morphisms between  colimits of same shape preserve epis *)
-Lemma colimOfArrows_Epi 
+Lemma colimOfArrows_Epi
            {C : precategory} {g : graph} {d1 d2 : diagram g C}
            (CC1 : ColimCocone d1) (CC2 : ColimCocone d2)
            (f : ∏ u : vertex g, C ⟦ dob d1 u, dob d2 u ⟧)
@@ -155,7 +155,7 @@ Qed.
 
 (** Again, a corrollary, in principle *)
 Lemma bincoproduct_Epis {C : category} {a b a' b'}
-      (ab : BinCoproduct a b) 
+      (ab : BinCoproduct a b)
       (a'b' : BinCoproduct a' b')
       (f : C ⟦a , a'⟧)(g : C ⟦b , b'⟧)
       (epif : isEpi f)(epig : isEpi g) :
@@ -267,7 +267,7 @@ Proof.
   apply product_epis; [apply epiF|apply epiG]; exact epif.
 Qed.
 
-Definition preserveEpi_binProdFuncSET {B  : category} 
+Definition preserveEpi_binProdFuncSET {B  : category}
       (F F' : functor B SET) :
   preserves_Epi F -> preserves_Epi F' -> preserves_Epi (BinProduct_of_functors _ _ _ F F') :=
   preserveEpi_binProdFunc productEpisSET F F'.
@@ -291,7 +291,7 @@ Qed.
 
 
 (** a corollary *)
-Lemma preserveEpi_sumFuncs {B C : category} {I : UU}(cp : Coproducts I C) 
+Lemma preserveEpi_sumFuncs {B C : category} {I : UU}(cp : Coproducts I C)
       Fs (epiFs : ∏ i, preserves_Epi (Fs i)) :
     preserves_Epi (coproduct_of_functors  I B C cp Fs).
 Proof.
@@ -303,7 +303,7 @@ Proof.
 Qed.
 
 (** Corollary *)
-Lemma preserveEpi_binCoprodFunc {B C : category} (bcp : BinCoproducts C) 
+Lemma preserveEpi_binCoprodFunc {B C : category} (bcp : BinCoproducts C)
       Fs Gs (epiFs : preserves_Epi Fs)(epiGs : preserves_Epi Gs) :
     preserves_Epi (BinCoproduct_of_functors B C bcp  Fs Gs).
 Proof.
@@ -329,7 +329,7 @@ Lemma preserves_Epi_option {B : category} (bcp : BinCoproducts B) (T : Terminal 
 Proof.
   intros R S f epif.
   intros c u v eq.
-  apply BinCoproductArrowsEq; [apply (identity_isEpi _ (x := T))| apply epif]; 
+  apply BinCoproductArrowsEq; [apply (identity_isEpi _ (x := T))| apply epif];
     do 2 rewrite assoc;
     [erewrite <- BinCoproductOfArrowsIn1|erewrite <- BinCoproductOfArrowsIn2];
     do 2 rewrite <- assoc;

@@ -39,8 +39,8 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Core.Prelude.
-Require Import UniMath.CategoryTheory.limits.pushouts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Pushouts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
@@ -68,7 +68,7 @@ If there is a morphism f : x → y  in C, then there is a unique morphism over f
 *)
   Definition disp_InitialArrow {x y : C} {xx : dC x} {yy : dC y}
         (init : isInitial  (fiber_category _ _) xx)
-        (f : C ⟦ x, y ⟧) := 
+        (f : C ⟦ x, y ⟧) :=
                                             transportf _ (id_left f)
                                             (iscontrpr1 (init _);; (cl _ _ f yy ))%mor_disp.
 
@@ -92,7 +92,7 @@ If there is a morphism f : x → y  in C, then there is a unique morphism over f
       apply (maponpaths (fun x => (x;; _)%mor_disp)) .
       apply iscontr_uniqueness.
   Qed.
-  
+
 
   Context
           {c0 c1 c2 c' : C}

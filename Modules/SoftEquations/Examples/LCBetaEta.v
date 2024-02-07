@@ -51,15 +51,15 @@ Some results:
 Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
 Require Import UniMath.CategoryTheory.catiso.
 
 Require Import UniMath.Foundations.Sets.
@@ -93,10 +93,10 @@ Require Import Modules.SoftEquations.quotientequation.
 Require Import Modules.Prelims.BinProductComplements.
 Require Import Modules.Prelims.CoproductsComplements.
 
-Require Import UniMath.CategoryTheory.limits.initial.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Initial.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import Modules.SoftEquations.SignatureOverBinproducts.
 Require Import Modules.SoftEquations.BindingSig.
 
@@ -104,8 +104,8 @@ Require Import Modules.SoftEquations.BindingSig.
 
 Local Notation θ := (tautological_signature).
 Local Notation τ := (tautological_LModule).
-Local Notation BPO := (limits.binproducts.BinProductObject _ ).
-Local Notation CPO := (limits.coproducts.CoproductObject _ _ ).
+Local Notation BPO := (Limits.BinProducts.BinProductObject _ ).
+Local Notation CPO := (Limits.Coproducts.CoproductObject _ _ ).
 Local Notation ι := (sig_over_from_sig _).
 
 
@@ -124,7 +124,7 @@ Local Infix "××" :=  (signature_BinProduct (cpC := bpC)  ) (at level 20).
 
 
 (** The LC algebraic signature is to Θ' + Θ × Θ
-The binding signature [LamSig] is defined in UniMath as [1], [0,0] 
+The binding signature [LamSig] is defined in UniMath as [1], [0,0]
  *)
 Definition LamOneSig := binding_to_one_sig bpC bcpC cpC TC LamSig.
 
@@ -139,13 +139,13 @@ Lemma source_app_iso :
       (arity_to_one_sig bpC bcpC TC (BindingSigMap LamSig appIdx))
       (BPO (θ ×× θ)).
 Proof.
-  eapply iso_comp; [ use binprod_sigs_har_iso|use BinProduct_pw_iso]; cbn ; apply tauto_sigs_har_iso. 
+  eapply iso_comp; [ use binprod_sigs_har_iso|use BinProduct_pw_iso]; cbn ; apply tauto_sigs_har_iso.
 Defined.
 
 (** The next lemmas show that the arity of abs is isomorphic to θ' *)
 Definition arity_abs := arity_to_one_sig bpC bcpC TC (BindingSigMap LamSig absIdx).
 
-Lemma arity_abs_mod_eq_mult R c : 
+Lemma arity_abs_mod_eq_mult R c :
   (ModulesFromSignatures.lift_lm_mult (Arity_to_Signature bpC bcpC TC (BindingSigMap LamSig absIdx)) R (τ R) :
   nat_trans _ _) c =
   (nat_trans_comp (whiskering.post_whisker (Derivative.deriv_dist TC bcpC R) (θ R))
@@ -158,7 +158,7 @@ Qed.
 
 Lemma arity_abs_eq (R S : Monad C) (f : Monad_Mor R S) (c : C) :
   (signature_deriv_on_morphisms bcpC TC θ R S f) c =
-  ((lift_lmodule_mor (Arity_to_Signature bpC bcpC TC (BindingSigMap LamSig absIdx)) R (monad_mor_to_lmodule f) c) · 
+  ((lift_lmodule_mor (Arity_to_Signature bpC bcpC TC (BindingSigMap LamSig absIdx)) R (monad_mor_to_lmodule f) c) ·
 
    (lift_pb_LModule (Arity_to_Signature bpC bcpC TC (BindingSigMap LamSig absIdx)) f) c).
 Proof.
@@ -179,7 +179,7 @@ Proof.
 Defined.
 
 
-    
+
 
 (**
 The first beta half-equation:
@@ -189,7 +189,7 @@ The first beta half-equation:
 θ' × θ -------> θ × θ ---> θ
 >>>
 *)
-Lemma abs_app_halfeq : signature_over_Mor (binding_to_one_sig bpC bcpC cpC TC LamSig) 
+Lemma abs_app_halfeq : signature_over_Mor (binding_to_one_sig bpC bcpC cpC TC LamSig)
                                           (ι (BPO ((∂ θ) ×× θ)))
                                           (ι θ).
 Proof.
@@ -200,7 +200,7 @@ Proof.
       apply (inv_from_iso (C := signature_category)).
       apply source_app_iso.
     + eapply compose;[|apply  signature_over_BinProducts_commutes_sig].
-      eapply (compose );[apply inv_from_iso, signature_over_BinProducts_commutes_sig|]. 
+      eapply (compose );[apply inv_from_iso, signature_over_BinProducts_commutes_sig|].
       apply BinProductOfArrows.
       * eapply compose; [apply sig_sig_over_mor, (inv_from_iso (C := signature_category)), source_abs_iso|].
         apply bindingSig_op_to_sig_mor.
@@ -214,7 +214,7 @@ The first eta half-equation:
 θ  -----> θ' -----> θ
 >>>
 *)
-Definition in_abs_halfeq : signature_over_Mor (binding_to_one_sig bpC bcpC cpC TC LamSig) 
+Definition in_abs_halfeq : signature_over_Mor (binding_to_one_sig bpC bcpC cpC TC LamSig)
                                           (ι θ)
                                           (ι θ).
 Proof.
@@ -229,9 +229,9 @@ Defined.
 End BindingSigOp.
 
 
-Local Notation BP := (BinProductsHSET : limits.binproducts.BinProducts SET).
-Local Notation BCP := (BinCoproductsHSET : limits.bincoproducts.BinCoproducts SET).
-Local Notation T := (TerminalHSET : limits.terminal.Terminal SET).
+Local Notation BP := (BinProductsHSET : Limits.BinProducts.BinProducts SET).
+Local Notation BCP := (BinCoproductsHSET : Limits.BinCoproducts.BinCoproducts SET).
+Local Notation T := (TerminalHSET : Limits.Terminal.Terminal SET).
 Local Notation CP := (CoproductsHSET).
 Local Notation "∂" := (signature_deriv BCP T).
 
@@ -312,9 +312,9 @@ Definition LCBetaEta : Initial
   (category_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
-                         LamOneSigHSET_epiSig 
+                         LamOneSigHSET_epiSig
                          (beta_eta_equations o))
-                 ). 
+                 ).
 Proof.
   use  elementary_equations_on_alg_preserve_initiality.
 Defined.

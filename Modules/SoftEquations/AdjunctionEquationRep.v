@@ -24,12 +24,12 @@ More generally, the forgetful functor from 2-models to 1-models has a left adjoi
 Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.Subcategory.Core.
 Require Import UniMath.CategoryTheory.Subcategory.Full.
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
@@ -57,7 +57,7 @@ Require Import Modules.Signatures.BindingSig.
 Require Import Modules.SoftEquations.BindingSig.
 
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 
 
 Local Notation  "R →→ S" := (rep_fiber_mor R S) (at level 6).
@@ -199,12 +199,12 @@ Section QuotientRepInit.
 End QuotientRepInit.
 
 (** As a corrolary, the case of an algebraic signature *)
-Definition elementary_equations_on_alg_preserve_initiality 
+Definition elementary_equations_on_alg_preserve_initiality
           (S : BindingSig) (Sig := binding_to_one_sigHSET S)
 
            (O : UU) (eq : O → elementary_equation (Sig := Sig))
            (R := bindingSigHSET_Initial S : Initial (rep_fiber_category Sig))
-           (iniEpi :=  algebraic_model_Epi S : preserves_Epi (InitialObject R : model Sig)) 
+           (iniEpi :=  algebraic_model_Epi S : preserves_Epi (InitialObject R : model Sig))
            (epiSig := algSig_NatEpi S)
            (SR_epi := BindingSigAreEpiEpiSig S)
            (** A family of equations *)
@@ -216,7 +216,7 @@ Definition elementary_equations_on_alg_preserve_initiality
 
 
 (** A version using the axiom of choice *)
-Lemma soft_equations_preserve_initiality_choice 
+Lemma soft_equations_preserve_initiality_choice
   (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) :
 
          ∏ (** The 1-signature *)
@@ -236,7 +236,7 @@ Qed.
 
 
 (** A version using the axiom of choice *)
-Lemma elementary_equations_preserve_initiality_choice 
+Lemma elementary_equations_preserve_initiality_choice
   (ax_choice : AxiomOfChoice.AxiomOfChoice_surj) :
 
          ∏ (** The 1-signature *)
@@ -254,7 +254,7 @@ Lemma elementary_equations_preserve_initiality_choice
          Initial (category_model_equations
                     (fun o =>
                        soft_equation_from_elementary_equation
-                         epiSig 
+                         epiSig
                          (eq o))
                  ).
   intros; use soft_equations_preserve_initiality_choice;  assumption.

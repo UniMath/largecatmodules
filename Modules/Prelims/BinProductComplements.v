@@ -14,21 +14,21 @@ Require Import UniMath.SubstitutionSystems.SignatureCategory.
 Require Import UniMath.SubstitutionSystems.BinProductOfSignatures.
 
 Require Import UniMath.CategoryTheory.Core.Prelude.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.CategoryTheory.Epis.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.EpiFacts.
 
 Open Scope cat.
 
 Section BinProdComplements.
   Context {C : category}.
-  
+
   Definition BinProductOfArrows_eq (CC : BinProducts C) a b c d (f f' : a --> c) (g g' : b --> d)
     : f = f' → g = g' →
       BinProductOfArrows _ _ _ f g = BinProductOfArrows _ (CC _ _) (CC _ _) f' g'.
@@ -37,8 +37,8 @@ Section BinProdComplements.
     induction 1.
     apply idpath.
   Qed.
-  
-  
+
+
   Definition BinProduct_commutative {a b : C} (bpab : BinProduct _ a b) (bpba : BinProduct _ b a)
     : C ⟦BinProductObject _ bpab, BinProductObject _ bpba ⟧
    := BinProductArrow C bpba (BinProductPr2 C bpab) (BinProductPr1 C bpab).
@@ -68,13 +68,13 @@ Section BinProdComplements.
   Definition BinProduct_pw_iso_mor {a b a' b' : C} (bp_ab : BinProduct _ a b)
              (bp_ab' : BinProduct _ a' b') (isoa : iso a a') (isob : iso b b') :
     C ⟦ BPO bp_ab, BPO bp_ab'⟧ :=
-    BinProductOfArrows C bp_ab' bp_ab isoa isob. 
+    BinProductOfArrows C bp_ab' bp_ab isoa isob.
 
   Lemma BinProduct_pw_eq_id  {a b a' b' : C} (bp_ab : BinProduct _ a b)
              (bp_ab' : BinProduct _ a' b') (isoa : iso a a') (isob : iso b b') :
     BinProduct_pw_iso_mor bp_ab bp_ab' isoa isob · BinProduct_pw_iso_mor bp_ab' bp_ab
-                          (iso_inv_from_iso isoa) 
-                          (iso_inv_from_iso isob) = 
+                          (iso_inv_from_iso isoa)
+                          (iso_inv_from_iso isob) =
     identity (BPO bp_ab).
   Proof.
    etrans;[apply postcompWithBinProductArrow|].
@@ -92,7 +92,7 @@ Section BinProdComplements.
   Proof.
     - use make_is_inverse_in_precat.
       + apply BinProduct_pw_eq_id.
-      + 
+      +
         etrans.
         {
         apply cancel_precomposition.

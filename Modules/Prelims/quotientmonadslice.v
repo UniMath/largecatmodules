@@ -4,21 +4,21 @@
 
 (* ----------------------------------------------------------------------------------- *)
 (** Description: This module construct the quotient of a monad (on Set) with respect to
-    some elements of its coslice category 
+    some elements of its coslice category
     More precisely: let (f_j : R --> d_j) for j in a (possibly large) set J be a collection of
     morphisms of monads. We quotient R(X) by the following relation: x ~ y
-    if and only if for all j, f_j(x) = f_j(y) 
+    if and only if for all j, f_j(x) = f_j(y)
 
     Pairs of related elements can be characterized as the (possibly large) limit L of the
-    following diagram in the category of endofunctors: 
+    following diagram in the category of endofunctors:
 <<<
   R ----> d_j
    \      ^
     \     |
      \    /
       \  /
-        / .. 
-       / 
+        / ..
+       /
       /  \
      /    \
     /     |
@@ -39,7 +39,7 @@ Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
@@ -54,7 +54,7 @@ Local Notation "'SET'" := hset_category.
 Local Notation "F ;;; G" := (nat_trans_comp _ _ _ F G) (at level 35).
 
 Open Scope cat.
-    
+
 
 Section QuotientMonad.
 
@@ -138,8 +138,8 @@ Qed.
 
 Let R' := R'  congr_equivc.
 Let projR := projR  congr_equivc.
-(** Two elements that are equal in the quotient 
-    get mapped to equal elements by any morphism 
+(** Two elements that are equal in the quotient
+    get mapped to equal elements by any morphism
     of actions
 *)
 Lemma compat_slice (j : J) ( m := ff j)
@@ -164,13 +164,13 @@ Proof.
   apply (quotientmonad.u_def).
 Qed.
 
-Lemma u_def_nt (j : J) :  (ff j : nat_trans _ _) = (compose (C := [SET,SET]) (projR : nat_trans _ _)  (u j))  . 
+Lemma u_def_nt (j : J) :  (ff j : nat_trans _ _) = (compose (C := [SET,SET]) (projR : nat_trans _ _)  (u j))  .
 Proof.
   apply quotientmonad.u_def_nt.
 Qed.
 
 (** We show that the relation induced by a morphism of models
-    satisfies the conditions necessary to induce a quotient monad 
+    satisfies the conditions necessary to induce a quotient monad
 *)
 Corollary compat_μ_slice : compat_μ_projR_def congr_equivc.
 Proof.
@@ -210,7 +210,7 @@ Proof.
     do 3 apply maponpaths.
     exact (!hxy).
 Qed.
-  
+
 (** Short notations for the quotient monad and the projection as a monad morphism *)
 Definition R'_monad : Monad SET := R'_monad R_epi congr_equivc compat_μ_slice.
 Definition projR_monad
@@ -229,6 +229,6 @@ Proof.
 Qed.
 
 End QuotientMonad.
-  
+
 Arguments projR : simpl never.
 Arguments R' : simpl never.

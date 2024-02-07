@@ -1,7 +1,7 @@
 (**
 pullback of coproducts
  Coproducts of arities using LModule Coproducts (more
-conveninent than LModule.Colims) 
+conveninent than LModule.Colims)
  *)
 Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
@@ -15,8 +15,8 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.CoproductsComplements.
@@ -95,10 +95,10 @@ Section Coprod.
       rewrite id_right.
       apply idpath.
   Qed.
-      
+
   Definition signature_coprod : Signature := _ ,, signature_coprod_is_signature.
 
-  Lemma signature_coproductIn_laws o : 
+  Lemma signature_coproductIn_laws o :
     is_signature_Mor (α o) signature_coprod
                  (fun R => CoproductIn  _ _  (cpLM R (fun o => α o R)) o  ).
   Proof.
@@ -114,7 +114,7 @@ Section Coprod.
     use (CoproductOfArrowsIn _ _ CC).
   Qed.
 
-  Definition signature_coproductIn o : 
+  Definition signature_coproductIn o :
     signature_Mor  (α o) signature_coprod := _ ,, signature_coproductIn_laws o.
 
   (* TODO : move to Signature *)

@@ -26,13 +26,13 @@ Require Import Modules.Prelims.LModulesComplements.
 Require Import Modules.Prelims.LModulesBinProducts.
 Require Import Modules.Prelims.DerivationIsFunctorial.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.bincoproducts.
-Require Import UniMath.CategoryTheory.limits.terminal.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
+Require Import UniMath.CategoryTheory.Limits.Terminal.
 Require Import UniMath.CategoryTheory.PrecategoryBinProduct.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.UnitorsAndAssociatorsForEndofunctors.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 
 (* Question pour Benedikt : est ce bien utile ce abstract (exact HH) *)
@@ -59,7 +59,7 @@ This is defined as M' x R -> MR -> M
   Local Notation bpS := BinProductsHSET.
   Local Notation bcpS := BinCoproductsHSET.
   Local Notation T := TerminalHSET.
-  Local Notation hsS := has_homsets_HSET. 
+  Local Notation hsS := has_homsets_HSET.
 Section substitution.
   Context {R : Monad SET}.
   Local Infix "+" := setcoprod : set_scope.
@@ -71,7 +71,7 @@ Section substitution.
   Local Notation TFunc := (option_functor bcpS T).
 
   Definition pre_subst_nt_data (M : functor SET SET) (X : hSet)
-             (* already known (isasetcoprod) but needed 
+             (* already known (isasetcoprod) but needed
   otherwise pre_subst_is_nat_trans does not typecheck*)
              {h : isaset (coprod unit X)}
                                                           :
@@ -104,7 +104,7 @@ pre_sub_X|                            | pre_subst_Y
 but this is the same as the following diagram, when seeing t as a morphism 1 -> RX
 <<<
                 M(1+f)
-       M(1+X)  -------------->    M (1+Y) 
+       M(1+X)  -------------->    M (1+Y)
          |                            |
          |                            |
  M[η,t]  |                            | M[η,Rf∘t]
@@ -128,7 +128,7 @@ and now we show the same diagram without the application of M
     cbn -[isasetcoprod]; unfold pre_subst_nt_data ; cbn -[isasetcoprod].
     etrans;rewrite comp_cat_comp.
     apply idpath.
-    
+
     revert x.
     use toforallpaths.
     do 2 rewrite <- (functor_comp M).
@@ -176,13 +176,13 @@ and now we show the same diagram without the application of M
 t : 1 --> RRX
 top right is right hand side
 <<<
-       x         M[t,η]    
+       x         M[t,η]
     M(1+RX) -----------------------------> MRR X
         |                                     |
         |                                     |
         |                                     | σ_RX
         |                                     |
-M[ηi1,Ri2]|                                   M RX 
+M[ηi1,Ri2]|                                   M RX
         |                                     |
         |                                     | σ
         V                                     V
@@ -193,7 +193,7 @@ M[ηi1,Ri2]|                                   M RX
 by naturality of σ_R, we can rewrite the bottom arrow:
 <<<
 MR(1+X) --------> M(1+X) ----> MRX
-          σ_1+X        M[μ∘t,η]  
+          σ_1+X        M[μ∘t,η]
 >>>
 
 as
@@ -226,8 +226,8 @@ and then we eliminate the application of M
     intros x.
     induction x as [p|x]; cbn -[isasetcoprod].
     -  pose (t' := (fun _ => t) : SET ⟦unitset , R (R X)⟧).
-      (* 
-       i1       
+      (*
+       i1
     1 ---> 1 + X
     |         |
  η  |         | η
@@ -238,11 +238,11 @@ and then we eliminate the application of M
 donc ça donne
 1 ---> R 1 ---------> R R R X ------->  R R X --> R X
   η         R t                 R μ          μ
-et encoer par naturalité de η,                 
+et encoer par naturalité de η,
 1 ---> R R X ---------> R R R X ------->  R R X --> R X
   t          η t                 R μ             μ
 et on utilise les 2 lois de monades
-         
+
 *)
       etrans; revgoals.
       {
@@ -345,7 +345,7 @@ et on utilise les 2 lois de monades
     revert x.
     apply toforallpaths.
     apply pathsinv0.
-    apply (nat_trans_ax m). 
+    apply (nat_trans_ax m).
   Qed.
 
   Definition substitution_nat_trans : nat_trans (∂ ∙ ×ℜ) (functor_identity _)
@@ -365,7 +365,7 @@ Section DerivCounit.
 
   Local Notation hsC := (homset_property C).
 
-    
+
   (* functors that are in stake *)
   Local Notation LMOD_bp := (LModule_BinProducts R bpC).
   Local Notation "∂" := (LModule_deriv_functor (TerminalObject T) bcpC R).
@@ -441,13 +441,13 @@ Top right is right hand side.
   T --------------> R(T+X)
   |                  |
 in|     composition  |  id
-  |                  |   
+  |                  |
   V                  V
   T+RX ----------> R(T+X)
   |    [f,Rin₂]      ^
-  |                  |   
+  |                  |
 η |     nat of η     |   μ
-  |   & monad law    |   
+  |   & monad law    |
   V                  |
 R(T+RX) -------> RR(T+X)
         R[f,Rin₂]
@@ -458,7 +458,7 @@ R(T+RX) -------> RR(T+X)
     {
       apply cancel_precomposition.
       etrans;[apply assoc|].
-      (* η natural & monad law *) 
+      (* η natural & monad law *)
       etrans.
       - (* η natural *)
         apply cancel_postcomposition.
@@ -652,7 +652,7 @@ Section derivadj.
   Defined.
 
 
-  
+
 End derivadj.
 Section Functoriality.
   Local Notation LMOD_bp := (LModule_BinProducts _ bpS hsS).
@@ -782,7 +782,7 @@ Local Lemma adj_law2 :
    (u : LModule_Mor R M (pb_LModule f A))
    (v : LModule_Mor S A (Derivative.LModule_deriv TerminalHSET BinCoproductsHSET B)),
    (adj1 R M (pb_LModule f B))
-     ((u : (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M, pb_LModule f A ⟧) · 
+     ((u : (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ M, pb_LModule f A ⟧) ·
       pb_LModule_Mor f v · (λ (R0 S0 : Monad SET) (f0 : Monad_Mor R0 S0),
                             (* LModPbCommute.pb_deriv_to_deriv_pb_iso *)
                             pb_LModule_deriv_iso
@@ -799,7 +799,7 @@ Local Lemma adj_law2 :
       (λ R0 : Monad SET, precategory_LModule R0 SET) R ⟦ tautological_LModule R,
       pb_LModule f (tautological_LModule S) ⟧) · (λ (R0 S0 : Monad SET) (f0 : Monad_Mor R0 S0),
                                                   binprod_pbm_to_pbm_iso f0) R S f A
-                                                   (tautological_LModule S) · 
+                                                   (tautological_LModule S) ·
    pb_LModule_Mor f ((adj1 S A B) v)).
 Proof.
   intros.

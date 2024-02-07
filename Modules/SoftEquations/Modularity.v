@@ -4,7 +4,7 @@
 Suppose we have the following pushout diagram in the category of 2-signatures:
 <<<
                 f1
-       a0 ------------>  a1 
+       a0 ------------>  a1
        |                 |
        |                 |
    f2  |                 | g2
@@ -12,8 +12,8 @@ Suppose we have the following pushout diagram in the category of 2-signatures:
        |                 |
        |                 |
        V                 V
-       a2 ------------>  a' 
-                 g1 
+       a2 ------------>  a'
+                 g1
 >>>
 
 such that a0, a1, a2 and a' are effective with initial models
@@ -21,7 +21,7 @@ R0, R1, R2 and R'. Then, above this pushout there is a pushout square in the
 large category of models:
 <<<
                 ff1
-       R0 ------------>  R1 
+       R0 ------------>  R1
        |                 |
        |                 |
   ff2  |                 | gg2
@@ -29,8 +29,8 @@ large category of models:
        |                 |
        |                 |
        V                 V
-       R2 ------------>  R' 
-                 gg1 
+       R2 ------------>  R'
+                 gg1
 >>>
 
 
@@ -43,8 +43,8 @@ Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 
-Require Import UniMath.CategoryTheory.limits.pushouts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Pushouts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
@@ -70,10 +70,10 @@ Definition pushout_in_big_rep
 
            (** and syntaxes for each of the signatures *)
            {R0 : two_model_disp a0} {R1 : two_model_disp a1} {R2 : two_model_disp a2} {R' : two_model_disp a'}
-           (repr_R0 : isInitial  (fiber_category _ _) R0)  
+           (repr_R0 : isInitial  (fiber_category _ _) R0)
            (repr_R1 : isInitial  (fiber_category _ _) R1)
            (repr_R2 : isInitial  (fiber_category _ _) R2)
-           (repr_R' : isInitial  (fiber_category _ _) R') 
+           (repr_R' : isInitial  (fiber_category _ _) R')
            (** Then the initial morphisms induce a pushout in the total category *)
   :  isPushout (TT (ι f1))
                (TT (ι f2))

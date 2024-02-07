@@ -21,12 +21,12 @@ equations, then it is also the case for R'.
 Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
@@ -64,7 +64,7 @@ Context (epiSig : sig_preservesNatEpiMonad Sig).
 
 (** Definition of a soft Sig-module
 
-It is a soft module Σ such that for any model R, and any family of model morphisms 
+It is a soft module Σ such that for any model R, and any family of model morphisms
 (f_j : R --> d_j), the following triangle can be completed in the category
 of natural transformations (from Σ(S) to Σ(d_j)):
 
@@ -89,7 +89,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
       (J : UU)(d : J -> (model Sig))(f : ∏ j, R →→ (d j))
       X (x y : (OSig R X : hSet)) (pi := projR_rep Sig epiSig  R_epi SigR_epi d f),
     (∏ j, (# OSig (f j))%sigo X x  = (# OSig (f j))%sigo X y )
-      -> (# OSig pi X x)%sigo = 
+      -> (# OSig pi X x)%sigo =
         (# OSig pi X y)%sigo  .
 
   Local Notation REP := (model Sig).
@@ -172,7 +172,7 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   Context (R_epi : preserves_Epi R).
   Context (SigR_epi : preserves_Epi (Sig R)).
 
-  Context {J : UU} (d : J -> REP) 
+  Context {J : UU} (d : J -> REP)
             (ff : ∏ (j : J), R →→ (d j)).
 
   (** R' is the 1-model R quotiented by the following relation on R(X):
@@ -224,8 +224,8 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
   (** R' can be thus given the structure of a 2-model *)
   Definition R'_model_equations {O : UU} (e : O -> soft_equation)
     (deq : ∏ j, satisfies_all_equations_hp e (d j))
-    : model_equations e 
-    := R' ,, R'_satisfies_all_equations e deq. 
+    : model_equations e
+    := R' ,, R'_satisfies_all_equations e deq.
 
 
   (** ** Definition of elementary equations
@@ -235,11 +235,11 @@ where π : R -> S is the canonical projection (S is R quotiented by the family (
 
   (** An elementary equation
 
-The source is an epi-Sig-module and the target a finite derivative of the tautological signature 
+The source is an epi-Sig-module and the target a finite derivative of the tautological signature
 
    *)
   Definition elementary_equation : UU :=
-    ∑ (S1 : signature_over Sig)(n : nat), isEpi_overSig S1 × half_equation S1 (θ ^(n)) × half_equation S1 (θ ^(n)). 
+    ∑ (S1 : signature_over Sig)(n : nat), isEpi_overSig S1 × half_equation S1 (θ ^(n)) × half_equation S1 (θ ^(n)).
 
   (** The Sig-module source of a soft equation *)
   Definition source_elem_eq (e : elementary_equation) : signature_over Sig :=
@@ -251,12 +251,12 @@ The source is an epi-Sig-module and the target a finite derivative of the tautol
   Local Notation σ' := source_elem_eq.
   Local Notation τ' := target_elem_eq.
 
-  Definition source_elem_epiSig (e : elementary_equation) : isEpi_overSig (σ' e) := 
+  Definition source_elem_epiSig (e : elementary_equation) : isEpi_overSig (σ' e) :=
     pr1 (pr2 (pr2 e)).
 
   Definition half_elem_eqs (e : elementary_equation) :
     half_equation (σ' e) (θ ^(τ' e)) ×
-    half_equation (σ' e) (θ ^(τ' e)) 
+    half_equation (σ' e) (θ ^(τ' e))
     :=
     pr2 (pr2 (pr2 e)).
 
@@ -273,7 +273,7 @@ The source is an epi-Sig-module and the target a finite derivative of the tautol
 
 End QuotientRep.
 
-Definition soft_equation_choice (choice : AxiomOfChoice.AxiomOfChoice_surj) (S : signature SET) 
+Definition soft_equation_choice (choice : AxiomOfChoice.AxiomOfChoice_surj) (S : signature SET)
             (** S preserves epimorphisms of monads *)
            (isEpi_sig : sig_preservesNatEpiMonad S)
          : UU :=

@@ -4,8 +4,8 @@ In this file :
 
 - Proof that HSET has effective epis
 
-- Proof that given a category D with pushouts, if a natural transformation 
-between two functors of codomain D is an epi, then it is pointwise an epi 
+- Proof that given a category D with pushouts, if a natural transformation
+between two functors of codomain D is an epi, then it is pointwise an epi
 (Colims_pw_epi).
 
 
@@ -19,7 +19,7 @@ to the previously mentionned for surjections.
 - Proof that pointwise epimorphisms of signature preserve representability
  if the domain is an epi-signature
 
-Section leftadjoint : 
+Section leftadjoint :
 Preuve d'André à traduire.
 
 *)
@@ -34,17 +34,17 @@ Require Import UniMath.CategoryTheory.Adjunctions.Core.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import Modules.Prelims.EpiComplements.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fiber.
 Require Import UniMath.CategoryTheory.DisplayedCats.Fibrations.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 
 Require Import Modules.Signatures.Signature.
@@ -60,17 +60,17 @@ Set Automatic Introduction.
 
 
 Section all_purpose.
-  
-(** First a general-purpose lemma: 
-    equal monad morphisms are mapped to 
+
+(** First a general-purpose lemma:
+    equal monad morphisms are mapped to
     equal module morphisms by any
     signature
 *)
 Lemma cancel_ar_on {sig : signature SET}
-      {T : Monad SET} 
+      {T : Monad SET}
       {S' : Monad SET}
       (m m' : Monad_Mor T S')
-      (X : SET) 
+      (X : SET)
   : m = m' ->  (# sig)%ar m X = (# sig)%ar m' X .
 Proof.
   intro e; induction e.
@@ -100,7 +100,7 @@ Proof.
     + apply choice.
     + apply hf.
 Qed.
-   
+
 
 End all_purpose.
 
@@ -134,20 +134,20 @@ Context (ab_epi : preserves_Epi (a ( R : model _)) ⨿ (∏ S, preserves_Epi (b 
 Local Notation "## F" := (pr1 (pr1 F))(at level 3).
 
 (**
-On any set X we define the following equivalence relation on R X : 
+On any set X we define the following equivalence relation on R X :
    x ~ y
 iff for any model morphism f : R -> F*(S) (where S is a b-model)
   f x = f y.
 
 
-We will show that this relation satisfies the conditions necessary to 
+We will show that this relation satisfies the conditions necessary to
 define the quotient of a monad, and of a module over a monad.
 
 *)
 
 
 (** Define two elements in R to be related if they are mapped
-    to the same element by any morphism f of models 
+    to the same element by any morphism f of models
 *)
 
 
@@ -163,7 +163,7 @@ Arguments projR : simpl never.
 
 Section Instantiating_Quotient_Constructions.
 
-(** We define short identifiers for the quotient constructions for 
+(** We define short identifiers for the quotient constructions for
     functors, monads, and modules (defined in previous files),
     for the equivalence relation induced by a morphism of models [m]
     over a morphism of arities [F].
@@ -217,7 +217,7 @@ End Instantiating_Quotient_Constructions.
 
 (** Some helper lemmas *)
 
-(** Any morphism of representations factors, 
+(** Any morphism of representations factors,
     as a monad morphism, via the monad projection *)
 Lemma Rep_mor_is_composition
       {S : REP b} (m : R -->[ F] S)
@@ -230,7 +230,7 @@ Proof.
     apply (u_def m).
 Qed.
 
-(** 
+(**
 <<
                  model_τ R
             a R  ----->  R
@@ -248,9 +248,9 @@ Qed.
 
 Lemma eq_mr
       {S : REP b} (m : R -->[ F] S) (X : SET)
-  : model_τ R X · pr1 (## m) X 
+  : model_τ R X · pr1 (## m) X
     =
-    pr1 (# a projR)%ar X · (F (R' ))%ar X 
+    pr1 (# a projR)%ar X · (F (R' ))%ar X
         ·
         pr1 (# b (u m))%ar X · model_τ S X.
 Proof.
@@ -338,7 +338,7 @@ The diagonal of the following square, which commutes by naturality of F:
 
 where π := projR
 
-The R-module morphism 
+The R-module morphism
     #a R · Pullback (π)(F R') : a(R) ---> π^*(b R')
 *)
 Definition hab :
@@ -364,14 +364,14 @@ Qed.
                τ
     a(R) -----------------> R
      |                      |
-hab  |                      | π 
+hab  |                      | π
      |                      |
      v                      v
    π^*(b R')                R'
 
 >>
 *)
-Lemma compat_model_τ_projR 
+Lemma compat_model_τ_projR
   : ∏ (X : SET) x y,
     (pr1 hab) X x
     (* =       ( pr1 (# a projR )%ar X ;; (F `` R') X) y *)
@@ -386,7 +386,7 @@ Proof.
   apply rel_eq_projR.
   intros [S m].
   assert (h := eq_mr m X); apply toforallpaths in h.
-  etrans; [ apply h |].  
+  etrans; [ apply h |].
   apply pathsinv0.
   etrans; [ apply h |].
   cbn.
@@ -425,7 +425,7 @@ Proof.
 Qed.
 
 
-Definition R'_model_τ_module 
+Definition R'_model_τ_module
   : LModule_Mor _ (b R') (tautological_LModule R') .
 Proof.
   use quotientrep.R'_model_τ_module; revgoals.
@@ -434,7 +434,7 @@ Proof.
   - apply ab_epi2.
 Defined.
 
-(** 
+(**
 <<
            a(π)
     a(R)-------> a(R')
@@ -443,17 +443,17 @@ Defined.
      |            v
    τ |           b(R')
      |            |
-     |            | τ 
+     |            | τ
      v            v
      R ---------> R'
-          π 
+          π
 >>
 *)
 
-Definition R'_model_τ_def 
+Definition R'_model_τ_def
   : ∏ (X : SET),
-    (# a (projR)%ar) X · (F R') X · R'_model_τ_module X  
-    = 
+    (# a (projR)%ar) X · (F R') X · R'_model_τ_module X
+    =
     model_τ R X · projR X .
 Proof.
   intro X.
@@ -491,7 +491,7 @@ Context {S : REP b} (m : R -->[ F] S).
 Context (cond_F : cond_isEpi_hab).
 
 Open Scope signature_scope.
-  
+
 
 (* TODO  : foutre ça dans quotientrep *)
 Lemma u_rep_laws
@@ -529,7 +529,7 @@ Proof.
 Qed.
 
 
-Definition u_rep : (rep_of_b_in_R' cond_F) -->[identity (b: CAT_SIGNATURE)] S 
+Definition u_rep : (rep_of_b_in_R' cond_F) -->[identity (b: CAT_SIGNATURE)] S
   := _ ,, u_rep_laws.
 
 
@@ -548,7 +548,7 @@ Proof.
     + apply has_homsets_HSET.
     + intro X.
       apply hu'.
-Qed.      
+Qed.
 
 
 End uModel.
@@ -578,12 +578,12 @@ Proof.
   intros u' x.
   apply pathsinv0.
   etrans ; [
-      apply (@transport_signature_mor SET a a 
+      apply (@transport_signature_mor SET a a
                                   (identity (a:CAT_SIGNATURE) · identity (a:CAT_SIGNATURE))
-                                  (identity (a:CAT_SIGNATURE)) (id_right (identity (a:CAT_SIGNATURE))) 
-                                  R 
+                                  (identity (a:CAT_SIGNATURE)) (id_right (identity (a:CAT_SIGNATURE)))
+                                  R
                                   (FF S)
-                                  _ 
+                                  _
             ) |].
   apply (cancel_precomposition HSET _ _ _ _ _ ((projR R _ x))).
   cbn.
@@ -594,7 +594,7 @@ Qed.
 Lemma u_rep_universal (R : model _)
     (Repi : preserves_Epi (R : model a))
     (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-    (cond_R : 
+    (cond_R :
        (isEpi (C := [_, _]) (pr1 (F (R' _ Repi) )) × sig_preservesNatEpiMonad a)
          ⨿ (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × sig_preservesNatEpiMonad b))
   :
@@ -603,10 +603,10 @@ Lemma u_rep_universal (R : model _)
     (projR_rep R Repi epiab cond_R).
 Proof.
     intros S m. cbn in S, m.
-    use unique_exists. 
-    + unshelve use (u_rep _ _ _ m). 
+    use unique_exists.
+    + unshelve use (u_rep _ _ _ m).
     + (* Ici ca devrait être apply quotientmonad.u_def *)
-      apply pathsinv0. 
+      apply pathsinv0.
       apply model_mor_mor_equiv.
       intro x.
       etrans. { apply u_def. }
@@ -621,10 +621,10 @@ Proof.
 Qed.
 
 Theorem push_initiality_weaker
-        (R : Rep_a) 
+        (R : Rep_a)
         (R_epi : preserves_Epi ( R : model _))
         (epiab :  preserves_Epi (a (R : model _)) ⨿ (∏ S : Monad SET, preserves_Epi (b S)))
-        (cond_R : 
+        (cond_R :
            (isEpi (C := [_, _]) (pr1 (F (R' _ R_epi) )) × sig_preservesNatEpiMonad a)
              ⨿ (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × sig_preservesNatEpiMonad b))
   : isInitial _ R -> Initial Rep_b.
@@ -637,7 +637,7 @@ Qed.
 
 Theorem push_initiality
         (** R is a model of a *)
-        (R : Rep_a) 
+        (R : Rep_a)
         (R_epi : preserves_Epi ( R : model _))
         (epiaR :  preserves_Epi (a (R : model _)))
         (** a is an epi-signature *)
@@ -682,17 +682,17 @@ Definition is_right_adjoint_functor_of_reps
 Proof.
   set (cond_F := fun R R_epi => inl ((Fepi R R_epi),, aepi) : cond_isEpi_hab R R_epi).
   use right_adjoint_left_from_partial.
-  - intro R. 
+  - intro R.
     use (rep_of_b_in_R' R _ _ (cond_F R _ )).
     + apply epiall.
-    + apply ii1. 
+    + apply ii1.
       apply epiall.
   - intro R. apply projR_rep.
   - intro R.
     apply u_rep_universal.
 Qed.
-  
-Corollary is_right_adjoint_functor_of_reps_from_pw_epi 
+
+Corollary is_right_adjoint_functor_of_reps_from_pw_epi
             (aepi : sig_preservesNatEpiMonad a)
            (epiall : ∏ (R : functor SET SET), preserves_Epi R)
           (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)
@@ -705,7 +705,7 @@ Proof.
   - intros; apply Fepi.
 Qed.
 
-Corollary is_right_adjoint_functor_of_reps_from_pw_epi_choice 
+Corollary is_right_adjoint_functor_of_reps_from_pw_epi_choice
            (choice : AxiomOfChoice.AxiomOfChoice_surj)
            (aepi : sig_preservesNatEpiMonad a)
           (Fepi : forall R : Monad SET, isEpi (C:=functor_precategory HSET HSET has_homsets_HSET)

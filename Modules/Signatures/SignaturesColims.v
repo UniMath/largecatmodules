@@ -14,8 +14,8 @@ Require Import UniMath.MoreFoundations.Tactics.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.whiskering.
-Require Import UniMath.CategoryTheory.limits.graphs.limits.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Limits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
@@ -26,11 +26,11 @@ Require Import Modules.Prelims.CoproductsComplements.
 Local Open Scope cat.
 
 (*
-Lemma compfNat 
-   {C : precategory} {g : graph} {d1 d2 d3 : diagram g C}  
-   
+Lemma compfNat
+   {C : precategory} {g : graph} {d1 d2 d3 : diagram g C}
+
    {f : ∏ u : vertex g, C ⟦ dob d1 u, dob d2 u ⟧}
-  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e) 
+  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e)
    {f2 : ∏ u : vertex g, C ⟦ dob d2 u, dob d3 u ⟧}
    (fNat2 : ∏ (u v : vertex g) (e : edge u v), dmor d2 e · f2 v = f2 u · dmor d3 e)
    (f3 := fun u => f u · f2 u)
@@ -47,12 +47,12 @@ Qed.
 *)
 (*
 Lemma compColimOfArrows
-   (C : precategory) (g : graph) (d1 d2 d3 : diagram g C) (CC1 : ColimCocone d1) 
+   (C : precategory) (g : graph) (d1 d2 d3 : diagram g C) (CC1 : ColimCocone d1)
    (CC2 : ColimCocone d2)(CC3 : ColimCocone d3)
    (f : ∏ u : vertex g, C ⟦ dob d1 u, dob d2 u ⟧)
-  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e) 
+  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e)
    (f2 : ∏ u : vertex g, C ⟦ dob d2 u, dob d3 u ⟧)
-  (fNat2 : ∏ (u v : vertex g) (e : edge u v), dmor d2 e · f2 v = f2 u · dmor d3 e) 
+  (fNat2 : ∏ (u v : vertex g) (e : edge u v), dmor d2 e · f2 v = f2 u · dmor d3 e)
   (x : C) (cc : cocone d2 x) :
   colimOfArrows CC1 CC2 f fNat · colimOfArrows CC2 CC3 f2 fNat2 =
   colimOfArrows CC1 CC3 (fun z => f z · f2 z) (compfNat  fNat fNat2).
@@ -70,7 +70,7 @@ Lemma compColimOfArrows
 
   reflexivity.
 .fNat · colimOfArrows CC2 CC3 f2 fNat2 .
-  colimOfArrows CC1 CC3 (fun 
+  colimOfArrows CC1 CC3 (fun
   colimArrow CC1 x
     (make_cocone (λ u : vertex g, f u · coconeIn cc u)
        (preCompWithColimOfArrows_subproof CC1 CC2 f fNat x cc)).
@@ -80,8 +80,8 @@ Lemma compColimOfArrows
 (* TODO déplacer ça dans Signature.v *)
 
 Section ColimsSig.
-  
-  Context 
+
+  Context
           {C : category}
           {g : graph} (colims_g : Colims_of_shape g C)
           (lims_g : Lims_of_shape g C).
@@ -197,7 +197,7 @@ Section ColimsSig.
       cbn.
       now rewrite id_right.
   Qed.
-  
+
   Lemma Sig_lim_is_signature : is_signature Sig_lim_signature_data.
   Proof.
     split.
@@ -263,8 +263,8 @@ Section ColimsSig.
 
 
 
-  Lemma Sig_coconeIn_laws v : 
-    is_signature_Mor 
+  Lemma Sig_coconeIn_laws v :
+    is_signature_Mor
                       (dob d v : signature  _)  Sig_colim
       (fun R => (coconeIn (colimCocone (coMod R (d' R))) v   )).
   Proof.
@@ -280,10 +280,10 @@ Section ColimsSig.
     cbn.
     apply (colimArrowCommutes cc2).
   Qed.
-  
-  Lemma Sig_coneOut_laws v : 
-    is_signature_Mor 
-                  Sig_lim    (dob d v : signature  _)  
+
+  Lemma Sig_coneOut_laws v :
+    is_signature_Mor
+                  Sig_lim    (dob d v : signature  _)
       (fun R => (coneOut (limCone (limMod R (d' R))) v   )).
   Proof.
     intros X Y f.
@@ -360,10 +360,10 @@ Section ColimsSig.
     cbn.
     apply signature_Mor_ax_pw.
   Qed.
-  
+
   Lemma Sig_limArrow_laws {M : signature C} (cc : cone d M) :
     is_signature_Mor
-      M  (  Sig_lim) 
+      M  (  Sig_lim)
       (fun R => limArrow  (limMod R (d' R)) (M R) (mapcone (FORGET R) d cc)  ).
   Proof.
     intros R S f.
@@ -425,7 +425,7 @@ Section ColimsSig.
       intro u.
       apply (  maponpaths (fun z => pr1 z R) (h u)).
   Defined.
-  
+
   Lemma Sig_isLimCone : isLimCone _ _ Sig_lim_cone.
     intros M cc.
     use unique_exists.

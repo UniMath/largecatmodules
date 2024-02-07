@@ -21,8 +21,8 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.binproducts.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.Limits.BinProducts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
 
 Require Import Modules.Prelims.lib.
 
@@ -119,11 +119,11 @@ Section Binprod.
         rewrite id_right.
         apply idpath.
   Qed.
-      
+
   Definition signature_over_binProd : signature_over Sig := _ ,, signature_over_binProd_is_signature_over.
 
-  Lemma signature_over_binProductPr1_laws : 
-    is_signature_over_Mor _ signature_over_binProd a 
+  Lemma signature_over_binProductPr1_laws :
+    is_signature_over_Mor _ signature_over_binProd a
                  (fun R => BinProductPr1  _  (cpLM R (a R) (b R)   )).
   Proof.
     intros R S f.
@@ -137,8 +137,8 @@ Section Binprod.
     use (BinProductOfArrowsPr1 _  CC).
   Qed.
 
-  Lemma signature_over_binProductPr2_laws : 
-    is_signature_over_Mor _ signature_over_binProd b 
+  Lemma signature_over_binProductPr2_laws :
+    is_signature_over_Mor _ signature_over_binProd b
                  (fun R => BinProductPr2  _  (cpLM R (a R) (b R)   )).
   Proof.
     intros R S f.
@@ -152,10 +152,10 @@ Section Binprod.
     use (BinProductOfArrowsPr2 _  CC).
   Qed.
 
-  Definition signature_over_binProductPr1 : 
+  Definition signature_over_binProductPr1 :
     signature_over_Mor  _ signature_over_binProd a := _ ,, signature_over_binProductPr1_laws .
 
-  Definition signature_over_binProductPr2 : 
+  Definition signature_over_binProductPr2 :
     signature_over_Mor  _ signature_over_binProd b := _ ,, signature_over_binProductPr2_laws .
 
   (* TODO : move to Signature_Over *)
@@ -163,7 +163,7 @@ Section Binprod.
              (cb : signature_over_Mor _ c b)
     :
     is_signature_over_Mor
-      _ c signature_over_binProd 
+      _ c signature_over_binProd
       (fun R => BinProductArrow  _  (cpLM R (a R) (b R)) (ca R) (cb R))  .
   Proof.
     intros R S f.
@@ -197,7 +197,7 @@ Section Binprod.
   Qed.
 
   Definition signature_over_binProductArrow {c : signature_over _} (ca :  signature_over_Mor _ c a )
-             (cb : signature_over_Mor _ c b) : 
+             (cb : signature_over_Mor _ c b) :
     signature_over_Mor _ c signature_over_binProd  := _ ,, signature_over_binProductArrow_laws ca cb.
 
   Lemma signature_over_isBinProduct : isBinProduct (signature_over_category _)  _ _ _
@@ -303,14 +303,14 @@ Definition signature_over_BinProducts
             : BinProducts (signature_over_category (C := C) Sig) :=
    signature_over_BinProduct (cpC := cpC) Sig.
 
-Definition signature_over_BinProducts_commutes_sig 
+Definition signature_over_BinProducts_commutes_sig
            {C : category}
            (cpC : BinProducts C) (Sig : signature C)
            (a b : signature C) :
   (* iso (C := signature_over_category Sig) *)
-   iso (C := signature_over_category Sig) 
+   iso (C := signature_over_category Sig)
       (BPO (signature_over_BinProducts cpC _ (ι a) (ι b))) (ι (BPO (signature_BinProducts cpC a b))).
-      
+
 Proof.
   use signature_over_S1_S2_iso.
 Defined.

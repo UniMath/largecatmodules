@@ -14,8 +14,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
@@ -29,9 +29,9 @@ Require Import Modules.Signatures.RawSigToHAr.
 Require Import Modules.Signatures.PresentableHArityCoproducts.
 Require Import Modules.Signatures.PresentableArity.
 Require  Modules.Signatures.FullSignatures.
-Require Import UniMath.CategoryTheory.categories.category_hset.
+Require Import UniMath.CategoryTheory.Categories.category_hset.
 
-Require Import UniMath.CategoryTheory.categories.category_hset_structures.
+Require Import UniMath.CategoryTheory.Categories.category_hset_structures.
 Module FAr := FullSignatures.
 
 Section RawSigRep.
@@ -54,14 +54,14 @@ Local Notation EndSet := [hset_category, hset_category].
 
     (** This uses univalence to transform an isomorphism of category into an equality
        Another proof could be used without univalence though
-       
+
      *)
   Lemma initial_presentable_raw_sig (ax:  AxiomOfChoice.AxiomOfChoice_surj): Initial (precategory_rep_sig (rawSigToSig rawsig)).
   Proof.
     eapply (transportb (fun X => Initial X)).
     apply catiso_to_precategory_path.
     - intros ? ? .
-      apply isaset_rep_a_sig_mor. 
+      apply isaset_rep_a_sig_mor.
     - unshelve apply iso_a_sig_har_rep.
       apply cp.
       apply setproperty.

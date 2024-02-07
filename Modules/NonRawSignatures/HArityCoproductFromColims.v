@@ -17,8 +17,8 @@ Require Import UniMath.CategoryTheory.DisplayedCats.Auxiliary.
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
 Require Import UniMath.CategoryTheory.DisplayedCats.Constructions.
 
-Require Import UniMath.CategoryTheory.limits.coproducts.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.Limits.Coproducts.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
 
 Require Import Modules.Prelims.lib.
 Require Import Modules.Prelims.modules.
@@ -110,7 +110,7 @@ Section pullback_coprod.
     etrans;[apply assoc|].
 
     etrans;[apply id_left|apply id_right].
-  
+
   Definition coprod_pbm_to_pbm_coprod : LModule_Mor  _ coprod_pbm pbm_coprod.
     use tpair.
     - use tpair

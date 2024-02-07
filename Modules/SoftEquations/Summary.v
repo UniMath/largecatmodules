@@ -7,13 +7,13 @@ Tip: The Coq command [About ident] prints where the ident was defined
 Require Import UniMath.Foundations.PartD.
 
 Require Import UniMath.CategoryTheory.Monads.Monads.
-Require Import UniMath.CategoryTheory.Monads.LModules. 
+Require Import UniMath.CategoryTheory.Monads.LModules.
 Require Import UniMath.CategoryTheory.Monads.Derivative.
 Require Import UniMath.CategoryTheory.SetValuedFunctors.
 Require Import UniMath.CategoryTheory.HorizontalComposition.
 Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
-Require Import UniMath.CategoryTheory.categories.HSET.All.
+Require Import UniMath.CategoryTheory.Categories.HSET.All.
 
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Epis.
@@ -35,7 +35,7 @@ Require Import Modules.SoftEquations.Equation.
 Require Import Modules.SoftEquations.quotientrepslice.
 Require Import Modules.SoftEquations.quotientequation.
 
-Require Import UniMath.CategoryTheory.limits.initial.
+Require Import UniMath.CategoryTheory.Limits.Initial.
 Require Import Modules.SoftEquations.AdjunctionEquationRep.
 
 Require Import UniMath.CategoryTheory.DisplayedCats.Core.
@@ -55,7 +55,7 @@ Local Notation MODULE R := (LModule R SET).
 (**
 The command:
 
-Check (x ::= y) 
+Check (x ::= y)
 
 succeeds if and only if [x] is convertible to [y]
 
@@ -232,9 +232,9 @@ Check (∏ (S : SIGNATURE)
                    isEpi (C := [SET, SET]) (# F f : nat_trans _ _)%sigo
        ).
 
-(** Definition of a soft-over signature (SoftEquations/quotientequation.v) 
+(** Definition of a soft-over signature (SoftEquations/quotientequation.v)
 
-It is a signature Σ such that for any model R, and any family of model morphisms 
+It is a signature Σ such that for any model R, and any family of model morphisms
 (f_j : R --> d_j), the following diagram can be completed in the category
 of natural transformations:
 
@@ -268,7 +268,7 @@ Check (∏ (S : SIGNATURE)
             X (x y : (F R X : hSet))
             (pi := projR_rep S isEpi_sig R_epi SR_epi d f),
           (∏ j, (# F (f j))%sigo X x  = (# F (f j))%sigo X y )
-          -> (# F pi X x)%sigo = 
+          -> (# F pi X x)%sigo =
             (# F pi X y)%sigo  )
        ).
 
@@ -320,14 +320,14 @@ Check (∏ (S : SIGNATURE)
          (** but not that *)
          epiSig
          (e : elementary_equation),
-       (soft_equation_from_elementary_equation epiSig  e  : soft_equation _ 
+       (soft_equation_from_elementary_equation epiSig  e  : soft_equation _
        ) ::=
-         mk_soft_equation epiSig 
+         mk_soft_equation epiSig
                           (half_elem_eqs e)  (source_elem_epiSig e)
                           (isSoft_finite_deriv_tauto epiSig  (target_elem_eq e))).
 
 
-(** 
+(**
 Definition of the category of 2-models of a 1-signature with a family of equation.
 
 It is the full subcategory of 1-models satisfying all the equations
@@ -366,7 +366,7 @@ Check (∏ (S : SIGNATURE)
                          (satisfies_all_equations_hp e)).
 
 
-(** *********************** 
+(** ***********************
 
 Our main result : if a 1-signature Σ generates a syntax, then the 2-signature over Σ
 consisting of any family of soft equations over Σ also generates a syntax
@@ -374,7 +374,7 @@ consisting of any family of soft equations over Σ also generates a syntax
 
 *)
 Check (@soft_equations_preserve_initiality :
-         ∏ 
+         ∏
            (Sig : SIGNATURE)
            (** S is an epi-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
@@ -385,7 +385,7 @@ Check (@soft_equations_preserve_initiality :
            (** this is implied by the axiom of choice *)
          preserves_Epi (InitialObject R : model Sig) ->
          preserves_Epi (Sig (InitialObject R : model Sig)) ->
-         
+
         (** .. then the category of 2-models has an initial object *)
          Initial (category_model_equations eq)).
 
@@ -393,7 +393,7 @@ Check (@soft_equations_preserve_initiality :
 
 (** As a corrolary, the case of a family of elementary equations *)
 Check (@elementary_equations_preserve_initiality :
-         ∏ 
+         ∏
            (Sig : SIGNATURE)
            (** (1) The 1-signature must be an epi-signature
             *)
@@ -429,7 +429,7 @@ any model preserves epis, , we can prove that
 the forgetful functor from 2-models (of a fixed 2-signature)
    to 1-models has a left adjoint *)
 Check (@ModEq_Mod_is_right_adjoint :
-         ∏ 
+         ∏
            (Sig : SIGNATURE)
            (** (1) S is an epi-signature *)
            (epiSig : sig_preservesNatEpiMonad Sig)
@@ -446,7 +446,7 @@ Check (@ModEq_Mod_is_right_adjoint :
 Note that an epimorphic monad morphism may not be epimorphic as a natural transformation.
 
 A natural transformation is epimorphic if and only if it is pointwise epimorphic.
-Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because 
+Thus, Hypotheses (2) and (3) are implied by the axiom of choice (because
 any epimorphism has a section). Hypothesis (1) does not seem to be implied
 by the axiom of choice. Note that even with the axiom of choice, there are some
 epimorphic natural transformations which don't have a retract
@@ -465,13 +465,13 @@ completion of the following diagram (so that the canonical projection π is a mo
          π π |           | π
              v           v
             R' R'        R'
-                  
+
 >>
 where R' is the quotient monad. This definition requires that π π = R' π ∘ π R = π R' ∘ R π
 is an epimorphism, and this is implied by R π being an epi. Hence the requirement that R preserves epis
 (since π is indeed an epi, as a canonical projection)
 
-- to show that Σ_R' preserves epi in when showing that 
+- to show that Σ_R' preserves epi in when showing that
     the Σ-action of the quotient monad is a module morphism (see diagram (Act) below)
 
 
@@ -483,15 +483,15 @@ is an epimorphism, and this is implied by R π being an epi. Hence the requireme
 <<
             Σ_π
      Σ_R -----------> Σ_R'
-     |                 
-     |                 
-  τ_R|                 
-     |                 
-     V                 
+     |
+     |
+  τ_R|
+     |
+     V
      R ------------->  R'
            π
 >>
-where R' is the quotient monad. This definition requires that Σ π 
+where R' is the quotient monad. This definition requires that Σ π
 is an epimorphism, hence the requirement that Σ sends epimorphic natural transformations
 to epimorphisms (π is indeed an epimorphic natural transformation, as a canonical projection)
 
@@ -502,7 +502,7 @@ to epimorphisms (π is indeed an epimorphic natural transformation, as a canonic
   case of the monad R .
   Indeed, I need to show that the following diagram commutes:
 <<
-                          
+
      Σ_R' R' -----------> Σ_R'
         |                 |
         |                 |

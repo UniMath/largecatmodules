@@ -26,8 +26,8 @@ Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 
 Require Import UniMath.CategoryTheory.whiskering.
-Require Import UniMath.CategoryTheory.limits.graphs.limits.
-Require Import UniMath.CategoryTheory.limits.graphs.colimits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Limits.
+Require Import UniMath.CategoryTheory.Limits.Graphs.Colimits.
 Require Import UniMath.CategoryTheory.Monads.Monads.
 Require Import UniMath.CategoryTheory.Monads.LModules.
 
@@ -37,11 +37,11 @@ Require Import UniMath.CategoryTheory.Monads.LModules.
 Local Open Scope cat.
 
 (*
-Lemma compfNat 
-   {C : precategory} {g : graph} {d1 d2 d3 : diagram g C}  
-   
+Lemma compfNat
+   {C : precategory} {g : graph} {d1 d2 d3 : diagram g C}
+
    {f : ∏ u : vertex g, C ⟦ dob d1 u, dob d2 u ⟧}
-  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e) 
+  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e)
    {f2 : ∏ u : vertex g, C ⟦ dob d2 u, dob d3 u ⟧}
    (fNat2 : ∏ (u v : vertex g) (e : edge u v), dmor d2 e · f2 v = f2 u · dmor d3 e)
    (f3 := fun u => f u · f2 u)
@@ -58,12 +58,12 @@ Qed.
 *)
 (*
 Lemma compColimOfArrows
-   (C : precategory) (g : graph) (d1 d2 d3 : diagram g C) (CC1 : ColimCocone d1) 
+   (C : precategory) (g : graph) (d1 d2 d3 : diagram g C) (CC1 : ColimCocone d1)
    (CC2 : ColimCocone d2)(CC3 : ColimCocone d3)
    (f : ∏ u : vertex g, C ⟦ dob d1 u, dob d2 u ⟧)
-  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e) 
+  (fNat : ∏ (u v : vertex g) (e : edge u v), dmor d1 e · f v = f u · dmor d2 e)
    (f2 : ∏ u : vertex g, C ⟦ dob d2 u, dob d3 u ⟧)
-  (fNat2 : ∏ (u v : vertex g) (e : edge u v), dmor d2 e · f2 v = f2 u · dmor d3 e) 
+  (fNat2 : ∏ (u v : vertex g) (e : edge u v), dmor d2 e · f2 v = f2 u · dmor d3 e)
   (x : C) (cc : cocone d2 x) :
   colimOfArrows CC1 CC2 f fNat · colimOfArrows CC2 CC3 f2 fNat2 =
   colimOfArrows CC1 CC3 (fun z => f z · f2 z) (compfNat  fNat fNat2).
@@ -81,7 +81,7 @@ Lemma compColimOfArrows
 
   reflexivity.
 .fNat · colimOfArrows CC2 CC3 f2 fNat2 .
-  colimOfArrows CC1 CC3 (fun 
+  colimOfArrows CC1 CC3 (fun
   colimArrow CC1 x
     (make_cocone (λ u : vertex g, f u · coconeIn cc u)
        (preCompWithColimOfArrows_subproof CC1 CC2 f fNat x cc)).
@@ -90,7 +90,7 @@ Lemma compColimOfArrows
 (* TODO déplacer ça dans LModule.v *)
 
 Section ColimsModule.
-  Context 
+  Context
           {C : category}
           {g : graph} (colims_g : Colims_of_shape g C)
           (lims_g : Lims_of_shape g C)
@@ -120,7 +120,7 @@ Section ColimsModule.
   Definition LModule_colim_mult_data (x : B) : C ⟦ (R ∙ F) x, F x ⟧.
     use colimOfArrows.
     - intro v.
-       exact ( lm_mult R (dob d v : LModule _ _) x). 
+       exact ( lm_mult R (dob d v : LModule _ _) x).
     - intros u v e.
       cbn.
         now apply  LModule_Mor_σ.
@@ -129,7 +129,7 @@ Section ColimsModule.
   Definition LModule_lim_mult_data (x : B) : C ⟦ (R ∙ F') x, F' x ⟧.
     use limOfArrows.
     - intro v.
-       exact ( lm_mult R (dob d v : LModule _ _) x). 
+       exact ( lm_mult R (dob d v : LModule _ _) x).
     - intros u v e.
       cbn.
       apply pathsinv0.
@@ -143,7 +143,7 @@ Section ColimsModule.
     - intro v.
       eapply compose; revgoals.
       + apply (colimIn _ v).
-      + exact ( lm_mult R (dob d v : LModule _ _) x). 
+      + exact ( lm_mult R (dob d v : LModule _ _) x).
     - intros u v e.
       cbn.
       (*
@@ -193,7 +193,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     apply colimArrowUnique.
     intro v.
     cbn.
-    
+
     apply pathsinv0.
     etrans;[apply assoc|].
     etrans.
@@ -201,7 +201,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       apply cancel_postcomposition.
       apply (nat_trans_ax (lm_mult R (dob d v : LModule _ _))).
     }
-    
+
     apply pathsinv0.
     etrans;[apply assoc|].
     etrans.
@@ -232,7 +232,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     apply limArrowUnique.
     intro v.
     cbn.
-    
+
     (* apply pathsinv0. *)
     etrans;[|apply assoc].
     etrans; revgoals.
@@ -241,7 +241,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
       apply pathsinv0.
       apply (nat_trans_ax (lm_mult R (dob d v : LModule _ _))).
     }
-    
+
     apply pathsinv0.
     etrans;[|apply assoc].
     etrans; revgoals.
@@ -269,7 +269,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
 
   Definition LModule_lim_mult : R ∙ F' ⟹ F' :=
     (_ ,, LModule_lim_mult_is_nat_trans).
-  
+
 
   Definition LModule_colim_data : LModule_data R C :=
     (F ,, LModule_colim_mult).
@@ -395,7 +395,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
   Definition LModule_colim : LModule R C := (_ ,, LModule_colim_laws).
   Definition LModule_lim : LModule R C := (_ ,, LModule_lim_laws).
 
-  Lemma LModule_coconeIn_laws v : 
+  Lemma LModule_coconeIn_laws v :
     LModule_Mor_laws R
                      (T := (dob d v : LModule _ _)) (T' := LModule_colim)
       ((coconeIn (colimCocone (coFunc d')) v : nat_trans _ _) ).
@@ -407,9 +407,9 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
     set (CC2 := colims_g _ ).
     apply (colimOfArrowsIn _ _ CC1 CC2).
   Defined.
-  Lemma LModule_coneOut_laws v : 
+  Lemma LModule_coneOut_laws v :
     LModule_Mor_laws R
-                    (T := LModule_lim) (T' := (dob d v : LModule _ _)) 
+                    (T := LModule_lim) (T' := (dob d v : LModule _ _))
       ((coneOut (limCone (limFunc d')) v : nat_trans _ _) ).
   Proof.
     intro c.
@@ -474,7 +474,7 @@ qu'on complète par propriété de [d e] en temps que morphisme de module
 
   Definition LModule_limArrow_laws {M : LModule R C} (cc : cone d M) :
     LModule_Mor_laws
-      _ (T := M)(T' := LModule_lim) 
+      _ (T := M)(T' := LModule_lim)
       (limArrow  (limFunc d') (M : functor _ _) (@mapcone (category_LModule R C) _ FORGET _ d _ cc) : nat_trans _ _ ).
   Proof.
     intro c.
@@ -566,12 +566,12 @@ Definition LModule_Lims_of_shape (C : category) {B : category}
            (d : diagram g (category_LModule R C))
             : LimCone d :=
   LModule_LimCone  lims_g d.
-                                         
+
 
 
 
 Section pullback_lims.
-  Context 
+  Context
           {D : category}
           {g : graph} (colims_g : Colims_of_shape g D)
           (lims_g : Lims_of_shape g D)
