@@ -31,6 +31,7 @@ Require Import UniMath.CategoryTheory.Chains.Chains.
 Require Import UniMath.CategoryTheory.Chains.Adamek.
 Require Import UniMath.CategoryTheory.Chains.OmegaCocontFunctors.
 Require Import UniMath.CategoryTheory.FunctorAlgebras.
+Require UniMath.SubstitutionSystems.SubstitutionSystems.
 Require Import UniMath.SubstitutionSystems.LiftingInitial_alt.
 Require Import UniMath.SubstitutionSystems.ModulesFromSignatures.
 Require Import UniMath.SubstitutionSystems.SignatureCategory.
@@ -85,7 +86,7 @@ Section EpiSignatureSig.
     := hss_initial_arrow_mon hsig b,, hss_initial_arrow_law hsig b.
 
   Local Notation EndAlg sig :=
-    (FunctorAlg (Id_H HSET BinCoproductsHSET ( sig))).
+    (FunctorAlg (SubstitutionSystems.Id_H HSET BinCoproductsHSET ( sig))).
 
   Local Notation M_alg := (ModulesFromSignatures.M_alg HSET BinCoproductsHSET).
 
@@ -94,7 +95,7 @@ Section EpiSignatureSig.
         (hsig : is_omega_cocont sig)
              (b : model (sigWithStrength_to_sig sig))
              (t : (rep_disp SET) [{(sigWithStrength_to_sig sig)}] ⟦ hss_initial_model hsig, b ⟧) :
-    is_algebra_mor (Id_H HSET  BinCoproductsHSET ( sig))
+    is_algebra_mor (SubstitutionSystems.Id_H HSET  BinCoproductsHSET ( sig))
                    (pr1 (pr1 (iniHSS sig hsig)))
                    (M_alg sig b (model_τ b))
                    (pr1 (pr1 t)).
@@ -150,7 +151,7 @@ Section EpiSignatureSig.
         (Colimits.ColimsFunctorCategory_of_shape nat_graph
            HSET HSET (ColimsHSET_of_shape nat_graph)
            (initChain (Initial_functor_precat HSET HSET InitialHSET)
-              (Id_H HSET BinCoproductsHSET ( sig)))))
+              (SubstitutionSystems.Id_H HSET BinCoproductsHSET ( sig)))))
      (ModulesFromSignatures.M_alg HSET BinCoproductsHSET ( sig) b (model_τ b)))).
 
     specialize (h (rep_mor_to_alg_mor hsig b t)).
