@@ -202,8 +202,7 @@ Section EpiSignatureSig.
       + intros n ar HI m epi_ar.
         intros M N f epif.
         unfold ArToSig,  Arity_to_Signature.
-        rewrite 2!map_cons.
-        rewrite foldr1_cons.
+        rewrite foldr1_map_cons.
         apply isEpi_binProdSig.
         * apply precompEpiFunc.
         * exact epi_ar.
@@ -224,8 +223,7 @@ Section EpiSignatureSig.
       + intros n ar HI m epi_ar.
         intros R epiR.
         unfold ArToSig,  Arity_to_Signature.
-        rewrite 2!map_cons.
-        rewrite foldr1_cons.
+        rewrite foldr1_map_cons.
         apply preserveEpi_binProdFunc.
         * apply productEpisSET.
         * apply precompEpiEpiFunc.
