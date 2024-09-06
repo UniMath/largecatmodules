@@ -693,7 +693,7 @@ f' x|f               | f
     etrans;[ eapply h|].
     cbn -[isasetcoprod].
     apply maponpaths.
-    set (ff := fun x => _).
+    set (ff := fun (x : unit ⨿ X) => _).
     set (bp := BinCoproductsHSET).
     assert (h' := nat_trans_ax f (bp unitHSET X) _ ff).
     apply toforallpaths in h'.
@@ -766,7 +766,7 @@ Proof.
   cbn -[isasetcoprod].
   apply maponpaths.
   apply maponpaths.
-  set (ff := fun x => _).
+  set (ff := λ (x : unit ⨿ (X : hSet)), _).
   set (bp := BinCoproductsHSET).
   apply pathsinv0.
   assert (h' := nat_trans_ax v (bp unitHSET X) _ ff).
@@ -811,7 +811,7 @@ Proof.
   intros[x y].
   apply maponpaths.
   unfold pre_subst_nt_data,prodtofuntoprod; cbn -[isasetcoprod].
-  set (ff :=  (fun z => _)).
+  set (ff :=  fun (z : unit ⨿ (X : hSet)) => _).
   set (bp := BinCoproductsHSET).
   assert (h :=  functor_comp B  (a := bp unitHSET _) ff (f X)).
   set (vv := (v X (u X x))).
