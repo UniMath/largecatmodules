@@ -31,6 +31,7 @@ Require Import UniMath.CategoryTheory.Core.Prelude.
 Require Import UniMath.CategoryTheory.FunctorCategory.
 Require Import UniMath.CategoryTheory.whiskering.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
+Require Import UniMath.CategoryTheory.Adjunctions.Reflections.
 Require Import UniMath.CategoryTheory.Epis.
 Require Import UniMath.CategoryTheory.EpiFacts.
 Require Import Modules.Prelims.EpiComplements.
@@ -597,25 +598,21 @@ Lemma u_rep_universal (R : model _)
     (cond_R :
        (isEpi (C := [_, _]) (pr1 (F (R' _ Repi) )) × sig_preservesNatEpiMonad a)
          ⨿ (isEpi (C := [_, _]) (pr1 (F (pr1 R))) × sig_preservesNatEpiMonad b))
-  :
-
-  is_universal_arrow_to FF R (rep_of_b_in_R' R Repi epiab cond_R)
-    (projR_rep R Repi epiab cond_R).
+  : is_reflection (make_reflection_data (F := FF) (rep_of_b_in_R' R Repi epiab cond_R)
+    (projR_rep R Repi epiab cond_R)).
 Proof.
-    intros S m. cbn in S, m.
-    use unique_exists.
-    + unshelve use (u_rep _ _ _ m).
+    intro m.
+    use make_reflection_arrow.
+    + unshelve use (u_rep _ _ _ (m : Rep_a⟦_, _⟧)).
     + (* Ici ca devrait être apply quotientmonad.u_def *)
-      apply pathsinv0.
       apply model_mor_mor_equiv.
       intro x.
-      etrans. { apply u_def. }
-      use (helper _ Repi epiab _ _ (u_rep R _ _ m cond_R)).
-    + intro y; apply homset_property.
+      refine (u_def _ _ _ _ @ _).
+      exact (helper _ Repi epiab _ _ (u_rep R _ _ (m : Rep_a⟦_, _⟧) cond_R) _).
     + intros u' hu'.
       hnf in hu'.
       apply u_rep_unique.
-      rewrite <- hu'.
+      rewrite hu'.
       intro x.
       apply helper.
 Qed.
@@ -632,7 +629,7 @@ Proof.
   intro iniR.
   eapply tpair.
   eapply (initial_universal_to_lift_initial _ (_ ,, iniR)).
-  use ( u_rep_universal R R_epi epiab cond_R ).
+  exact (u_rep_universal R R_epi epiab cond_R).
 Qed.
 
 Theorem push_initiality
@@ -681,15 +678,16 @@ Definition is_right_adjoint_functor_of_reps
   : is_right_adjoint FF.
 Proof.
   set (cond_F := fun R R_epi => inl ((Fepi R R_epi),, aepi) : cond_isEpi_hab R R_epi).
-  use right_adjoint_left_from_partial.
-  - intro R.
-    use (rep_of_b_in_R' R _ _ (cond_F R _ )).
-    + apply epiall.
-    + apply ii1.
-      apply epiall.
-  - intro R. apply projR_rep.
-  - intro R.
-    apply u_rep_universal.
+  apply left_adjoint_weq_reflections.
+  intro R.
+  use make_reflection.
+  - use make_reflection_data.
+    + use (rep_of_b_in_R' R _ _ (cond_F R _ )).
+      * apply epiall.
+      * apply ii1.
+        apply epiall.
+    + apply projR_rep.
+  - apply u_rep_universal.
 Qed.
 
 Corollary is_right_adjoint_functor_of_reps_from_pw_epi

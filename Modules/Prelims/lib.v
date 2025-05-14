@@ -28,6 +28,7 @@ Require Import UniMath.CategoryTheory.Limits.Initial.
 Require Import UniMath.CategoryTheory.catiso.
 
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
+Require Import UniMath.CategoryTheory.Adjunctions.Reflections.
 
 
 Local Notation "'SET'" := hset_category.
@@ -57,21 +58,20 @@ Proof.
     + apply (pr2 ini).
 Defined.
 
-Lemma initial_universal_to_lift_initial {D C : precategory}
+Lemma initial_universal_to_lift_initial {D C : category}
       (S : D ⟶ C)
       (c : Initial C)
       {r : D} {f : C ⟦ c, S r ⟧}
-      (unif : is_universal_arrow_to  S c r f) :
+      (unif : is_reflection (make_reflection_data r f)) :
   isInitial _ r.
 Proof.
   intro d.
-  specialize (unif d (InitialArrow _ _)).
+  specialize (unif (make_reflection_data d (InitialArrow _ _))).
   use make_iscontr.
   - apply (iscontrpr1 unif).
   - intro g.
-    cbn.
     apply path_to_ctr.
-    apply InitialArrowUnique.
+    refine (!InitialArrowUnique _ _ _).
 Qed.
 
 (**

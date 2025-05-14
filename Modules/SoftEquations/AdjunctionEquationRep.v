@@ -57,6 +57,7 @@ Require Import Modules.Signatures.BindingSig.
 Require Import Modules.SoftEquations.BindingSig.
 
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
+Require Import UniMath.CategoryTheory.Adjunctions.Reflections.
 Require Import UniMath.CategoryTheory.Limits.Initial.
 
 
@@ -115,21 +116,19 @@ Section QuotientRep.
     := projR_rep Sig epiSig R_epi SigR_epi  d ff.
 
   Lemma u_rep_universal (R : model _) (R_epi: preserves_Epi R) (SigR_epi : preserves_Epi (Sig R))
-    : is_universal_arrow_to (ModEq_Mod_functor eq) R (R' R_epi SigR_epi) (projR_rep R R_epi SigR_epi).
+    : is_reflection (make_reflection_data (F := ModEq_Mod_functor eq) (R' R_epi SigR_epi) (projR_rep R R_epi SigR_epi)).
   Proof.
-    intros S f.
-    set (j := tpair (fun (x : model_equations _) => R →→ x) (S : model_equations _)  f).
-    eassert (def_u :=(u_rep_def _ _ _  _ (@d R) (@ff R) j)).
-    unshelve eapply unique_exists.
-    - exact (u_rep_arrow R_epi SigR_epi f ,, tt).
-    - exact (! def_u).
-    - intro.
-      apply homset_property.
+    intros f.
+    set (j := tpair (λ (x : model_equations _), R →→ x) (reflection_data_object f) (f : REP_CAT⟦_, _⟧)).
+    eassert (def_u := u_rep_def _ _ _  _ (@d R) (@ff R) j).
+    use make_reflection_arrow.
+    - exact (u_rep_arrow R_epi SigR_epi (f : REP_CAT⟦_, _⟧) ,, tt).
+    - exact def_u.
     - intros g eq'.
-      use eq_in_sub_precategory.
-      cbn.
-      use (_ : isEpi (C := REP_CAT) (projR_rep R _ _)); [apply isEpi_projR_rep|].
-      etrans;[exact eq'|exact def_u].
+      apply eq_in_sub_precategory.
+      use (isEpi_projR_rep _ _ _ _ _ _ : isEpi (C := REP_CAT) (projR_rep R _ _)).
+      refine (!eq' @ _).
+      exact def_u.
   Qed.
 
   (** If all models preserve epis, and their image by the signature
@@ -137,11 +136,13 @@ Section QuotientRep.
   Definition ModEq_Mod_is_right_adjoint
              (modepis : ∏ (R : model Sig), preserves_Epi R)
              (SigR_epis : ∏ (R : model Sig) , preserves_Epi (Sig R))
-    : is_right_adjoint (ModEq_Mod_functor eq) :=
-    right_adjoint_left_from_partial (ModEq_Mod_functor (λ x : O, eq x))
-                                    (fun R => R' (modepis R) (SigR_epis R ))
-                                    (fun R => projR_rep R (modepis R)(SigR_epis R ))
-                                    (fun R => u_rep_universal R (modepis R)(SigR_epis R )).
+    : is_right_adjoint (ModEq_Mod_functor eq)
+    := invmap (left_adjoint_weq_reflections _)
+      (λ (R : REP_CAT), make_reflection
+        (make_reflection_data (F := ModEq_Mod_functor eq)
+          (R' (modepis R) (SigR_epis R))
+          (projR_rep R (modepis R)(SigR_epis R )))
+        (u_rep_universal R (modepis R) (SigR_epis R))).
 
 
   (** If the initial model and its image by the signature preserve epis,
