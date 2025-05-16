@@ -680,13 +680,12 @@ Proof.
   set (cond_F := fun R R_epi => inl ((Fepi R R_epi),, aepi) : cond_isEpi_hab R R_epi).
   apply left_adjoint_weq_reflections.
   intro R.
-  use make_reflection.
-  - use make_reflection_data.
-    + use (rep_of_b_in_R' R _ _ (cond_F R _ )).
-      * apply epiall.
-      * apply ii1.
-        apply epiall.
-    + apply projR_rep.
+  use make_reflection'.
+  - use (rep_of_b_in_R' R _ _ (cond_F R _ )).
+    + apply epiall.
+    + apply ii1.
+      apply epiall.
+  - apply projR_rep.
   - apply u_rep_universal.
 Qed.
 

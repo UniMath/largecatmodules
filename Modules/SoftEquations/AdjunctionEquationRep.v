@@ -138,10 +138,10 @@ Section QuotientRep.
              (SigR_epis : ∏ (R : model Sig) , preserves_Epi (Sig R))
     : is_right_adjoint (ModEq_Mod_functor eq)
     := invmap (left_adjoint_weq_reflections _)
-      (λ (R : REP_CAT), make_reflection
-        (make_reflection_data (F := ModEq_Mod_functor eq)
-          (R' (modepis R) (SigR_epis R))
-          (projR_rep R (modepis R)(SigR_epis R )))
+      (λ (R : REP_CAT), make_reflection'
+        (F := ModEq_Mod_functor eq)
+        (R' (modepis R) (SigR_epis R))
+        (projR_rep R (modepis R)(SigR_epis R ))
         (u_rep_universal R (modepis R) (SigR_epis R))).
 
 
