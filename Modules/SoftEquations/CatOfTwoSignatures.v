@@ -54,6 +54,7 @@ Require Import UniMath.CategoryTheory.Limits.Coproducts.
 Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
 Require Import UniMath.CategoryTheory.Limits.Pushouts.
 Require Import UniMath.CategoryTheory.Adjunctions.Core.
+Require Import UniMath.CategoryTheory.Adjunctions.Reflections.
 
 Section TwoSig.
 
@@ -294,25 +295,26 @@ Definition OneSig_to_TwoSig (S : signature C) : TwoSignature := (S ,, ∅ ,, emp
 
 (** This induces a left adjoint to the forgetful functor *)
 Lemma universal_OneSig_to_TwoSig (S : signature C) :
-  is_universal_arrow_to (pr1_category two_signature_disp) S (OneSig_to_TwoSig S) (identity _).
+  is_reflection (F := pr1_category two_signature_disp)
+    (make_reflection_data (OneSig_to_TwoSig S) (identity _)).
 Proof.
-  intros TT f.
-  unshelve eapply unique_exists.
-  - refine (f ,, _) .
-    intro.
-    use empty_rect.
-  - apply id_left.
-  - intro.
-    apply homset_property.
+  intro f.
+  use make_reflection_arrow.
+  - exists (f : signature_category⟦_, _⟧).
+    intro x.
+    exact (empty_rect _).
+  - exact (!id_left _).
   - intros y eqy.
     apply subtypePath_prop.
-    etrans;[|exact eqy].
-    apply pathsinv0, id_left.
+    refine (_ @ !eqy).
+    symmetry.
+    apply id_left.
 Defined.
 
 Definition TwoSig_OneSig_is_right_adjoint
   : is_right_adjoint (pr1_category two_signature_disp)
-  := right_adjoint_left_from_partial (X := signature_category ) _ _ _ universal_OneSig_to_TwoSig.
+  := invmap (left_adjoint_weq_reflections _)
+    (λ (S : signature_category), make_reflection _ (universal_OneSig_to_TwoSig S)).
 
 Lemma OneSig_TwoSig_fully_faithful
   : fully_faithful (left_adjoint TwoSig_OneSig_is_right_adjoint : _ ⟶  TwoSig_category).
@@ -462,20 +464,17 @@ Definition OneMod_TwoMod (M : MOD1) : MOD2 :=
 
 (** This induces a left adjoint to the forgetful functor *)
 Lemma universal_OneMod_TwoMod (M : MOD1) :
-  is_universal_arrow_to TwoMod_OneMod_functor M  (OneMod_TwoMod M ) (identity _).
+  is_reflection (F := TwoMod_OneMod_functor)
+    (make_reflection_data (OneMod_TwoMod M ) (identity _)).
 Proof.
-  intros TT f.
-  unshelve eapply unique_exists.
-  - exact ((pr1 f ,, fun x => empty_rect _) ,, pr2 f) .
-  - apply id_left.
-  - intro.
-    apply homset_property.
-  -
-    intros y eqy.
+  intro f.
+  use make_reflection_arrow.
+  - exact ((pr1 (f : MOD1⟦_, _⟧) ,, fun x => empty_rect _) ,, pr2 (f : MOD1⟦_, _⟧)).
+  - exact (!id_left _).
+  - intros y eqy.
     rewrite id_left in eqy.
-    cbn in eqy.
-    rewrite <- eqy.
-    cbn.
+    cbn in *.
+    rewrite eqy.
     set (y2' := fun (x : model_equations _) => _).
     assert (e : y2' = (pr2 (pr1 y))).
     {
@@ -491,8 +490,9 @@ Proof.
 Defined.
 
 
-Definition TwoMod_OneMod_is_right_adjoint : is_right_adjoint TwoMod_OneMod_functor :=
-  right_adjoint_left_from_partial (X := MOD1) _ _ _ universal_OneMod_TwoMod.
+Definition TwoMod_OneMod_is_right_adjoint : is_right_adjoint TwoMod_OneMod_functor
+  := invmap (left_adjoint_weq_reflections _)
+    (λ M, make_reflection _ (universal_OneMod_TwoMod M)).
 
 Lemma OneMod_TwoMod_fully_faithful : fully_faithful (left_adjoint TwoMod_OneMod_is_right_adjoint).
 Proof.
