@@ -22,7 +22,6 @@ Require Import UniMath.Foundations.PartD.
 Require Import UniMath.Foundations.Propositions.
 Require Import UniMath.Foundations.Sets.
 Require Import UniMath.CategoryTheory.Limits.BinCoproducts.
-(* Require Import UniMath.SubstitutionSystems.FromBindingSigsToMonads_Summary. *)
 Require Import UniMath.SubstitutionSystems.BindingSigToMonad.
 Require Import UniMath.SubstitutionSystems.Signatures.
 Require Import UniMath.CategoryTheory.Core.Prelude.
